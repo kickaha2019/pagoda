@@ -1,0 +1,35 @@
+root Root
+	set Site "Adventure Gamers"
+	set Base "https://adventuregamers.com"
+	run Reviews
+
+root Reviews
+	set Type "Review"
+	expect Site Type "Force Majeure II: The Zone" "Force Majeure II: The Zone" Base+"/articles/view/17942"
+	url Base+"/articles/reviews"
+    run Page Site Base Type
+
+branch Page Site Base Type
+	run Games Site Base Type
+	every A
+    text Marker
+    match Marker "&gt;"
+    attribute href Link
+    match Link "https://adventuregamers.com/articles/reviews/P.*"
+    url Link
+	call Page Site Base Type
+
+branch Games Site Base Type
+    every SPAN
+    attribute class Class
+    match Class "article_type"
+    text Text
+    match Text "review"
+    previous A
+	attribute href Link
+	if
+		match Link "/.*"
+		set Link Base+Link
+	endif
+	text Title
+	write Site Type Title Title Link

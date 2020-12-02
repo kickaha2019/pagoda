@@ -1,0 +1,35 @@
+root Root
+	set Site "Inferno's Adventures"
+	set Base "http://home.earthlink.net/~angeldancer27/"
+	set Type "Reference"
+	expect Site Type "Hopkins FBI" "Hopkins FBI" "http://home.earthlink.net/~infernofilecabinet2/XpSetupsF_J/HopkinsFBI_Setup.htm"
+	expect Site Type "Journeyman Project II:" "Journeyman Project II:" "http://home.earthlink.net/~infernofilecabinet2/XpSetupsF_J/JourneyPII_Setup.htm"
+	url Base+"XpGameList.htm"
+	every A
+	attribute href Link
+	match Link "XpGameList.*"
+	url Base+Link
+	every A
+	attribute href Link
+	match Link ".*XpSet.*"
+	run Absolute Site Type Link
+	run Default Site Type Link
+	run Relative Site Type Link
+
+branch Absolute Site Type Link
+	match Link "http:.*"
+	text Title
+	match Title ".+"
+	write Site Type Title Title Link
+
+branch Default Site Type Link
+	match Link "infernofilecabinet.*"
+	text Title
+	match Title ".+"
+	write Site Type Title Title "http://home.earthlink.net/"+Link
+
+branch Relative Site Type Link
+	match Link "\.\.(.*)" Link1
+	text Title
+	match Title ".+"
+	write Site Type Title Title "http://home.earthlink.net"+Link1

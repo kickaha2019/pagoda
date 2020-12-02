@@ -1,0 +1,13 @@
+root Root
+	Column "site" ""
+	Column "type" ""
+	Column "name" ""
+	Column "label" ""
+	Column "url" ""
+	Column "pc" "Y"
+	Column "mac" "Y"
+	Column "web" "Y"
+	run Gamespot/Root
+	run iTunes/Root
+	run MacAppStore/Root
+

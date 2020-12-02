@@ -1,0 +1,5 @@
+root test
+	url "http://www.alofmethbin.com/"
+	next TITLE
+	text Title
+	write Title

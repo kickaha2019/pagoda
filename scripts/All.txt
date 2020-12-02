@@ -1,0 +1,29 @@
+root Root
+	Column "site" ""
+	Column "type" ""
+	Column "name" ""
+	Column "label" ""
+	Column "url" ""
+	Column "pc" "Y"
+	Column "mac" "Y"
+	Column "web" "Y"
+	run AdventureClassicGaming/Root
+	run AdventureGamers/Root
+	run AdventureIsland/Root
+	run AdventureLantern/Root
+	run AndrewPlotkin/Root
+	run Aventuraycia/Root
+	run BrassLantern/Root
+	run Fisicx/Root
+	run GameBoomers/Root
+	run Grabbed/Root
+	run JustAdventure/Root
+	run Metzomagic/Root
+	run MobyGames/Root
+	run MrBillsAdventureland/Root
+	run MysteryManor/Root
+	run Official/Root
+	run Przygodoskop/Root
+	run SpoilerCentre/Root
+	run TapRepeatedly/Root
+	run UHS/Root

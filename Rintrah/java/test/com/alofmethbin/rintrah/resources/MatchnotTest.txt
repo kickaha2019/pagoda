@@ -1,0 +1,9 @@
+root true
+	matchnot "No digits in here" "\d" 
+	write "Matched"
+	
+root false
+	write "Unmatched"
+	matchnot "The alphabet starts with ABC and carries on to XYZ" ".*ABC.*"
+	write "Shouldn't get here"
+

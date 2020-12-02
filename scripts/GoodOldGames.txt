@@ -1,0 +1,14 @@
+root Root
+	Set Site "Good Old Games"
+	set Base "http://www.gog.com"
+	set Type "Availability"
+	expect Site Type "11TH HOUR, THE" "11TH HOUR, THE" Base+"/game/the_11th_hour"
+	expect Site Type "ZORK: GRAND INQUISITOR" "ZORK: GRAND INQUISITOR" Base+"/game/zork_grand_inquisitor"
+	file "/Users/peter/pagoda/temp/gog.html"
+	every DIV
+	attribute class Class
+	match Class "product-title ng-binding ng-scope"
+	text Title
+	previous A
+	attribute href Url
+	write Site Type Title Title Base+Url

@@ -1,0 +1,11 @@
+root Root
+	set Site "Spyglass Guides"
+	set Base "http://www.spyglassguides.com/"
+	set Type "Walkthrough"
+	expect Site Type "1893: A World's Fair Mystery" "1893: A World's Fair Mystery" "http://www.spyglassguides.com/guides/1893.htm"
+	url Base+"sitemap/sitemap.html"
+	every A
+	attribute href Link
+	match Link "../guides/(.*)" Path
+	text Text
+	write Site Type Text Text Base+"guides/"+Path

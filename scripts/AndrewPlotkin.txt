@@ -1,0 +1,16 @@
+root Root
+	set Site "Andrew Plotkin"
+	set Base "https://www.eblong.com/zarf/gamerev"
+	set Type "Review"
+	expect Site Type "Secrets of the Luxor" "Secrets of the Luxor" Base+"/luxor.html"
+	url Base+"/index.html"
+	every LI
+	next A
+	attribute href Link
+	set Link1 Base+"/"+Link
+	if
+		match Link "http(s|):.*"
+		set Link1 Link
+	endif
+	text Title
+	write Site Type Title Title Link1

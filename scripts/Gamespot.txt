@@ -1,0 +1,21 @@
+root Root
+	set Site "Gamespot"
+	set Base "http://www.gamespot.com"
+	set Type "Reference"
+	expect Site Type "A Fork in the Tale" "A Fork in the Tale" Base+"/reviews/a-fork-in-the-tale-review/1900-2537843/"
+	run Search Site Base Type "a+fork+in+the+tale" "a fork in the tale" 5
+	limitNew 30
+	readloop "database/search.txt" url_encode words_match
+	run Search Site Base Type url_encode words_match 999
+
+branch Search Site Base Type url_encode words_match Age
+	url Base+"/search/?q="+ url_encode +"&indices%5B%5D=review" Age
+	every A
+	attribute href Link
+	match Link "/reviews/.*-review/.*/"
+	next H3
+	text Title
+	match Title "(.*) Review" Title
+	match Title words_match
+	prune
+	write Site Type Title Title Base+Link

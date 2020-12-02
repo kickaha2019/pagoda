@@ -1,0 +1,19 @@
+root Root
+	set Site "A For Adventure"
+	set Base "http://www.a-for-adventure.com"
+	set Type "Review"
+	expect Site Type "Blade Runner" "Blade Runner" Base+"/gamereview.php?id=197"
+	url Base+"/reviews.php"
+	run Reviews Site Base Type
+	every A
+	attribute href Link
+	match Link "/reviews.php\?page=.*"
+	url Base+Link
+	run Reviews Site Base Type
+
+branch Reviews Site Base Type
+	every A
+	attribute href Link
+	match Link "/gamereview.php\?id=.*"
+	text Title
+	write Site Type Title Title Base+Link

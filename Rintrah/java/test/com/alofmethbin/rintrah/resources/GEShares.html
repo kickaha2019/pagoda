@@ -1,0 +1,701 @@
+<SCRIPT LANGUAGE="JavaScript"> <!--
+	// -----------------------------------------------------------
+	// Client-side BrowserData constructor
+	// Populated using data from server-side oBD object to avoid redundancy
+	// -----------------------------------------------------------
+	function BrowserData()
+	{
+				this.userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)";
+		this.browser = "MSIE";
+		this.majorVer = "6";
+		this.minorVer = "0";
+		this.betaVer = 0;
+		this.platform = "32";
+		this.getsNavBar = true;
+		this.doesActiveX = false;
+
+	}
+	var oBD = new BrowserData();
+	
+	
+	function IsIE55AndAbove( ) {
+		if (oBD.browser == "MSIE" && ( oBD.majorVer >= 6 || (oBD.majorVer = 5 && oBD.minorVer >= 5)) )
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+//--></SCRIPT>
+
+
+
+
+<SCRIPT LANGUAGE="Javascript"><!--
+	// -----------------------------------------------------------
+	// window_load()
+	// Container function for load.
+	// -----------------------------------------------------------
+	function window_load()
+	{
+		//alert("window_load");
+		if (oBD.getsNavBar)
+		{
+			if ("function" == typeof(InitNavLinks)) 
+				InitNavLinks();
+			else 
+				//alert("no InitNavLinks");
+			if ("function" == typeof(CheckToTop)) CheckToTop();
+		}
+	}
+	window.onload = window_load;
+//--></SCRIPT>
+
+
+
+<SCRIPT LANGUAGE="Javascript1.2">
+<!--
+// self.document.domain = "thuridion.com";
+//-->
+</SCRIPT>
+
+
+
+<script LANGUAGE="JavaScript">
+function click_termscondition( )
+{
+	var strWindowProperties;
+
+	strWindowProperties = "dialogWidth:700px; dialogHeight:580px; center:yes; status:no";
+	window.showModalDialog("../plan/Confirm.asp?page=ComputerShareTermsCondition", "", strWindowProperties);
+
+	return false;
+}
+
+
+function setLanguage(vlcid)
+{
+	document.frmLangSelect.LangID.value = vlcid ;
+	document.frmLangSelect.submit();
+	return true;
+}
+
+
+</script>
+
+
+<SCRIPT LANGUAGE="JavaScript">
+
+//Called when the Update button is clicked.
+function validateThisForm(objButton)
+{
+	// If using last 12 months then there's nothing to validate
+	// alert( "validate: " + objButton );
+	if ( document.documentfrm.displayoptions[0].checked )
+	{
+		return localSubmit(objButton);
+	}
+	
+	if ( areDatesValid() )
+	{
+		return localSubmit(objButton);
+	}
+
+	return false;
+}
+
+//Clicked when the Print button is clicked.
+function displayInPrintMode(objButton)
+{
+	// If using last 12 months then there's nothing to validate
+	if ( document.documentfrm.displayoptions[0].checked )
+	{
+		doprintpreview();
+		document.documentfrm.submit();
+		return true;
+	}
+	
+	if ( areDatesValid() )
+	{
+		doprintpreview();
+		document.documentfrm.submit();
+		return true;
+	}
+
+	return false;
+}
+
+// Sets the number of days for the month and year selected for the start date controls.
+function populateStart(objForm,selectIndex)
+{
+	// Get the currently selected day.
+	var iDay;
+	
+	setDateRangeRadioButton();
+	
+	iDay = objForm.dayStart.options[objForm.dayStart.selectedIndex].text;
+	
+	timeA = new Date(objForm.yearStart.options[objForm.yearStart.selectedIndex].text, objForm.monthStart.options[objForm.monthStart.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < objForm.dayStart.length; i++)
+	{
+	objForm.dayStart.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+		objForm.dayStart.options[i] = new Option(i+1);
+		// See if the current day should be selected if day is <= 28.
+		if ( iDay <= 28 && iDay == i+1 )
+			objForm.dayStart.options[i].selected = true;
+	}
+	
+	// If the day is > 29 then select the last item in the list.
+	if ( iDay >= 29 )
+		objForm.dayStart.options[objForm.dayStart.length-1].selected = true;
+}
+
+// Sets the number of days for the month and year selected for the end date controls.
+function populateEnd(objForm,selectIndex)
+{
+	// Get the currently selected day.
+	var iDay;
+	
+	setDateRangeRadioButton();
+	
+	iDay = objForm.dayEnd.options[objForm.dayEnd.selectedIndex].text;
+	
+	timeA = new Date(objForm.yearEnd.options[objForm.yearEnd.selectedIndex].text, objForm.monthEnd.options[objForm.monthEnd.selectedIndex].value,1);
+	timeDifference = timeA - 86400000;
+	timeB = new Date(timeDifference);
+	var daysInMonth = timeB.getDate();
+	for (var i = 0; i < objForm.dayEnd.length; i++)
+	{
+	objForm.dayEnd.options[0] = null;
+	}
+	for (var i = 0; i < daysInMonth; i++)
+	{
+		objForm.dayEnd.options[i] = new Option(i+1);
+		// See if the current day should be selected if day is <= 28.
+		if ( iDay <= 28 && iDay == i+1 )
+			objForm.dayEnd.options[i].selected = true;
+	}
+	
+	// If the day is > 29 then select the last item in the list.
+	if ( iDay >= 29 )
+		objForm.dayEnd.options[objForm.dayEnd.length-1].selected = true;
+}
+
+// Returns true if date1 is greater than date2
+// Values are expected be integers: Can convert by using parseInt
+function IsDateGreaterThan (iMonth1, iDay1, iYear1, iMonth2, iDay2, iYear2)
+{
+	if (iYear1 > iYear2)
+	{
+		return true;
+	}
+
+	if (iYear1 == iYear2)
+	{
+		if (iMonth1 > iMonth2)
+		{
+			return true;
+		}
+		if (iMonth1 == iMonth2)
+		{
+			if (iDay1 > iDay2)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// Returns true if date1 is less than date2
+// Values are expected be integers: Can convert by using parseInt
+function IsDateLessThan (iMonth1, iDay1, iYear1, iMonth2, iDay2, iYear2)
+{
+	if (iYear1 < iYear2)
+	{
+		return true;
+	}
+
+	if (iYear1 == iYear2)
+	{
+		if (iMonth1 < iMonth2)
+		{
+			return true;
+		}
+		if (iMonth1 == iMonth2)
+		{
+			if (iDay1 < iDay2)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// Returns true if date1 is equal to date2
+// Values are expected be integers: Can convert by using parseInt
+function AreDatesEqual (iMonth1, iDay1, iYear1, iMonth2, iDay2, iYear2)
+{
+	if (iMonth1 == iMonth2 && iDay1==iDay2 && iYear1==iYear2)
+	{
+		return true;
+	}
+	return false;
+}
+
+// This function should only be called if both the start and end date controls are present.
+// No error checking is performed to enforce this at this time.  You have to know when designing your form.
+function areDatesValid()
+{
+	var iStartMonth;
+	var istartDay;
+	var iStartYear;
+	var itrEndMonth;
+	var iEndDay;
+	var iEndYear;
+	var retValue;
+	var iCurrentDay;
+ 	var iCurrentMonth;
+ 	var iCurrentYear;
+	var theform = document.documentfrm;
+
+	// The starting month select control will have values of 0-12.
+	// Months are zero based in the control
+	iStartMonth = theform.monthStart.selectedIndex + 1;
+	iStartDay = theform.dayStart.options[theform.dayStart.selectedIndex].text;
+	iStartYear = theform.yearStart.options[theform.yearStart.selectedIndex].text;
+
+	// The ending month select control will have values of 0-12.
+	// Months are zero based in the control
+	iEndMonth = theform.monthEnd.selectedIndex + 1;
+	iEndDay = theform.dayEnd.options[theform.dayEnd.selectedIndex].text;
+	iEndYear = theform.yearEnd.options[theform.yearEnd.selectedIndex].text;
+
+	// The 3 iCurrent... variables are hidden values in the form set to the values the date as returned by Now.
+	iCurrentMonth = theform.currentmonth.value;
+	iCurrentDay = theform.currentday.value;
+	iCurrentYear = theform.currentyear.value;
+
+	//alert(iCurrentMonth + " " + iCurrentDay + " " + iCurrentYear);
+	//alert(iStartMonth + " " + iStartDay + " " + iStartYear);
+	//alert(iEndMonth + " " + iEndDay + " " + iEndYear);
+
+	// Convert the iCurrent values to integers.
+	iCurrentMonth=parseInt(iCurrentMonth);
+	iCurrentDay=parseInt(iCurrentDay);
+	iCurrentYear=parseInt(iCurrentYear);
+
+	// Convert starting day to an integer.	
+	iStartDay=parseInt(iStartDay);
+
+	// Convert starting year to an integer.
+	iStartYear=parseInt(iStartYear);
+
+	// Convert ending day to an integer.
+	iEndDay=parseInt(iEndDay);
+	
+	// Convert ending year to an integer.
+	iEndYear=parseInt(iEndYear);
+
+	// Is ending date greater than starting date?
+	if (!IsDateGreaterThan(iEndMonth,iEndDay,iEndYear,iStartMonth,iStartDay,iStartYear))
+	{
+		// The ending date specified is not later than the starting date.
+		alert(theform.endDateNotLaterThanStartingDate.value);
+		theform.monthStart.focus();
+		return false;
+	}
+
+	// Is ending date equal to the current date?
+	if (AreDatesEqual(iCurrentMonth,iCurrentDay,iCurrentYear,iEndMonth,iEndDay,iEndYear))
+	{
+		return true;
+	}
+
+	// Is current date greater than ending date.
+	if (!IsDateGreaterThan(iCurrentMonth,iCurrentDay,iCurrentYear,iEndMonth,iEndDay,iEndYear))
+	{
+		// The ending date must not be later than today's date.
+		alert(theform.endDateNotLessThanCurrentDate.value);
+		theform.monthEnd.focus();
+		return false;
+	}
+
+	// Here if the dates selected are valid and acceptable.
+	return true;
+	
+}
+
+// Called when any of the date controls are changed.
+// The assumption is that the radio button control name is displayoptions.
+// Example from Statement.asp:
+// O	Display last month
+// O	Display selected dates from 
+// Returns true always.
+//
+function setDateRangeRadioButton()
+{
+	if ( !document || !document.documentfrm || !document.documentfrm.displayoptions ) return true;
+	
+	if ( document.documentfrm.displayoptions[0].checked )
+	{
+		document.documentfrm.displayoptions[0].checked = false;
+		document.documentfrm.displayoptions[1].checked = true;
+	}
+	return true;
+}
+
+</SCRIPT><html >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<meta HTTP-EQUIV="Expires" CONTENT="-1">
+		<link rel="stylesheet" href="../styles/defstyles.css" type="text/css">
+		<link rel="stylesheet" media="print" href="../styles/defstyles-print.css" type="text/css">
+		<link rel="stylesheet" href="../plan/exstyles.css" type="text/css">
+		<title>GEShares</title>
+		<script type="text/javascript" SRC="../scripts/jscripts.js" LANGUAGE="JavaScript"></script>
+		<script type="text/javascript" SRC="../scripts/GenericFuncts.js" LANGUAGE="JavaScript"></script>
+		<style type="text/css"><!--
+TH.TblHdr {	color: #FFFFFF;	background-color: #94aad6 }
+TD.TblHdr {	color: #FFFFFF;	background-color: #94aad6 }
+TD.TblCell { color: #000000; background-color: #dcdcdc }
+TD.GraySidebar { color: #333399; background-color: #eeeeff }
+TD.MenuItem { cursor: default; text-decoration: none; font-weight: bold; color: #333399 }	
+TD.MenuItemOver { cursor: default; text-decoration: none; font-weight: bold; color: #990000 }	
+TD.MenuImage { background-color: #eeeeff; border: solid; border-width: 1px 1px 0px; border-color: #FFFFFF #FFFFFF black }
+TD.MenuImageLast { background-color: #eeeeff; border: 1px #FFFFFF solid }
+TD.clsNavBarSpacer { background-color: #000000 }
+.clsMenu { background-color: #336699; }
+.TitleText { font-family: Impact, sans-serif; font-size: 26px; font-weight: normal; font-style:italic; color: #666666; }
+.SubTitleText {	color: #333333;	}
+.CopyrightText { color: #333399; font-size: 10px; line-height: 12px }
+.UserInfo {	color: #000000 } 
+.UserInfoBold {	color: #000099 }
+--></style>
+<SCRIPT LANGUAGE="JavaScript"><!--
+
+//-->
+</script><LINK REL='stylesheet' TYPE='text/css' HREF='../plan/navbar.css'>
+
+		<script type="text/javascript">
+		var sHeaderPage = '../plan/header.asp';
+		
+		function fnGetThisPage( )
+		{
+			return 'Statement';
+		}
+
+		function fnIsPrintPreviewOn( )
+		{
+			
+			return false
+			
+		}
+		</script>
+	</head>
+	<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="body_onload('Statement','MainMenus', 0)" bgcolor="#ffffff"  >
+<table class="PrintHeader"  border="1" cellpadding="0" cellspacing="0" width="100%" align="center">
+	<tr>
+		<td width="100%" align="center">
+			<img src="../plan/GESharesTitle.gif" WIDTH="148" HEIGHT="63">
+		</td>
+	</tr>
+</table>
+
+	<form method="POST" id="documentfrm" name="documentfrm" action="Statement.asp?DISP_MODE=">
+		<input type=hidden  name=currentmonth  id=currentmonth value=1>
+	<input type=hidden  name=currentday  id=currentday value=24>
+	<input type=hidden  name=currentyear  id=currentyear value=2011>
+	<input type=hidden  name=endDateNotLaterThanStartingDate id=endDateNotLaterThanStartingDate value="The ending date specified is not later than the starting date.">
+	<input type=hidden  name=endDateNotLessThanCurrentDate id=endDateNotLessThanCurrentDate value="The ending date must not be later than today's date.">
+		<input type="hidden" name="printpreview" id="printpreview" value="False">
+		<input type=hidden  name=submitstring id=submitstring value="">
+		<table width="100%" border="0" cellpadding="12" cellspacing="0" align="center" ID="Table1">
+		<tr><td>
+		<br><br>
+		<p><center><H2>International Plan&nbsp;Statement for the period &nbsp;1 January 2010 - 31 December 2010</H2><br></center></P><table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" valign="top">
+		<tr>
+			<td width="1%" valign="top" align="center" nowrap><H3>Display Options</H3></td>
+			<td width="99%">
+				<table width="100%" border="0" cellspacing="0" cellpadding="3" align="center" valign="top"><tr>
+		<td width="1%"><input type='radio' name='displayoptions' value='LastMonth' >Display Last 12 months</td>
+	</tr><tr>
+		<td width="1%" nowrap><input type='radio' name='displayoptions' value='SelectedPeriods'checked>Display selected dates from&nbsp;<select name=monthStart onChange="populateStart(this.form,this.selectedIndex);" style="z-index:1" ><option value=01 selected>Jan</option>
+<option value=02>Feb</option>
+<option value=03>Mar</option>
+<option value=04>Apr</option>
+<option value=05>May</option>
+<option value=06>Jun</option>
+<option value=07>Jul</option>
+<option value=08>Aug</option>
+<option value=09>Sep</option>
+<option value=10>Oct</option>
+<option value=11>Nov</option>
+<option value=12>Dec</option>
+</select>
+<select name=dayStart onchange="return setDateRangeRadioButton()" style="z-index:1"><option value=1 selected>1</option>
+<option value=2>2</option>
+<option value=3>3</option>
+<option value=4>4</option>
+<option value=5>5</option>
+<option value=6>6</option>
+<option value=7>7</option>
+<option value=8>8</option>
+<option value=9>9</option>
+<option value=10>10</option>
+<option value=11>11</option>
+<option value=12>12</option>
+<option value=13>13</option>
+<option value=14>14</option>
+<option value=15>15</option>
+<option value=16>16</option>
+<option value=17>17</option>
+<option value=18>18</option>
+<option value=19>19</option>
+<option value=20>20</option>
+<option value=21>21</option>
+<option value=22>22</option>
+<option value=23>23</option>
+<option value=24>24</option>
+<option value=25>25</option>
+<option value=26>26</option>
+<option value=27>27</option>
+<option value=28>28</option>
+<option value=29>29</option>
+<option value=30>30</option>
+<option value=31>31</option>
+</select><select name=yearStart onChange="populateStart(this.form,this.form.monthStart.selectedIndex);" style="z-index:1"><option value=2002>2002</option>
+<option value=2003>2003</option>
+<option value=2004>2004</option>
+<option value=2005>2005</option>
+<option value=2006>2006</option>
+<option value=2007>2007</option>
+<option value=2008>2008</option>
+<option value=2009>2009</option>
+<option value=2010 selected>2010</option>
+<option value=2011>2011</option>
+</select>&nbsp;to&nbsp;&nbsp;<select name=monthEnd onChange="populateEnd(this.form,this.selectedIndex);" style="z-index:1" ><option value=01>Jan</option>
+<option value=02>Feb</option>
+<option value=03>Mar</option>
+<option value=04>Apr</option>
+<option value=05>May</option>
+<option value=06>Jun</option>
+<option value=07>Jul</option>
+<option value=08>Aug</option>
+<option value=09>Sep</option>
+<option value=10>Oct</option>
+<option value=11>Nov</option>
+<option value=12 selected>Dec</option>
+</select>
+<select name=dayEnd onchange="return setDateRangeRadioButton()" style="z-index:1"><option value=1>1</option>
+<option value=2>2</option>
+<option value=3>3</option>
+<option value=4>4</option>
+<option value=5>5</option>
+<option value=6>6</option>
+<option value=7>7</option>
+<option value=8>8</option>
+<option value=9>9</option>
+<option value=10>10</option>
+<option value=11>11</option>
+<option value=12>12</option>
+<option value=13>13</option>
+<option value=14>14</option>
+<option value=15>15</option>
+<option value=16>16</option>
+<option value=17>17</option>
+<option value=18>18</option>
+<option value=19>19</option>
+<option value=20>20</option>
+<option value=21>21</option>
+<option value=22>22</option>
+<option value=23>23</option>
+<option value=24>24</option>
+<option value=25>25</option>
+<option value=26>26</option>
+<option value=27>27</option>
+<option value=28>28</option>
+<option value=29>29</option>
+<option value=30>30</option>
+<option value=31 selected>31</option>
+</select><select name=yearEnd onChange="populateEnd(this.form,this.form.monthEnd.selectedIndex);" style="z-index:1"><option value=2002>2002</option>
+<option value=2003>2003</option>
+<option value=2004>2004</option>
+<option value=2005>2005</option>
+<option value=2006>2006</option>
+<option value=2007>2007</option>
+<option value=2008>2008</option>
+<option value=2009>2009</option>
+<option value=2010 selected>2010</option>
+<option value=2011>2011</option>
+</select>&nbsp;<input type=button name=xsubmit value="Commit" onclick="return validateThisForm(this)"></td>
+	</tr><tr><td>&nbsp;</td></tr>
+				</table>
+			</td>
+		</tr>
+	</table><table width='100%' border='0' cellpadding='6' cellspacing='2' align='center'>
+<tr>
+<td class='TblCell' style='font-weight: bold;' width='1%' nowrap>Date</td>
+<td class='TblCell' style='font-weight: bold;' width='15%' nowrap>Transaction Type</td>
+<td class='TblCell' style='font-weight: bold;' width='5%'>Local Currency</td>
+<td class='TblCell' style='font-weight: bold;' width='5%'>USD</td>
+<td class='TblCell' style='font-weight: bold;' width='5%'>Share Price<br>USD</td>
+<td class='TblCell' style='font-weight: bold;' width='5%'>Number of<br>Shares Purchased /<br>Withdrawn</td>
+<td class='TblCell' style='font-weight: bold;' width='5%'>Share Balance</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>01/01/2010</td>
+<td class='TblCell' width='15%'>Opening Balance</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>0.0000</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/08/2010</td>
+<td class='TblCell' width='15%'>Your contribution</td>
+<td class='TblCell'  width='5%' nowrap>0.00</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/09/2010</td>
+<td class='TblCell' width='15%'>Your contribution</td>
+<td class='TblCell'  width='5%' nowrap>46.08&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>73.27</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/09/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased (Using your contribution)</td>
+<td class='TblCell'  width='5%' nowrap>-46.08&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>-73.27</td>
+<td class='TblCell'  width='5%' nowrap>16.2500</td>
+<td class='TblCell'  width='5%' nowrap>4.5089</td>
+<td class='TblCell'  width='5%' nowrap>4.5089</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/09/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased by GE</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>0.6763</td>
+<td class='TblCell'  width='5%' nowrap>5.1852</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>29/10/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased (Using your contribution)</td>
+<td class='TblCell'  width='5%' nowrap>-48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>-77.37</td>
+<td class='TblCell'  width='5%' nowrap>16.0200</td>
+<td class='TblCell'  width='5%' nowrap>4.8295</td>
+<td class='TblCell'  width='5%' nowrap>10.0147</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>29/10/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased by GE</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>0.7244</td>
+<td class='TblCell'  width='5%' nowrap>10.7391</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/10/2010</td>
+<td class='TblCell' width='15%'>Your contribution</td>
+<td class='TblCell'  width='5%' nowrap>48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>77.37</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/11/2010</td>
+<td class='TblCell' width='15%'>Your contribution</td>
+<td class='TblCell'  width='5%' nowrap>48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>76.03</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/11/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased (Using your contribution)</td>
+<td class='TblCell'  width='5%' nowrap>-48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>-76.03</td>
+<td class='TblCell'  width='5%' nowrap>15.8300</td>
+<td class='TblCell'  width='5%' nowrap>4.8029</td>
+<td class='TblCell'  width='5%' nowrap>15.5420</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>30/11/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased by GE</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>0.7204</td>
+<td class='TblCell'  width='5%' nowrap>16.2624</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/12/2010</td>
+<td class='TblCell' width='15%'>Your contribution</td>
+<td class='TblCell'  width='5%' nowrap>48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>75.26</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/12/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased (Using your contribution)</td>
+<td class='TblCell'  width='5%' nowrap>-48.29&nbsp;GBP</td>
+<td class='TblCell'  width='5%' nowrap>-75.26</td>
+<td class='TblCell'  width='5%' nowrap>18.2900</td>
+<td class='TblCell'  width='5%' nowrap>4.1148</td>
+<td class='TblCell'  width='5%' nowrap>20.3772</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/12/2010</td>
+<td class='TblCell' width='15%'>Shares Purchased by GE</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>0.6172</td>
+<td class='TblCell'  width='5%' nowrap>20.9944</td>
+</tr>
+<tr>
+<td class='TblCell' nowrap width='1%'>31/12/2010</td>
+<td class='TblCell' width='15%'>Closing Balance</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>&nbsp;</td>
+<td class='TblCell'  width='5%' nowrap>20.9944</td>
+</tr>
+</table>
+
+		<br>
+		
+		<!-- <p><font size="1">Please note that the share price and currency exchange information on this statement is for reference purposes only and may not reflect the actual value of your shares at the time of a transfer or sale.</font></p> -->
+		 
+		</td></tr></table>
+	</form>
+<SCRIPT LANGUAGE='JavaScript' SRC='../scripts/navmenus.js'></SCRIPT><DIV ID='divMenu1' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Home' CLASS='clsMenuItem'  expURL='../plan/Home.asp'>Home</DIV></DIV><DIV ID='divMenu2' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Statement Summary' CLASS='clsMenuItem'  expURL='../plan/StatementSummary.asp'>Statement Summary</DIV><DIV ID='Statement Detail' CLASS='clsMenuItem'  expURL='../plan/Statement.asp'>Statement Detail</DIV><DIV ID='Annual Statement' CLASS='clsMenuItem'  expURL='../plan/AnnualStatement_new.asp'>Annual Statement</DIV><DIV ID='Sell Shares' CLASS='clsMenuItem'  expURL='../plan/SalesRequest.asp'>Sell Shares</DIV><DIV ID='Transfer shares' CLASS='clsMenuItem'  expURL='../plan/TransferRequest.asp'>Transfer shares</DIV></DIV><DIV ID='divMenu3' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Join the Plan' CLASS='clsMenuItem'  expURL='../plan/Enrollment.asp'>Join the Plan</DIV><DIV ID='Change/Suspend Contributions' CLASS='clsMenuItem'  expURL='../plan/ContribChange.asp'>Change/Suspend Contributions</DIV><DIV ID='Print Confirmation Statement' CLASS='clsMenuItem'  expURL='../plan/EnrolmentPrint.asp'>Print Confirmation Statement</DIV></DIV><DIV ID='divMenu4' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);'ONCLICK = javascript:window.open('http://geshares.ge.com/geshares/index.htm')><DIV ID='What is GE Shares?' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1221'>What is GE Shares?</DIV><DIV ID='Being a Shareholder' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1222'>Being a Shareholder</DIV><DIV ID='Employment Changes' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1223'>Employment Changes</DIV><DIV ID='Tax Information' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1224'>Tax Information</DIV><DIV ID='Worked Examples' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1225'>Worked Examples</DIV><DIV ID='Contact Information' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1226'>Contact Information</DIV><DIV ID='GE Shares Brochure (PDF Version)' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1227'>GE Shares Brochure (PDF Version)</DIV><DIV ID='UK FAQs' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1228'>UK FAQs</DIV><DIV ID='Enrolment and Change Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1229'>Enrolment and Change Form</DIV><DIV ID='Withdrawal Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1230'>Withdrawal Form</DIV><DIV ID='SIP Enrolment Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1231'>SIP Enrolment Form</DIV><DIV ID='Sales Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=90743'>Sales Form</DIV><DIV ID='Transfer Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=90744'>Transfer Form</DIV></DIV>
+	</body>
+	</html>
+	<Table width=100% cellpadding=12 > <TR><TD><a href='Statement.asp?DISP_MODE=2'>SIP</a></TR></TD></Table>

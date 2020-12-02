@@ -1,0 +1,47 @@
+root Root
+	set Type "Official"
+	run Explicit
+	run DarklingRoom
+	run HerInteractive
+
+root Explicit
+	run Single "Atropos Studios" "http://www.atropos-studios.com/diamonds.html" "Diamonds in the Rough" "Atropos Studios.*"
+	run Single "Cardboard Box Entertainment" "http://www.ghostinthesheet.com/" "Ghost in the Sheet" "Ghost in the Sheet"
+	run Single "MindFactory" "http://www.brokensword25.com/" "Broken Sword 2.5: The Return of the Templars" "Baphomets Fluch 2.5 – Broken Sword 2.5"
+	run Single "Momentum AS" "http://www.culpainnata.com/" "Culpa Innata" "Culpa Innata.*"
+	run Single "Mulawa Dreaming" "https://www.mulawa.net/cooroora/index.html" "Cooroora" "Cooroora.*"
+	run Single "Mulawa Dreaming" "https://www.mulawa.net/magicama/index.html" "Magicama" "Magicama.*"
+	run Single "Mulawa Dreaming" "https://www.mulawa.net/magnetic/index.html" "Magnetic" "Magnetic.*"
+	run Single "Mulawa Dreaming" "https://www.mulawa.net/xiama/index.html" "Xiama" "Xiama.*"
+	run Single "Nintendo" "https://www.nintendolife.com/games/ds/apollo_justice_ace_attorney" "Apollo Justice: Ace Attorney" "Apollo Justice.*"
+	
+root DarklingRoom
+	set Site "Darkling Room"
+	run Single Site "http://www.thelostcrown.co.uk/" "The Lost Crown: a ghosthunting adventure" ".*Lost Crown.*"
+	set Site "Shadow Tor Studios"
+	run Single Site "http://www.shadowtorstudios.co.uk/" "Barrow Hill: Curse Of The Ancient Circle" ".*Shadow Tor.*"
+	
+root HerInteractive
+	set Site "Her Interactive"
+	set Base "https://www.herinteractive.com"
+	expect Site Type "#14 Nancy Drew: Danger by Design" "#14 Nancy Drew: Danger by Design" Base+"/shop-games/nancy-drew-danger-by-design/"
+	url Base+"/shop-games/desktop-games/"
+	every A
+	attribute href Href
+	attribute class Class
+	match Class "grayThumb"
+	next IMG
+	attribute alt Title
+	call Write Site Title Href
+
+branch Single Site Url Title Meta
+	expect Site Type Title Title Url
+	url Url
+	every TITLE
+	text Text
+	match Text Meta
+	write Site Type Title Title Url
+	
+branch Write Site Title Url
+	write Site Type Title Title Url
+	

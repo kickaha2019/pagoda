@@ -1,0 +1,64 @@
+root Root
+	Set Site "GameBoomers"
+	set Base "http://www.gameboomers.com/"
+	run Reviews Site Base
+	run Walkthroughs Site Base
+
+branch Reviews Site Base
+	set Type "Review"
+	expect Site Type "Barrow Hill" "Barrow Hill review" Base+"reviews/Bb/BarrowHillbyinferno.htm"
+	expect Site Type "Adventure at Chateau dOr" "Adventure at Chateau dOr review by syd" Base+"reviews/Aa/AdChadOrbysyd.htm"
+	expect Site Type "Normality" "Normality review" Base+"reviews/Nn/Normalitybygsd.htm"
+	url Base+"reviews.html"
+	every A
+	attribute href Url
+	match Url Base+"reviews/.*"
+    url Url 999
+    set Title Site
+    if
+        next TITLE
+        text Title
+    endif
+	run Print Site Type Title Url
+
+branch Walkthroughs Site Base
+	set Type "Walkthrough"
+	expect Site Type "A Fork in the Tale" "A Fork in the Tale" Base+"wtcheats/pcAa/aforkinthetale.html"
+	expect Site Type "Nancy Drew: Secrets Can Kill" "Nancy Drew: Secrets Can Kill" Base+"wtcheats/pcNn/NancyDrewSCK.html"
+	expect Site Type "Zanzarah" "Zanzarah Walkthrough" Base+"wtcheats/pcZz/zanzarah.htm"
+	expect Site Type "GameBoomers" "GameBoomers" Base+"wtcheats/pcSs/The%20Secrets%20of%20Da%20Vinci%20MSchmidt/index.htm"
+	url Base+"walkthroughs.html"
+	every A
+	attribute href Href1
+	match Href1 "("+Base+")*(.*)" "{2}" Href1
+	match Href1 "Walkthroughs/.*walkthroughs.html"
+	url Base+Href1
+	every A
+	attribute href Url
+	match Url Base+"wtcheats/.*"
+    url Url 999
+    set Title Site
+    if
+        next TITLE
+        text Title
+    endif
+	run Print Site Type Title Url
+	
+branch Print Site Type Text Url 
+	match Text "(.*?)( by .*)*" Title
+	match Title "(.*?)( [Rr]eview)*" Title
+	match Title "(.*?)( Junior walkthrough)*" Title
+	match Title "(.*?)( [Ww]alkthrough by .*)*" Title
+	match Title "(.*?)( [Ww]alkthrough)*" Title
+	match Title "(.*?)(-[Ww]alkthrough)*" Title
+	match Title "(.*?)( Cheat Codes)*" Title
+	match Title "(.*?)( Cheats)*" Title
+	match Title "(.*?)( [Ss]olutions)*" Title
+	match Title "(.*?)( [Hh]ints)*" Title
+	match Title "(.*?)( [Ss]olve)*" Title
+	match Title "(.*?)(- Game Boomers)*" Title
+	match Title "(.*?)(-)*" Title
+	if
+		match Title "[^\)\(]*\)(.*)" Title
+	endif
+	write Site Type Title Text Url

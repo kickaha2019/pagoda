@@ -1,0 +1,44 @@
+root Root
+	Set Site "Interact"
+	set Base "http://www.interactcd.com"
+	set Type "Availability"
+	run Mac Site Base Type
+	run PC Site Base Type 
+
+branch Mac Site Base Type
+	#expect Site Type "INHERIT THE EARTH" "INHERIT THE EARTH" Base+"/cgi/PrintDetails.cgi?index1=sku_number&search_on1=ITE" "N" "Y"
+	url Base+"/cgi/Products.cgi?orderby=name&limit_listings_to=1000&index1=special3&search_on1=MAC&index2=category2&search_on2=Adventure&preposition2=and&index3=category4&search_on3=visible&preposition3=and&match3=exact"
+	call Scan Site Base Type "N" "Y"
+
+branch PC Site Base Type
+	#expect Site Type "CARTE BLANCHE" "CARTE BLANCHE" Base+"/cgi/PrintDetails.cgi?index1=sku_number&search_on1=005060060291072" "Y" "N"
+	url Base+"/cgi/Products.cgi?orderby=name&limit_listings_to=1000&index1=special3&search_on1=PC&index2=category2&search_on2=Adventure&preposition2=and&index3=category4&search_on3=visible&preposition3=and&match3=exact"
+	call Scan Site Base Type "Y" "N"
+	
+branch Scan Site Base Type PC Mac
+	every A
+	attribute href Url
+	match Url "/cgi/PrintDetails.cgi.*"
+	text Text
+	if
+		match Text "(.*)\bUSED\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\bDVD\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\bMAC\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\b\(JC\)\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\bJEWEL\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\bJEWELCASE\b.*" "{1}" Text
+	endif
+	if
+		match Text "(.*)\bJEWEL CASE\b.*" "{1}" Text
+	endif
+	write Site Type Text Text Base+Url PC Mac

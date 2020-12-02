@@ -1,0 +1,31 @@
+root Root
+	set Site "Tap Repeatedly"
+	set Base "http://tap-repeatedly.com"
+	run Reviews Site Base
+
+branch Reviews Site Base
+	set Type "Review"
+	expect Site Type "Midnight Nowhere" "Midnight Nowhere" Base+"/2003/02/midnight-nowhere-review/" 
+	expect Site Type "Call of Cthulhu: Dark Corners of the Earth" "Call of Cthulhu: Dark Corners of the Earth" Base+"/2003/02/call-of-cthulhu-dark-corners-of-the-earth-review/" 
+	url Base+"/category/ffc-archives/"
+    run Page Site Base Type
+
+branch Page Site Base Type
+	run Games Site Base Type
+	every A
+    attribute class Class
+    match Class "nextpostslink"
+	attribute href Link
+    url Link
+	call Page Site Base Type
+
+branch Games Site Base Type
+	every A
+	attribute href Link
+	text Title
+    match Title "(.*) Review" Title
+	write Site Type Title Title Link
+
+
+
+

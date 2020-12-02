@@ -1,0 +1,3 @@
+root test1
+    urlencode "http://www.alofmethbin.com/Articles/Diary/2014/Azura/boarding/index.html" encoded
+    write encoded

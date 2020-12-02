@@ -1,0 +1,24 @@
+root Root
+	set Site "Adventure Archiv (G)"
+	set Type "Review"
+	expect Site Type "Dark Fall" "Dark Fall" "http://www.adventure-archiv.de/d/darkfallreviewe.htm"
+	expect Site Type "Wild, Wild West - The Steel Assassin" "Wild, Wild West - The Steel Assassin" "http://www.adventure-archiv.com/w/wwwreviewe.htm"
+	url "http://www.adventure-archiv.com/previews.htm"
+	every A
+	text Language
+	match Language "englisch"
+	attribute href Url
+	run Full Site Type Url
+	run Relative Site Type Url
+
+branch Full Site Type Url
+	match Url "http:.*"
+	url Url 300
+	next TITLE
+	text Text
+	match Text "(.*) - Review(| [Ee]nglish| [Ee]nglisch)" Title
+	write Site Type Title Title Url
+
+branch Relative Site Type Url
+	matchnot Url "http:.*"
+	call Full Site Type "http://www.adventure-archiv.com/"+Url

@@ -1,0 +1,30 @@
+<html>
+<head>
+  <style>
+    h1 {text-align: center}
+    table {margin-left: auto; margin-right: auto; font-size: 24px; margin-bottom: 20px}
+    .tables, .scan {border-collapse: collapse}
+    .menu td {padding-left: 10px; padding-right: 10px}
+    .tables th, .tables td {border: 1px solid black; border-collapse: collapse; padding: 5px}
+    .scan th, .scan td {border: 1px solid black; border-collapse: collapse; padding: 5px}
+    .tables td:nth-child(2) {text-align: right}
+  </style>
+</head>
+<body>
+<h1>Pagoda Game Editor</h1>
+
+<table class="menu">
+  <tr><td>
+    <%=
+      ['tables', 'scan'].collect do |item|
+        if item == page
+          "<span>#{item.capitalize}</span>"
+        elsif item == 'tables'
+          "<a href=\"/\">#{item.capitalize}</a>"
+        else
+          "<a href=\"/#{item}\">#{item.capitalize}</a>"
+        end
+      end.join( "</td><td>")
+    %>
+  </td></tr>
+</table>

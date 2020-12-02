@@ -1,0 +1,15 @@
+<%= erb :header, :locals => {:page => 'tables'} %>
+
+  <table class="tables">
+    <tr><th>Table</th><th>Records</th></tr>
+    <%=
+      html = []
+      ['alias', 'bind', 'collate', 'game', 'scan'].each do |name|
+        html << "<tr><td>#{name}</td><td>#{$database.count(name)}</td></tr>"
+      end
+      html.join( "\n")
+    %>
+  </table>
+
+</body>
+</html>

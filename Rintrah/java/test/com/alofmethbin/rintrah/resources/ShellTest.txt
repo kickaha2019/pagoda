@@ -1,0 +1,5 @@
+root test
+	shell "echo '<TITLE>Hello World</TITLE>'"
+	next TITLE
+	text Title
+	write Title

@@ -1,0 +1,11 @@
+root Root
+	set Site "Adventure Island (NL)"
+	set Base "http://www.adventure-island.nl"
+	set Type "Review"
+	expect Site Type "Wallace & Gromit Ep. 4: The Bogey Man" "Wallace & Gromit Ep. 4: The Bogey Man" Base+"/reviews.php?do=view&id=109" 
+	url Base+"/reviews.php"
+	every A
+	attribute href Link
+	match Link "reviews\.php\?.*"
+	text Title
+	write Site Type Title Title Base+"/"+Link 

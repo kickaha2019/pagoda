@@ -1,0 +1,26 @@
+root Root
+	set Site "Moby Games"
+	set Base "https://www.mobygames.com"
+	set Type "Reference"
+	expect Site Type "5 Days a Stranger" "5 Days a Stranger.*" Base+"/game/5-days-a-stranger"
+	expect Site Type "Zork Nemesis: The Forbidden Lands" "Zork Nemesis: The Forbidden Lands.*" Base+"/game/zork-nemesis-the-forbidden-lands"
+	url Base+"/browse/games/adventure/list-games/"
+	run Page Site Base Type
+
+branch Page Site Base Type
+	run Games Site Base Type
+	every A
+	text Title
+	match Title "Next"
+	attribute href Link
+	match Link "/browse/.*"
+	prune
+	url Base+Link
+	call Page Site Base Type
+
+branch Games Site Base Type
+	every A
+	attribute href Link
+	match Link "/game/.*"
+	text Title
+	write Site Type Title Title Base+Link

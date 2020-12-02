@@ -1,0 +1,8 @@
+root find
+	set quote "All mimsy were the Borogroves"
+	expect quote
+	write quote
+
+root not_find
+	expect "Quoth the Raven nevermore"
+	

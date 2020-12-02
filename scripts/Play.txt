@@ -1,0 +1,20 @@
+root Root
+	Set Site "Play.com (UK)"
+	set Base "http://www.play.com"
+	set Type "Availability"
+	expect Site Type "Atlantis Evolution" "Atlantis Evolution" Base+"/Games/PC/4-/183624/Atlantis-Evolution/Product.html" "Y"
+	url Base+"/Games/PC/6-/GenreBrowse.html?searchstring=Adventure"
+	run Scan Site Base Type
+	every A
+	attribute href Href
+	match Href "/Games/PC/6-/GenreBrowse.html\?searchtype=&searchstring=Adventure&cpage=.*"
+	url Base+Href 
+	call Scan Site Base Type
+	
+branch Scan Site Base Type
+	every A
+	attribute href Url
+	match Url "/Games/PC/4-/.*"
+	text Text
+	matchnot Text ""
+	write Site Type Text Text Base+Url "Y"
