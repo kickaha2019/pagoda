@@ -1,31 +1,30 @@
 <%= erb :header, :locals => {:page => 'scan'} %>
 
-<form id="types" action="/scan">
   <table class=checkboxes">
     <tr>
       <%=
         html = []
+        types = $database.unique( 'scan', :type)
         @types_to_list = {}
 
         none_listed = true
-        params.each_value do |value|
-          none_listed = false if value == 'Y'
+        types.each do |type|
+          none_listed = false if cookies.key?( type.to_sym)
         end
 
-        $database.unique( 'scan', :type).each do |type|
+        types.each do |type|
           checked = ''
-          if (params[type.to_sym] == 'Y') || none_listed
+          if (cookies[type.to_sym] == 'Y') || none_listed
             @types_to_list[type] = true
             checked = 'checked'
           end
           html << "<td>#{type}: "
-          html << "<input type=\"checkbox\" name=\"#{type}\" value=\"Y\" onclick=\"document.getElementById('types').submit()\" #{checked}></td>"
+          html << "<input type=\"checkbox\" id=\"#{type}\" value=\"Y\" onclick=\"scan_checkbox('#{type}')\" #{checked}></td>"
         end
         html.join( "\n")
       %>
     </tr>
   </table>
-</form>
 
   <table class="scan">
     <tr><th>Site</th><th>Type</th><th>Unmatched</th><th>Unbound</th><th>Matched</th><th>Bound</th></tr>
@@ -43,9 +42,7 @@
       matched, unmatched, bound, unbound, site, type = 0, 0, 0, 0, '', ''
       records.each do |rec|
         if (rec[:site] != site) || (rec[:type] != type)
-          if site != ''
-            html << "<tr><td>#{site}</td><td>#{type}</td><td>#{unmatched}</td><td>#{unbound}</td><td>#{matched}</td><td>#{bound}</td></tr>"
-          end
+          scan_line( site, type, unmatched, unbound, matched, bound, html)
           site  = rec[:site]
           type  = rec[:type]
           matched = unmatched = bound = unbound = 0
@@ -64,10 +61,7 @@
         end
       end
 
-      if site != ''
-        html << "<tr><td>#{site}</td><td>#{type}</td><td>#{unmatched}</td><td>#{unbound}</td><td>#{matched}</td><td>#{bound}</td></tr>"
-      end
-
+      scan_line( site, type, unmatched, unbound, matched, bound, html)
       html.join( "\n")
     %>
   </table>

@@ -1,5 +1,8 @@
 require 'sinatra'
+require 'sinatra/cookies'
+
 require_relative 'database'
+require_relative 'editor_helper'
 
 configure do
   $database = Database.new( ARGV[0])
@@ -12,5 +15,5 @@ get '/' do
 end
 
 get '/scan' do
-  erb :scan, :locals => {:params => params}
+  erb :scan
 end
