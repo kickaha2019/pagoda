@@ -1,0 +1,17 @@
+<%= erb :header, :locals => {:page => 'site'} %>
+
+  <table class=combos">
+    <tr>
+      <%=
+        html = []
+        site_types     = $database.combinations( 'scan', :site, :type)
+        @chosen_site   = site_combo( 'site',   site_types.keys.sort, html)
+        @chosen_type   = site_combo( 'type',   site_types[@chosen_site].keys.sort, html)
+        @chosen_status = site_combo( 'status', ['Unmatched', 'Unbound', 'Matched', 'Bound'], html)
+        html.join( "\n")
+      %>
+    </tr>
+  </table>
+
+</body>
+</html>

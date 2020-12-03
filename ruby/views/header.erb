@@ -5,6 +5,8 @@
     table {margin-left: auto; margin-right: auto; font-size: 24px; margin-bottom: 20px}
     .tables, .scan {border-collapse: collapse}
     .menu td {padding-left: 10px; padding-right: 10px}
+    .checkboxes td {padding-left: 10px; padding-right: 10px}
+    .combos td {padding-left: 10px; padding-right: 10px}
     .tables th, .tables td {border: 1px solid black; border-collapse: collapse; padding: 5px}
     .scan th, .scan td {border: 1px solid black; border-collapse: collapse; padding: 5px}
     .tables td:nth-child(2) {text-align: right}
@@ -21,6 +23,11 @@
           setCookie( cname, document.getElementById( cname).checked ? 'Y' : 'N');
           window.location.reload();
       }
+
+      function site_combo( cname) {
+          setCookie( cname, document.getElementById( cname).value);
+          window.location.reload();
+      }
   </script>
 </head>
 <body>
@@ -29,7 +36,7 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'scan'].collect do |item|
+      ['tables', 'scan', 'site'].collect do |item|
         if item == page
           "<span>#{item.capitalize}</span>"
         elsif item == 'tables'

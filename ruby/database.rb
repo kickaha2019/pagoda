@@ -37,6 +37,10 @@ class Database
     end
   end
 
+  def combinations( table_name, * columns)
+    @tables[table_name].combinations( * columns)
+  end
+
   def count( table_name)
     @tables[table_name].size
   end

@@ -52,6 +52,19 @@ class DatabaseTest < Minitest::Test
     assert_equal 0, db.count('data')
   end
 
+  def test_combinations
+    write 'data.txt', "id\tname"
+    db = load_database
+    db.start_transaction
+    db.insert( 'data', {id:1, name:'fred'})
+    db.insert( 'data', {id:2, name:'bill'})
+    db.insert( 'data', {id:3, name:'fred'})
+    combs = db.combinations( 'data', :name, :id)
+    assert_equal 2, combs.size
+    assert_equal 2, combs['fred'].size
+    assert_equal 2, combs['bill'].keys[0]
+  end
+
   def test_count
     write 'data.txt', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"

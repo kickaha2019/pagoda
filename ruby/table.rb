@@ -45,6 +45,25 @@ class Table
     @columns.index( column_name)
   end
 
+  def combinations( * cols)
+    map = {}
+    @indexes[@columns[0]].each_value do |rows|
+      rows.each do |row|
+        m = map
+        cols.each do |col|
+          v = row[column_index(col)]
+          raise "Column value nil" if v.nil?
+          if m.key?(v)
+            m = m[v]
+          else
+            m = m[v] = {}
+          end
+        end
+      end
+    end
+    map
+  end
+
   def delete( column_name, column_value)
     column_value = coerce( column_value)
 

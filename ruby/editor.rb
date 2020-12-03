@@ -17,3 +17,7 @@ end
 get '/scan' do
   erb :scan
 end
+
+get '/site' do
+  erb :site
+end
