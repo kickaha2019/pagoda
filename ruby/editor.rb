@@ -18,6 +18,6 @@ get '/scan' do
   erb :scan
 end
 
-get '/site' do
-  erb :site
+get '/summary' do
+  erb :summary
 end

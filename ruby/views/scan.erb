@@ -1,67 +1,49 @@
 <%= erb :header, :locals => {:page => 'scan'} %>
 
-  <table class=checkboxes">
+  <table class=combos">
     <tr>
       <%=
         html = []
-        types = $database.unique( 'scan', :type)
-        @types_to_list = {}
-
-        none_listed = true
-        types.each do |type|
-          none_listed = false if cookies.key?( type.to_sym)
-        end
-
-        types.each do |type|
-          checked = ''
-          if (cookies[type.to_sym] == 'Y') || none_listed
-            @types_to_list[type] = true
-            checked = 'checked'
-          end
-          html << "<td>#{type}: "
-          html << "<input type=\"checkbox\" id=\"#{type}\" value=\"Y\" onclick=\"scan_checkbox('#{type}')\" #{checked}></td>"
-        end
+        site_types     = $database.combinations( 'scan', :site, :type)
+        @chosen_site   = scan_site_combo( 'site',   html)
+        @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
+        @chosen_status = scan_status_combo( 'status', @chosen_site, @chosen_type, html)
         html.join( "\n")
       %>
     </tr>
   </table>
 
-  <table class="scan">
-    <tr><th>Site</th><th>Type</th><th>Unmatched</th><th>Unbound</th><th>Matched</th><th>Bound</th></tr>
+  <table class="scan list">
+    <tr><th>Site</th><th>Type</th><th>Title</th><td>Status</td><th>Collation</th></tr>
     <%=
       html = []
 
       records = $database.select( 'scan') do |rec|
-        @types_to_list[rec[:type]]
+        chosen = ((rec[:site] == @chosen_site) || (@chosen_site == 'All'))
+        chosen = false unless (rec[:type] == @chosen_type) || (@chosen_type == 'All')
+        chosen = false unless (scan_status(rec) == @chosen_status) || (@chosen_status == 'All')
+        chosen
       end
 
       records.sort_by! do |rec|
-        [rec[:site].downcase, rec[:type]]
+        [rec[:site], rec[:type], rec[:label]]
       end
 
-      matched, unmatched, bound, unbound, site, type = 0, 0, 0, 0, '', ''
       records.each do |rec|
-        if (rec[:site] != site) || (rec[:type] != type)
-          scan_line( site, type, unmatched, unbound, matched, bound, html)
-          site  = rec[:site]
-          type  = rec[:type]
-          matched = unmatched = bound = unbound = 0
-        end
+        html << "<tr><td>#{rec[:site]}</td><td>#{rec[:type]}</td><td>#{rec[:label]}</td>"
+        html << "<td>#{scan_status(rec)}</td><td>"
 
         if rec[:bind].size > 0
           if rec[:bind][0][:id] >= 0
-            bound += 1
-          else
-            unbound += 1
+            html << rec[:bind][0][:name]
           end
         elsif rec[:collate].size > 0
-          matched += 1
-        else
-          unmatched += 1
+          html << $database.get( 'game', :id, rec[:collate][0][:id])[0][:name]
         end
+
+        html << '</td></tr>'
       end
 
-      scan_line( site, type, unmatched, unbound, matched, bound, html)
       html.join( "\n")
     %>
   </table>
