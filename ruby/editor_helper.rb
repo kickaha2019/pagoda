@@ -12,6 +12,12 @@ module Sinatra
       html << '</select></td>'
     end
 
+    def games_records
+      $database.select( 'game') do |rec|
+        rec[:game_type] == 'A'
+      end
+    end
+
     def h(text)
       Rack::Utils.escape_html(text)
     end

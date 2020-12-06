@@ -1,0 +1,18 @@
+<table class="pages">
+ <tr><td>
+   <%=
+       html = []
+
+       records = games_records
+       current_page = cookies[control_id.to_sym] ? cookies[control_id.to_sym].to_i : 1
+       total_pages  = (records.size + 99) /  100
+       current_page = 1 if total_pages < current_page
+
+       html << "<button #{(current_page <= 1) ? 'disabled' : ''} onclick=\"change_page('#{control_id.to_sym}', #{current_page-1});\">&lt;&lt;</button>"
+       html << "&nbsp;Page #{current_page} of #{total_pages}&nbsp;"
+       html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"change_page('#{control_id.to_sym}', #{current_page+1});\">&gt;&gt;</button>"
+
+       html.join( "\n")
+   %>
+ </td></tr>
+</table>

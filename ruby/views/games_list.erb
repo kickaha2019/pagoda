@@ -1,0 +1,24 @@
+<table class="games list">
+  <tr><th>Name</th><th>Group</th><th>Year</th><td>Developer</td><th>Publisher</th></tr>
+  <%=
+    html = []
+
+    records = games_records
+    current_page = cookies[:games_page] ? cookies[:games_page].to_i : 1
+    total_pages  = (records.size + 99) /  100
+    current_page = 1 if total_pages < current_page
+
+    records.sort_by! do |rec|
+      rec[:sort_name]
+    end
+
+    records[(100*(current_page-1))...(100*current_page)].each do |rec|
+      rec[:year] = '' if rec[:year] < 1
+      html << '<tr>'
+      html << [:name, :is_group, :year, :developer, :publisher].collect {|f| "<td>#{rec[f]}</td>"}
+      html << '</tr>'
+    end
+
+    html.join( "\n")
+  %>
+</table>

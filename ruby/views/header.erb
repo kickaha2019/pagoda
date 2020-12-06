@@ -24,6 +24,11 @@
           window.location.reload();
       }
 
+      function change_page( pname, value) {
+          setCookie( pname, value);
+          window.location.reload();
+      }
+
       function scan_checkbox( cname) {
           setCookie( cname, document.getElementById( cname).checked ? 'Y' : 'N');
           window.location.reload();
@@ -36,7 +41,7 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'summary', 'scan'].collect do |item|
+      ['tables', 'summary', 'scan', 'games'].collect do |item|
         if item == page
           "<span>#{item.capitalize}</span>"
         elsif item == 'tables'

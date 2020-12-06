@@ -1,0 +1,28 @@
+<%= erb :header, :locals => {:page => 'games'} %>
+
+<table class="search">
+  <tr>
+    <div id="pages"></div>
+  </tr>
+</table>
+
+<div id="list"></div>
+
+<script>
+    function load_games() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/games_list", false);
+        xhttp.send();
+        document.getElementById("list").innerHTML = xhttp.responseText;
+
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/page_control/games_page", false);
+        xhttp.send();
+        document.getElementById("pages").innerHTML = xhttp.responseText;
+    }
+
+    load_games();
+</script>
+
+</body>
+</html>

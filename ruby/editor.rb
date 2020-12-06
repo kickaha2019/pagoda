@@ -14,6 +14,18 @@ get '/' do
   erb :tables
 end
 
+get '/games' do
+  erb :games
+end
+
+get '/games_list' do
+  erb :games_list
+end
+
+get '/page_control/:control_id' do
+  erb :page_control, :locals => {:control_id => params[:control_id]}
+end
+
 get '/scan' do
   erb :scan
 end
