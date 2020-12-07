@@ -13,8 +13,10 @@ module Sinatra
     end
 
     def games_records
+      search = cookies[:game_search]
+      search = '' if search.nil?
       $database.select( 'game') do |rec|
-        rec[:game_type] == 'A'
+        (rec[:game_type] == 'A') && rec[:name].to_s.index( search)
       end
     end
 

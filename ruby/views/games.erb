@@ -2,7 +2,11 @@
 
 <table class="search">
   <tr>
-    <div id="pages"></div>
+    <td>
+      <label for="search">Search</label>
+      <input type="text" id="search" maxlength="40" oninput="search_input()">
+    </td>
+    <td><div id="pages"></div></td>
   </tr>
 </table>
 
@@ -21,6 +25,12 @@
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }
 
+    function search_input() {
+        setCookie( 'game_search', document.getElementById( 'search').value);
+        load_games();
+    }
+
+    document.getElementById( 'search').value = get_cookie( 'game_search');
     load_games();
 </script>
 
