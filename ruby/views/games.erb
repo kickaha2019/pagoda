@@ -3,7 +3,7 @@
 <table class="search">
   <tr>
     <td>
-      <label for="search">Search</label>
+      <label for="search">Search:</label>
       <input type="text" id="search" maxlength="40" oninput="search_input()">
     </td>
     <td><div id="pages"></div></td>
@@ -27,6 +27,11 @@
 
     function search_input() {
         setCookie( 'game_search', document.getElementById( 'search').value);
+        load_games();
+    }
+
+    function select_checkbox( id) {
+        setCookie( 'selected_game', id);
         load_games();
     }
 
