@@ -31,6 +31,15 @@ module Sinatra
       $database.end_transaction
     end
 
+    def game_link( id)
+      recs = $database.get( 'game', :id, id)
+      if (recs.size > 0)
+        "<a href=\"/game/#{id}\">#{recs[0][:name]}</a>"
+      else
+        ''
+      end
+    end
+
     def games_records
       search = cookies[:game_search]
       search = '' if search.nil?
