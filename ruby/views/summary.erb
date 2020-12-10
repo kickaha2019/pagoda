@@ -1,5 +1,13 @@
 <%= erb :header, :locals => {:page => 'summary'} %>
 
+<script>
+    function set_scan_cookies( site, type, status) {
+        setCookie( 'site', site);
+        setCookie( 'type', type);
+        setCookie( 'status', status);
+    }
+</script>
+
   <table class=checkboxes">
     <tr>
       <%=
@@ -39,29 +47,19 @@
         [rec[:site].downcase, rec[:type]]
       end
 
-      matched, unmatched, bound, ignored, site, type = 0, 0, 0, 0, '', ''
+      counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
       records.each do |rec|
         if (rec[:site] != site) || (rec[:type] != type)
-          summary_line( site, type, unmatched, ignored, matched, bound, html)
-          site  = rec[:site]
-          type  = rec[:type]
-          matched = unmatched = bound = ignored = 0
+          summary_line( site, type, counts, html)
+          site   = rec[:site]
+          type   = rec[:type]
+          counts = Hash.new {|h,k| h[k] = 0}
         end
 
-        if rec[:bind].size > 0
-          if rec[:bind][0][:id] >= 0
-            bound += 1
-          else
-            ignored += 1
-          end
-        elsif rec[:collate].size > 0
-          matched += 1
-        else
-          unmatched += 1
-        end
+        counts[scan_status(rec)] += 1
       end
 
-      summary_line( site, type, unmatched, ignored, matched, bound, html)
+      summary_line( site, type, counts, html)
       html.join( "\n")
     %>
   </table>

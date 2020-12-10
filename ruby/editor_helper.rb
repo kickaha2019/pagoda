@@ -108,9 +108,17 @@ module Sinatra
       end
     end
 
-    def summary_line( site, type, unmatched, ignored, matched, bound, html)
+    def summary_line( site, type, counts, html)
       return if site == ''
-      html << "<tr><td>#{site}</td><td>#{type}</td><td>#{unmatched}</td><td>#{ignored}</td><td>#{matched}</td><td>#{bound}</td></tr>"
+      html << "<tr><td>#{site}</td><td>#{type}</td>"
+      ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
+        if counts[status] > 0
+          html << "<td><a href=\"/scan\" onclick=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+        else
+          html << "<td>#{counts[status]}</td>"
+        end
+      end
+      html << '</tr>'
     end
 
     def update_game( params)
