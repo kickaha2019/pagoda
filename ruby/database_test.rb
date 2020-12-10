@@ -167,6 +167,16 @@ class DatabaseTest < Minitest::Test
     assert found
   end
 
+  def test_next_value
+    write 'data.txt', "id\tname"
+    db = load_database
+    assert_equal 1, db.next_value( 'data', :id)
+    db.start_transaction
+    db.insert( 'data', {id:5, name:'fred'})
+    db.end_transaction
+    assert_equal 6, db.next_value( 'data', :id)
+  end
+
   def test_rebuild
     write 'data.txt', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"

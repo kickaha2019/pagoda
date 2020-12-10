@@ -13,7 +13,7 @@
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
-      rec[:year] = '' if rec[:year] < 1
+      rec[:year] = '' if rec[:year].nil? || (rec[:year] < 1)
       if selected == rec[:id]
         style   = 'style="background: lime"'
         checked = 'checked'
@@ -21,7 +21,8 @@
         style = checked = ''
       end
       html << "<tr #{style}>"
-      html << [:name, :year, :group_name].collect {|f| "<td>#{rec[f]}</td>"}.join( "\n")
+      html << "<td><a href=\"/game/#{rec[:id]}\">#{rec[:name]}</a></td>"
+      html << [:year, :group_name].collect {|f| "<td>#{rec[f]}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec[:id]}')\" #{checked}></td>"
       html << '</tr>'
     end

@@ -5,6 +5,7 @@
     table {margin-left: auto; margin-right: auto; font-size: 24px; margin-bottom: 20px}
     .tables, .list {border-collapse: collapse}
     .menu td {padding-left: 10px; padding-right: 10px}
+    .buttons td {padding-left: 10px; padding-right: 10px}
     .checkboxes td {padding-left: 10px; padding-right: 10px}
     .combos td {padding-left: 10px; padding-right: 10px}
     .tables th, .tables td {border: 1px solid black; border-collapse: collapse; padding: 5px}
@@ -57,13 +58,13 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'summary', 'scan', 'games'].collect do |item|
+      ['tables', 'summary', 'scan', 'games', 'new_game'].collect do |item|
         if item == page
-          "<span>#{item.capitalize}</span>"
+          "<span>#{item.capitalize.gsub('_', ' ')}</span>"
         elsif item == 'tables'
           "<a href=\"/\">#{item.capitalize}</a>"
         else
-          "<a href=\"/#{item}\">#{item.capitalize}</a>"
+          "<a href=\"/#{item}\">#{item.capitalize.gsub('_', ' ')}</a>"
         end
       end.join( "</td><td>")
     %>

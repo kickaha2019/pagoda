@@ -107,13 +107,26 @@ class Table
     row = coerce_array( fields)
     @indexes.each_pair do |index_column, index|
       colind = column_index( index_column)
-      raise "No value for index column" if row[colind].nil?
+      raise "No value for index column #{index_column}" if row[colind].nil?
       index[row[colind]] << row
     end
   end
 
   def join( join_name, &block)
     @joins[join_name] = block
+  end
+
+  def next_value( column_name)
+    colind    = column_index( column_name)
+    max_value = 0
+
+    @indexes[@columns[0]].each_value do |rows|
+      rows.each do |row|
+        max_value = row[colind] if row[colind] && row[colind] > max_value
+      end
+    end
+
+    max_value + 1
   end
 
   def record( fields)

@@ -2,6 +2,16 @@ require 'sinatra/base'
 
 module Sinatra
   module EditorHelper
+    def alias_element( index, alias_rec)
+      input_element( "alias#{index}", 80, alias_rec[:name]) +
+      "<label for=\"hide#{index}\">Hidden?</label>" +
+      checkbox_element( "hide#{index}", alias_rec[:hide] == 'Y')
+    end
+
+    def checkbox_element( name, checked, extras='')
+      "<input type=\"checkbox\" id=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
+    end
+
     def combo_box( combo_name, values, current_value, html)
       html << "<td>#{combo_name.capitalize}: "
       html << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
@@ -10,6 +20,15 @@ module Sinatra
         html << "<option value=\"#{value}\"#{selected}>#{value}</option>"
       end
       html << '</select></td>'
+    end
+
+    def delete_game( id)
+      $database.start_transaction
+      $database.delete( 'game',    :id, id)
+      $database.delete( 'alias',   :id, id)
+      $database.delete( 'bind',    :id, id)
+      $database.delete( 'collate', :id, id)
+      $database.end_transaction
     end
 
     def games_records
@@ -22,6 +41,10 @@ module Sinatra
 
     def h(text)
       Rack::Utils.escape_html(text)
+    end
+
+    def input_element( name, len, value, extras='')
+      "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{value}\" #{extras}>"
     end
 
     def scan_site_combo( combo_name, html)
@@ -76,9 +99,41 @@ module Sinatra
       current_value
     end
 
+    def sort_name( name)
+      name = name.upcase
+      if m = /^(A|AN|THE)\s+(.*)$/.match( name)
+        m[2]
+      else
+        name
+      end
+    end
+
     def summary_line( site, type, unmatched, ignored, matched, bound, html)
       return if site == ''
       html << "<tr><td>#{site}</td><td>#{type}</td><td>#{unmatched}</td><td>#{ignored}</td><td>#{matched}</td><td>#{bound}</td></tr>"
+    end
+
+    def update_game( params)
+      id = params[:id]
+      $database.start_transaction
+      $database.delete( 'game',    :id, id)
+      $database.delete( 'alias',   :id, id)
+
+      rec = {}
+      [:id, :name, :year, :is_group, :group_name, :developer, :publisher, :game_type].each do |field|
+        rec[field] = params[field]
+      end
+      rec[:sort_name] = sort_name( rec[:name])
+      $database.insert( 'game', rec)
+
+      (0..20).each do |index|
+        name = params["alias#{index}".to_sym]
+        next if name.nil? || (name.strip == '')
+        rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
+        $database.insert( 'alias', rec)
+      end
+
+      $database.end_transaction
     end
   end
 

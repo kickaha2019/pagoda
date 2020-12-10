@@ -23,7 +23,7 @@ class Database
         if /^timestamp/ =~ lines[i]
           path = dir + '/' + lines[i].split("\t")[1] + '.txt'
           ts   = lines[i].split("\t")[2].to_i
-          raise "Wrong timestamp for #{path}" if ts != File.mtime( path)
+          raise "Wrong timestamp for #{path}" if ts != File.mtime( path).to_i
         end
         begun = i if 'BEGIN' == lines[i]
         if 'END' == lines[i]
@@ -92,6 +92,10 @@ class Database
     end
   end
 
+  def next_value( table_name, column_name)
+    @tables[ table_name].next_value( column_name)
+  end
+
   def rebuild
     @tables.each_pair do |name, table|
       table.save( @dir + '/' + name + '.txt')
@@ -116,7 +120,7 @@ class Database
         Dir.entries( @dir).each do |f|
           if m = /^(.*)\.txt$/.match( f)
             if m[1] != 'transaction'
-              io.puts "timestamp\t#{m[1]}\t#{File.mtime( @dir + '/' + f)}"
+              io.puts "timestamp\t#{m[1]}\t#{File.mtime( @dir + '/' + f).to_i}"
             end
           end
         end

@@ -1,0 +1,84 @@
+<%= erb :header, :locals => {:page => (id >= 0) ? 'game' : 'new_game'} %>
+
+<%
+    games = $database.get( 'game', :id, id)
+    if games.size > 0
+      @create_label  = 'Update'
+      @delete_label  = 'Delete'
+      @delete_method = 'get'
+      @delete_action = "/delete_game/#{id}"
+      @id            = id
+      @name          = games[0][:name]
+      @group         = (games[0][:is_group] == 'Y')
+      @group_name    = games[0][:group_name]
+      @game_type     = games[0][:game_type]
+      @year          = games[0][:year]
+      @developer     = games[0][:developer]
+      @publisher     = games[0][:publisher]
+      @aliases       = games[0][:aliases]
+    else
+      @create_label  = 'Create'
+      @delete_label  = 'Clear'
+      @delete_method = 'get'
+      @delete_action = "/new_game"
+      @id            = $database.next_value( 'game', :id)
+      @name          = ''
+      @group         = false
+      @group_name    = ''
+      @game_type     = 'A'
+      @year          = ''
+      @developer     = ''
+      @publisher     = ''
+      @aliases       = []
+    end
+
+    while @aliases.size < 7
+      @aliases << {:name => '', :hide => 'N'}
+    end
+%>
+
+<form action="/game">
+    <table class="game">
+      <tr><th>Id:</th><td><%= input_element( 'id', 6, @id, 'readonly id="id"') %></td></tr>
+
+      <tr><th>Name:</th><td><%= input_element( 'name', 80, @name, 'required') %></td></tr>
+
+      <tr><th>Year:</th><td><%= input_element( 'year', 4, @year) %></td></tr>
+
+      <tr><th>Group?</th><td><%= checkbox_element( 'is_group', @group) %></td></tr>
+
+      <tr><th>In group:</th><td><%= input_element( 'group_name', 80, @group_name) %></td></tr>
+
+      <tr><th>Developer:</th><td><%= input_element( 'developer', 60, @developer) %></td></tr>
+
+      <tr><th>Publisher:</th><td><%= input_element( 'publisher', 60, @publisher) %></td></tr>
+
+      <tr><th>Type:</th><td><%= input_element( 'game_type', 1, @game_type) %></td></tr>
+
+      <tr><th>Aliases:</th><td><%= alias_element( 0, @aliases[0]) %></td></tr>
+
+      <%=
+          index = 0
+          @aliases[1..-1].collect do |a|
+            index += 1
+            '<tr><th></th><td>' +
+            alias_element( index, a) +
+            '</td></tr>'
+          end.join( "\n")
+      %>
+    </table>
+
+    <table class="buttons">
+      <tr>
+        <td>
+          <button formmethod="post" type="submit"><%= @create_label %></button>
+        </td>
+        <td>
+          <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\">#{@delete_label}</button>" %>
+        </td>
+      </tr>
+    </table>
+</form>
+
+</body>
+</html>
