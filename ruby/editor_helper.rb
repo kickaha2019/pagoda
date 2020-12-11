@@ -1,4 +1,6 @@
 require 'sinatra/base'
+require_relative 'database'
+require_relative 'names'
 
 module Sinatra
   module EditorHelper
@@ -27,7 +29,7 @@ module Sinatra
       $database.delete( 'game',    :id, id)
       $database.delete( 'alias',   :id, id)
       $database.delete( 'bind',    :id, id)
-      $database.delete( 'collate', :id, id)
+      $names.remove( id)
       $database.end_transaction
     end
 
@@ -44,7 +46,7 @@ module Sinatra
       search = cookies[:game_search]
       search = '' if search.nil?
       $database.select( 'game') do |rec|
-        (rec[:game_type] == 'A') && rec[:name].to_s.index( search)
+        (rec[:game_type] == 'A') && rec[:name].to_s.downcase.index( search.downcase)
       end
     end
 
@@ -54,6 +56,20 @@ module Sinatra
 
     def input_element( name, len, value, extras='')
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{value}\" #{extras}>"
+    end
+
+    def self.load_database
+      $database = Database.new( ARGV[0])
+      $names     = Names.new
+      $database.join( 'scan', :bind, :url, 'bind', :url)
+      $database.join( 'game', :aliases, :id, 'alias', :id)
+
+      $database.select( 'game') do |game|
+        $names.add( game[:name], game[:id])
+        game[:aliases].each do |arec|
+          $names.add( arec[:name], game[:id])
+        end
+      end
     end
 
     def scan_site_combo( combo_name, html)
@@ -72,7 +88,7 @@ module Sinatra
         else
           'Ignored'
         end
-      elsif rec[:collate].size > 0
+      elsif $names.lookup( rec[:name])
         'Matched'
       else
         'Unmatched'
@@ -117,12 +133,14 @@ module Sinatra
       end
     end
 
-    def summary_line( site, type, counts, html)
+    def summary_line( site, type, counts, totals, html)
       return if site == ''
       html << "<tr><td>#{site}</td><td>#{type}</td>"
       ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
         if counts[status] > 0
-          html << "<td><a href=\"/scan\" onclick=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          html << "<td><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          totals[status] = 0 if ! totals.has_key?( status)
+          totals[status] += counts[status]
         else
           html << "<td>#{counts[status]}</td>"
         end
@@ -142,12 +160,14 @@ module Sinatra
       end
       rec[:sort_name] = sort_name( rec[:name])
       $database.insert( 'game', rec)
+      $names.add( rec[:name], id)
 
       (0..20).each do |index|
         name = params["alias#{index}".to_sym]
         next if name.nil? || (name.strip == '')
         rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
         $database.insert( 'alias', rec)
+        $names.add( rec[:name], id)
       end
 
       $database.end_transaction

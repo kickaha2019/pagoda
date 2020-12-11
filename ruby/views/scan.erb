@@ -38,8 +38,8 @@
           if (id = rec[:bind][0][:id]) >= 0
             html << game_link( id)
           end
-        elsif rec[:collate].size > 0
-          html << game_link( rec[:collate][0][:id])
+        elsif id = $names.lookup( rec[:name])
+          html << game_link( id)
         end
 
         html << '</td></tr>'

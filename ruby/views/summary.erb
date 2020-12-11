@@ -38,6 +38,7 @@
     <tr><th>Site</th><th>Type</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
     <%=
       html = []
+      totals = {}
 
       records = $database.select( 'scan') do |rec|
         @types_to_list[rec[:type]]
@@ -50,7 +51,7 @@
       counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
       records.each do |rec|
         if (rec[:site] != site) || (rec[:type] != type)
-          summary_line( site, type, counts, html)
+          summary_line( site, type, counts, totals, html)
           site   = rec[:site]
           type   = rec[:type]
           counts = Hash.new {|h,k| h[k] = 0}
@@ -59,7 +60,8 @@
         counts[scan_status(rec)] += 1
       end
 
-      summary_line( site, type, counts, html)
+      summary_line( site, type, counts, totals, html)
+      summary_line( 'Totals', '', totals, {}, html)
       html.join( "\n")
     %>
   </table>
