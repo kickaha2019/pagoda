@@ -12,6 +12,14 @@ get '/' do
   erb :tables
 end
 
+get '/collation_link/:id' do
+  collation_link( params[:id].to_i)
+end
+
+post '/bind/:id' do
+  bind_scan( params[:id].to_i)
+end
+
 get '/delete_game/:id' do
   delete_game( params[:id].to_i)
   redirect '/new_game'
@@ -56,4 +64,8 @@ end
 
 get '/summary' do
   erb :summary
+end
+
+post '/unbind/:id' do
+  unbind_scan( params[:id].to_i)
 end

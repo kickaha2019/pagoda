@@ -16,8 +16,39 @@ module Sinatra
       binds[0][:id]
     end
 
+    def bind_scan( scan_id)
+      return '' if cookies[:selected_game].nil?
+      selected_id = cookies[:selected_game].to_i
+      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      return '' if bind_id( scan_rec) == selected_id
+      $database.start_transaction
+      $database.delete( 'bind', :url, scan_rec[:url])
+      $database.insert( 'bind', {
+          url:scan_rec[:url],
+          id:selected_id
+      })
+      $database.end_transaction
+      'Bound'
+    end
+
     def checkbox_element( name, checked, extras='')
       "<input type=\"checkbox\" id=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
+    end
+
+    def collation_link( scan_id)
+      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      binds = $database.get( 'bind', :url, scan_rec[:url])
+      game_id = nil
+
+      if binds.size > 0
+        game_id = binds[0][:id] if binds[0][:id] >= 0
+      else
+        game_id = $names.lookup( $database.get( 'scan', :id, scan_id)[0][:name])
+      end
+
+      return '' if game_id.nil?
+      game_rec = $database.get( 'game', :id, game_id)[0]
+      "<a href=\"/game/#{game_rec[:id]}\">#{game_rec[:name]}</a>"
     end
 
     def combo_box( combo_name, values, current_value, html)
@@ -174,6 +205,16 @@ module Sinatra
         end
       end
       html << '</tr>'
+    end
+
+    def unbind_scan( scan_id)
+      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      return '' if bind_id( scan_rec).nil?
+      $database.start_transaction
+      $database.delete( 'bind', :url, scan_rec[:url])
+      $database.end_transaction
+      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      scan_status( scan_rec)
     end
 
     def update_game( params)
