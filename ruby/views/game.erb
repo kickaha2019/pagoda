@@ -58,13 +58,21 @@
       <tr><th>Aliases:</th><td><%= alias_element( 0, @aliases[0]) %></td></tr>
 
       <%=
-          index = 0
-          @aliases[1..-1].collect do |a|
+          index, html = 0, []
+          @aliases[1..-1].each do |a|
             index += 1
-            '<tr><th></th><td>' +
-            alias_element( index, a) +
-            '</td></tr>'
-          end.join( "\n")
+            html << '<tr><th></th><td>' +
+                    alias_element( index, a) +
+                    '</td></tr>'
+          end
+
+          if $debug
+            html << '<tr><th>Keys:</th><td>' +
+                    $names.keys( @id).join( '</td></tr><tr><th></th><td>') +
+                    '</td></tr>'
+          end
+
+          html.join( "\n")
       %>
     </table>
 

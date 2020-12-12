@@ -14,7 +14,7 @@
   </table>
 
   <table class="scan list">
-    <tr><th>Site</th><th>Type</th><th>Title</th><th>Status</th><th>Collation</th></tr>
+    <tr><th>Site</th><th>Type</th><th>Title</th><th>Status</th><th>Actions</th></tr>
     <%=
       html = []
 
@@ -31,17 +31,8 @@
 
       records.each do |rec|
         html << "<tr><td>#{rec[:site]}</td><td>#{rec[:type]}</td>"
-        html << "<td><a href=\"#{rec[:url]}\">#{rec[:label]}<a/></td>"
+        html << "<td><a href=\"/scan/#{rec[:id]}\">#{rec[:label]}<a/></td>"
         html << "<td>#{scan_status(rec)}</td><td>"
-
-        if rec[:bind].size > 0
-          if (id = rec[:bind][0][:id]) >= 0
-            html << game_link( id)
-          end
-        elsif id = $names.lookup( rec[:name])
-          html << game_link( id)
-        end
-
         html << '</td></tr>'
       end
 

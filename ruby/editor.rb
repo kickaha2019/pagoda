@@ -5,7 +5,7 @@ require_relative 'editor_helper'
 
 configure do
   enable :lock
-  Sinatra::EditorHelper::load_database
+  Sinatra::EditorHelper::setup
 end
 
 get '/' do
@@ -44,6 +44,10 @@ end
 
 get '/scan' do
   erb :scan
+end
+
+get '/scan/:id' do
+  erb :scan_record, :locals => {:id => params[:id].to_i}
 end
 
 get '/summary' do

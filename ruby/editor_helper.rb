@@ -58,20 +58,6 @@ module Sinatra
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{value}\" #{extras}>"
     end
 
-    def self.load_database
-      $database = Database.new( ARGV[0])
-      $names     = Names.new
-      $database.join( 'scan', :bind, :url, 'bind', :url)
-      $database.join( 'game', :aliases, :id, 'alias', :id)
-
-      $database.select( 'game') do |game|
-        $names.add( game[:name], game[:id])
-        game[:aliases].each do |arec|
-          $names.add( arec[:name], game[:id])
-        end
-      end
-    end
-
     def scan_site_combo( combo_name, html)
       values = $database.unique( 'scan', :site)
       values << 'All'
@@ -122,6 +108,25 @@ module Sinatra
       current_value = 'All' unless types.index( current_value)
       combo_box( combo_name, types, current_value, html)
       current_value
+    end
+
+    def self.setup
+      $database = Database.new( ARGV[0])
+      $names     = Names.new
+      $database.join( 'scan', :bind, :url, 'bind', :url)
+      $database.join( 'game', :aliases, :id, 'alias', :id)
+
+      $database.select( 'game') do |game|
+        $names.add( game[:name], game[:id])
+        game[:aliases].each do |arec|
+          $names.add( arec[:name], game[:id])
+        end
+      end
+
+      $debug = false
+      ARGV[1..-1].each do |arg|
+        $debug = true if /^debug=true$/i =~ arg
+      end
     end
 
     def sort_name( name)

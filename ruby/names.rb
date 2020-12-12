@@ -15,7 +15,10 @@ class Names
         '&quot;'   => '"',
         '&ouml;'   => 'o',
         '&uuml;'   => 'u',
-        '&#8217;'  => "'"
+        '&#8216;'  => "'",
+        '&#8217;'  => "'",
+        '&#8220;'  => '"',
+        '&#8221;'  => '"'
     }
 
     # List of substitutions to make which includes ignoring certain words
@@ -63,7 +66,7 @@ class Names
   end
 
   def add_reduced( name, id)
-    if m = /^([^0-9]*) ([\d]+) (.*)$/.match( name)
+    if m = /^([^0-9]*) ([\d]+) ([^0-9]*)$/.match( name)
       add_reduced( m[1] + ' ' + m[2], id)
       add_reduced( m[1] + ' ' + m[3], id)
     end
@@ -78,9 +81,17 @@ class Names
     names << name unless names.index( name)
   end
 
+  def keys( id)
+    @id2names[id]
+  end
+
   def lookup( name)
     ids = @name2ids[ reduce( name)]
     (ids.size == 1) ? ids[0] : nil
+  end
+
+  def matches( name)
+    @name2ids[ reduce( name)]
   end
 
   def reduce( name)
