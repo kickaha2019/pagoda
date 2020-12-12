@@ -10,6 +10,12 @@ module Sinatra
       checkbox_element( "hide#{index}", alias_rec[:hide] == 'Y')
     end
 
+    def bind_id( scan_rec)
+      binds = $database.get( 'bind', :url, scan_rec[:url])
+      return nil if binds.size < 1
+      binds[0][:id]
+    end
+
     def checkbox_element( name, checked, extras='')
       "<input type=\"checkbox\" id=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
     end
@@ -54,8 +60,25 @@ module Sinatra
       Rack::Utils.escape_html(text)
     end
 
+    def ignore_scan( scan_id)
+      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      return '' if bind_id( scan_rec) == -1
+      $database.start_transaction
+      $database.delete( 'bind', :url, scan_rec[:url])
+      $database.insert( 'bind', {
+          url:scan_rec[:url],
+          id:-1
+      })
+      $database.end_transaction
+      'Ignored'
+    end
+
     def input_element( name, len, value, extras='')
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{value}\" #{extras}>"
+    end
+
+    def scan_action( rec, action)
+      "<button onclick=\"scan_action( #{rec[:id]}, '#{action}');\">#{action.capitalize}</button>"
     end
 
     def scan_site_combo( combo_name, html)

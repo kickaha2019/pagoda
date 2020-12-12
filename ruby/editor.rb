@@ -34,6 +34,10 @@ get '/games_list' do
   erb :games_list
 end
 
+post '/ignore/:id' do
+  ignore_scan( params[:id].to_i)
+end
+
 get '/new_game' do
   erb :game, :locals => {:id => -1}
 end

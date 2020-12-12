@@ -1,5 +1,17 @@
 <%= erb :header, :locals => {:page => 'scan'} %>
 
+<script>
+    function scan_action( id, action) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/" + action + "/" + id, false);
+        xhttp.send();
+        if (xhttp.responseText == '') {return;}
+        document.getElementById("status" + id).innerHTML = '<span class="changed">' +
+                                                           xhttp.responseText +
+                                                           '</span>';
+    }
+</script>
+
   <table class=combos">
     <tr>
       <%=
@@ -32,7 +44,8 @@
       records.each do |rec|
         html << "<tr><td>#{rec[:site]}</td><td>#{rec[:type]}</td>"
         html << "<td><a href=\"/scan/#{rec[:id]}\">#{rec[:label]}<a/></td>"
-        html << "<td>#{scan_status(rec)}</td><td>"
+        html << "<td id=\"status#{rec[:id]}\">#{scan_status(rec)}</td><td>"
+        html << scan_action( rec, 'ignore')
         html << '</td></tr>'
       end
 
