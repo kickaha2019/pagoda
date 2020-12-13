@@ -9,21 +9,21 @@
     current_page = 1 if total_pages < current_page
     selected     = cookies[:selected_game] ? cookies[:selected_game].to_i : -1
     records.sort_by! do |rec|
-      rec[:sort_name]
+      rec.name
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
-      rec[:year] = '' if rec[:year].nil? || (rec[:year] < 1)
-      if selected == rec[:id]
+      year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
+      if selected == rec.id
         style   = 'style="background: lime"'
         checked = 'checked'
       else
         style = checked = ''
       end
       html << "<tr #{style}>"
-      html << "<td><a href=\"/game/#{rec[:id]}\">#{rec[:name]}</a></td>"
-      html << [:year, :group_name].collect {|f| "<td>#{rec[f]}</td>"}.join( "\n")
-      html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec[:id]}')\" #{checked}></td>"
+      html << "<td><a href=\"/game/#{rec.id}\">#{rec.name}</a></td>"
+      html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
+      html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"
       html << '</tr>'
     end
 

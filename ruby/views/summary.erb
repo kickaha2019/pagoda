@@ -12,7 +12,7 @@
     <tr>
       <%=
         html = []
-        types = $database.unique( 'scan', :type)
+        types = $pagoda.scans.collect {|s| s.type}.uniq.sort
         @types_to_list = {}
 
         none_listed = true
@@ -40,20 +40,20 @@
       html = []
       totals = {}
 
-      records = $database.select( 'scan') do |rec|
-        @types_to_list[rec[:type]]
+      records = $pagoda.scans do |rec|
+        @types_to_list[rec.type]
       end
 
       records.sort_by! do |rec|
-        [rec[:site].downcase, rec[:type]]
+        [rec.site.downcase, rec.type]
       end
 
       counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
       records.each do |rec|
-        if (rec[:site] != site) || (rec[:type] != type)
+        if (rec.site != site) || (rec.type != type)
           summary_line( site, type, counts, totals, html)
-          site   = rec[:site]
-          type   = rec[:type]
+          site   = rec.site
+          type   = rec.type
           counts = Hash.new {|h,k| h[k] = 0}
         end
 

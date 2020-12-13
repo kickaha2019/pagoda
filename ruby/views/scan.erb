@@ -24,7 +24,6 @@
     <tr>
       <%=
         html = []
-        site_types     = $database.combinations( 'scan', :site, :type)
         @chosen_site   = scan_site_combo( 'site',   html)
         @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
         @chosen_status = scan_status_combo( 'status', @chosen_site, @chosen_type, html)
@@ -38,22 +37,22 @@
     <%=
       html = []
 
-      records = $database.select( 'scan') do |rec|
-        chosen = ((rec[:site] == @chosen_site) || (@chosen_site == 'All'))
-        chosen = false unless (rec[:type] == @chosen_type) || (@chosen_type == 'All')
+      records = $pagoda.scans do |rec|
+        chosen = ((rec.site == @chosen_site) || (@chosen_site == 'All'))
+        chosen = false unless (rec.type == @chosen_type) || (@chosen_type == 'All')
         chosen = false unless (scan_status(rec) == @chosen_status) || (@chosen_status == 'All')
         chosen
       end
 
       records.sort_by! do |rec|
-        [rec[:site], rec[:type], rec[:label]]
+        [rec.site, rec.type, rec.label]
       end
 
       records.each do |rec|
-        html << "<tr><td>#{rec[:site]}</td><td>#{rec[:type]}</td>"
-        html << "<td><a href=\"/scan/#{rec[:id]}\">#{rec[:label]}<a/></td>"
-        html << "<td id=\"collation#{rec[:id]}\">#{collation_link( rec[:id])}</td>"
-        html << "<td id=\"status#{rec[:id]}\">#{scan_status(rec)}</td><td>"
+        html << "<tr><td>#{rec.site}</td><td>#{rec.type}</td>"
+        html << "<td><a href=\"/scan/#{rec.id}\">#{rec.label}<a/></td>"
+        html << "<td id=\"collation#{rec.id}\">#{collation_link( rec.id)}</td>"
+        html << "<td id=\"status#{rec.id}\">#{scan_status(rec)}</td><td>"
         html << scan_action( rec, 'ignore')
         html << scan_action( rec, 'bind')
         html << scan_action( rec, 'unbind')

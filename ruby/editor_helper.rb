@@ -1,6 +1,5 @@
 require 'sinatra/base'
-require_relative 'database'
-require_relative 'names'
+require_relative 'pagoda'
 
 module Sinatra
   module EditorHelper
@@ -11,23 +10,18 @@ module Sinatra
     end
 
     def bind_id( scan_rec)
-      binds = $database.get( 'bind', :url, scan_rec[:url])
-      return nil if binds.size < 1
-      binds[0][:id]
+      return nil if ! scan_rec.bound?
+      game_rec = scan_rec.collation
+      return -1 if game_rec.nil?
+      game_rec.id
     end
 
     def bind_scan( scan_id)
       return '' if cookies[:selected_game].nil?
       selected_id = cookies[:selected_game].to_i
-      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      scan_rec = $pagoda.scan( scan_id)
       return '' if bind_id( scan_rec) == selected_id
-      $database.start_transaction
-      $database.delete( 'bind', :url, scan_rec[:url])
-      $database.insert( 'bind', {
-          url:scan_rec[:url],
-          id:selected_id
-      })
-      $database.end_transaction
+      scan_rec.bind( selected_id)
       'Bound'
     end
 
@@ -36,19 +30,9 @@ module Sinatra
     end
 
     def collation_link( scan_id)
-      scan_rec = $database.get( 'scan', :id, scan_id)[0]
-      binds = $database.get( 'bind', :url, scan_rec[:url])
-      game_id = nil
-
-      if binds.size > 0
-        game_id = binds[0][:id] if binds[0][:id] >= 0
-      else
-        game_id = $names.lookup( $database.get( 'scan', :id, scan_id)[0][:name])
-      end
-
-      return '' if game_id.nil?
-      game_rec = $database.get( 'game', :id, game_id)[0]
-      "<a href=\"/game/#{game_rec[:id]}\">#{game_rec[:name]}</a>"
+      collation = $pagoda.scan( scan_id).collation
+      return '' if collation.nil?
+      "<a href=\"/game/#{collation.id}\">#{collation.name}</a>"
     end
 
     def combo_box( combo_name, values, current_value, html)
@@ -62,28 +46,21 @@ module Sinatra
     end
 
     def delete_game( id)
-      $database.start_transaction
-      $database.delete( 'game',    :id, id)
-      $database.delete( 'alias',   :id, id)
-      $database.delete( 'bind',    :id, id)
-      $names.remove( id)
-      $database.end_transaction
+      game_rec = $pagoda.game( id)
+      game_rec.delete if game_rec != nil
     end
 
     def game_link( id)
-      recs = $database.get( 'game', :id, id)
-      if (recs.size > 0)
-        "<a href=\"/game/#{id}\">#{recs[0][:name]}</a>"
-      else
-        ''
-      end
+      game_rec = $pagoda.game( id)
+      return '' if game_rec.nil?
+      "<a href=\"/game/#{id}\">#{game_rec.name}</a>"
     end
 
     def games_records
       search = cookies[:game_search]
       search = '' if search.nil?
-      $database.select( 'game') do |rec|
-        (rec[:game_type] == 'A') && rec[:name].to_s.downcase.index( search.downcase)
+      $pagoda.games do |game|
+        (game.game_type == 'A') && game.name.to_s.downcase.index( search.downcase)
       end
     end
 
@@ -92,15 +69,9 @@ module Sinatra
     end
 
     def ignore_scan( scan_id)
-      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      scan_rec = $pagoda.scan( scan_id)
       return '' if bind_id( scan_rec) == -1
-      $database.start_transaction
-      $database.delete( 'bind', :url, scan_rec[:url])
-      $database.insert( 'bind', {
-          url:scan_rec[:url],
-          id:-1
-      })
-      $database.end_transaction
+      scan_rec.bind( -1)
       'Ignored'
     end
 
@@ -109,11 +80,11 @@ module Sinatra
     end
 
     def scan_action( rec, action)
-      "<button onclick=\"scan_action( #{rec[:id]}, '#{action}');\">#{action.capitalize}</button>"
+      "<button onclick=\"scan_action( #{rec.id}, '#{action}');\">#{action.capitalize}</button>"
     end
 
     def scan_site_combo( combo_name, html)
-      values = $database.unique( 'scan', :site)
+      values = $pagoda.scans.collect {|s| s.site}.uniq.sort
       values << 'All'
       current_value = cookies[combo_name.to_sym]
       current_value = 'All' unless values.index( current_value)
@@ -122,13 +93,9 @@ module Sinatra
     end
 
     def scan_status( rec)
-      if rec[:bind].size > 0
-        if rec[:bind][0][:id] >= 0
-          'Bound'
-        else
-          'Ignored'
-        end
-      elsif $names.lookup( rec[:name])
+      if rec.bound?
+        rec.collation ? 'Bound' : 'Ignored'
+      elsif rec.collation
         'Matched'
       else
         'Unmatched'
@@ -137,9 +104,9 @@ module Sinatra
 
     def scan_status_combo( combo_name, current_site, current_type, html)
       values = []
-      $database.select( 'scan') do |rec|
-        next unless (current_site == 'All') || (current_site == rec[:site])
-        next unless (current_type == 'All') || (current_type == rec[:type])
+      $pagoda.scans do |rec|
+        next unless (current_site == 'All') || (current_site == rec.site)
+        next unless (current_type == 'All') || (current_type == rec.type)
         values << scan_status( rec)
       end
       values = values.uniq.sort
@@ -152,9 +119,9 @@ module Sinatra
 
     def scan_type_combo( combo_name, current_site, html)
       types = []
-      $database.select( 'scan') do |rec|
-        next unless (current_site == 'All') || (current_site == rec[:site])
-        types << rec[:type]
+      $pagoda.scans do |rec|
+        next unless (current_site == 'All') || (current_site == rec.site)
+        types << rec.type
       end
       types = types.uniq.sort
       types << 'All'
@@ -165,17 +132,7 @@ module Sinatra
     end
 
     def self.setup
-      $database = Database.new( ARGV[0])
-      $names     = Names.new
-      $database.join( 'scan', :bind, :url, 'bind', :url)
-      $database.join( 'game', :aliases, :id, 'alias', :id)
-
-      $database.select( 'game') do |game|
-        $names.add( game[:name], game[:id])
-        game[:aliases].each do |arec|
-          $names.add( arec[:name], game[:id])
-        end
-      end
+      $pagoda = Pagoda.new( ARGV[0])
 
       $debug = false
       ARGV[1..-1].each do |arg|
@@ -208,38 +165,19 @@ module Sinatra
     end
 
     def unbind_scan( scan_id)
-      scan_rec = $database.get( 'scan', :id, scan_id)[0]
-      return '' if bind_id( scan_rec).nil?
-      $database.start_transaction
-      $database.delete( 'bind', :url, scan_rec[:url])
-      $database.end_transaction
-      scan_rec = $database.get( 'scan', :id, scan_id)[0]
+      scan_rec = $pagoda.scan( scan_id)
+      return '' if ! scan_rec.bound?
+      scan_rec.unbind
       scan_status( scan_rec)
     end
 
     def update_game( params)
-      id = params[:id]
-      $database.start_transaction
-      $database.delete( 'game',    :id, id)
-      $database.delete( 'alias',   :id, id)
-
-      rec = {}
-      [:id, :name, :year, :is_group, :group_name, :developer, :publisher, :game_type].each do |field|
-        rec[field] = params[field]
+      game_rec = $pagoda.game( params[:id])
+      if game_rec
+        game_rec.update( params)
+      else
+        $pagoda.create_game( params)
       end
-      rec[:sort_name] = sort_name( rec[:name])
-      $database.insert( 'game', rec)
-      $names.add( rec[:name], id)
-
-      (0..20).each do |index|
-        name = params["alias#{index}".to_sym]
-        next if name.nil? || (name.strip == '')
-        rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
-        $database.insert( 'alias', rec)
-        $names.add( rec[:name], id)
-      end
-
-      $database.end_transaction
     end
   end
 

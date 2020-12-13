@@ -5,7 +5,7 @@
     <%=
       html = []
       ['alias', 'bind', 'game', 'scan'].each do |name|
-        html << "<tr><td>#{name}</td><td>#{$database.count(name)}</td></tr>"
+        html << "<tr><td>#{name}</td><td>#{$pagoda.count(name)}</td></tr>"
       end
       html.join( "\n")
     %>
