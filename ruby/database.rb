@@ -97,11 +97,11 @@ class Database
   end
 
   def rebuild
-    @tables.each_pair do |name, table|
-      table.save( @dir + '/' + name + '.txt')
-    end
-
     if @transactions
+      @tables.each_pair do |name, table|
+        table.save( @dir + '/' + name + '.txt')
+      end
+
       @transactions.close
       @transactions = nil
       File.delete( @transactions_file)

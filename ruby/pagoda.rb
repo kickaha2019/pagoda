@@ -319,6 +319,10 @@ class Pagoda
     @database.next_value( table_name, column_name)
   end
 
+  def rebuild
+    @database.rebuild
+  end
+
   def reduce_name( name)
     @names.reduce( name)
   end

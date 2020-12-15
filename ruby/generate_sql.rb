@@ -145,6 +145,10 @@ class GenerateSQL
     io.puts "alter table `#{table_name}` add primary key (`#{field_name}`);"
   end
 
+  def rebuild
+    @pagoda.rebuild
+  end
+
   def rename_table( from, to, io)
     io.puts "rename table `#{from}` to `#{to}`;"
   end
@@ -160,4 +164,5 @@ class GenerateSQL
 end
 
 gs = GenerateSQL.new( ARGV[0])
+gs.rebuild
 gs.generate( ARGV[1])
