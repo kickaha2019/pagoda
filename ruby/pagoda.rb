@@ -2,6 +2,48 @@ require_relative 'database'
 require_relative 'names'
 
 class Pagoda
+  class PagodaAlias
+    def initialize( owner, rec)
+      @owner  = owner
+      @record = rec
+    end
+
+    def hide
+      @record[:hide]
+    end
+
+    def id
+      @record[:id]
+    end
+
+    def name
+      @record[:name]
+    end
+
+    def sort_name
+      @owner.sort_name( name)
+    end
+  end
+
+  class PagodaCollation
+    def initialize( owner, rec)
+      @owner  = owner
+      @record = rec
+    end
+
+    def id
+      @record[:id]
+    end
+
+    def link
+      @record[:link]
+    end
+
+    def rank
+      0
+    end
+  end
+
   class PagodaGame
     def initialize( owner, rec)
       @owner  = owner
@@ -9,7 +51,11 @@ class Pagoda
     end
 
     def aliases
-      @owner.get( 'alias', :id, id)
+      @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
+    end
+
+    def console
+      'N'
     end
 
     def delete
@@ -41,12 +87,32 @@ class Pagoda
       @record[:is_group]
     end
 
+    def mac
+      'N'
+    end
+
     def name
       @record[:name]
     end
 
+    def pc
+      'N'
+    end
+
+    def phone
+      'N'
+    end
+
     def publisher
       @record[:publisher]
+    end
+
+    def sort_name
+      @owner.sort_name( name)
+    end
+
+    def tablet
+      'N'
     end
 
     def update( params)
@@ -72,6 +138,10 @@ class Pagoda
 
       @owner.end_transaction
       self
+    end
+
+    def web
+      'N'
     end
 
     def year
@@ -153,8 +223,24 @@ class Pagoda
       g = PagodaGame.new( self, game_rec)
       @names.add( g.name, g.id)
       g.aliases.each do |arec|
-        @names.add( arec[:name], g.id)
+        @names.add( arec.name, g.id)
       end
+    end
+  end
+
+  def aliases
+    list = []
+    games.each do |g|
+      g.aliases.each do |a|
+        list << a
+      end
+    end
+    list
+  end
+
+  def collations
+    scans.select {|s| s.collation}.collect do |s|
+      PagodaCollation.new( self, {id:s.collation.id, link:s.id})
     end
   end
 
@@ -239,6 +325,20 @@ class Pagoda
 
   def remove_name_id( id)
     @names.remove( id)
+  end
+
+  def sort_name( name)
+    name = @names.simplify( name)
+    if m = /^(a|an|the) (.*)$/.match( name)
+      name = m[2]
+    end
+
+    name = name.strip.upcase
+    if /^\d/ =~ name
+      '#' + name
+    else
+      name
+    end
   end
 
   def start_transaction

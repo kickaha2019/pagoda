@@ -4,9 +4,9 @@ require_relative 'pagoda'
 module Sinatra
   module EditorHelper
     def alias_element( index, alias_rec)
-      input_element( "alias#{index}", 80, alias_rec[:name]) +
+      input_element( "alias#{index}", 80, alias_rec.name) +
       "<label for=\"hide#{index}\">Hidden?</label>" +
-      checkbox_element( "hide#{index}", alias_rec[:hide] == 'Y')
+      checkbox_element( "hide#{index}", alias_rec.hide == 'Y')
     end
 
     def bind_id( scan_rec)

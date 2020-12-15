@@ -103,21 +103,7 @@ class Names
     return cached if cached
 
     # Lower case and decode HTML entities
-    reduced = name.to_s.downcase
-    @entities.each_pair do |from, to|
-      reduced = reduced.gsub( from, to)
-    end
-
-    # Check for unhandled HTML entity codes
-    if m = /(&[a-z0-1#]*;)/.match( reduced)
-      puts 'Unhandled HTML entity code: ' + m[1]
-    end
-
-    # Specially handle &
-    reduced = reduced.gsub( '&', 'and')
-
-    # Replace punctuation by blanks (or AND for ampersand)
-    reduced = reduced.gsub( /[^a-z0-9]/, ' ').strip
+    reduced = simplify( name)
 
     # Apply substitutions and eliminations
     was = nil
@@ -145,5 +131,25 @@ class Names
       @name2ids[name].delete_if {|nid| nid == id}
     end
     @id2names.delete( id)
+  end
+
+  def simplify( name)
+
+    # Lower case and decode HTML entities
+    reduced = name.to_s.downcase
+    @entities.each_pair do |from, to|
+      reduced = reduced.gsub( from, to)
+    end
+
+    # Check for unhandled HTML entity codes
+    if m = /(&[a-z0-1#]*;)/.match( reduced)
+      puts 'Unhandled HTML entity code: ' + m[1]
+    end
+
+    # Specially handle &
+    reduced = reduced.gsub( '&', 'and')
+
+    # Replace punctuation by blanks
+    reduced.gsub( /[^a-z0-9]/, ' ').strip
   end
 end
