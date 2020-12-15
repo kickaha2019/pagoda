@@ -1,12 +1,42 @@
 <%= erb :header, :locals => {:page => (id >= 0) ? 'game' : 'new_game'} %>
 
+<script>
+    function check_name( field) {
+        var name = document.getElementsByName(field)[0].value;
+        if (name == '') {return true;}
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET",
+                   "/check_name/" +
+                   document.getElementById("id").value + "/" +
+                   encodeURIComponent( name),
+                   false);
+        xhttp.send();
+
+        if (xhttp.responseText != 'Y') {
+          alert( name + " already used");
+          return false;
+        } else {
+          return true;
+        }
+    }
+
+    function check_names() {
+        if (! check_name( 'name')) {return false;}
+        for (i = 0; i < 10; i++) {
+            if (! check_name( "alias" + i)) {return false;}
+        }
+        return true;
+    }
+</script>
+
 <%
     game = $pagoda.game( id)
     if game
       @create_label  = 'Update'
       @delete_label  = 'Delete'
-      @delete_method = 'get'
-      @delete_action = "/delete_game/#{id}"
+      @delete_method = 'post'
+      @delete_action = "/delete_game"
       @id            = id
       @name          = game.name
       @group         = (game.is_group == 'Y')
@@ -32,8 +62,8 @@
       @aliases       = []
     end
 
-    while @aliases.size < 7
-      @aliases << {:name => '', :hide => 'N'}
+    while @aliases.size < 10
+      @aliases << nil
     end
 %>
 
@@ -59,11 +89,13 @@
 
       <%=
           index, html = 0, []
-          @aliases[1..-1].each do |a|
-            index += 1
-            html << '<tr><th></th><td>' +
-                    alias_element( index, a) +
-                    '</td></tr>'
+          if @aliases.size > 1
+            @aliases[1..-1].each do |a|
+              index += 1
+              html << '<tr><th></th><td>' +
+                      alias_element( index, a) +
+                      '</td></tr>'
+            end
           end
 
           if $debug
@@ -79,7 +111,7 @@
     <table class="buttons">
       <tr>
         <td>
-          <button formmethod="post" type="submit"><%= @create_label %></button>
+          <button formmethod="post" type="submit" onclick="return check_names();"><%= @create_label %></button>
         </td>
         <td>
           <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\">#{@delete_label}</button>" %>

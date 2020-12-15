@@ -12,6 +12,10 @@ get '/' do
   erb :tables
 end
 
+get '/check_name/:id/:name' do
+  check_name( params[:name], params[:id])
+end
+
 get '/collation_link/:id' do
   collation_link( params[:id].to_i)
 end
@@ -20,7 +24,7 @@ post '/bind/:id' do
   bind_scan( params[:id].to_i)
 end
 
-get '/delete_game/:id' do
+post '/delete_game' do
   delete_game( params[:id].to_i)
   redirect '/new_game'
 end

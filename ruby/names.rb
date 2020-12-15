@@ -1,8 +1,10 @@
 class Names
   def initialize
     @cache    = {}
-    @id2names = Hash.new {|h,k| h[k] = []}
-    @name2ids = Hash.new {|h,k| h[k] = []}
+    @id2reduced  = Hash.new {|h,k| h[k] = []}
+    @reduced2ids = Hash.new {|h,k| h[k] = []}
+    @id2names    = Hash.new {|h,k| h[k] = []}
+    @names2ids   = {}
 
     # HTML entity codes
     @entities = {
@@ -58,7 +60,11 @@ class Names
   end
 
   def add( name, id)
-    if m = /^(.*):(.*)$/.match( name.to_s)
+    name = name.to_s.downcase
+    @names2ids[name] =  id
+    @id2names[id]    << name
+
+    if m = /^(.*):(.*)$/.match( name)
       add_reduced( reduce( m[1]), id)
       add_reduced( reduce( m[2] + ' ' + m[1]), id)
     end
@@ -75,23 +81,32 @@ class Names
       add_reduced( m[1], id)
     end
 
-    ids  = @name2ids[ name]
+    ids  = @reduced2ids[name]
     ids << id unless ids.index(id)
-    names = @id2names[id]
+    names = @id2reduced[id]
     names << name unless names.index( name)
   end
 
+  def check_unique_name( name, id)
+    name = name.to_s.downcase
+    if @names2ids[name] && (@names2ids[name] != id)
+      false
+    else
+      true
+    end
+  end
+
   def keys( id)
-    @id2names[id]
+    @id2reduced[id]
   end
 
   def lookup( name)
-    ids = @name2ids[ reduce( name)]
+    ids = @reduced2ids[reduce(name)]
     (ids.size == 1) ? ids[0] : nil
   end
 
   def matches( name)
-    @name2ids[ reduce( name)]
+    @reduced2ids[reduce(name)]
   end
 
   def reduce( name)
@@ -127,10 +142,15 @@ class Names
   end
 
   def remove( id)
-    @id2names[id].each do |name|
-      @name2ids[name].delete_if {|nid| nid == id}
+    @id2reduced[id].each do |name|
+      @reduced2ids[name].delete_if {|nid| nid == id}
     end
-    @id2names.delete( id)
+    @id2reduced.delete(id)
+
+    @id2names[id].each do |name|
+      @names2ids.delete( name)
+    end
+    @id2names.delete(id)
   end
 
   def simplify( name)

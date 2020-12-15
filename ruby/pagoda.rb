@@ -127,13 +127,16 @@ class Pagoda
       end
       @owner.insert( 'game', rec)
       @owner.add_name( rec[:name], id)
+      names_seen = {rec[:name].downcase => true}
 
       (0..20).each do |index|
         name = params["alias#{index}".to_sym]
         next if name.nil? || (name.strip == '')
+        next if names_seen[name.downcase]
         rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
         @owner.insert( 'alias', rec)
         @owner.add_name( rec[:name], id)
+        names_seen[name.downcase] = true
       end
 
       @owner.end_transaction
@@ -238,6 +241,20 @@ class Pagoda
     list
   end
 
+  def check_unique_name( name, id)
+    return true if name.nil? or name == ''
+    @names.check_unique_name( name, id)
+  end
+
+  def check_unique_names( params)
+    id = params[:id]
+    return false unless check_unique_name( params[:name], id)
+    (0..20).each do |index|
+      return false unless check_unique_name( params["alias#{index}"], id)
+    end
+    true
+  end
+
   def collations
     scans.select {|s| s.collation}.collect do |s|
       PagodaCollation.new( self, {id:s.collation.id, link:s.id})
@@ -245,6 +262,7 @@ class Pagoda
   end
 
   def create_game( params)
+    raise 'Names not unique' unless check_unique_names( params)
     g = PagodaGame.new( self, {id:params[:id]})
     g.update( params)
   end
@@ -280,7 +298,7 @@ class Pagoda
   # Wrapper methods for calls to database and names logic
 
   def add_name( name, id)
-    @names.add( name, id)
+    @names.add(name, id)
   end
 
   def count( table_name)
@@ -304,15 +322,15 @@ class Pagoda
   end
 
   def keys( id)
-    @names.keys( id)
+    @names.keys(id)
   end
 
   def lookup( name)
-    @names.lookup( name)
+    @names.lookup(name)
   end
 
   def matches( name)
-    @names.matches( name)
+    @names.matches(name)
   end
 
   def next_value( table_name, column_name)
@@ -324,15 +342,15 @@ class Pagoda
   end
 
   def reduce_name( name)
-    @names.reduce( name)
+    @names.reduce(name)
   end
 
   def remove_name_id( id)
-    @names.remove( id)
+    @names.remove(id)
   end
 
   def sort_name( name)
-    name = @names.simplify( name)
+    name = @names.simplify(name)
     if m = /^(a|an|the) (.*)$/.match( name)
       name = m[2]
     end
