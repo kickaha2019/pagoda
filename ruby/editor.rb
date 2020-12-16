@@ -54,8 +54,8 @@ get '/new_game' do
   erb :game, :locals => {:id => -1}
 end
 
-get '/page_control/:control_id' do
-  erb :page_control, :locals => {:control_id => params[:control_id]}
+get '/page_control/:kind' do
+  erb :page_control, :locals => {:kind => params[:kind]}
 end
 
 get '/scan' do
@@ -64,6 +64,10 @@ end
 
 get '/scan/:id' do
   erb :scan_record, :locals => {:id => params[:id].to_i}
+end
+
+get '/scan_list' do
+  erb :scan_list
 end
 
 get '/summary' do

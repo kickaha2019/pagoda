@@ -20,7 +20,7 @@
         document.getElementById("list").innerHTML = xhttp.responseText;
 
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/games_page", false);
+        xhttp.open("GET", "/page_control/games", false);
         xhttp.send();
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }

@@ -87,6 +87,23 @@ module Sinatra
       "<button onclick=\"scan_action( #{rec.id}, '#{action}');\">#{action.capitalize}</button>"
     end
 
+    def scan_records
+      search = cookies[:scan_search]
+      search = '' if search.nil?
+
+      chosen_site   = cookies[:site]
+      chosen_type   = cookies[:type]
+      chosen_status = cookies[:status]
+
+      $pagoda.scans do |rec|
+        chosen = rec.name.to_s.downcase.index( search.downcase)
+        chosen = false unless ((h(rec.site) == chosen_site) || (chosen_site == 'All'))
+        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
+        chosen = false unless (scan_status(rec) == chosen_status) || (chosen_status == 'All')
+        chosen
+      end
+    end
+
     def scan_site_combo( combo_name, html)
       values = $pagoda.scans.collect {|s| s.site}.uniq.sort.collect {|v| h(v)}
       values << 'All'
