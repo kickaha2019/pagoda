@@ -1,6 +1,4 @@
-<table class="pages">
- <tr><td>
-   <%=
+<%=
        html = []
 
        records      = self.send( "#{kind}_records".to_sym)
@@ -14,6 +12,4 @@
        html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"change_page('#{control_id}', #{current_page+1});\">&gt;&gt;</button>"
 
        html.join( "\n")
-   %>
- </td></tr>
-</table>
+%>

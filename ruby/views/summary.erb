@@ -8,8 +8,7 @@
     }
 </script>
 
-  <table class=checkboxes">
-    <tr>
+  <div class="checkboxes control">
       <%=
         html = []
         types = $pagoda.scans.collect {|s| s.type}.uniq.sort
@@ -26,19 +25,18 @@
             @types_to_list[type] = true
             checked = 'checked'
           end
-          html << "<td>#{type}: "
-          html << "<input type=\"checkbox\" id=\"#{type}\" value=\"Y\" onclick=\"scan_checkbox('#{type}')\" #{checked}></td>"
+          html << "<span>#{type}:&nbsp;</span>" +
+                  "<input type=\"checkbox\" id=\"#{type}\" value=\"Y\" onclick=\"scan_checkbox('#{type}')\" #{checked}>"
         end
-        html.join( "\n")
+        html.join( "&nbsp;&nbsp;&nbsp;\n")
       %>
-    </tr>
-  </table>
+  </div>
 
   <table class="summary list">
     <tr><th>Site</th><th>Type</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
     <%=
-      html = []
-      totals = {}
+      html   = []
+      totals = Hash.new {|h,k| h[k] = 0}
 
       records = $pagoda.scans do |rec|
         @types_to_list[rec.type]

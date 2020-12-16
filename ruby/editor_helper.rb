@@ -5,7 +5,7 @@ module Sinatra
   module EditorHelper
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 80, alias_rec ? alias_rec.name : '') +
-      "<label for=\"hide#{index}\">Hidden?</label>" +
+      "&nbsp;&nbsp;<label for=\"hide#{index}\">Hidden?</label>" +
       checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : false)
     end
 
@@ -40,13 +40,14 @@ module Sinatra
     end
 
     def combo_box( combo_name, values, current_value, html)
-      html << "<td>#{combo_name.capitalize}: "
-      html << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
+      defn = ["#{combo_name.capitalize}:&nbsp;"]
+      defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
       values.each do |value|
         selected = (current_value == value) ? 'selected' : ''
-        html << "<option value=\"#{value}\"#{selected}>#{value}</option>"
+        defn << "<option value=\"#{value}\"#{selected}>#{value}</option>"
       end
-      html << '</select></td>'
+      defn << '</select>'
+      html << defn.join('')
     end
 
     def delete_game( id)

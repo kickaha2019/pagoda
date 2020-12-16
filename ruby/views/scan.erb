@@ -1,26 +1,21 @@
 <%= erb :header, :locals => {:page => 'scan'} %>
 
-<table class="search">
-  <tr>
-    <td>
-      <label for="search">Search:</label>
-      <input type="text" id="search" maxlength="40" oninput="search_input()">
-    </td>
-    <td><div id="pages"></div></td>
-  </tr>
-</table>
+<div class="combos control">
+  <%=
+    html = []
+    @chosen_site   = scan_site_combo( 'site',   html)
+    @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
+    @chosen_status = scan_status_combo( 'status', @chosen_site, @chosen_type, html)
+    html.join( "&nbsp;&nbsp;\n")
+  %>
+</div>
 
-<table class=combos">
-  <tr>
-    <%=
-      html = []
-      @chosen_site   = scan_site_combo( 'site',   html)
-      @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
-      @chosen_status = scan_status_combo( 'status', @chosen_site, @chosen_type, html)
-      html.join( "\n")
-    %>
-  </tr>
-</table>
+<div class="search control">
+  <label for="search">Search:&nbsp;</label>
+  <input type="text" id="search" maxlength="40" oninput="search_input()">
+  &nbsp;&nbsp;
+  <div id="pages" class="control"></div>
+</div>
 
 <div id="list"></div>
 

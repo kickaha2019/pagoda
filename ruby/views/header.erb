@@ -1,16 +1,20 @@
 <html>
 <head>
   <style>
-    h1 {text-align: center}
+    body {display: flex; flex-direction: column; align-items: center;}
     table {margin-left: auto; margin-right: auto; font-size: 24px; margin-bottom: 20px}
     .tables, .list {border-collapse: collapse}
     .menu td {padding-left: 10px; padding-right: 10px}
     .buttons td {padding-left: 10px; padding-right: 10px}
-    .checkboxes td {padding-left: 10px; padding-right: 10px}
-    .combos td {padding-left: 10px; padding-right: 10px}
+    .control {font-size: 24px; display: flex; align-items: center;}
+    .checkboxes, .combos, .search {padding-bottom: 20px}
+    .checkboxes input {transform: scale(2);}
+    .search, .pages {font-size: 24px; padding-bottom: 20px; display: flex; align-items: center;}
     .tables th, .tables td {border: 1px solid black; border-collapse: collapse; padding: 5px}
     .list th, .list td {border: 1px solid black; border-collapse: collapse; padding: 5px}
     .tables td:nth-child(2) {text-align: right}
+    .game th {text-align: left}
+    .game input {font-size: 20px}
     .scan {font-size: 14px}
     span.changed {background: lime}
   </style>
