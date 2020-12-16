@@ -57,7 +57,7 @@ module Sinatra
     def game_link( id)
       game_rec = $pagoda.game( id)
       return '' if game_rec.nil?
-      "<a href=\"/game/#{id}\">#{game_rec.name}</a>"
+      "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
     end
 
     def games_records
@@ -80,7 +80,7 @@ module Sinatra
     end
 
     def input_element( name, len, value, extras='')
-      "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{value}\" #{extras}>"
+      "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
     end
 
     def scan_action( rec, action)
@@ -88,7 +88,7 @@ module Sinatra
     end
 
     def scan_site_combo( combo_name, html)
-      values = $pagoda.scans.collect {|s| s.site}.uniq.sort
+      values = $pagoda.scans.collect {|s| s.site}.uniq.sort.collect {|v| h(v)}
       values << 'All'
       current_value = cookies[combo_name.to_sym]
       current_value = 'All' unless values.index( current_value)
@@ -155,7 +155,7 @@ module Sinatra
 
     def summary_line( site, type, counts, totals, html)
       return if site == ''
-      html << "<tr><td>#{site}</td><td>#{type}</td>"
+      html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
       ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
         if counts[status] > 0
           html << "<td><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"

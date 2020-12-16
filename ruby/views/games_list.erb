@@ -21,7 +21,7 @@
         style = checked = ''
       end
       html << "<tr #{style}>"
-      html << "<td><a href=\"/game/#{rec.id}\">#{rec.name}</a></td>"
+      html << "<td><a href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
       html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"
       html << '</tr>'

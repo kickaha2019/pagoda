@@ -72,7 +72,7 @@ class Names
   end
 
   def add_reduced( name, id)
-    if m = /^([^0-9]*) ([\d]+) ([^0-9]*)$/.match( name)
+    if m = /^([^0-9:]*) ([\d]+) ([^0-9]*)$/.match( name)
       add_reduced( m[1] + ' ' + m[2], id)
       add_reduced( m[1] + ' ' + m[3], id)
     end
