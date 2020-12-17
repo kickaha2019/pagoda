@@ -18,7 +18,7 @@ root Root
 branch Reviews Site Base
 	set Type "Review"
 	expect Site Type "Alida" "Alida" Base+"/articles/reviews/alida.php"
-	url Base+"/articles/reviews"
+	url Base+"/articles/reviews/"
 	every A
 	attribute href Url
 	match Url "/articles/reviews/.+"

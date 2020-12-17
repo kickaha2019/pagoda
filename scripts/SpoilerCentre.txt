@@ -1,6 +1,6 @@
 root Root
 	set Site "The Spoiler Centre"
-	set Base "https://www.the-spoiler.com"
+	set Base "https://the-spoiler.com"
 	set Type "Walkthrough"
 	expect Site Type "Aura : Fate of the Ages" "Aura : Fate of the Ages" Base+"/ADVENTURE/The.adventure.company/Aura.html"
 	url Base+"/ADVENTURE/index.html"

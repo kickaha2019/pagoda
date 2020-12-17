@@ -31,10 +31,10 @@ class Stores
 	def accept_ios( name, url)
 		if m = /\/id(\d+)($|\?)/.match( url)
 			begin
-				found, compatible = get_ios_compatibility( url, m[1])
+				found, compatible, html = get_ios_compatibility( url, m[1])
 
 				unless found
-					found, compatible = get_ios_compatibility( url, m[1], false)
+					found, compatible, html = get_ios_compatibility( url, m[1], false)
 				end
 
 				unless found
@@ -45,7 +45,8 @@ class Stores
 				end
 
 				compatible
-			rescue
+			rescue Exception => bang
+				raise bang
 				error( "Error getting page for #{name}: #{url}")
 				false
 			end
@@ -93,12 +94,14 @@ class Stores
 		path = "#{@cache}/ios_pages/#{id}.html"
 
 		unless File.exist?( path) && reuse
-			text = http_get( url)
+			html = http_get( url)
 			sleep 10
-			text.force_encoding( 'UTF-8')
-			text.encode!( 'US-ASCII',
+			html.force_encoding( 'UTF-8')
+			html.encode!( 'US-ASCII',
 										:invalid => :replace, :undef => :replace, :universal_newline => true)
-			File.open( path, 'w') {|io| io.print text}
+			File.open( path, 'w') {|io| io.print html}
+		else
+			html = IO.read( path)
 		end
 
 		compatible, found = false, false
@@ -107,7 +110,7 @@ class Stores
 			compatible = true if /(iOS|iPadOS)/i =~ text
 		end
 
-		return found, compatible
+		return found, compatible, html
 	end
 
 	def gog

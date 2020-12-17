@@ -42,7 +42,7 @@ branch ReviewMulti Site Base Url Title
 branch Walkthroughs Site Base
 	set Type "Walkthrough"
 	expect Site Type "Broken Sword II - The Smoking Mirror" "Broken Sword II - The Smoking Mirror" Base+"walkthroughs/BrokenSwordII/index.htm" 
-	url "http://mysterymanor.net/walkthroughs.htm"
+	url "https://mysterymanor.net/walkthroughs.htm"
 	every A
 	attribute href Url
 	match Url "walkthroughs/.*"
