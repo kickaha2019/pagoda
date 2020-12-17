@@ -8,6 +8,10 @@ configure do
   Sinatra::EditorHelper::setup
 end
 
+before do
+  cache_control :no_cache
+end
+
 get '/' do
   erb :tables
 end
