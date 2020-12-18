@@ -110,6 +110,7 @@ class Table
       raise "No value for index column #{index_column}" if row[colind].nil?
       index[row[colind]] << row
     end
+    record( row)
   end
 
   def join( join_name, &block)

@@ -125,7 +125,7 @@ class Pagoda
       [:id, :name, :year, :is_group, :group_name, :developer, :publisher, :game_type].each do |field|
         rec[field] = params[field]
       end
-      @owner.insert( 'game', rec)
+      @record = @owner.insert( 'game', rec)
       @owner.add_name( rec[:name], id)
       names_seen = {rec[:name].downcase => true}
 

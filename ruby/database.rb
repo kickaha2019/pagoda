@@ -66,8 +66,8 @@ class Database
 
   def insert( table_name, record)
     fields = @tables[table_name].fields( record)
-    @tables[table_name].insert( * fields)
     @transactions.puts "INSERT\t" + table_name + "\t" + fields.collect {|v| v.to_s}.join( "\t")
+    @tables[table_name].insert( * fields)
   end
 
   def join( from_table, join_name, from_column, to_table, to_column)

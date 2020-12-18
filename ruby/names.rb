@@ -97,7 +97,7 @@ class Names
   end
 
   def keys( id)
-    @id2reduced[id]
+    @id2reduced[id].clone
   end
 
   def lookup( name)
@@ -106,7 +106,7 @@ class Names
   end
 
   def matches( name)
-    @reduced2ids[reduce(name)]
+    @reduced2ids[reduce(name)].clone
   end
 
   def reduce( name)
