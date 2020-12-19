@@ -28,6 +28,10 @@
         }
         return true;
     }
+
+    function confirm_delete( label) {
+        return confirm( "Confirm " + label);
+    }
 </script>
 
 <%
@@ -114,7 +118,7 @@
           <button formmethod="post" type="submit" onclick="return check_names();"><%= @create_label %></button>
         </td>
         <td>
-          <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\">#{@delete_label}</button>" %>
+          <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\" onclick=\"return confirm_delete('#{@delete_label}');\">#{@delete_label}</button>" %>
         </td>
       </tr>
     </table>

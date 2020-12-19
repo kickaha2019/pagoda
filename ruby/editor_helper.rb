@@ -65,7 +65,15 @@ module Sinatra
       search = cookies[:game_search]
       search = '' if search.nil?
       $pagoda.games do |game|
-        (game.game_type == 'A') && game.name.to_s.downcase.index( search.downcase)
+        if game.game_type != 'A'
+          false
+        else
+          selected = game.name.to_s.downcase.index( search.downcase)
+          game.aliases.each do |a|
+            selected = true if a.name.to_s.downcase.index( search.downcase)
+          end
+          selected
+        end
       end
     end
 

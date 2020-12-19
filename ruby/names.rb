@@ -61,6 +61,7 @@ class Names
 
   def add( name, id)
     name = name.to_s.downcase
+    id   = id.to_i
     @names2ids[name] =  id
     @id2names[id]    << name
 
@@ -89,6 +90,7 @@ class Names
 
   def check_unique_name( name, id)
     name = name.to_s.downcase
+    id   = id.to_i
     if @names2ids[name] && (@names2ids[name] != id)
       false
     else
@@ -97,7 +99,7 @@ class Names
   end
 
   def keys( id)
-    @id2reduced[id].clone
+    @id2reduced[id.to_i].clone
   end
 
   def lookup( name)
@@ -142,6 +144,7 @@ class Names
   end
 
   def remove( id)
+    id = id.to_i
     @id2reduced[id].each do |name|
       @reduced2ids[name].delete_if {|nid| nid == id}
     end

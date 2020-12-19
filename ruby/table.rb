@@ -32,6 +32,8 @@ class Table
       value.to_i
     elsif /^(\-|)(\d*)\.(\d*)$/ =~ value
       value.to_f
+    elsif value == ''
+      nil
     else
       value
     end

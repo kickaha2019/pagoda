@@ -13,8 +13,9 @@
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
-      html << "<tr><td>#{h(rec.site)}</td><td>#{rec.type}</td>"
-      html << "<td><a href=\"/scan/#{rec.id}\">#{h(rec.label)}<a/></td>"
+      html << "<tr><td><a href=\"/scan/#{rec.id}\">#{h(rec.site)}</a></td>"
+      html << "<td>#{rec.type}</td>"
+      html << "<td><a href=\"#{rec.url}\">#{h(rec.label)}<a/></td>"
       html << "<td id=\"collation#{rec.id}\">#{collation_link( rec.id)}</td>"
       html << "<td id=\"status#{rec.id}\">#{scan_status(rec)}</td><td>"
       html << scan_action( rec, 'ignore')

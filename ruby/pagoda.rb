@@ -123,7 +123,7 @@ class Pagoda
 
       rec = {}
       [:id, :name, :year, :is_group, :group_name, :developer, :publisher, :game_type].each do |field|
-        rec[field] = params[field]
+        rec[field] = params[field] ? params[field].strip : nil
       end
       @record = @owner.insert( 'game', rec)
       @owner.add_name( rec[:name], id)
@@ -243,7 +243,7 @@ class Pagoda
 
   def check_unique_name( name, id)
     return true if name.nil? or name == ''
-    @names.check_unique_name( name, id)
+    @names.check_unique_name( name, id.to_i)
   end
 
   def check_unique_names( params)
@@ -268,7 +268,7 @@ class Pagoda
   end
 
   def game( id)
-    recs = get( 'game', :id, id)
+    recs = get( 'game', :id, id.to_i)
     return nil if recs.size <= 0
     PagodaGame.new( self, recs[0])
   end
@@ -283,7 +283,7 @@ class Pagoda
   end
 
   def scan( id)
-    PagodaScan.new( self, get( 'scan', :id, id)[0])
+    PagodaScan.new( self, get( 'scan', :id, id.to_i)[0])
   end
 
   def scans

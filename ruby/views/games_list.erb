@@ -9,7 +9,7 @@
     current_page = 1 if total_pages < current_page
     selected     = cookies[:selected_game] ? cookies[:selected_game].to_i : -1
     records.sort_by! do |rec|
-      rec.name
+      rec.name.to_s
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
