@@ -2,54 +2,37 @@ require_relative 'database'
 require_relative 'names'
 
 class Pagoda
-  class PagodaAlias
+  class PagodaRecord
     def initialize( owner, rec)
       @owner  = owner
       @record = rec
     end
 
-    def hide
-      @record[:hide]
+    def method_missing( m, *args, &block)
+      if (args.size > 0) || block
+        super
+      else
+        @record[m]
+      end
     end
+  end
 
-    def id
-      @record[:id]
-    end
-
-    def name
-      @record[:name]
-    end
-
+  class PagodaAlias < PagodaRecord
     def sort_name
       @owner.sort_name( name)
     end
   end
 
-  class PagodaCollation
-    def initialize( owner, rec)
-      @owner  = owner
-      @record = rec
-    end
-
-    def id
-      @record[:id]
-    end
-
-    def link
-      @record[:link]
-    end
-
+  class PagodaCollation < PagodaRecord
     def rank
       0
     end
   end
 
-  class PagodaGame
-    def initialize( owner, rec)
-      @owner  = owner
-      @record = rec
-    end
+  class PagodaExpect < PagodaRecord
+  end
 
+  class PagodaGame < PagodaRecord
     def aliases
       @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
     end
@@ -67,32 +50,8 @@ class Pagoda
       @owner.end_transaction
     end
 
-    def developer
-      @record[:developer]
-    end
-
-    def game_type
-      @record[:game_type]
-    end
-
-    def group_name
-      @record[:group_name]
-    end
-
-    def id
-      @record[:id]
-    end
-
-    def is_group
-      @record[:is_group]
-    end
-
     def mac
       'N'
-    end
-
-    def name
-      @record[:name]
     end
 
     def pc
@@ -101,10 +60,6 @@ class Pagoda
 
     def phone
       'N'
-    end
-
-    def publisher
-      @record[:publisher]
     end
 
     def sort_name
@@ -146,21 +101,13 @@ class Pagoda
     def web
       'N'
     end
-
-    def year
-      @record[:year]
-    end
   end
 
-  class PagodaScan
-    def initialize( owner, rec)
-      @owner  = owner
-      @record = rec
-    end
-
+  class PagodaScan < PagodaRecord
     def bind( id)
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
+      @owner.delete( 'expect', :url, @record[:url])
       @owner.insert( 'bind', {
           url:@record[:url],
           id:id
@@ -169,8 +116,7 @@ class Pagoda
     end
 
     def bound?
-      binds = @owner.get( 'bind', :url, @record[:url])
-      binds.size > 0
+      @owner.has?( 'bind', :url, @record[:url])
     end
 
     def collation
@@ -185,34 +131,11 @@ class Pagoda
       end
     end
 
-    def id
-      @record[:id]
-    end
-
-    def label
-      @record[:label]
-    end
-
-    def name
-      @record[:name]
-    end
-
-    def site
-      @record[:site]
-    end
-
-    def type
-      @record[:type]
-    end
-
     def unbind
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
+      @owner.delete( 'expect', :url, @record[:url])
       @owner.end_transaction
-    end
-
-    def url
-      @record[:url]
     end
   end
 
@@ -222,6 +145,7 @@ class Pagoda
     #$database.join( 'scan', :bind, :url, 'bind', :url)
     #$database.join( 'game', :aliases, :id, 'alias', :id)
 
+    # Populate names repository
     @database.select( 'game') do |game_rec|
       g = PagodaGame.new( self, game_rec)
       @names.add( g.name, g.id)
@@ -229,6 +153,26 @@ class Pagoda
         @names.add( arec.name, g.id)
       end
     end
+
+    # Add to list of URLs expected any scan records
+    # with a collation
+    found = false
+    @database.select( 'scan') do |scan_rec|
+      s = PagodaScan.new( self, scan_rec)
+      if s.collation && (! @database.has?( 'expect', :url, s.url))
+        unless found
+          found = true
+          @database.start_transaction
+        end
+        @database.insert( 'expect', {
+            site:s.site,
+            type:s.type,
+            name:s.name,
+            url:s.url
+        })
+      end
+    end
+    @database.end_transaction if found
   end
 
   def aliases
@@ -267,6 +211,12 @@ class Pagoda
     g.update( params)
   end
 
+  def delete_expect( url)
+    @database.start_transaction
+    @database.delete( 'expect', :url, url)
+    @database.end_transaction
+  end
+
   def game( id)
     recs = get( 'game', :id, id.to_i)
     return nil if recs.size <= 0
@@ -278,6 +228,17 @@ class Pagoda
     @database.select( 'game') do |rec|
       g = PagodaGame.new( self, rec)
       selected << g if (! block_given?) || (yield g)
+    end
+    selected
+  end
+
+  def lost
+    selected = []
+    @database.select( 'expect') do |rec|
+      e = PagodaExpect.new( self, rec)
+      unless @database.has?( 'scan', :url, e.url)
+        selected << e if (! block_given?) || (yield e)
+      end
     end
     selected
   end
@@ -315,6 +276,10 @@ class Pagoda
 
   def get( table_name, column_name, column_value)
     @database.get( table_name, column_name, column_value)
+  end
+
+  def has?( table_name, column_name, column_value)
+    @database.has?( table_name, column_name, column_value)
   end
 
   def insert( table_name, table_rec)

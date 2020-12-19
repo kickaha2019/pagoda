@@ -64,6 +64,10 @@ class Database
     got
   end
 
+  def has?( table_name, column_name, column_value)
+    get( table_name, column_name, column_value).size > 0
+  end
+
   def insert( table_name, record)
     fields = @tables[table_name].fields( record)
     @transactions.puts "INSERT\t" + table_name + "\t" + fields.collect {|v| v.to_s}.join( "\t")

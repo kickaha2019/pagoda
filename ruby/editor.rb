@@ -33,6 +33,10 @@ post '/delete_game' do
   redirect '/new_game'
 end
 
+post '/delete_expect' do
+  delete_expect( cookies[:expect_url])
+end
+
 get '/game/:id' do
   erb :game, :locals => {:id => params[:id].to_i}
 end
@@ -52,6 +56,10 @@ end
 
 post '/ignore/:id' do
   ignore_scan( params[:id].to_i)
+end
+
+get '/lost' do
+  erb :lost
 end
 
 get '/new_game' do

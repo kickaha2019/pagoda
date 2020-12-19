@@ -33,7 +33,7 @@
   </div>
 
   <table class="summary list">
-    <tr><th>Site</th><th>Type</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
+    <tr><th>Site</th><th>Type</th><th>Lost</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
     <%=
       html   = []
       totals = Hash.new {|h,k| h[k] = 0}
@@ -47,9 +47,11 @@
       end
 
       counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
+      lost = lost_summary
+
       records.each do |rec|
         if (rec.site != site) || (rec.type != type)
-          summary_line( site, type, counts, totals, html)
+          summary_line( site, type, counts, totals, lost, html)
           site   = rec.site
           type   = rec.type
           counts = Hash.new {|h,k| h[k] = 0}
@@ -58,8 +60,8 @@
         counts[scan_status(rec)] += 1
       end
 
-      summary_line( site, type, counts, totals, html)
-      summary_line( 'Totals', '', totals, {}, html)
+      summary_line( site, type, counts, totals, lost, html)
+      summary_line( 'Totals', '', totals, {}, lost, html)
       html.join( "\n")
     %>
   </table>

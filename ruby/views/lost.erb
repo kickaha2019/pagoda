@@ -1,0 +1,45 @@
+<%= erb :header, :locals => {:page => 'lost'} %>
+
+<div class="combos control">
+  <%=
+    html = []
+    @chosen_site   = scan_site_combo( 'site',   html)
+    @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
+    html.join( "&nbsp;&nbsp;\n")
+  %>
+</div>
+
+<script>
+    function delete_expect( url) {
+        setCookie( 'expect_url', url);
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/delete_expect", false);
+        xhttp.send();
+        location.reload();
+    }
+</script>
+
+<table class="lost list">
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Actions</th></tr>
+  <%=
+      html = []
+
+      records = lost_records
+      records.sort_by! do |rec|
+        [rec.site, rec.type, rec.name]
+      end
+
+      records.each do |rec|
+        html << "<tr><td>#{h(rec.site)}</td>"
+        html << "<td>#{rec.type}</td>"
+        html << "<td><a href=\"#{rec.url}\">#{h(rec.name)}<a/></td><td>"
+        html << lost_action( rec)
+        html << '</td></tr>'
+      end
+
+      html.join( "\n")
+  %>
+</table>
+
+</body>
+</html>

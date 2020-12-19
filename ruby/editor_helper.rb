@@ -55,6 +55,10 @@ module Sinatra
       game_rec.delete if game_rec != nil
     end
 
+    def delete_expect( url)
+      $pagoda.delete_expect( url)
+    end
+
     def game_link( id)
       game_rec = $pagoda.game( id)
       return '' if game_rec.nil?
@@ -90,6 +94,31 @@ module Sinatra
 
     def input_element( name, len, value, extras='')
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
+    end
+
+    def lost_action( rec)
+      "<button onclick=\"delete_expect( '#{rec.url}');\">Forget</button>"
+    end
+
+    def lost_records
+      chosen_site   = cookies[:site]
+      chosen_type   = cookies[:type]
+      chosen_status = cookies[:status]
+
+      $pagoda.lost do |rec|
+        chosen = true
+        chosen = false unless ((h(rec.site) == chosen_site) || (chosen_site == 'All'))
+        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
+        chosen
+      end
+    end
+
+    def lost_summary
+      summary = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
+      $pagoda.lost do |rec|
+        summary[rec.site][rec.type] += 1
+      end
+      summary
     end
 
     def scan_action( rec, action)
@@ -179,16 +208,24 @@ module Sinatra
       end
     end
 
-    def summary_line( site, type, counts, totals, html)
+    def summary_line( site, type, counts, totals, lost, html)
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
+
+      if lost[site][type] > 0
+        html << "<td style=\"background: red\"><a href=\"/lost\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{lost[site][type]}</a></td>"
+      else
+        html << "<td></td>"
+      end
+
       ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
+        colour = (status == 'Unmatched') ? 'red' : 'white'
         if counts[status] > 0
-          html << "<td><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          html << "<td style=\"background: #{colour}\"><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
           totals[status] = 0 if ! totals.has_key?( status)
           totals[status] += counts[status]
         else
-          html << "<td>#{counts[status]}</td>"
+          html << "<td></td>"
         end
       end
       html << '</tr>'
