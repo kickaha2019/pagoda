@@ -11,9 +11,8 @@
 
 <script>
     function delete_expect( url) {
-        setCookie( 'expect_url', url);
         var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/delete_expect", false);
+        xhttp.open( "DELETE", "/expect/" + url, false);
         xhttp.send();
         location.reload();
     }

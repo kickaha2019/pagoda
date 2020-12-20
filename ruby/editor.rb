@@ -33,8 +33,8 @@ post '/delete_game' do
   redirect '/new_game'
 end
 
-post '/delete_expect' do
-  delete_expect( cookies[:expect_url])
+delete '/expect/:url' do
+  delete_expect( d(params[:url]))
 end
 
 get '/game/:id' do

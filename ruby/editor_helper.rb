@@ -44,10 +44,14 @@ module Sinatra
       defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
       values.each do |value|
         selected = (current_value == value) ? 'selected' : ''
-        defn << "<option value=\"#{value}\"#{selected}>#{value}</option>"
+        defn << "<option value=\"#{e(value)}\"#{selected}>#{h(value)}</option>"
       end
       defn << '</select>'
       html << defn.join('')
+    end
+
+    def d( text)
+      CGI.unescape( text)
     end
 
     def delete_game( id)
@@ -57,6 +61,10 @@ module Sinatra
 
     def delete_expect( url)
       $pagoda.delete_expect( url)
+    end
+
+    def e( text)
+      CGI.escape( text)
     end
 
     def game_link( id)
@@ -97,7 +105,7 @@ module Sinatra
     end
 
     def lost_action( rec)
-      "<button onclick=\"delete_expect( '#{rec.url}');\">Forget</button>"
+      "<button onclick=\"delete_expect( '#{e(rec.url)}');\">Forget</button>"
     end
 
     def lost_records
@@ -129,13 +137,13 @@ module Sinatra
       search = cookies[:scan_search]
       search = '' if search.nil?
 
-      chosen_site   = cookies[:site]
+      chosen_site   = d(cookies[:site])
       chosen_type   = cookies[:type]
       chosen_status = cookies[:status]
 
       $pagoda.scans do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
-        chosen = false unless ((h(rec.site) == chosen_site) || (chosen_site == 'All'))
+        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
         chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
         chosen = false unless (scan_status(rec) == chosen_status) || (chosen_status == 'All')
         chosen
@@ -143,9 +151,9 @@ module Sinatra
     end
 
     def scan_site_combo( combo_name, html)
-      values = $pagoda.scans.collect {|s| s.site}.uniq.sort.collect {|v| h(v)}
+      values = $pagoda.scans.collect {|s| s.site}.uniq.sort
       values << 'All'
-      current_value = cookies[combo_name.to_sym]
+      current_value = d(cookies[combo_name.to_sym])
       current_value = 'All' unless values.index( current_value)
       combo_box( combo_name, values, current_value, html)
       current_value
@@ -213,7 +221,7 @@ module Sinatra
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
       if lost[site][type] > 0
-        html << "<td style=\"background: red\"><a href=\"/lost\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{lost[site][type]}</a></td>"
+        html << "<td style=\"background: red\"><a href=\"/lost\" onmousedown=\"set_scan_cookies('#{e(site)}','#{type}','#{status}');\">#{lost[site][type]}</a></td>"
       else
         html << "<td></td>"
       end
@@ -221,7 +229,7 @@ module Sinatra
       ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
         colour = (status == 'Unmatched') ? 'red' : 'white'
         if counts[status] > 0
-          html << "<td style=\"background: #{colour}\"><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{site}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          html << "<td style=\"background: #{colour}\"><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
           totals[status] = 0 if ! totals.has_key?( status)
           totals[status] += counts[status]
         else
