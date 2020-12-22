@@ -30,7 +30,7 @@ module Sinatra
     end
 
     def checkbox_element( name, checked, extras='')
-      "<input type=\"checkbox\" id=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
+      "<input type=\"checkbox\" name=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
     end
 
     def collation_link( scan_id)

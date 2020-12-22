@@ -28,6 +28,7 @@ class Names
     @substitutions = {
         'a'           => '',
         'center'      => 'centre',
+        'eight'       => '8',
         'four'        => '4',
         'five'        => '5',
         'i'           => '1',
@@ -35,10 +36,13 @@ class Names
         'iii'         => '3',
         'in'          => '',
         'iv'          => '4',
+        'ix'          => '9',
+        'nine'        => '9',
         'one'         => '1',
         'redux'       => '',
         'remastered'  => '',
         'review'      => '',
+        'seven'       => '7',
         'six'         => '6',
         'the'         => '',
         'three'       => '3',
@@ -46,6 +50,7 @@ class Names
         'v'           => '5',
         'vi'          => '6',
         'vii'         => '7',
+        'viii'        => '8',
         'vs'          => 'versus',
         'walkthrough' => ''
     }
@@ -69,6 +74,7 @@ class Names
 
     if m = /^(.*):(.*)$/.match( name)
       add_reduced( reduce( m[1]), id)
+      add_reduced( reduce( m[2]), id)
       add_reduced( reduce( m[2] + ' ' + m[1]), id)
     end
     add_reduced( reduce(name), id)
