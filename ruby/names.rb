@@ -59,6 +59,7 @@ class Names
     @ordinals = [
         'act',
         'book',
+        'case',
         'chapter',
         'episode',
         'vol',
@@ -72,7 +73,13 @@ class Names
     @names2ids[name] =  id
     @id2names[id]    << name
 
-    if m = /^(.*):(.*)$/.match( name)
+    if m = /^(.*)(\s+\d+\s*):(.*)$/.match( name)
+      add_reduced( reduce( m[1] + m[2]), id)
+      add_reduced( reduce( m[1] + ' ' + m[3]), id)
+      add_reduced( reduce( m[3]), id)
+      add_reduced( reduce( m[3] + ' ' + m[1]), id)
+      add_reduced( reduce( m[3] + ' ' + m[1] + ' ' + m[2]), id)
+    elsif m = /^(.*):(.*)$/.match( name)
       add_reduced( reduce( m[1]), id)
       add_reduced( reduce( m[2]), id)
       add_reduced( reduce( m[2] + ' ' + m[1]), id)
