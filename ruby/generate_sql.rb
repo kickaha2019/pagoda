@@ -43,6 +43,7 @@ class GenerateSQL
      name:       'varchar(120) not null',
      sort_name:  'varchar(120)',
      is_group:   'varchar(1)',
+     group_id:   'integer',
      group_name: 'varchar(120)',
      game_type:  'varchar(1)',
      year:       'integer',

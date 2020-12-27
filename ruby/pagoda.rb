@@ -50,6 +50,14 @@ class Pagoda
       @owner.end_transaction
     end
 
+    def group_name
+      if @record[:group_id]
+        @owner.get( 'game', :id, @record[:group_id])[0][:name]
+      else
+        nil
+      end
+    end
+
     def mac
       'N'
     end
@@ -77,9 +85,15 @@ class Pagoda
       @owner.remove_name_id( id)
 
       rec = {}
-      [:id, :name, :year, :is_group, :group_name, :developer, :publisher, :game_type].each do |field|
+      [:id, :name, :year, :is_group, :developer, :publisher, :game_type].each do |field|
         rec[field] = params[field] ? params[field].strip : nil
       end
+
+      if params[:group_name]
+        group_recs = @owner.get( 'game', :name, params[:group_name].strip)
+        rec[:group_id] = group_recs[0][:id] if group_recs
+      end
+
       @record = @owner.insert( 'game', rec)
       @owner.add_name( rec[:name], id)
       names_seen = {rec[:name].downcase => true}

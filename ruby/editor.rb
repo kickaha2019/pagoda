@@ -82,6 +82,10 @@ get '/scan_list' do
   erb :scan_list
 end
 
+get '/selected_game' do
+  selected_game
+end
+
 get '/summary' do
   erb :summary
 end

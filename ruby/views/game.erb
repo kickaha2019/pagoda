@@ -32,6 +32,14 @@
     function confirm_delete( label) {
         return confirm( "Confirm " + label);
     }
+
+    function set_group() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "GET", "/selected_game", false);
+        xhttp.send();
+        if (xhttp.responseText == '') {return;}
+        document.getElementById("group").value = xhttp.responseText;
+    }
 </script>
 
 <%
@@ -81,7 +89,7 @@
 
       <tr><th>Group?</th><td><%= checkbox_element( 'is_group', @group) %></td></tr>
 
-      <tr><th>In group:</th><td><%= input_element( 'group_name', 80, @group_name) %></td></tr>
+      <tr><th>In group:</th><td><%= input_element( 'group_name', 80, @group_name, 'readonly id="group"') + game_group_action() %></td></tr>
 
       <tr><th>Developer:</th><td><%= input_element( 'developer', 60, @developer) %></td></tr>
 

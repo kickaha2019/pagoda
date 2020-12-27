@@ -67,6 +67,10 @@ module Sinatra
       CGI.escape( text)
     end
 
+    def game_group_action()
+      "<button onclick=\"set_group(); return false;\">Set</button>"
+    end
+
     def game_link( id)
       game_rec = $pagoda.game( id)
       return '' if game_rec.nil?
@@ -196,6 +200,11 @@ module Sinatra
       current_value = 'All' unless types.index( current_value)
       combo_box( combo_name, types, current_value, html)
       current_value
+    end
+
+    def selected_game
+      id = cookies[:selected_game]
+      id ? $pagoda.get( 'game', :id, id.to_i)[0][:name] : ''
     end
 
     def self.setup
