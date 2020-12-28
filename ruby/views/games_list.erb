@@ -1,5 +1,5 @@
 <table class="games list">
-  <tr><th>Name</th><th>Year</th><th>In group</th><th>Select</th></tr>
+  <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Select</th></tr>
   <%=
     html = []
 
@@ -21,6 +21,7 @@
         style = checked = ''
       end
       html << "<tr #{style}>"
+      html << "<td>#{rec.id}</td>"
       html << "<td><a href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
       html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"

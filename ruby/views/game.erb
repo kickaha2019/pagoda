@@ -43,21 +43,21 @@
 </script>
 
 <%
-    game = $pagoda.game( id)
-    if game
+    @game = $pagoda.game( id)
+    if @game
       @create_label  = 'Update'
       @delete_label  = 'Delete'
       @delete_method = 'post'
       @delete_action = "/delete_game"
       @id            = id
-      @name          = game.name
-      @group         = (game.is_group == 'Y')
-      @group_name    = game.group_name
-      @game_type     = game.game_type
-      @year          = game.year
-      @developer     = game.developer
-      @publisher     = game.publisher
-      @aliases       = game.aliases
+      @name          = @game.name
+      @group         = (@game.is_group == 'Y')
+      @group_name    = @game.group_name
+      @game_type     = @game.game_type
+      @year          = @game.year
+      @developer     = @game.developer
+      @publisher     = @game.publisher
+      @aliases       = @game.aliases
     else
       @create_label  = 'Create'
       @delete_label  = 'Clear'
@@ -97,28 +97,47 @@
 
       <tr><th>Type:</th><td><%= input_element( 'game_type', 1, @game_type) %></td></tr>
 
-      <tr><th>Aliases:</th><td><%= alias_element( 0, @aliases[0]) %></td></tr>
-
       <%=
+        html = []
+        if $debug
+          html << '<tr><th>Keys:</th><td>' +
+                  $pagoda.keys( @id).join( '</td></tr><tr><th></th><td>') +
+                  '</td></tr>'
+        end
+        html.join( "\n")
+      %>
+
+    </table>
+
+    <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between">
+      <table class="small list">
+        <tr><th>Alias</th><th>Hidden?</th></tr>
+        <%=
           index, html = 0, []
-          if @aliases.size > 1
-            @aliases[1..-1].each do |a|
-              index += 1
-              html << '<tr><th></th><td>' +
-                      alias_element( index, a) +
-                      '</td></tr>'
+          @aliases.each do |a|
+            html << '<tr><td>' +
+            alias_element( index, a) +
+            '</td></tr>'
+            index += 1
+          end
+          html.join( "\n")
+        %>
+      </table>
+
+      <table class="small list" style="padding-left: 10px">
+        <tr><th>Site</th><th>Type</th><th>Scan</th></tr>
+        <%=
+          html = []
+          $pagoda.scans do |s|
+            c = s.collation
+            if c && (c.id == @game.id)
+              html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a href=\"/scan/#{s.id}\">#{s.name}</a></td></tr>"
             end
           end
-
-          if $debug
-            html << '<tr><th>Keys:</th><td>' +
-                    $pagoda.keys( @id).join( '</td></tr><tr><th></th><td>') +
-                    '</td></tr>'
-          end
-
           html.join( "\n")
-      %>
-    </table>
+        %>
+      </table>
+    </div>
 
     <table class="buttons">
       <tr>

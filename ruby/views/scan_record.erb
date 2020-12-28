@@ -1,5 +1,14 @@
 <%= erb :header, :locals => {:page => 'scan_record'} %>
 
+<script>
+    function scan_action( id, action) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/" + action + "/" + id, false);
+        xhttp.send();
+        window.location.reload();
+    }
+</script>
+
 <%
   @rec = $pagoda.scan( id)
 %>
@@ -10,6 +19,8 @@
     <tr><th>Name</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.name)}<a/>" %></td></tr>
     <tr><th>Label</th><td><%= h(@rec.label) %></td></tr>
     <tr><th>Status</th><td><%= scan_status(@rec) %></td></tr>
+    <tr><th>Actions</th><td><%= scan_action( @rec, 'ignore') + scan_action( @rec, 'bind') + scan_action( @rec, 'unbind') %></td></tr>
+
     <%=
       html = []
       if $debug
