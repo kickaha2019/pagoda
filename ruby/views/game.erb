@@ -130,7 +130,7 @@
           html = []
           $pagoda.scans do |s|
             c = s.collation
-            if c && (c.id == @game.id)
+            if c && @game && (c.id == @game.id)
               html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a href=\"/scan/#{s.id}\">#{s.name}</a></td></tr>"
             end
           end

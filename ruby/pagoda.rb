@@ -91,7 +91,7 @@ class Pagoda
 
       if params[:group_name]
         group_recs = @owner.get( 'game', :name, params[:group_name].strip)
-        rec[:group_id] = group_recs[0][:id] if group_recs
+        rec[:group_id] = group_recs[0][:id] if group_recs && group_recs[0]
       end
 
       @record = @owner.insert( 'game', rec)
