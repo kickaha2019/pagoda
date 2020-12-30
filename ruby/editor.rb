@@ -16,6 +16,14 @@ get '/' do
   erb :tables
 end
 
+get '/aliases' do
+  erb :aliases
+end
+
+get '/aliases_list' do
+  erb :aliases_list
+end
+
 get '/check_name/:id/:name' do
   check_name( params[:name], params[:id])
 end

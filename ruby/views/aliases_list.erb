@@ -1,0 +1,30 @@
+<table class="games list">
+  <tr><th>ID</th><th>Name</th><th>Alias</th></tr>
+  <%=
+    html = []
+
+    records = aliases_records
+    current_page = cookies[:aliases_page] ? cookies[:aliases_page].to_i : 1
+    total_pages  = (records.size + 49) /  50
+    current_page = 1 if total_pages < current_page
+    records.sort_by! do |rec|
+      rec.name.to_s
+    end
+
+    records[(50*(current_page-1))...(50*current_page)].each do |rec|
+      html << "<tr>"
+      html << "<td>#{rec.id}</td>"
+      html << "<td><a href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
+      html << "<td>#{h(rec.aliases[0].name)}</td>"
+      html << '</tr>'
+
+      rec.aliases[1..-1].each do |arec|
+          html << "<tr><td></td><td></td>"
+          html << "<td>#{h(arec.name)}</td>"
+          html << '</tr>'
+      end
+    end
+
+    html.join( "\n")
+  %>
+</table>

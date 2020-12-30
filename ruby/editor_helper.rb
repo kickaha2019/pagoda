@@ -9,6 +9,10 @@ module Sinatra
       checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : true)
     end
 
+    def aliases_records
+      games_records(:alias_search).select {|g| g.aliases.size > 0}
+    end
+
     def bind_id( scan_rec)
       return nil if ! scan_rec.bound?
       game_rec = scan_rec.collation
@@ -77,8 +81,8 @@ module Sinatra
       "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
     end
 
-    def games_records
-      search = cookies[:game_search]
+    def games_records( search_cookie=:game_search)
+      search = cookies[search_cookie]
       search = '' if search.nil?
       $pagoda.games do |game|
         if game.game_type != 'A'

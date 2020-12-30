@@ -1,0 +1,38 @@
+<%= erb :header, :locals => {:page => 'aliases'} %>
+
+<table class="search">
+  <tr>
+    <td>
+      <label for="search">Search:</label>
+      <input type="text" id="search" maxlength="40" oninput="search_input()">
+    </td>
+    <td><div id="pages"></div></td>
+  </tr>
+</table>
+
+<div id="list"></div>
+
+<script>
+    function load_aliases() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/aliases_list", false);
+        xhttp.send();
+        document.getElementById("list").innerHTML = xhttp.responseText;
+
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/page_control/aliases", false);
+        xhttp.send();
+        document.getElementById("pages").innerHTML = xhttp.responseText;
+    }
+
+    function search_input() {
+        setCookie( 'alias_search', document.getElementById( 'search').value);
+        load_aliases();
+    }
+
+    document.getElementById( 'search').value = get_cookie( 'alias_search');
+    load_aliases();
+</script>
+
+</body>
+</html>

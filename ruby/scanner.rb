@@ -81,7 +81,7 @@ class Scanner
 		['alias.txt','game.txt'].each do |file|
 			IO.readlines( @dir + '/' + file)[1..-1].each do |line|
 				els = line.split( "\t")
-				@games[els[0]] << phrase_words( els[1])
+				@games[els[0]] << phrase_words( els[1].gsub(/\(\d+\)/, ' '))
 				sequences( els[1]) do |seq|
 					@pagoda_sequences[seq] << els[0]
 				end
