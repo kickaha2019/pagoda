@@ -43,6 +43,11 @@ module Sinatra
       "<a href=\"/game/#{collation.id}\">#{collation.name}</a>"
     end
 
+    def collation_year( scan_id)
+      collation = $pagoda.scan( scan_id).collation
+      collation.nil? ? '' : collation.year
+    end
+
     def combo_box( combo_name, values, current_value, html)
       defn = ["#{combo_name.capitalize}:&nbsp;"]
       defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
@@ -88,9 +93,9 @@ module Sinatra
         if game.game_type != 'A'
           false
         else
-          selected = game.name.to_s.downcase.index( search.downcase)
+          selected = $pagoda.contains_string( game.name, search)
           game.aliases.each do |a|
-            selected = true if a.name.to_s.downcase.index( search.downcase)
+            selected = true if $pagoda.contains_string( a.name, search)
           end
           selected
         end

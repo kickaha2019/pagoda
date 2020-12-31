@@ -219,6 +219,13 @@ class Pagoda
     end
   end
 
+  def contains_string( text, search)
+    text   = text.to_s
+    search = search.downcase
+    return true if text.downcase.index( search)
+    @names.reduce( text).index( search)
+  end
+
   def create_game( params)
     raise 'Names not unique' unless check_unique_names( params)
     g = PagodaGame.new( self, {id:params[:id]})

@@ -53,6 +53,11 @@
         xhttp.open( "GET", "/collation_link/" + id, false);
         xhttp.send();
         document.getElementById("collation" + id).innerHTML = xhttp.responseText;
+
+        xhttp = new XMLHttpRequest();
+        xhttp.open( "GET", "/collation_year/" + id, false);
+        xhttp.send();
+        document.getElementById("collation_year" + id).innerHTML = xhttp.responseText;
     }
 
     document.getElementById( 'search').value = get_cookie( 'scan_search');

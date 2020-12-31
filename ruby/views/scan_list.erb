@@ -1,5 +1,5 @@
 <table class="scan list">
-  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Status</th><th>Actions</th></tr>
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Actions</th></tr>
   <%=
     html = []
 
@@ -17,6 +17,7 @@
       html << "<td>#{rec.type}</td>"
       html << "<td><a href=\"#{rec.url}\">#{h(rec.label)}<a/></td>"
       html << "<td id=\"collation#{rec.id}\">#{collation_link( rec.id)}</td>"
+      html << "<td id=\"collation_year#{rec.id}\">#{collation_year( rec.id)}</td>"
       html << "<td id=\"status#{rec.id}\">#{scan_status(rec)}</td><td>"
       html << scan_action( rec, 'ignore')
       html << scan_action( rec, 'bind')

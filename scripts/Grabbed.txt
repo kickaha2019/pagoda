@@ -68,7 +68,7 @@ root Root
 	run Single "Official" "Level-5" ".*Layton Brothers Mystery Room" "Layton Brothers Mystery Room" "http://level5ia.com/mystery-room/us/home/"
 	run Single "Official" "Denby Raze" "Richard &amp; Alice - An indie point-and-click adventure game" "Richard and Alice" "http://owlcave.net/richard-alice/"
 	run Single "Official" "Animation Arts" "Animation Arts" "Secret Files: Sam Peters" "http://www.animationarts.de/sites/games/sp1.html" 
-	run Single "Official" "Double Fine Production" "The Cave" "The Cave" "http://thecavegame.com/"
+	run Single "Official" "Double Fine Productions" "The Cave" "The Cave" "http://thecavegame.com/"
 	run Single "Official" "Studio Fizbin" "The Inner World" "The Inner World" "http://www.theinnerworld.de/index_TIW1.html"
 	run Single "Official" "Fireproof Games" "The Room Two .*" "The Room Two" "http://www.fireproofgames.com/games/the-room-two"
 	run Single "Official" "Level-5" "LEVEL-5 - The Starship Damrey" "The Starship Damrey" "http://level5ia.com/blackbox/us/the-starship-damrey/"

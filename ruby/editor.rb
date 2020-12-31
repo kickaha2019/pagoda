@@ -32,6 +32,10 @@ get '/collation_link/:id' do
   collation_link( params[:id].to_i)
 end
 
+get '/collation_year/:id' do
+  collation_year( params[:id].to_i)
+end
+
 post '/bind/:id' do
   bind_scan( params[:id].to_i)
 end
