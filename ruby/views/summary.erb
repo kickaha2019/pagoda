@@ -2,9 +2,9 @@
 
 <script>
     function set_scan_cookies( site, type, status) {
-        setCookie( 'site', site);
-        setCookie( 'type', type);
-        setCookie( 'status', status);
+        set_variable( 'site', site);
+        set_variable( 'type', type);
+        set_variable( 'status', status);
     }
 </script>
 
@@ -16,12 +16,12 @@
 
         none_listed = true
         types.each do |type|
-          none_listed = false if cookies.key?( type.to_sym)
+          none_listed = false if get_variable(type)
         end
 
         types.each do |type|
           checked = ''
-          if (cookies[type.to_sym] == 'Y') || none_listed
+          if (get_variable(type) == 'Y') || none_listed
             @types_to_list[type] = true
             checked = 'checked'
           end

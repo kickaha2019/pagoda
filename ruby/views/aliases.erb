@@ -26,11 +26,11 @@
     }
 
     function search_input() {
-        setCookie( 'alias_search', document.getElementById( 'search').value);
+        set_variable( 'alias_search', document.getElementById( 'search').value);
         load_aliases();
     }
 
-    document.getElementById( 'search').value = get_cookie( 'alias_search');
+    document.getElementById( 'search').value = get_variable( 'alias_search');
     load_aliases();
 </script>
 

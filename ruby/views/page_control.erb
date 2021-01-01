@@ -3,7 +3,7 @@
 
        records      = self.send( "#{kind}_records".to_sym)
        control_id   = "#{kind}_page".to_sym
-       current_page = cookies[control_id] ? cookies[control_id].to_i : 1
+       current_page = get_variable(control_id,1).to_i
        total_pages  = (records.size + 99) /  100
        current_page = 1 if total_pages < current_page
 

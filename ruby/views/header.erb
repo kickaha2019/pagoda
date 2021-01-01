@@ -20,41 +20,31 @@
     span.changed {background: lime}
   </style>
   <script>
-      function get_cookie(cname) {
-          var name = cname + "=";
-          var decodedCookie = decodeURIComponent(document.cookie);
-          var ca = decodedCookie.split(';');
-          for(var i = 0; i <ca.length; i++) {
-              var c = ca[i];
-              while (c.charAt(0) == ' ') {
-                  c = c.substring(1);
-              }
-              if (c.indexOf(name) == 0) {
-                  return c.substring(name.length, c.length);
-              }
-          }
-          return "";
+      function get_variable(cname) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.open("GET", "/get_variable/" + cname, false);
+          xhttp.send();
+          return xhttp.responseText;
       }
 
-      function setCookie( cname, cvalue) {
-          var d = new Date();
-          d.setTime( d.getTime() + (30 * 24 * 60 * 60 * 1000));
-          var expires = "expires="+d.toUTCString();
-          document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      function set_variable( cname, cvalue) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.open("PUT", "/set_variable/" + cname + "/" + encodeURIComponent( cvalue), false);
+          xhttp.send();
       }
 
       function change_combo( cname) {
-          setCookie( cname, document.getElementById( cname).value);
+          set_variable( cname, document.getElementById( cname).value);
           window.location.reload();
       }
 
       function change_page( pname, value) {
-          setCookie( pname, value);
+          set_variable( pname, value);
           window.location.reload();
       }
 
       function scan_checkbox( cname) {
-          setCookie( cname, document.getElementById( cname).checked ? 'Y' : 'N');
+          set_variable( cname, document.getElementById( cname).checked ? 'Y' : 'N');
           window.location.reload();
       }
   </script>

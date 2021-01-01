@@ -4,7 +4,7 @@
     html = []
 
     records = aliases_records
-    current_page = cookies[:aliases_page] ? cookies[:aliases_page].to_i : 1
+    current_page = get_variable(:aliases_page,1).to_i
     total_pages  = (records.size + 49) /  50
     current_page = 1 if total_pages < current_page
     records.sort_by! do |rec|

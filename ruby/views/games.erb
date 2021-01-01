@@ -26,16 +26,16 @@
     }
 
     function search_input() {
-        setCookie( 'game_search', document.getElementById( 'search').value);
+        set_variable( 'game_search', document.getElementById( 'search').value);
         load_games();
     }
 
     function select_checkbox( id) {
-        setCookie( 'selected_game', id);
+        set_variable( 'selected_game', id);
         load_games();
     }
 
-    document.getElementById( 'search').value = get_cookie( 'game_search');
+    document.getElementById( 'search').value = get_variable( 'game_search');
     load_games();
 </script>
 

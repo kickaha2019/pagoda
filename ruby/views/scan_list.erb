@@ -4,12 +4,12 @@
     html = []
 
     records = scan_records
-    current_page = cookies[:scan_page] ? cookies[:scan_page].to_i : 1
+    current_page = get_variable(:scan_page,1).to_i
     total_pages  = (records.size + 99) /  100
     current_page = 1 if total_pages < current_page
 
     records.sort_by! do |rec|
-      [rec.site, rec.type, rec.label]
+      [rec.site, rec.type, rec.label.to_s]
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|

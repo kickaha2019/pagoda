@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'sinatra/cookies'
 
 require_relative 'editor_helper'
 
@@ -66,6 +65,10 @@ get '/games_list' do
   erb :games_list
 end
 
+get '/get_variable/:name' do
+  get_variable( params[:name])
+end
+
 post '/ignore/:id' do
   ignore_scan( params[:id].to_i)
 end
@@ -96,6 +99,10 @@ end
 
 get '/selected_game' do
   selected_game
+end
+
+put '/set_variable/:name/:value' do
+  set_variable( params[:name], params[:value])
 end
 
 get '/summary' do

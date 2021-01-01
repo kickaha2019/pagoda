@@ -4,10 +4,10 @@
     html = []
 
     records = games_records
-    current_page = cookies[:games_page] ? cookies[:games_page].to_i : 1
+    current_page = get_variable(:games_page,1).to_i
     total_pages  = (records.size + 99) /  100
     current_page = 1 if total_pages < current_page
-    selected     = cookies[:selected_game] ? cookies[:selected_game].to_i : -1
+    selected     = get_variable(:selected_game,-1).to_i
     records.sort_by! do |rec|
       rec.name.to_s
     end

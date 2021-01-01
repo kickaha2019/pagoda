@@ -3,6 +3,8 @@ require_relative 'pagoda'
 
 module Sinatra
   module EditorHelper
+    @@variables = {}
+
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
       '</td><td>' +
@@ -21,8 +23,8 @@ module Sinatra
     end
 
     def bind_scan( scan_id)
-      return '' if cookies[:selected_game].nil?
-      selected_id = cookies[:selected_game].to_i
+      return '' if get_variable(:selected_game).nil?
+      selected_id = get_variable(:selected_game).to_i
       scan_rec = $pagoda.scan( scan_id)
       return '' if bind_id( scan_rec) == selected_id
       scan_rec.bind( selected_id)
@@ -87,7 +89,7 @@ module Sinatra
     end
 
     def games_records( search_cookie=:game_search)
-      search = cookies[search_cookie]
+      search = get_variable(search_cookie)
       search = '' if search.nil?
       $pagoda.games do |game|
         if game.game_type != 'A'
@@ -100,6 +102,10 @@ module Sinatra
           selected
         end
       end
+    end
+
+    def get_variable( name, defval=nil)
+      @@variables[name.to_sym] ? @@variables[name.to_sym] : defval
     end
 
     def h(text)
@@ -122,9 +128,8 @@ module Sinatra
     end
 
     def lost_records
-      chosen_site   = cookies[:site]
-      chosen_type   = cookies[:type]
-      chosen_status = cookies[:status]
+      chosen_site   = get_variable(:site,'All')
+      chosen_type   = get_variable(:type,'All')
 
       $pagoda.lost do |rec|
         chosen = true
@@ -147,12 +152,12 @@ module Sinatra
     end
 
     def scan_records
-      search = cookies[:scan_search]
+      search = get_variable(:scan_search)
       search = '' if search.nil?
 
-      chosen_site   = d(cookies[:site])
-      chosen_type   = cookies[:type]
-      chosen_status = cookies[:status]
+      chosen_site   = d(get_variable(:site,'All'))
+      chosen_type   = get_variable(:type,'All')
+      chosen_status = get_variable(:status,'All')
 
       $pagoda.scans do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
@@ -166,8 +171,10 @@ module Sinatra
     def scan_site_combo( combo_name, html)
       values = $pagoda.scans.collect {|s| s.site}.uniq.sort
       values << 'All'
-      current_value = d(cookies[combo_name.to_sym])
-      current_value = 'All' unless values.index( current_value)
+      current_value = d(get_variable(combo_name,'All'))
+      unless values.index( current_value)
+        set_variable(combo_name.to_sym, current_value = 'All')
+      end
       combo_box( combo_name, values, current_value, html)
       current_value
     end
@@ -191,8 +198,10 @@ module Sinatra
       end
       values = values.uniq.sort
       values << 'All'
-      current_value = cookies[combo_name.to_sym]
-      current_value = 'All' unless values.index( current_value)
+      current_value = get_variable(combo_name,'All')
+      unless values.index( current_value)
+        set_variable( combo_name, current_value = 'All')
+      end
       combo_box( combo_name, values, current_value, html)
       current_value
     end
@@ -205,15 +214,21 @@ module Sinatra
       end
       types = types.uniq.sort
       types << 'All'
-      current_value = cookies[combo_name.to_sym]
-      current_value = 'All' unless types.index( current_value)
+      current_value = get_variable( combo_name,'All')
+      unless types.index( current_value)
+        set_variable( combo_name, current_value = 'All')
+      end
       combo_box( combo_name, types, current_value, html)
       current_value
     end
 
     def selected_game
-      id = cookies[:selected_game]
+      id = get_variable(:selected_game)
       id ? $pagoda.get( 'game', :id, id.to_i)[0][:name] : ''
+    end
+
+    def set_variable( name, value)
+      @@variables[name.to_sym] = value
     end
 
     def self.setup

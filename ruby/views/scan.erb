@@ -44,7 +44,7 @@
     }
 
     function search_input() {
-        setCookie( 'scan_search', document.getElementById( 'search').value);
+        set_variable( 'scan_search', document.getElementById( 'search').value);
         load_scan();
     }
 
@@ -60,7 +60,7 @@
         document.getElementById("collation_year" + id).innerHTML = xhttp.responseText;
     }
 
-    document.getElementById( 'search').value = get_cookie( 'scan_search');
+    document.getElementById( 'search').value = get_variable( 'scan_search');
     load_scan();
 </script>
 
