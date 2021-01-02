@@ -39,10 +39,10 @@ module Sinatra
       "<input type=\"checkbox\" name=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
     end
 
-    def collation_link( scan_id)
+    def collation( scan_id)
       collation = $pagoda.scan( scan_id).collation
-      return '' if collation.nil?
-      "<a href=\"/game/#{collation.id}\">#{collation.name}</a>"
+      return {'link':'','year':''} if collation.nil?
+      {'link':"<a href=\"/game/#{collation.id}\">#{collation.name}</a>",'year':"#{collation.year}"}
     end
 
     def collation_year( scan_id)
@@ -92,15 +92,11 @@ module Sinatra
       search = get_variable(search_cookie)
       search = '' if search.nil?
       $pagoda.games do |game|
-        if game.game_type != 'A'
-          false
-        else
-          selected = $pagoda.contains_string( game.name, search)
-          game.aliases.each do |a|
-            selected = true if $pagoda.contains_string( a.name, search)
-          end
-          selected
+        selected = $pagoda.contains_string( game.name, search)
+        game.aliases.each do |a|
+          selected = true if $pagoda.contains_string( a.name, search)
         end
+        selected
       end
     end
 

@@ -162,9 +162,11 @@ class Pagoda
     # Populate names repository
     @database.select( 'game') do |game_rec|
       g = PagodaGame.new( self, game_rec)
-      @names.add( g.name, g.id)
-      g.aliases.each do |arec|
-        @names.add( arec.name, g.id)
+      if g.game_type == 'A'
+        @names.add( g.name, g.id)
+        g.aliases.each do |arec|
+          @names.add( arec.name, g.id)
+        end
       end
     end
 

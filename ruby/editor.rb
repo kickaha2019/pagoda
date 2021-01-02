@@ -27,12 +27,8 @@ get '/check_name/:id/:name' do
   check_name( params[:name], params[:id])
 end
 
-get '/collation_link/:id' do
-  collation_link( params[:id].to_i)
-end
-
-get '/collation_year/:id' do
-  collation_year( params[:id].to_i)
+get '/collation/:id' do
+  collation( params[:id].to_i).to_json
 end
 
 post '/bind/:id' do

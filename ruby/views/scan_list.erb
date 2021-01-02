@@ -16,8 +16,9 @@
       html << "<tr><td><a href=\"/scan/#{rec.id}\">#{h(rec.site)}</a></td>"
       html << "<td>#{rec.type}</td>"
       html << "<td><a href=\"#{rec.url}\">#{h(rec.label)}<a/></td>"
-      html << "<td id=\"collation#{rec.id}\">#{collation_link( rec.id)}</td>"
-      html << "<td id=\"collation_year#{rec.id}\">#{collation_year( rec.id)}</td>"
+      info = collation( rec.id)
+      html << "<td id=\"collation#{rec.id}\">#{info[:link]}</td>"
+      html << "<td id=\"collation_year#{rec.id}\">#{info[:year]}</td>"
       html << "<td id=\"status#{rec.id}\">#{scan_status(rec)}</td><td>"
       html << scan_action( rec, 'ignore')
       html << scan_action( rec, 'bind')

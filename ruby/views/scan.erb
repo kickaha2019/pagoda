@@ -50,14 +50,12 @@
 
     function set_collation( id) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open( "GET", "/collation_link/" + id, false);
+        xhttp.open( "GET", "/collation/" + id, false);
         xhttp.send();
-        document.getElementById("collation" + id).innerHTML = xhttp.responseText;
+        var info = JSON.parse( xhttp.responseText)
 
-        xhttp = new XMLHttpRequest();
-        xhttp.open( "GET", "/collation_year/" + id, false);
-        xhttp.send();
-        document.getElementById("collation_year" + id).innerHTML = xhttp.responseText;
+        document.getElementById("collation" + id).innerHTML = info['link'];
+        document.getElementById("collation_year" + id).innerHTML = info['year'];
     }
 
     document.getElementById( 'search').value = get_variable( 'scan_search');
