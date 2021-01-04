@@ -80,7 +80,7 @@ class Names
       add_reduced( reduce( m[3]), id)
       add_reduced( reduce( m[3] + ' ' + m[1]), id)
       add_reduced( reduce( m[3] + ' ' + m[1] + ' ' + m[2]), id)
-    elsif m = /^(.*)(:|-)([^:\-]*)$/.match( name)
+    elsif m = /^(.*)(:|-)\s(.*)$/.match( name)
       add_reduced( reduce( m[1]), id)
       add_reduced( reduce( m[3]), id)
       add_reduced( reduce( m[3] + ' ' + m[1]), id)
