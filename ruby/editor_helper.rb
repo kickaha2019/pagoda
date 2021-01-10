@@ -119,8 +119,12 @@ module Sinatra
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
     end
 
-    def lost_action( rec)
+    def lost_forget_action( rec)
       "<button onclick=\"delete_expect( '#{e(rec.url)}');\">Forget</button>"
+    end
+
+    def lost_revive_action( rec)
+      "<button onclick=\"revive_expect( '#{e(rec.url)}');\">Revive</button>"
     end
 
     def lost_records
@@ -141,6 +145,10 @@ module Sinatra
         summary[rec.site][rec.type] += 1
       end
       summary
+    end
+
+    def revive_expect( url)
+      $pagoda.revive_expect( url)
     end
 
     def scan_action( rec, action)
@@ -248,6 +256,12 @@ module Sinatra
     def summary_line( site, type, counts, totals, lost, html)
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
+
+      if type == ''
+        count = 0
+        lost.each_value {|ls| ls.each_value {|lt| count += lt}}
+        lost[site][type] = count
+      end
 
       if lost[site][type] > 0
         html << "<td style=\"background: red\"><a href=\"/lost\" onmousedown=\"set_scan_cookies('#{e(site)}','#{type}','#{status}');\">#{lost[site][type]}</a></td>"

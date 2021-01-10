@@ -115,9 +115,9 @@ class Table
     record( row)
   end
 
-  def join( join_name, &block)
-    @joins[join_name] = block
-  end
+  # def join( join_name, &block)
+  #   @joins[join_name] = block
+  # end
 
   def next_value( column_name)
     colind    = column_index( column_name)
@@ -135,9 +135,9 @@ class Table
   def record( fields)
     rec = {}
     fields.each_index {|i| rec[@columns[i]] = fields[i]}
-    @joins.each_pair do |name,block|
-      rec[name] = block.call( rec)
-    end
+    # @joins.each_pair do |name,block|
+    #   rec[name] = block.call( rec)
+    # end
     rec
   end
 

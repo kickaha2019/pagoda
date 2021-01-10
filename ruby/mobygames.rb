@@ -13,7 +13,7 @@ class MobyGames
 
 	def urls( scanner)
 		path = scanner.cache + '/mobygames.json'
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 20 * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 10 * 24 * 60 * 60))
 			loop, offset, urls = true, 0, {}
 
 			while (offset < 30000) && loop

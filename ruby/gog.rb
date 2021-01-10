@@ -13,7 +13,7 @@ class GOG
 
 	def urls( scanner)
 		path = scanner.cache + '/gog.json'
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 20 * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 10 * 24 * 60 * 60))
 			loop, page, urls = true, 0, {}
 
 			while (page < 200) && loop

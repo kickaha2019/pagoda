@@ -19,9 +19,13 @@
           none_listed = false if get_variable(type)
         end
 
+        if none_listed
+          types.each {|type| set_variable( type, 'Y')}
+        end
+
         types.each do |type|
           checked = ''
-          if (get_variable(type) == 'Y') || none_listed
+          if get_variable(type) == 'Y'
             @types_to_list[type] = true
             checked = 'checked'
           end

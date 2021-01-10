@@ -13,7 +13,7 @@ class Steam
 
 	def urls( scanner)
 		path = scanner.cache + '/steam.json'
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 20 * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 10 * 24 * 60 * 60))
 			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
 				raise 'Error retrieving steam data'
 			end

@@ -12,7 +12,14 @@
 <script>
     function delete_expect( url) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open( "DELETE", "/expect/" + url, false);
+        xhttp.open( "DELETE", "/expect/" + encodeURIComponent(url), false);
+        xhttp.send();
+        location.reload();
+    }
+
+    function revive_expect( url) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "PUT", "/revive/" + encodeURIComponent(url), false);
         xhttp.send();
         location.reload();
     }
@@ -32,7 +39,8 @@
         html << "<tr><td>#{h(rec.site)}</td>"
         html << "<td>#{rec.type}</td>"
         html << "<td><a href=\"#{rec.url}\">#{h(rec.name)}<a/></td><td>"
-        html << lost_action( rec)
+        html << lost_forget_action( rec)
+        html << lost_revive_action( rec)
         html << '</td></tr>'
       end
 

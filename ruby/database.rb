@@ -74,15 +74,15 @@ class Database
     @tables[table_name].insert( * fields)
   end
 
-  def join( from_table, join_name, from_column, to_table, to_column)
-    @tables[from_table].join( join_name) do |rec|
-      joins = []
-      @tables[to_table].get( to_column, rec[from_column]) do |rec1|
-        joins << rec1
-      end
-      joins
-    end
-  end
+  # def join( from_table, join_name, from_column, to_table, to_column)
+  #   @tables[from_table].join( join_name) do |rec|
+  #     joins = []
+  #     @tables[to_table].get( to_column, rec[from_column]) do |rec1|
+  #       joins << rec1
+  #     end
+  #     joins
+  #   end
+  # end
 
   def load_transaction( rec)
     table = @tables[rec[1]]
@@ -94,6 +94,15 @@ class Database
     else
       raise "Unknown transaction: #{rec[0]}"
     end
+  end
+
+  def max_value( table_name, column_name)
+    got = 0
+    @tables[table_name].select do |rec|
+      value = rec[column_name]
+      got = value if value && value.is_a?( Integer) && (value > got)
+    end
+    got
   end
 
   def next_value( table_name, column_name)

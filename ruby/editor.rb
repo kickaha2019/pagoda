@@ -81,6 +81,10 @@ get '/page_control/:kind' do
   erb :page_control, :locals => {:kind => params[:kind]}
 end
 
+put '/revive/:url' do
+  revive_expect( d(params[:url]))
+end
+
 get '/scan' do
   erb :scan
 end

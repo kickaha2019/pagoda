@@ -266,6 +266,15 @@ class Pagoda
     selected
   end
 
+  def revive_expect( url)
+    lost_rec = @database.get( 'expect', :url, url)[0]
+    lost_rec[:label] = lost_rec[:name]
+    lost_rec[:id]    = @database.max_value( 'scan', :id) + 1
+    @database.start_transaction
+    @database.insert( 'scan', lost_rec)
+    @database.end_transaction
+  end
+
   def scan( id)
     PagodaScan.new( self, get( 'scan', :id, id.to_i)[0])
   end

@@ -17,8 +17,7 @@ class IOS
 
 				compatible
 			rescue Exception => bang
-				raise bang
-				scanner.error( "Error getting page for #{name}: #{url}")
+				scanner.error( "Error getting #{name}: #{url}: #{bang.message}")
 				false
 			end
   	else
@@ -65,7 +64,7 @@ class IOS
 		{'adventure':7002, 'puzzle':7012,'role-playing':7014}.each do |section, id|
 			(0...letters.size).each do |i|
 				path = scanner.cache + "/ios-#{section}#{i+1}.json"
-				if File.exist?( path) && (File.mtime( path) > (Time.now - 20 * 24 * 60 * 60))
+				if File.exist?( path) && (File.mtime( path) > (Time.now - 10 * 24 * 60 * 60))
 					JSON.parse( IO.read( path))['urls'].each_pair {|k,v| urls[k] = v}
 					next
 				end
