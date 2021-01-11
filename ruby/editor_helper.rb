@@ -124,7 +124,7 @@ module Sinatra
     end
 
     def lost_revive_action( rec)
-      "<button onclick=\"revive_expect( '#{e(rec.url)}');\">Revive</button>"
+      "<button onclick=\"revive_expect( '#{e(rec.url)}');\">Restore</button>"
     end
 
     def lost_records

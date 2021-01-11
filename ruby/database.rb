@@ -52,7 +52,8 @@ class Database
 
   def end_transaction
     @transactions.puts 'END'
-    @transactions.flush
+    @transactions.close
+    @transactions = nil
   end
 
   def get( table_name, column_name, column_value)
@@ -110,13 +111,11 @@ class Database
   end
 
   def rebuild
-    if @transactions
+    if File.exist?( @transactions_file)
       @tables.each_pair do |name, table|
         table.save( @dir + '/' + name + '.txt')
       end
 
-      @transactions.close
-      @transactions = nil
       File.delete( @transactions_file)
     end
   end
@@ -128,7 +127,7 @@ class Database
   end
 
   def start_transaction
-    unless @transactions
+    unless File.exist?( @transactions_file)
       File.open(@transactions_file, 'w') do |io|
         Dir.entries( @dir).each do |f|
           if m = /^(.*)\.txt$/.match( f)
@@ -138,10 +137,9 @@ class Database
           end
         end
       end
-
-      @transactions = File.open(@transactions_file, 'a+')
     end
 
+    @transactions = File.open(@transactions_file, 'a+')
     @transactions.puts 'BEGIN'
   end
 
