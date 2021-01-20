@@ -10,16 +10,26 @@ class Names
     @entities = {
         '&aacute;' => 'a',
         '&amp;'    => '&',
+        '&ccedil;' => 'c',
         '&eacute;' => 'e',
         '&egrave;' => 'e',
+        '&hellip;' => '...',
+        '&igrave;' => 'i',
         '&iuml;'   => 'i',
         '&ocirc;'  => 'o',
         '&quot;'   => '"',
         '&ouml;'   => 'o',
+        '&uacute;' => 'u',
         '&uuml;'   => 'u',
         '&#xff;'   => 'y',
+        '&#xE8;'   => 'e',
+        '&#xE9;'   => 'e',
         '&#xFF;'   => 'y',
+        '&#x14D;'  => 'o',
+        '&#x22;'   => '"',
+        '&#x26;'   => "&",
         '&#x27;'   => "'",
+        '&#x2022;' => " ",
         '&#039;'   => "'",
         '&#8216;'  => "'",
         '&#8217;'  => "'",
@@ -66,7 +76,9 @@ class Names
         'case',
         'chapter',
         'episode',
+        'issue',
         'mystery',
+        'part',
         'vol',
         'volume'
     ]
@@ -163,6 +175,10 @@ class Names
     @cache[name] = reduced
   end
 
+  def reduced_names
+    @reduced2ids.each_pair {|name,ids| yield name, ids}
+  end
+
   def remove( id)
     id = id.to_i
     @id2reduced[id].each do |name|
@@ -179,7 +195,13 @@ class Names
   def simplify( name)
 
     # Lower case and decode HTML entities
-    reduced = name.to_s.downcase
+    reduced = name.to_s
+    @entities.each_pair do |from, to|
+      reduced = reduced.gsub( from, to)
+    end
+    reduced = reduced.downcase
+
+    # Again for luck
     @entities.each_pair do |from, to|
       reduced = reduced.gsub( from, to)
     end

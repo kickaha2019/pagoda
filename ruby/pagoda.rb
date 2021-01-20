@@ -154,8 +154,9 @@ class Pagoda
   end
 
   def initialize( dir)
-    @database = Database.new( ARGV[0])
-    @names    = Names.new
+    @database  = Database.new( ARGV[0])
+    @names     = Names.new
+    @possibles = nil
     #$database.join( 'scan', :bind, :url, 'bind', :url)
     #$database.join( 'game', :aliases, :id, 'alias', :id)
 
@@ -199,6 +200,21 @@ class Pagoda
       end
     end
     list
+  end
+
+  def build_frequencies
+    @frequencies = Hash.new {|h,k| h[k] = 0}
+
+    games.each do |g|
+      string_combos(g.name) do |combo, weight|
+        @frequencies[combo] += weight
+      end
+      g.aliases.each do |a|
+        string_combos(a.name) do |combo, weight|
+          @frequencies[combo] += weight
+        end
+      end
+    end
   end
 
   def check_unique_name( name, id)
@@ -266,6 +282,20 @@ class Pagoda
     selected
   end
 
+  def lowest_frequency( name)
+    build_frequencies unless @frequencies
+    freq, match = 1000000, ''
+    string_combos( name) do |combo, weight|
+      if @frequencies.include?(combo)
+        if @frequencies[combo] < freq
+          freq  = @frequencies[combo]
+          match = combo
+        end
+      end
+    end
+    return freq, match
+  end
+
   def revive_expect( url)
     lost_rec = @database.get( 'expect', :url, url)[0]
     lost_rec[:label] = lost_rec[:name]
@@ -286,6 +316,23 @@ class Pagoda
       selected << s if (! block_given?) || (yield s)
     end
     selected
+  end
+
+  def string_combos( name)
+    words = @names.reduce( name).split( ' ')
+    words.each {|word| yield word, 125}
+
+    (0..(words.size-2)).each do |i|
+      yield words[i..(i+1)].join(' '), 25
+    end
+
+    (0..(words.size-3)).each do |i|
+      yield words[i..(i+2)].join(' '), 5
+    end
+
+    (0..(words.size-4)).each do |i|
+      yield words[i..(i+3)].join(' '), 1
+    end
   end
 
   # Wrapper methods for calls to database and names logic

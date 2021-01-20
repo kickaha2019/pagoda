@@ -4,6 +4,8 @@
   Command line:
 		Database directory
 		Cache directory
+		Cache lifetime
+		Max matches for each scan record to consider
 =end
 
 require 'json'
@@ -11,19 +13,36 @@ require 'net/http'
 require 'net/https'
 require 'uri'
 require "selenium-webdriver"
+require_relative 'pagoda'
 
 class Scanner
 	attr_reader :cache
 
-	def initialize( dir, cache, max)
+	def initialize( dir, cache)
 		@dir          = dir
 		@cache        = cache
-		@max_matches  = max
 		@scan         = File.open( @dir + '/scan.txt', 'a')
 		@id           = 100000
 		@driver       = nil
 		@log          = File.open( @cache + '/scan.log', 'w')
 		@errors       = 0
+		@pagoda       = Pagoda.new( dir)
+	end
+
+	def accept_bound_expected( site, urls)
+		unaccepted = {}
+
+		urls.each_pair do |name, url|
+			if @pagoda.has?( 'expect', :url, url) ||
+				 @pagoda.has?( 'bind', :url, url)
+
+				write_match( site, name, url, '')
+			else
+				unaccepted[name] = url
+			end
+		end
+
+		unaccepted
 	end
 
 	def browser_get( url)
@@ -31,16 +50,6 @@ class Scanner
 		@driver.navigate.to url
 		sleep 15
 		@driver.execute_script('return document.documentElement.outerHTML;')
-	end
-
-	def contains_pagoda_name( candidate, seq)
-		candidate_words = phrase_words( candidate)
-		@pagoda_sequences[seq].each do |id|
-			@games[id].each do |game_words|
-				return true if (game_words - candidate_words).size == 0
-			end
-		end
-		false
 	end
 
 	def count_matches( sequence)
@@ -74,58 +83,22 @@ class Scanner
 		response.body
 	end
 
-	def load_pagoda
-		@games = Hash.new {|h,k| h[k] = []}
-		@pagoda_sequences = Hash.new {|h,k| h[k] = []}
-
-		['alias.txt','game.txt'].each do |file|
-			IO.readlines( @dir + '/' + file)[1..-1].each do |line|
-				els = line.split( "\t")
-				@games[els[0]] << phrase_words( els[1].gsub(/\(\d+\)/, ' '))
-				sequences( els[1]) do |seq|
-					@pagoda_sequences[seq] << els[0]
-				end
-			end
-		end
-
-		@pagoda_sequences.each_value do |list|
-			list.uniq!
-		end
-	end
-
-	def load_store_sequences( urls)
-		@sequences = {}
-		@pagoda_sequences.each_pair do |k,v|
-			@sequences[k] = 0 if v.size <= @max_matches
-		end
-
-		urls.each_key do |name|
-			sequences( name) do |seq|
-				#puts "DEBUG200: #{name}" if seq == 'do'
-				if ! @sequences[seq].nil?
-					@sequences[seq] += 1
-				end
-			end
-		end
-	end
-
-	def match_games( site, type, urls)
+	def match_games( site, urls, limit)
+		list = []
 		urls.each_pair do |name, url|
-			next if not_a_game( name)
+			freq, combo = @pagoda.lowest_frequency( name)
+			list << [freq, name, url, combo]
+		end
 
-			matched = false
-			sequences( name) do |seq|
-				# if seq == 'do'
-				# 	p [name, seq, @sequences[seq]]
-				# end
-				if (! matched) && (! @sequences[seq].nil?) && (@sequences[seq] <= @max_matches)
-					if contains_pagoda_name( name, seq)
-						matched = true
-						if yield( name, url)
-							write_match( site, type, name, url, seq)
-						end
-					end
-				end
+		list.sort!
+
+		list.each do |entry|
+			name, url = entry[1], entry[2]
+			next if (limit <= 0) || not_a_game( name)
+			if yield( name, url)
+				p entry
+				limit -= 1
+				write_match( site, name, url, entry[3])
 			end
 		end
 	end
@@ -138,7 +111,7 @@ class Scanner
 	end
 
 	def phrase_words( phrase)
-		phrase.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
+		phrase.to_s.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
 	end
 
 	def purge_files( dir, keep_days, max_purge)
@@ -150,13 +123,6 @@ class Scanner
 		to_delete = to_delete[0..max_purge] if to_delete.size > max_purge
 		to_delete.each do |f|
 			File.delete( dir + '/' + f)
-		end
-	end
-
-	def reduce_word_sequences
-		@sequences, old = {}, @sequences
-		old.each_pair do |seq, count|
-			@sequences[seq] = 0 if count <= @max_matches
 		end
 	end
 
@@ -179,31 +145,36 @@ class Scanner
 
 	def set_not_game_words( *suspect)
 		@not_game_words = Hash.new {|h,k| h[k] = false}
-		suspect.each {|word| @not_game_words[word.downcase] = true}
-		@games.each_value do |words|
-			words.each {|word| @not_game_words[word] = false}
+
+		suspect.each do |word|
+			@not_game_words[word.downcase] = true
+		end
+
+		@pagoda.games.each do |game|
+			phrase_words( game.name).each do |word|
+				@not_game_words[word] = false
+		  end
 		end
 	end
 
-	def write_match( site, type, game, url, sequence)
+	def write_match( site, game, url, ref)
 		@id += 1
-		@scan.puts "#{@id}\t#{site}\t#{type}\t#{game}\t#{game}\t#{url}"
-		@log.puts "Site: #{site} Game: #{game} Sequence: #{sequence}"
+		@scan.puts "#{@id}\t#{site.title}\t#{site.type}\t#{game}\t#{game}\t#{url}"
+		@log.puts "Site: #{site.title} Game: #{game} Ref: #{ref}"
 	end
 end
 
-scanner = Scanner.new( ARGV[0], ARGV[1], ARGV[2].to_i)
-scanner.load_pagoda
+scanner = Scanner.new( ARGV[0], ARGV[1])
 scanner.set_not_game_words( 'demo', 'OST', 'soundtrack', 'trailer')
 
-ARGV[3..-1].each do |site_name|
+ARGV[4..-1].each do |site_name|
   require_relative site_name.downcase
   site = Kernel.const_get( site_name).new
-	urls = site.urls( scanner)
-
-	scanner.load_store_sequences( urls)
-	scanner.reduce_word_sequences
-	scanner.match_games( site.title, site.type, urls) {|game_name, game_url| site.accept( scanner, game_name, game_url)}
+	urls = site.urls( scanner, ARGV[2].to_i)
+  urls = scanner.accept_bound_expected( site, urls)
+	scanner.match_games( site, urls, ARGV[3].to_i) do |game_name, game_url|
+    site.accept( scanner, game_name, game_url)
+	end
 	scanner.flush
 end
 

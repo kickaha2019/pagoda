@@ -57,14 +57,14 @@ class IOS
 		'Store'
 	end
 
-	def urls( scanner)
+	def urls( scanner, lifetime)
 		urls, letters = {}, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 		scanner.purge_files( scanner.cache + '/ios_pages', 200, 100)
 
 		{'adventure':7002, 'puzzle':7012,'role-playing':7014}.each do |section, id|
 			(0...letters.size).each do |i|
 				path = scanner.cache + "/ios-#{section}#{i+1}.json"
-				if File.exist?( path) && (File.mtime( path) > (Time.now - 10 * 24 * 60 * 60))
+				if File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
 					JSON.parse( IO.read( path))['urls'].each_pair {|k,v| urls[k] = v}
 					next
 				end
