@@ -1,21 +1,18 @@
 =begin
-	Query stores
+	Query sites
 
   Command line:
 		Database directory
 		Cache directory
 		Cache lifetime
 		Max matches for each scan record to consider
+		One or more sites to scan
 =end
 
-require 'json'
-require 'net/http'
-require 'net/https'
-require 'uri'
-require "selenium-webdriver"
-require_relative 'pagoda'
+require_relative 'common'
 
 class Scanner
+	include Common
 	attr_reader :cache
 
 	def initialize( dir, cache)
@@ -23,7 +20,6 @@ class Scanner
 		@cache        = cache
 		@scan         = File.open( @dir + '/scan.txt', 'a')
 		@id           = 100000
-		@driver       = nil
 		@log          = File.open( @cache + '/scan.log', 'w')
 		@errors       = 0
 		@pagoda       = Pagoda.new( dir)
@@ -45,13 +41,6 @@ class Scanner
 		unaccepted
 	end
 
-	def browser_get( url)
-		@driver = Selenium::WebDriver.for :chrome if @driver.nil?
-		@driver.navigate.to url
-		sleep 15
-		@driver.execute_script('return document.documentElement.outerHTML;')
-	end
-
 	def count_matches( sequence)
 		count = 0
 		@steam_games.each do |game|
@@ -69,25 +58,19 @@ class Scanner
 		@scan.flush
 	end
 
-	def http_get( url)
-		sleep 10
-		uri = URI.parse( url)
-		http = Net::HTTP.new( uri.host, uri.port)
-		if /^https/ =~ url
-			http.use_ssl     = true
-			http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-		end
-
-		response = http.request( Net::HTTP::Get.new(uri.request_uri))
-		response.value
-		response.body
-	end
-
 	def match_games( site, urls, limit)
 		list = []
 		urls.each_pair do |name, url|
-			freq, combo = @pagoda.lowest_frequency( name)
-			list << [freq, name, url, combo]
+			if @pagoda.has?( 'expect', :url, url) ||
+				 @pagoda.has?( 'bind', :url, url)
+
+				if yield( name, url)
+					write_match( site, name, url, '')
+				end
+			else
+				freq, combo = @pagoda.lowest_frequency( name)
+				list << [freq, name, url, combo]
+			end
 		end
 
 		list.sort!
@@ -96,7 +79,6 @@ class Scanner
 			name, url = entry[1], entry[2]
 			next if (limit <= 0) || not_a_game( name)
 			if yield( name, url)
-				p entry
 				limit -= 1
 				write_match( site, name, url, entry[3])
 			end
@@ -171,7 +153,6 @@ ARGV[4..-1].each do |site_name|
   require_relative site_name.downcase
   site = Kernel.const_get( site_name).new
 	urls = site.urls( scanner, ARGV[2].to_i)
-  urls = scanner.accept_bound_expected( site, urls)
 	scanner.match_games( site, urls, ARGV[3].to_i) do |game_name, game_url|
     site.accept( scanner, game_name, game_url)
 	end

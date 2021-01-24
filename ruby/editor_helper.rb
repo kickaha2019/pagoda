@@ -128,13 +128,13 @@ module Sinatra
     end
 
     def lost_records
-      chosen_site   = get_variable(:site,'All')
-      chosen_type   = get_variable(:type,'All')
+      chosen_site = d( get_variable(:site,'All'))
+      chosen_type = get_variable(:type,'All')
 
       $pagoda.lost do |rec|
         chosen = true
-        chosen = false unless ((h(rec.site) == chosen_site) || (chosen_site == 'All'))
-        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
+        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
+        chosen = false unless ((rec.type == chosen_type) || (chosen_type == 'All'))
         chosen
       end
     end
@@ -237,6 +237,7 @@ module Sinatra
 
     def self.setup
       $pagoda = Pagoda.new( ARGV[0])
+      $pagoda.add_expected
 
       $debug = false
       ARGV[1..-1].each do |arg|

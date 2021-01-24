@@ -170,9 +170,11 @@ class Pagoda
         end
       end
     end
+  end
 
-    # Add to list of URLs expected any scan records
-    # with a collation
+  # Add to list of URLs expected any scan records
+  # with a collation
+  def add_expected
     found = false
     @database.select( 'scan') do |scan_rec|
       s = PagodaScan.new( self, scan_rec)
