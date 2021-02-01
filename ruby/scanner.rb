@@ -193,7 +193,7 @@ scanner.set_not_game_words( 'demo', 'OST', 'soundtrack', 'trailer')
 pagoda_freqs = scanner.build_pagoda_frequencies
 
 ARGV[4..-1].each do |site_name|
-  require_relative site_name.downcase
+  require_relative scanner.to_filename( site_name)
   site = Kernel.const_get( site_name).new
 	urls = site.urls( scanner, ARGV[2].to_i)
 	scanner.match_games( pagoda_freqs, site, urls, ARGV[3].to_i) do |game_name, game_url|

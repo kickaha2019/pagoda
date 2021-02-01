@@ -42,7 +42,7 @@ class GooglePlay
 		dir  = scanner.cache + '/' + cache_directory
 		urls = {}
 
-		Dir.entries( dir) do |f|
+		Dir.entries( dir).each do |f|
 			if /\.json$/ =~ f
 				searched = JSON.parse( IO.read( dir + '/' + f))
 				searched.each do |rec|
