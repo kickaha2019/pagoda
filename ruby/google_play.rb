@@ -1,0 +1,56 @@
+class GooglePlay
+	include Common
+
+	def accept( scanner, name, url)
+		true
+	end
+
+	def cache_directory
+		'google_play'
+	end
+
+	def search( name)
+		name = name.gsub( /[^A-Za-z0-9]/, ' ').gsub( /\s+/, '%20')
+		page = http_get( 'https://play.google.com/store/search?c=apps&q=' + name, 60)
+		urls = []
+		app  = ''
+
+		page.split( "\n").each do |line|
+			if m = /^,"([^"]*)"/.match( line)
+				app = m[1]
+				app.force_encoding( 'UTF-8')
+				app.encode!( 'US-ASCII',
+										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			elsif m1 = /"\/store\/apps\/details\?id\\u003d([^"]*)"/.match( line)
+				urls << [app, "https://play.google.com/store/apps/details?id=#{m1[1]}"] if app
+				app = nil
+			end
+		end
+
+		urls
+	end
+
+	def title
+		'Google Play'
+	end
+
+	def type
+		'Store'
+	end
+
+	def urls( scanner, lifetime)
+		dir  = scanner.cache + '/' + cache_directory
+		urls = {}
+
+		Dir.entries( dir) do |f|
+			if /\.json$/ =~ f
+				searched = JSON.parse( IO.read( dir + '/' + f))
+				searched.each do |rec|
+					urls[rec[0]] = rec[1]
+				end
+			end
+		end
+
+		urls
+	end
+end

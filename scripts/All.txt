@@ -4,9 +4,7 @@ root Root
 	Column "name" ""
 	Column "label" ""
 	Column "url" ""
-	Column "pc" "Y"
-	Column "mac" "Y"
-	Column "web" "Y"
+	Column "join" ""
 	run AdventureClassicGaming/Root
 	run AdventureGamers/Root
 	run AdventureIsland/Root

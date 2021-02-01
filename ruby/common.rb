@@ -13,8 +13,8 @@ module Common
 		@driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
-	def http_get( url)
-		sleep 10
+	def http_get( url, delay = 10)
+		sleep delay
 		uri = URI.parse( url)
 		http = Net::HTTP.new( uri.host, uri.port)
 		if /^https/ =~ url
@@ -25,5 +25,12 @@ module Common
 		response = http.request( Net::HTTP::Get.new(uri.request_uri))
 		response.value
 		response.body
+	end
+
+	def to_filename( clazz)
+		while m = /^(.*[a-z0-9])([A-Z])(.*)$/.match( clazz)
+			clazz = m[1] + '_' + m[2].downcase + m[3]
+		end
+		clazz.downcase
 	end
 end

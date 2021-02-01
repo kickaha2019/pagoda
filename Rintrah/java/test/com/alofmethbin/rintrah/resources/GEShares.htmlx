@@ -19,7 +19,7 @@
 	
 	
 	function IsIE55AndAbove( ) {
-		if (oBD.browser == "MSIE" && ( oBD.majorVer >= 6 || (oBD.majorVer = 5 && oBD.minorVer >= 5)) )
+		if (oBD.browser === "MSIE" && ( oBD.majorVer >= 6 || (oBD.majorVer = 5 && oBD.minorVer >= 5)) )
 		{
 			return true;
 		}
@@ -43,11 +43,11 @@
 		//alert("window_load");
 		if (oBD.getsNavBar)
 		{
-			if ("function" == typeof(InitNavLinks)) 
+			if ("function" === typeof(InitNavLinks)) 
 				InitNavLinks();
 			else 
 				//alert("no InitNavLinks");
-			if ("function" == typeof(CheckToTop)) CheckToTop();
+			if ("function" === typeof(CheckToTop)) CheckToTop();
 		}
 	}
 	window.onload = window_load;
@@ -149,7 +149,7 @@ function populateStart(objForm,selectIndex)
 	{
 		objForm.dayStart.options[i] = new Option(i+1);
 		// See if the current day should be selected if day is <= 28.
-		if ( iDay <= 28 && iDay == i+1 )
+		if ( iDay <= 28 && iDay === i+1 )
 			objForm.dayStart.options[i].selected = true;
 	}
 	
@@ -180,7 +180,7 @@ function populateEnd(objForm,selectIndex)
 	{
 		objForm.dayEnd.options[i] = new Option(i+1);
 		// See if the current day should be selected if day is <= 28.
-		if ( iDay <= 28 && iDay == i+1 )
+		if ( iDay <= 28 && iDay === i+1 )
 			objForm.dayEnd.options[i].selected = true;
 	}
 	
@@ -198,13 +198,13 @@ function IsDateGreaterThan (iMonth1, iDay1, iYear1, iMonth2, iDay2, iYear2)
 		return true;
 	}
 
-	if (iYear1 == iYear2)
+	if (iYear1 === iYear2)
 	{
 		if (iMonth1 > iMonth2)
 		{
 			return true;
 		}
-		if (iMonth1 == iMonth2)
+		if (iMonth1 === iMonth2)
 		{
 			if (iDay1 > iDay2)
 			{
@@ -224,13 +224,13 @@ function IsDateLessThan (iMonth1, iDay1, iYear1, iMonth2, iDay2, iYear2)
 		return true;
 	}
 
-	if (iYear1 == iYear2)
+	if (iYear1 === iYear2)
 	{
 		if (iMonth1 < iMonth2)
 		{
 			return true;
 		}
-		if (iMonth1 == iMonth2)
+		if (iMonth1 === iMonth2)
 		{
 			if (iDay1 < iDay2)
 			{
@@ -695,7 +695,6 @@ TD.clsNavBarSpacer { background-color: #000000 }
 		 
 		</td></tr></table>
 	</form>
-<SCRIPT LANGUAGE='JavaScript' SRC='../scripts/navmenus.js'></SCRIPT><DIV ID='divMenu1' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Home' CLASS='clsMenuItem'  expURL='../plan/Home.asp'>Home</DIV></DIV><DIV ID='divMenu2' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Statement Summary' CLASS='clsMenuItem'  expURL='../plan/StatementSummary.asp'>Statement Summary</DIV><DIV ID='Statement Detail' CLASS='clsMenuItem'  expURL='../plan/Statement.asp'>Statement Detail</DIV><DIV ID='Annual Statement' CLASS='clsMenuItem'  expURL='../plan/AnnualStatement_new.asp'>Annual Statement</DIV><DIV ID='Sell Shares' CLASS='clsMenuItem'  expURL='../plan/SalesRequest.asp'>Sell Shares</DIV><DIV ID='Transfer shares' CLASS='clsMenuItem'  expURL='../plan/TransferRequest.asp'>Transfer shares</DIV></DIV><DIV ID='divMenu3' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);' ONCLICK='Menu_click(this);'><DIV ID='Join the Plan' CLASS='clsMenuItem'  expURL='../plan/Enrollment.asp'>Join the Plan</DIV><DIV ID='Change/Suspend Contributions' CLASS='clsMenuItem'  expURL='../plan/ContribChange.asp'>Change/Suspend Contributions</DIV><DIV ID='Print Confirmation Statement' CLASS='clsMenuItem'  expURL='../plan/EnrolmentPrint.asp'>Print Confirmation Statement</DIV></DIV><DIV ID='divMenu4' CLASS='clsMenu' ONMOUSEOVER='Menu_hover();' ONMOUSEOUT='Menu_out(this);'ONCLICK = javascript:window.open('http://geshares.ge.com/geshares/index.htm')><DIV ID='What is GE Shares?' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1221'>What is GE Shares?</DIV><DIV ID='Being a Shareholder' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1222'>Being a Shareholder</DIV><DIV ID='Employment Changes' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1223'>Employment Changes</DIV><DIV ID='Tax Information' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1224'>Tax Information</DIV><DIV ID='Worked Examples' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1225'>Worked Examples</DIV><DIV ID='Contact Information' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1226'>Contact Information</DIV><DIV ID='GE Shares Brochure (PDF Version)' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1227'>GE Shares Brochure (PDF Version)</DIV><DIV ID='UK FAQs' CLASS='clsMenuItem'  expURL='../plan/GESharesDoc.asp?DocID=1228'>UK FAQs</DIV><DIV ID='Enrolment and Change Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1229'>Enrolment and Change Form</DIV><DIV ID='Withdrawal Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1230'>Withdrawal Form</DIV><DIV ID='SIP Enrolment Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=1231'>SIP Enrolment Form</DIV><DIV ID='Sales Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=90743'>Sales Form</DIV><DIV ID='Transfer Form' CLASS='clsMenuItem'  expURL='../plan/GESharesBrochure.asp?PDFFileName=90744'>Transfer Form</DIV></DIV>
 	</body>
 	</html>
 	<Table width=100% cellpadding=12 > <TR><TD><a href='Statement.asp?DISP_MODE=2'>SIP</a></TR></TD></Table>

@@ -20,7 +20,6 @@ class Scanner
 		@cache        = cache
 		@scan         = File.open( @dir + '/scan.txt', 'a')
 		@id           = 100000
-		@log          = File.open( @cache + '/scan.log', 'w')
 		@errors       = 0
 		@pagoda       = Pagoda.new( dir)
 	end
@@ -139,10 +138,9 @@ class Scanner
 		end
 	end
 
-	def write_match( site, game, url, ref)
+	def write_match( site, game, url, join)
 		@id += 1
-		@scan.puts "#{@id}\t#{site.title}\t#{site.type}\t#{game}\t#{game}\t#{url}"
-		@log.puts "Site: #{site.title} Game: #{game} Ref: #{ref}"
+		@scan.puts "#{@id}\t#{site.title}\t#{site.type}\t#{game}\t#{game}\t#{url}\t#{join}"
 	end
 end
 

@@ -52,14 +52,14 @@ class Searcher
 			end
 
 			max_searches -= 1
-			game = @pagoda.game( newest).name
+			game = @pagoda.game( newest)
 			urls = yield game.name
 
 			game.aliases.each do |a|
 				urls += yield a.name
 			end
 
-			File.open( "#{site_cache_dir}/#{newest}.json") do |io|
+			File.open( "#{site_cache_dir}/#{newest}.json", 'w') do |io|
 				io.puts urls.to_json
 			end
 		end
@@ -69,7 +69,7 @@ end
 searcher = Searcher.new( ARGV[0], ARGV[1])
 
 ARGV[3..-1].each do |site_name|
-  require_relative site_name.downcase
+  require_relative searcher.to_filename( site_name)
   site = Kernel.const_get( site_name).new
 	searcher.search( site.cache_directory, ARGV[2].to_i) do |game_name|
     site.search( game_name)
