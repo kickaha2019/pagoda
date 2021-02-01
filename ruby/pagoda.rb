@@ -204,21 +204,6 @@ class Pagoda
     list
   end
 
-  def build_frequencies
-    @frequencies = Hash.new {|h,k| h[k] = 0}
-
-    games.each do |g|
-      string_combos(g.name) do |combo, weight|
-        @frequencies[combo] += weight
-      end
-      g.aliases.each do |a|
-        string_combos(a.name) do |combo, weight|
-          @frequencies[combo] += weight
-        end
-      end
-    end
-  end
-
   def check_unique_name( name, id)
     return true if name.nil? or name == ''
     @names.check_unique_name( name, id.to_i)
@@ -282,20 +267,6 @@ class Pagoda
       end
     end
     selected
-  end
-
-  def lowest_frequency( name)
-    build_frequencies unless @frequencies
-    freq, match = 1000000, ''
-    string_combos( name) do |combo, weight|
-      if @frequencies.include?(combo)
-        if @frequencies[combo] < freq
-          freq  = @frequencies[combo]
-          match = combo
-        end
-      end
-    end
-    return freq, match
   end
 
   def revive_expect( url)
