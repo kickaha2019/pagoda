@@ -32,7 +32,7 @@
 
       records = lost_records
       records.sort_by! do |rec|
-        [rec.site, rec.type, rec.name]
+        [rec.site, rec.type, rec.name.to_s]
       end
 
       records.each do |rec|

@@ -1,0 +1,3 @@
+root test
+    readloop "/Users/peter/Pagoda/Rintrah/java/test/com/alofmethbin/rintrah/resources/ReadloopData.txt" Fred Bill
+    write Bill

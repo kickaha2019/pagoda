@@ -1,0 +1,773 @@
+<html>
+<HEAD>
+<title>The Just Adventure Virtual Encyclopedia (JAVE)</title>
+<meta name="Author" content="Valerie Davis">
+<meta name="keywords" content="adventure, games, pc, mac, macintosh, desktop themes, wallpaper, cheats, easter eggs, theme, just adventure, screenshots, boxshot, box shot, review, fmv, horror, mystery, point, click, action, puzzle, 3D, Myst-like, humor, sci-fi, science fiction, humor, fantasy, kids, children, historical, history, text, virtual encyclopedia, console, rpg, walkthrough, walkthru">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<script>
+<!-- Beginning of JavaScript -->
+
+// CREDITS:
+// PopupTicker describing all your links onmouseover by Urs Dudli and Peter Gehrig 
+// Copyright (c) 2000 Peter Gehrig and Urs Dudli. All rights reserved.
+// Permission given to use the script provided that this notice remains as is.
+// Additional scripts can be found at http://www.24fun.com.
+// info@24fun.ch
+// 8/1/2000
+
+// IMPORTANT: 
+// If you add this script to a script-library or a script-archive 
+// you have to insert a link to http://www.24fun.com right into the webpage where the script
+// will be displayed.
+
+// CONFIGURATION:
+// Go to http://www.24fun.com, open category 'text' and download the ZIP-file of this script 
+// containing the the script-file with step-by-step instructions for easy configuration.
+
+// width of the ticker
+var tickerwidth=215
+
+// height of the ticker
+var tickerheight=120
+
+// distance from the messagetext to the tickermarrgin (pixels)
+var tickerpadding=5
+
+// borderwidth of the ticker (pixels)
+var borderwidth=4
+
+// font-family
+var fnt="Verdana"
+
+// font-size of the text
+var fntsize=10
+
+// font-size of the last letter of the ticker
+var fntsizelastletter=10
+
+// font-color of the text
+var fntcolor="214A4A"
+
+// font-color of the last letter of the ticker
+var fntcolorlastletter="214A4A"
+
+// font-weight. Set a value between 1 to 9 to adjust the boldness
+var fntweight=5
+
+// backgroundcolor
+var backgroundcolor="ECCF82"
+
+// standstill between the messages (microseconds)
+var standstill=2000
+
+// speed (a higher value will slow down the ticker)
+var speed=10
+
+// horizontal distance from the textlink to the popupbox (pixels)
+var xdistance=10
+
+// vertical distance from the textlink to the popupbox (pixels)
+var ydistance=15
+
+// Do not edit the variables below
+var timer
+var topposition=0
+var leftposition=0
+var x,y
+var i_substring=0
+var i_presubstring=0
+var i_message=0
+var message
+var messagecontent=""
+var messagebackground=""
+var messagepresubstring=""
+var messageaftersubstring=""
+fntweight=fntweight*100
+
+function getmessagebackground() {
+		messagebackground="<table border="+borderwidth+" width="+tickerwidth+" height="+tickerheight+" cellspacing=0 cellpadding=0><tr><td valign=top bgcolor='"+backgroundcolor+"'>"
+		messagebackground+="&nbsp;</td></tr></table>"
+}
+
+function getmessagecontent() {	
+		messagecontent="<table border=0 cellspacing=0 cellpadding="+tickerpadding+" width="+tickerwidth+" height="+tickerheight+"><tr><td valign=top>"
+		messagecontent+="<span style='position:relative; font-family:"+fnt+";color:"+fntcolor+";font-size:"+fntsize+"pt;font-weight:"+fntweight+"'>"	
+		messagecontent+="<font color='"+fntcolor+"'>"
+		messagecontent+=messagepresubstring
+		messagecontent+="</font>"
+		messagecontent+="</span>"
+		messagecontent+="<span style='position:relative; font-family:"+fnt+";color:"+fntcolor+";font-size:"+fntsizelastletter+"pt;font-weight:900'>"	
+		messagecontent+="<font color='"+fntcolorlastletter+"'>"
+		messagecontent+=messageaftersubstring
+		messagecontent+="</font>"
+		messagecontent+="</span>"
+		messagecontent+="</td></tr></table>"
+}
+
+function showticker() {
+	if (i_substring<=message.length-1) {
+			i_substring++
+			i_presubstring=i_substring-1
+			if (i_presubstring<0) {i_presubstring=0}
+            messagepresubstring=message.substring(0,i_presubstring)
+	        messageaftersubstring=message.substring(i_presubstring,i_substring)
+			getmessagecontent()
+		if (document.all) {
+			ticker.innerHTML=messagecontent
+			timer=setTimeout("showticker()", speed)
+		}
+		if (document.layers) {
+			document.ticker.document.write(messagecontent)
+			document.ticker.document.close()
+			timer=setTimeout("showticker()", speed)
+		}
+	}
+	else {
+		clearTimeout(timer)
+	}
+}
+
+function hideticker() {
+    clearTimeout(timer)
+    i_substring=0
+	i_presubstring=0
+    if (document.all) {
+	    document.all.ticker.style.visibility="hidden"
+        document.all.tickerbg.style.visibility="hidden"
+	}
+	if (document.layers) {
+		document.ticker.visibility="hidden"
+        document.tickerbg.visibility="hidden"
+	}
+}
+
+function showmessage(linkmessage) {
+    getmessagebackground()
+    message=linkmessage
+   
+	i_substring=0
+	i_presubstring=0
+    leftposition=x+xdistance
+    topposition=y+ydistance
+	if (document.all) {	
+		document.all.ticker.style.posLeft=leftposition
+		document.all.ticker.style.posTop=topposition
+		document.all.tickerbg.style.posLeft=leftposition
+		document.all.tickerbg.style.posTop=topposition
+		tickerbg.innerHTML=messagebackground
+        document.all.ticker.style.visibility="visible"
+        document.all.tickerbg.style.visibility="visible"
+		showticker()
+	}
+	if (document.layers) {
+        document.ticker.left=leftposition
+		document.ticker.top=topposition
+		document.tickerbg.left=leftposition
+		document.tickerbg.top=topposition
+		document.tickerbg.document.write(messagebackground)
+		document.tickerbg.document.close()
+        document.ticker.visibility="visible"
+        document.tickerbg.visibility="visible"
+		showticker()
+	}
+}
+
+function handlerMM(e){
+	x = (document.layers) ? e.pageX : document.body.scrollLeft+event.clientX
+	y = (document.layers) ? e.pageY : document.body.scrollTop+event.clientY
+}
+
+if (document.layers){
+	document.captureEvents(Event.MOUSEMOVE);
+}
+document.onmousemove = handlerMM;
+
+// - End of JavaScript - -->
+</script>
+<script language="JavaScript">
+<!--
+
+
+
+
+
+function addToFavorite(favTitle){
+  if ((navigator.appVersion.indexOf("MSIE") > 0) && (parseInt(navigator.appVersion) >= 4)) {
+    window.external.AddFavorite(location.href, unescape(favTitle));
+  }
+}
+//-->
+</script>
+<script language="JavaScript">
+<!--
+<!--
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+// -->
+
+function takeFocusBack() {
+    window.focus();
+}
+//-->
+</script>
+<meta http-equiv="Page-Enter" content="RevealTrans (Duration=2, Transition=23)">
+<meta http-equiv="Page-Exit" content="RevealTrans (Duration=2, Transition=23)">
+<link rel="shortcut icon" href="/favicon.ico">
+<script language="JavaScript">
+<!--
+function fwLoadMenus() {
+  if (window.fw_menu_0) return;
+  window.fw_menu_0 = new Menu("root",200,21,"Arial, Helvetica, sans-serif",14,"#214a4a","#d9a621","#f2dea8","#214a4a");
+  fw_menu_0.addMenuItem("Games A-Z","location='#bottom'");
+  fw_menu_0.addMenuItem("Categories","location='http://www.thejave.com/JAVECategory.shtml'");
+  fw_menu_0.addMenuItem("Search (the JAVE &amp; JA+)","location='http://www.thejave.com/cgi-bin/search/search.pl'");
+  fw_menu_0.addMenuItem("Email the JAVE","location='mailto:thejave@justadventure.com'");
+  fw_menu_0.addMenuItem("Add Your Fansite","location='http://www.thejave.com/JAVE_FanSiteRules.shtml'");
+   fw_menu_0.bgImageUp="fwmenu1_200x21_up.gif";
+   fw_menu_0.bgImageOver="fwmenu1_200x21_over.gif";
+   fw_menu_0.fontWeight="bold";
+   fw_menu_0.hideOnMouseOut=true;
+
+  fw_menu_0.writeMenus();
+} // fwLoadMenus()
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+//-->
+</script>
+<script language="JavaScript1.2" src="fw_menu.js"></script>
+</head>
+
+<body bgcolor="#ECCF82"  link="214a4a" vlink="#984E06" alink="#CC0033" onLoad="MM_preloadImages('/thejave/html/JAVEAlphabet/0-9_on5.gif','/thejave/html/JAVEAlphabet/A_on5test.gif','/thejave/html/JAVEAlphabet/B_on5.gif','/thejave/html/JAVEAlphabet/C_on5.gif','/thejave/html/JAVEAlphabet/D_on5.gif','/thejave/html/JAVEAlphabet/E_on5.gif','/thejave/html/JAVEAlphabet/F_on5.gif','/thejave/html/JAVEAlphabet/G_on5.gif','/thejave/html/JAVEAlphabet/H_on5.gif','/thejave/html/JAVEAlphabet/I_on5.gif','/thejave/html/JAVEAlphabet/J_on5.gif','/thejave/html/JAVEAlphabet/K_on5.gif','/thejave/html/JAVEAlphabet/N_on5.gif','/thejave/html/JAVEAlphabet/O_on5.gif','/thejave/html/JAVEAlphabet/P_on5.gif','/thejave/html/JAVEAlphabet/Q_on5.gif','/thejave/html/JAVEAlphabet/R_on5.gif','/thejave/html/JAVEAlphabet/S_on5.gif','/thejave/html/JAVEAlphabet/T_on5.gif','/thejave/html/JAVEAlphabet/U_on5.gif','/thejave/html/JAVEAlphabet/V_on5.gif','/thejave/html/JAVEAlphabet/W_on5.gif','/thejave/html/JAVEAlphabet/X_on5.gif','/thejave/html/JAVEAlphabet/Y_on5.gif','/thejave/html/JAVEAlphabet/Z_on5.gif','/thejave/html/JAVEAlphabet/L_on5.gif','/thejave/html/JAVEAlphabet/M_on5.gif')">
+<DIV ID="tickerbg" style="position:absolute;"></DIV>
+<DIV ID="ticker" style="position:absolute;"></DIV>
+<div align="center"> 
+  <p><b><font face="Arial, Helvetica, sans-serif">| 
+
+
+<a href="/thejave/html/Games/GamesR/RunawayRdAdv/JAVE_RunawayRdAdv.shtml" onMouseOver="showmessage('01/08/2009 - Runaway: A Road Adventure ' )" onMouseOut="hideticker()" target="_top"><font color="#CC6600">
+
+What's New!</font></a> |<br>	
+    | 
+
+<a href="/thejave/html/Games/GamesCasual/AliceGreenfingers/JAVE_AliceGreenfingers.shtml" onMouseOver="showmessage('01/04/2009 - Alice Greenfingers ' )" onMouseOut="hideticker()" target="_top"><font color="#FF9900">
+
+What's New!</font></a> | 
+
+<a href="/thejave/html/Games/GamesD/DraculaOrigin/JAVE_DraculaOrigin.shtml" onMouseOver="showmessage('07/21/2008 - Dracula Origin ' )" onMouseOut="hideticker()" target="_top"><font color="Blue">
+
+What's 
+    New!</font></a> | 
+
+<a href="/thejave/html/Games/GamesN/NancyDrew/NancyWhiteWolf/JAVE_NancyWhiteWolf.shtml" onMouseOver="showmessage('07/21/2008 - Nancy Drew - The White Wolf of Icicle Creek ')" onMouseOut="hideticker()" target="_top"><font color="#990099">
+
+What's New!</font></a> |<br>
+    | 
+
+<a href="/thejave/html/Games/GamesN/NancyDrew/NancyCrystalSkull/JAVE_NancyCrystalSkull.shtml" onMouseOver="showmessage('07/21/2008 - Nancy Drew - Legend of the Crystal Skull ' )" onMouseOut="hideticker()" target="_top"><font color="green">
+
+What's New!</font></a> | 
+
+<a href="/thejave/html/Games/GamesS/SamAndMax/SandM104_LincolnMustDie/JAVE_SandM_LincolnMustDie.shtml" onMouseOver="showmessage('07/02/2008 - Sam and Max -Season 1 Episode 4 - Abe Lincoln Must Die ')" onMouseOut="hideticker()" target="_top"><font color="red">
+
+What's New!</font></a> |<br>    | 
+
+<a href="/thejave/html/Games/GamesS/SamAndMax/SandM105_Reality2.0/JAVE_SandM_Reality2.0.shtml" onMouseOver="showmessage('07/02/2008 - Sam and Max - Season 1 Episode 5 - Reality 2.0 ')" onMouseOut="hideticker()" target="_top"><font color="navy">What's 
+    New!</font></a> |</font></b></p>
+	
+  <p><font color="#214A4A" face="Arial, Helvetica, sans-serif"><a href="http://www.onlinecasinoclub.de" target="_blank">casino</a><br>
+    <a href="http://www.onlinecasinoclub.de" target="_blank">online casino</a> 
+    </font></p>
+      <p><img src="CasualGamesLettering.jpg" width="466" height="34"></p>  
+  <p><font face="Arial, Helvetica, sans-serif" color="#214A4A">Play <a href="http://www.bogofbingo.co.uk" target="_blank">free 
+    bingo</a> online today!</font></p>
+  <hr width="50%" size="1" noshade>
+  <p><b><font face="Arial, Helvetica, sans-serif" color="#214A4A"><i><font size="3">Help 
+    needed for the JAVE! If you are interested in doing research, submitting<br>
+    screenshots or can be of any help, please contact<img src="/thejave/html/JAVEemail_addy.jpg" width="291" height="22" align="absmiddle"></font></i></font></b><BR>
+    <font color="#006600" size="2" face="Arial, Helvetica, sans-serif"><i><u>Note</u>: 
+    Due to the amount of spam received at this address, please reflect </i><strong>JAVE</strong><i><br>
+    in the subject line or your message will be deleted unopened. Thanks.</i></font></p>
+  
+
+
+  <table width="100%" border="0" cellspacing="1" cellpadding="1">
+    <tr> 
+      <td valign="middle" width="17%" rowspan="5"> 
+        <div align="center"> 
+          <p><a href="Mmusic2.mid"><img src="MusicIcon2.gif" width="80" height="45" border="0" alt="Click to hear music!"></a> 
+            <br>
+            <font size="2">Listen to medieval music while you surf!</font></p>
+        </div>
+      </td>
+      <td valign="middle" rowspan="5">
+        <div align="center">
+<p><a href="http://www.justadventure.com" target="_blank"><img src="JA_Logo_onYellow.gif" width="410" height="49" alt="Click to go to JA+" border="0" align="top"></a> 
+          </p>
+          <p><font size="5" color="#214A4A" face="Verdana, Arial, Helvetica, sans-serif"><b>Presents</b></font></p>
+        </div>
+      </td>
+      <td bordercolor="#214a4a" width="17%"> 
+        <div align="left"><a href="#bottom" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image47','','MenuA-Zon.gif',1)"><img name="Image47" border="0" src="MenuA-Z.gif" width="123" height="25" alt="Games A-Z"></a></div>
+      </td>
+    </tr>
+    <tr>
+      <td bordercolor="#214a4a" width="17%"><a href="/thejave/html/JAVECategory.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image48','','MenuCategories_on.gif',1)"><img name="Image48" border="0" src="MenuCategories.gif" width="123" height="25" alt="Category Definitions"></a></td>
+    </tr>
+    <tr>
+      <td bordercolor="#214a4a" width="17%"><img name="Image49" border="0" src="MenuSearch.gif" width="123" height="25" alt="Search the JAVE and JA+"></td>
+    </tr>
+    <tr>
+      <td bordercolor="#214a4a" width="17%"><a href="mailto:JaveJA@justadventure.com" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image50','','MenuEmail_on.gif',1)"><img name="Image50" border="0" src="MenuEmail.gif" width="123" height="25" alt="Send an email to the JAVE"></a></td>
+    </tr>
+    <tr>
+      <td bordercolor="#214a4a" width="17%"><a href="/thejave/html/JAVE_FanSiteRules.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image51','','MenuFansite_on.gif',1)"><img name="Image51" border="0" src="MenuFansite.gif" width="123" height="25" alt="Add your fansite to the JAVE"></a></td>
+    </tr>
+  </table>
+</div>
+
+
+<table width="100%" border="0">
+  <tr> 
+    <td width="115" nowrap valign="top"> 
+      <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads5.gif" width="55" height="63" alt="Adventure Characters" border="0"></p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads3.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads2.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p>&nbsp;</p>
+      <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads4.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+      </td>
+    <td width="82%" valign="top"> 
+      <div align="center">
+        <p><b><font color="#CC0000" size="+2"><a href="#" onMouseDown="addToFavorite('The%20JAVE')"><img src="JAVElogoSparkle.gif" width="350" height="301" border="0" alt="Click to add to Favorites!  IE 4.0 and later only." onMouseDown="takeFocusBack()" align="top"></a></font></b></p>
+        <p><b><font color="#CC0000"><font color="#214A4A" face="Arial, Helvetica, sans-serif">You 
+          are about to enter a world of damsels in distress and of knights in 
+          shining armor. A world of sparkling cities in decay and decaying landscapes 
+          that harbor hope for the future. A world where brains are valued over 
+          brawn: where anything can, and usually does, happen. You are about to 
+          enter the wonderful, magical world of Adventure Gaming.</font></font></b></p>
+        <p><a href="http://www.gog.com/en/frontpage/pp/dbc0f004854457f59fb16ab863a3a1722cef553f" target="_blank"><img src="/GOG/Images/GOGblkSSITop.jpg" alt="PC Classics. All the Flavor. Half the price. No DRM. gog.com" width="458" height="60" border="0"></a></p>
+        <font size="3"> 
+        
+
+<script language="JavaScript">
+
+<!--
+
+function MM_preloadImages() { //v3.0
+
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+
+}
+
+
+
+function MM_swapImgRestore() { //v3.0
+
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+
+}
+
+
+
+function MM_findObj(n, d) { //v4.01
+
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+
+}
+
+
+
+function MM_swapImage() { //v3.0
+
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+
+}
+
+//-->
+
+</script>
+
+
+
+<body onLoad="MM_preloadImages('/thejave/html/JAVEAlphabet/0-9_on5.gif','/thejave/html/JAVEAlphabet/A_on5test.gif','/thejave/html/JAVEAlphabet/B_on5.gif','/thejave/html/JAVEAlphabet/C_on5.gif','/thejave/html/JAVEAlphabet/D_on5.gif','/thejave/html/JAVEAlphabet/E_on5.gif','/thejave/html/JAVEAlphabet/F_on5.gif','/thejave/html/JAVEAlphabet/G_on5.gif','/thejave/html/JAVEAlphabet/H_on5.gif','/thejave/html/JAVEAlphabet/I_on5.gif','/thejave/html/JAVEAlphabet/J_on5.gif','/thejave/html/JAVEAlphabet/K_on5.gif','/thejave/html/JAVEAlphabet/N_on5.gif','/thejave/html/JAVEAlphabet/O_on5.gif','/thejave/html/JAVEAlphabet/P_on5.gif','/thejave/html/JAVEAlphabet/Q_on5.gif','/thejave/html/JAVEAlphabet/R_on5.gif','/thejave/html/JAVEAlphabet/S_on5.gif','/thejave/html/JAVEAlphabet/T_on5.gif','/thejave/html/JAVEAlphabet/U_on5.gif','/thejave/html/JAVEAlphabet/V_on5.gif','/thejave/html/JAVEAlphabet/W_on5.gif','/thejave/html/JAVEAlphabet/X_on5.gif','/thejave/html/JAVEAlphabet/Y_on5.gif','/thejave/html/JAVEAlphabet/Z_on5.gif','/thejave/html/JAVEAlphabet/L_on5.gif','/thejave/html/JAVEAlphabet/M_on5.gif')">
+
+<div align="center">
+
+  <p>&nbsp;</p>
+
+</div>
+
+<table border=4 cols=27 align="center" name="Gamex A-Z" background="/thejave/html/StylesTexturesEtc/ParchStrings.jpg" >
+
+  <caption><a name="bottom"></a><img src="/thejave/html/JAVEAlphabet/WordAdvGamesA-Z_5test.gif" width="280" height="41"></caption>
+
+  <tr align="center" valign="middle"> 
+
+    <td nowrap valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_0-9.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image27','','/thejave/html/JAVEAlphabet/0-9_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_0-9_md_clr.gif" width="75" height="37" border="0" name="Image27" alt="0-9"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_A.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('A2','','/thejave/html/JAVEAlphabet/A_on5test.gif',1)"><img name="A2" border="0" src="/thejave/html/JAVEAlphabet/plaque_a_md_clr.gif" width="60" height="60" alt="A"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_B.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image1','','/thejave/html/JAVEAlphabet/B_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_b_md_clr.gif" height=60 width=60 border="0" name="Image1" alt="B"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_C.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image2','','/thejave/html/JAVEAlphabet/C_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_c_md_clr.gif" height=60 width=60 border="0" name="Image2" alt="C"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_D.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image3','','/thejave/html/JAVEAlphabet/D_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_d_md_clr.gif" width="60" height="60" border="0" name="Image3" alt="D"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap><a href="/thejave/html/JAVE_E.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image4','','/thejave/html/JAVEAlphabet/E_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_e_md_clr.gif" width="60" height="60" border="0" name="Image4" alt="E"></a></td>
+
+    <td nowrap><a href="/thejave/html/JAVE_F.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image5','','/thejave/html/JAVEAlphabet/F_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_f_md_clr.gif" width="60" height="60" border="0" name="Image5" alt="F"></a></td>
+
+  </tr>
+
+  <tr align="center" valign="middle"> 
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_G.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image7','','/thejave/html/JAVEAlphabet/G_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_g_md_clr.gif" width="60" height="60" border="0" name="Image7" alt="G"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_H.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image8','','/thejave/html/JAVEAlphabet/H_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_h_md_clr.gif" width="60" height="60" border="0" name="Image8" alt="H"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_I.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image9','','/thejave/html/JAVEAlphabet/I_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_i_md_clr.gif" width="60" height="60" border="0" name="Image9" alt="I"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_J.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image10','','/thejave/html/JAVEAlphabet/J_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_j_md_clr.gif" width="60" height="60" border="0" name="Image10" alt="J"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_K.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image11','','/thejave/html/JAVEAlphabet/K_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_k_md_clr.gif" width="60" height="60" border="0" name="Image11" alt="K"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_L.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image12','','/thejave/html/JAVEAlphabet/L_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_l_md_clr.gif" width="60" height="60" border="0" name="Image12" alt="L"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_M.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image13','','/thejave/html/JAVEAlphabet/M_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_m_md_clr.gif" width="60" height="60" border="0" name="Image13" alt="M"></a> 
+
+      </center>
+
+    </td>
+
+  </tr>
+
+  <tr align="center" valign="middle"> 
+
+    <td nowrap><a href="/thejave/html/JAVE_N.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image14','','/thejave/html/JAVEAlphabet/N_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_n_md_clr.gif" width="60" height="60" border="0" name="Image14" alt="N"></a></td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_O.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image15','','/thejave/html/JAVEAlphabet/O_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_o_md_clr.gif" width="60" height="60" border="0" name="Image15" alt="O"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_P.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image16','','/thejave/html/JAVEAlphabet/P_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_p_md_clr.gif" width="60" height="60" border="0" name="Image16" alt="P"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_Q.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image17','','/thejave/html/JAVEAlphabet/Q_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_q_md_clr.gif" width="60" height="60" border="0" name="Image17" alt="Q"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_R.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image6','','/thejave/html/JAVEAlphabet/R_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_r_md_clr.gif" width="60" height="60" border="0" name="Image6" alt="R"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_S.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image18','','/thejave/html/JAVEAlphabet/S_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_s_md_clr.gif" width="60" height="60" border="0" name="Image18" alt="S"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap><a href="/thejave/html/JAVE_T.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image19','','/thejave/html/JAVEAlphabet/T_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_t_md_clr.gif" width="60" height="60" border="0" name="Image19" alt="T"></a></td>
+
+  </tr>
+
+  <tr align="center" valign="middle"> 
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_U.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image20','','/thejave/html/JAVEAlphabet/U_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_u_md_clr.gif" width="60" height="60" border="0" name="Image20" alt="U"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_V.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image21','','/thejave/html/JAVEAlphabet/V_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_v_md_clr.gif" width="60" height="60" border="0" name="Image21" alt="V"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_W.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image22','','/thejave/html/JAVEAlphabet/W_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_w_md_clr.gif" width="60" height="60" border="0" name="Image22" alt="W"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_X.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image23','','/thejave/html/JAVEAlphabet/X_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_x_md_clr.gif" width="60" height="60" border="0" name="Image23" alt="X"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_Y.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image24','','/thejave/html/JAVEAlphabet/Y_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_y_md_clr.gif" width="60" height="60" border="0" name="Image24" alt="Y"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap align="center" valign="middle"> 
+
+      <center>
+
+        <a href="/thejave/html/JAVE_Z.shtml" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('Image25','','/thejave/html/JAVEAlphabet/Z_on5.gif',1)"><img src="/thejave/html/JAVEAlphabet/plaque_z_md_clr.gif" width="60" height="60" border="0" name="Image25" alt="Z"></a> 
+
+      </center>
+
+    </td>
+
+    <td nowrap>&nbsp;</td>
+
+  </tr>
+
+</table>
+
+<div align="center">
+
+  <p><a name="bottom" onClick="if(this.blur)this.blur()"></a><a href="#top">Top 
+
+    of Page</a> </p>
+
+
+
+	
+  <p><font size="3" color="#984E06"><a href="http://office.microsoft.com/en-us/marketplace/CE101703961033.aspx" target="_blank">Optimized</a> 
+    for 1280x1024, 32-Bit Color, MSIE 6.x <a href="http://www.microsoft.com/ie/" target="_blank"><img src="/thejave/html/MSIEicon.jpg" width="72" height="23" border="0" alt="Get MSIE"></a> 
+    &amp; Netscape 8.x <a href="http://www.netscape.com/" target="_blank"><img src="/thejave/html/NetscrapeIcon.jpg" width="65" height="23" border="0" alt="Get Netscape "></a> 
+    or later.<br>
+    </font> <font color="#984E06" size="3">Earlier <a href="http://www.ct.gov/opm/cwp/view.asp?a=2995&q=383458" target="_blank">versions</a> 
+    or other browsers may produce less than perfect results. Using a <a href="http://www.investintech.com/" target="_blank">PDF 
+    converter</a> could improve results depending on your OS.</font></p>
+
+</div>
+
+
+
+
+
+        </font> 
+        <p><font size="-1" face="Arial, Helvetica, sans-serif">&copy;1999-2011 
+          Just Adventure</font></p>
+      </div>
+    </td>
+    <td width="115" nowrap valign="top"> 
+      <div align="right">
+        <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads2.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp; </p>
+        <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads4.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp; </p>
+        <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads5.gif" width="55" height="63" alt="Adventure Characters" border="0"></p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp; </p>
+        <p><img src="RotatingGameShots/CharacterHeadShots/RotatingHeads3.gif" width="55" height="62" alt="Adventure Characters" border="0"></p>
+      </div>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

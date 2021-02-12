@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>
+            Home - The Book of Unwritten Tales &ndash; The Fantasy Point &amp; Click Adventure Game
+        </title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <meta name="keywords" content="king art, kingart" />
+        <meta name="description" content=
+        "Home - The Book of Unwritten Tales is a classic point-and-click adventure game for PC set in a beautiful RPG fantasy world." />
+        <meta name="author" content="Kingart, Dirk Theysen" />
+        <meta name="robots" content="INDEX, FOLLOW" />
+        <meta name="language" content="en" /><!-- 
+          <meta property="og:title" content="The Book of Unwritten Tales" />
+        <meta property="og:type" content="game" />
+        <meta property="og:url" content="http://bout.kingart-games.com" />
+        <meta property="og:image" content="http://bout.kingart-games.com/images/bout_cover_150.jpg" />
+        <meta property="og:site_name" content="Book of Unwritten Tales" />
+        <meta property="fb:admins" content="100002465244106" />
+          -->
+        <link rel="stylesheet" href="css/ka_bout_e_01.css" type="text/css" media="screen" title="Default" />
+<script type="text/javascript" src="js/prototype.js">
+</script>
+<script type="text/javascript" src="js/scriptaculous.js?load=effects,builder">
+</script>
+<script type="text/javascript" src="js/lightbox.js">
+</script>
+<script src="js/swfobject.js" type="text/javascript" charset="utf-8">
+</script>
+<script src="js/nonverblaster.js" type="text/javascript" charset="utf-8">
+</script>
+        <link rel="stylesheet" href="css/lightbox.css" type="text/css" media="screen" />
+<script type="text/javascript" src="js/slideshow.js">
+</script>
+<script type="text/javascript">
+//<![CDATA[
+                lastone='empty';
+                lastcal='abc';
+                akt='nix';
+                stat='stop';            
+                function showIt(lyr,cal) { 
+                    if (lastone!='empty') {
+                        akt=document.getElementById(lyr);
+                        lastcal.style.backgroundPosition ="0px 0px";
+                        if (lastone==akt) {
+                            if (stat=='play') {
+                                /*akt.style.display='none';*/
+                                lastcal=document.getElementById(cal);
+                                /*lastcal.style.backgroundPosition ="0px 0px";*/
+                                stat='stop';
+                            }else{
+                                lastone=document.getElementById(lyr); 
+                                lastone.style.display='block';
+                                stat='play';
+                                document.getElementById(cal).style.backgroundPosition ="0px -150px";
+                                lastcal=document.getElementById(cal);
+                            }
+                        }else{
+                            lastone.style.display='none';
+                        }
+                    }
+                    if (lastone!=akt) {
+                        lastone=document.getElementById(lyr); 
+                        lastone.style.display='block';
+                        stat='play';
+                        lastcal=document.getElementById(cal);
+                        lastcal.style.backgroundPosition ="0px -150px";
+                    }
+                }
+                
+                var scrollPosition = 0;
+                
+                function moveToNext() {
+                    if (scrollPosition>-520) { //vor rausnahme 650
+                        scrollPosition-=130;
+                        document.getElementById('menubilder').style.left = scrollPosition+'px';
+                    }else{
+                        if (scrollPosition>-590) { //vor rausnahme 720
+                            scrollPosition-=84;
+                            document.getElementById('menubilder').style.left = scrollPosition+'px';
+                        }
+                    }
+                    
+                }
+                function moveToPrevious() {
+                    if (scrollPosition<-520) { //vor rausnahme 650
+                        scrollPosition+=84;
+                        document.getElementById('menubilder').style.left = scrollPosition+'px';
+                    }else{
+                        if (scrollPosition<0) {
+                            scrollPosition+=130;
+                            document.getElementById('menubilder').style.left = scrollPosition+'px';
+                        }
+                    }
+                }
+                
+//]]>
+</script>
+    </head>
+    <body onload="showIt('cont_teaser','teaser_li');">
+        <div id="page">
+            <div id="header">
+                <div id="boutvc_logo">
+                    <a href="index.html"><img alt="Book of unwritten Tales - Logo" src="images/mainmenu_bout_logo.jpg" /></a>
+                </div>
+                <div id="main_menu">
+                    <div id="main_menu_games">
+                        <a href="game_story.html"><span>Game</span></a>
+                    </div>
+                    <div id="main_menu_chars">
+                        <a href="characters_wilbur.html"><span>Chars</span></a>
+                    </div>
+                    <div id="main_menu_media">
+                        <a href="media_music.html"><span>Media</span></a>
+                    </div>
+                </div>
+            </div>
+            <div id="content_main">
+                <div id="cont_main_media" class="mm_index">
+                    <div id="cont_teaser">
+                        <!-- Container: Teaser -->
+                        <a name="ytplayer" id="ytplayer"></a>
+                        <div id="ytplayer_div">
+                            You need Flash player 8+ and JavaScript enabled to view this video.
+                        </div><script type="text/javascript">
+//<![CDATA[
+    swfobject.embedSWF(
+      'http://www.youtube.com/v/vJ0B8Kctx18&enablejsapi=1&rel=0&fs=1',
+      'ytplayer_div',
+      '640',
+      '360',
+      '9',
+      null,
+      null,
+      {
+        allowScriptAccess: 'always',
+        allowFullScreen: 'true'
+      },
+      {
+        id: 'ytplayer_object'
+      }
+    );
+//]]>
+</script> <script type="text/javascript">
+//<![CDATA[
+    function ytplayer_loadvideo( id ) {
+      var o = document.getElementById( 'ytplayer_object' );
+      if( o ) {
+        o.loadVideoById( id );
+      }
+    }
+//]]>
+</script>
+                    </div>
+                    <div id="cont_wilbur_ss" style="display:none;">
+                        <!-- Container: Wilbur SS -->
+                        <a href="screenshots/big_wilbur_screen01.jpg" rel="lightbox"><img src="screenshots/medium_wilbur_screen01.jpg" alt="" /></a> 
+                        <!-- rel="lightbox[bout]" -->
+                    </div>
+                    <div id="cont_ivo_ss" style="display:none;">
+                        <!-- Container: Ivo SS -->
+                        <a href="screenshots/big_ivo_screen01.jpg" rel="lightbox"><img src="screenshots/medium_ivo_screen01.jpg" alt="" /></a>
+                    </div>
+                    <div id="cont_wupperman_is" style="display:none;">
+                        <!-- Container: Wupperman Ingame -->
+                    </div>
+                    <div id="cont_mage_ss" style="display:none;">
+                        <!-- Container: Magier SS -->
+                        <a href="screenshots/big_wilbur_screen02.jpg" rel="lightbox"><img src="screenshots/medium_wilbur_screen02.jpg" alt="" /></a>
+                    </div>
+                    <div id="cont_undead_ss" style="display:none;">
+                        <!-- Container: Undead SS -->
+                        <a href="screenshots/big_nate_screen01.jpg" rel="lightbox"><img src="screenshots/medium_nate_screen01.jpg" alt="" /></a>
+                    </div>
+                    <div id="cont_nate_ss" style="display:none;">
+                        <!-- Container: Nate SS -->
+                        <a href="screenshots/big_nate_screen02.jpg" rel="lightbox"><img src="screenshots/medium_nate_screen02.jpg" alt="" /></a>
+                    </div>
+                    <div id="cont_kerker_ss" style="display:none;">
+                        <!-- Container: Kerker SS -->
+                        <a href="screenshots/big_ivo_screen02.jpg" rel="lightbox"><img src="screenshots/medium_ivo_screen02.jpg" alt="" /></a>
+                    </div><!-- Container: Ivo Ingame -->
+                    <!--<div id="cont_nate_is" style="display:none;"> -->
+                    <!-- Container: Nate Ingame -->
+                </div>
+                <div id="cont_main_menu">
+                    <div id="cont_main_menu_left">
+                        <a href="#" onclick="moveToPrevious();"><span>Left</span></a>
+                    </div>
+                    <div id="slidemenu">
+                        <div id="menubilder">
+                            <div id="sm_teaser_trailer">
+                                <a href="#" onclick="showIt('cont_teaser','teaser_li');ytplayer_loadvideo('vJ0B8Kctx18');" id="teaser_li" name=
+                                "teaser_li"><span>Teaser-Trailer</span></a>
+                            </div>
+                            <div id="sm_wilbur_ss">
+                                <a href="#" onclick="showIt('cont_wilbur_ss','wilbur_ss_li');ytplayer_stop();" id="wilbur_ss_li" name="wilbur_ss_li"><span>Wilbur
+                                Screenshot</span></a>
+                            </div>
+                            <div id="sm_mage_ss">
+                                <a href="#" onclick="showIt('cont_mage_ss','mage_ss_li');" id="mage_ss_li" name="mage_ss_li"><span>Mage - Screenshot</span></a>
+                            </div>
+                            <div id="sm_wupperman_is">
+                                <a href="#" onclick="showIt('cont_teaser','wupperman_is_li');ytplayer_loadvideo('wM96gzA1sKQ');" id="wupperman_is_li" name=
+                                "wupperman_is_li"><span>Wupperman - Ingame</span></a>
+                            </div>
+                            <div id="sm_undead_ss">
+                                <a href="#" onclick="showIt('cont_undead_ss','undead_ss_li');" id="undead_ss_li" name="undead_ss_li"><span>Undead -
+                                Screenshot</span></a>
+                            </div>
+                            <div id="sm_nate_ss">
+                                <a href="#" onclick="showIt('cont_nate_ss','nate_ss_li');" id="nate_ss_li" name="nate_ss_li"><span>Nate - Screenshot</span></a>
+                            </div> 
+									 <div id="sm_nate_is">
+                                <a href="#" onclick="showIt('cont_teaser','nate_is_li');ytplayer_loadvideo('UwIx-dMUYPM');" id="nate_is_li" name="nate_is_li"><span>Nate - Ingame</span></a>
+                            </div> 
+                            <div id="sm_kerker_ss">
+                                <a href="#" onclick="showIt('cont_kerker_ss','kerker_ss_li');" id="kerker_ss_li" name="kerker_ss_li"><span>Kerker -
+                                Screenshot</span></a>
+                            </div>
+                            <div id="sm_ivo_ss">
+                                <a href="#" onclick="showIt('cont_ivo_ss','ivo_ss_li');" id="ivo_ss_li" name="ivo_ss_li"><span>Ivo Screenshot</span></a>
+                            </div><!-- <div id="sm_ivo_is">
+                                <a href="#" onclick="showIt('cont_ivo_is','ivo_is_li');" id="ivo_is_li" name="ivo_is_li"><span>Ivo - Ingame</span></a>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div id="cont_main_menu_right">
+                        <a href="#" onclick="moveToNext();"><span>Right</span></a>
+                    </div>
+                </div>
+            </div>
+            <div id="content_bottom">
+                <div id="preorder_now">
+                    <img src="images/preorder_background.jpg" alt="" />
+                    <div id="preorder_button">
+                        <a href="preorder.html"><span>Preorder - Bout</span></a>
+                    </div>
+                </div>
+                <div id="spread_the_word">
+                    <img src="images/spreadword_background.jpg" alt="" />
+                    <div id="social_links">
+                        <!--[if IE]>
+                            <iframe src="http://www.facebook.com/plugins/like.php?app_id=222759767761203&amp;href=http%3A%2F%2Fwww.facebook.com%2FUnwrittenTales&amp;send=false&amp;layout=box_count&amp;width=280&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=verdana&amp;height=90" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:280px; height:90px;" allowTransparency="true"></iframe>
+                        <![endif]-->
+                        <!--[if !IE]>-->
+                        <iframe src=
+                        "http://www.facebook.com/plugins/like.php?app_id=222759767761203&amp;href=http%3A%2F%2Fwww.facebook.com%2FUnwrittenTales&amp;send=false&amp;layout=box_count&amp;width=280&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=verdana&amp;height=90"
+                        scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:280px; height:90px;"></iframe> <!--<![endif]-->
+                    </div>
+                    <div id="sc_links_t">
+                        The latest news: <a href="http://www.facebook.com/UnwrittenTales" target="_blank" title=
+                        "Book of unwritten Tales auf Facebook ">www.facebook.com/UnwrittenTales</a>
+                    </div>
+                </div>
+            </div>
+            <div id="news_r">
+                <div id="slideshow">
+                    <img class="start" src="images/awards_page001.jpg" alt="" />
+                </div>
+            </div>
+            <div id="footer">
+                <div id="kingart">
+                    <a href="http://www.kingart.de" target="_blank"><img src="images/ka_logo_klein.jpg" alt="KING Art Logo klein" id="ft_ka_img" name=
+                    "ft_ka_img" /></a>
+                    <div id="ft_ka_oben">
+                        <a href="contact.html">Contact</a> | <a href="impressum.html">Impressum</a>
+                    </div>
+                    <div id="ft_ka_unten">
+                        (c) 2009-2011 by <a href="http://www.kingart.de" target="_blank">KING Art</a> GmbH
+                    </div>
+                </div>
+            </div>
+        </div><!-- Piwik -->
+        <script type="text/javascript">
+//<![CDATA[
+var pkBaseURL = (("https:" == document.location.protocol) ? "https://pwstats.kingart.de/" : "http://pwstats.kingart.de/");
+document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+try {
+var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 5);
+piwikTracker.trackPageView();
+piwikTracker.enableLinkTracking();
+} catch( err ) {}
+//]]>
+</script><noscript>
+        <p>
+            <img src="http://pwstats.kingart.de/piwik.php?idsite=5" style="border:0" alt="" />
+        </p></noscript><!-- End Piwik Tracking Code -->
+    </body>
+</html>

@@ -49,23 +49,15 @@ class IOS
 		return found, compatible, html
 	end
 
-	def title
-		'iOS'
-	end
-
-	def type
-		'Store'
-	end
-
-	def urls( scanner, lifetime)
-		urls, letters = {}, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
+	def find( scanner, lifetime)
+		found, letters = [], 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 		scanner.purge_files( scanner.cache + '/ios_pages', 200, 100)
 
 		{'adventure':7002, 'puzzle':7012,'role-playing':7014}.each do |section, id|
 			(0...letters.size).each do |i|
 				path = scanner.cache + "/ios-#{section}#{i+1}.json"
 				if File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
-					JSON.parse( IO.read( path))['urls'].each_pair {|k,v| urls[k] = v}
+					JSON.parse( IO.read( path))['urls'].each_pair {|k,v| found << [v, k]}
 					next
 				end
 
@@ -82,19 +74,27 @@ class IOS
 							text.force_encoding( 'UTF-8')
 							text.encode!( 'US-ASCII',
 														:invalid => :replace, :undef => :replace, :universal_newline => true)
-							letter_urls[text] = m[1]
-							urls[text] = m[1]
+							letter_urls[m[1]] = text
 						end
 					end
 					loop = (old_size < letter_urls.size)
 				end
 
 				raise "Too many IOS games" if loop
+				letter_urls.each_pair {|k,v| found << [v,k]}
 				File.open( path, 'w') {|io| io.print JSON.generate( {'urls' => letter_urls})}
 			end
 		end
 		# https://apps.apple.com/us/genre/ios-games/id6014?letter=A
 
-		urls
+		found
+	end
+
+	def title
+		'iOS'
+	end
+
+	def type
+		'Store'
 	end
 end

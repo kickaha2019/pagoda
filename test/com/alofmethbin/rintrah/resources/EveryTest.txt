@@ -1,0 +1,16 @@
+root test
+	file "YesAsia"
+	every SELECT
+	attribute id Id
+	match Id "id69"
+	attribute name Name
+	write Name
+
+root badElement
+        file "MMReviews"
+        every A
+        attribute href Href
+        match Href "reviewbrokensword.htm"
+        next *
+        text Text
+        write Text

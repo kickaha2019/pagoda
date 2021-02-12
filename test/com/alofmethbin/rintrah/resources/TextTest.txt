@@ -1,0 +1,46 @@
+root test
+	file "YesAsia"
+	next TITLE
+	text Title
+	match Title "(\w*):.*" Title
+	write Title
+
+root whitespace
+        file "BrassLantern"
+	every A
+        attribute href Link
+	text Title
+	match Title "Review 2"
+	previous BR
+	text Title
+	if
+		match Title "(.*)\(" Title
+	endif
+	write Title
+        write Link
+        prune
+
+root nbsp
+        file "GameBoomers"
+        every A
+        attribute href Link
+        match Link "http://www\.gameboomers\.com/reviews/Nn/Normalitybygsd.htm"
+        previous FONT
+        text Text
+        prune
+        write Text
+
+root textAll
+        file "GameBoomers"
+        every A
+        attribute href Link
+        match Link "http://www\.gameboomers\.com/reviews/Ss/SpellforceOrderofDawnbyDrizzt.htm"
+        textAll Text
+        prune
+        write Text
+
+root xml_encoding
+        file "BOUT"
+        next TITLE
+        text Text
+        write Text

@@ -7,7 +7,7 @@ require_relative 'pagoda'
 
 module Common
 	def browser_get( url)
-		@driver = Selenium::WebDriver.for :chrome unless Kernel.defined?( @driver)
+		@driver = Selenium::WebDriver.for :chrome unless defined?( @driver)
 		@driver.navigate.to url
 		sleep 15
 		@driver.execute_script('return document.documentElement.outerHTML;')

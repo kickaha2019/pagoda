@@ -1,0 +1,7 @@
+root test
+	file "JAVE"
+	next META
+	next META
+	previous META
+	attribute content Content
+	write Content

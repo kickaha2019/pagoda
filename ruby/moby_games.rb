@@ -3,15 +3,7 @@ class MobyGames
 		true
 	end
 
-	def title
-		'MobyGames'
-	end
-
-	def type
-		'Reference'
-	end
-
-	def urls( scanner, lifetime)
+	def find( scanner, lifetime)
 		path = scanner.cache + '/mobygames.json'
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
 			loop, offset, urls = true, 0, {}
@@ -26,7 +18,7 @@ class MobyGames
 						text.force_encoding( 'UTF-8')
 						text.encode!( 'US-ASCII',
 													:invalid => :replace, :undef => :replace, :universal_newline => true)
-						urls[text] = m[1]
+						urls[m[1]] = text
 					end
 				end
 
@@ -35,9 +27,21 @@ class MobyGames
 			end
 
 			raise "Too many MobyGames pages" if loop
-			File.open( path, 'w') {|io| io.print JSON.generate( {'urls' => urls})}
+			found = []
+			urls.each_pair do |url, name|
+				found << [name, url]
+			end
+			File.open( path, 'w') {|io| io.print JSON.generate( {'found' => found})}
 		end
 
-		JSON.parse( IO.read( path))['urls']
+		JSON.parse( IO.read( path))['found']
+	end
+
+	def title
+		'MobyGames'
+	end
+
+	def type
+		'Reference'
 	end
 end

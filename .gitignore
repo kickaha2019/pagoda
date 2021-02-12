@@ -16,3 +16,7 @@ store_cache
 temp
 restructure.rb
 cache1
+/Rintrah/build/
+/nbproject/private/
+/build/
+/dist/

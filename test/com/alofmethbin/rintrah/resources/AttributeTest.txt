@@ -1,0 +1,19 @@
+root test
+	file "YesAsia"
+	next META
+	attribute name Name
+	write Name
+
+root MrBills
+        file "MrBills"
+        next A
+        attribute name Name
+        write Name
+
+root AdventureLantern
+        file "AdventureLantern"
+        every A
+        text Text
+        match Text "Agatha Christie: Murder on the Orient Express"
+        attribute class Class
+        write Class

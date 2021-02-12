@@ -9,8 +9,24 @@ class GooglePlay
 		'google_play'
 	end
 
+	def find( scanner, lifetime)
+		dir  = scanner.cache + '/' + cache_directory
+		found = []
+
+		Dir.entries( dir).each do |f|
+			if /\.json$/ =~ f
+				searched = JSON.parse( IO.read( dir + '/' + f))
+				searched.each do |rec|
+					found << [rec[0], rec[1]]
+				end
+			end
+		end
+
+		found
+	end
+
 	def search( name)
-		name = name.gsub( /[^A-Za-z0-9]/, ' ').gsub( /\s+/, '%20')
+		name = name.to_s.gsub( /[^A-Za-z0-9]/, ' ').gsub( /\s+/, '%20')
 		page = http_get( 'https://play.google.com/store/search?c=apps&q=' + name, 60)
 		urls = []
 		app  = ''
@@ -36,21 +52,5 @@ class GooglePlay
 
 	def type
 		'Store'
-	end
-
-	def urls( scanner, lifetime)
-		dir  = scanner.cache + '/' + cache_directory
-		urls = {}
-
-		Dir.entries( dir).each do |f|
-			if /\.json$/ =~ f
-				searched = JSON.parse( IO.read( dir + '/' + f))
-				searched.each do |rec|
-					urls[rec[0]] = rec[1]
-				end
-			end
-		end
-
-		urls
 	end
 end
