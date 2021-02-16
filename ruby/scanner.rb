@@ -78,9 +78,9 @@ class Scanner
 	end
 
 	def debug_hook( site, name, url=nil)
-		if (/Alter Ego/i =~ name) || (/63110$/ =~ url)
-			puts "#{site}: #{name} #{url}"
-		end
+		# if (/Alter Ego/i =~ name) || (/63110$/ =~ url)
+		# 	puts "#{site}: #{name} #{url}"
+		# end
 	end
 
 	def error( msg)
