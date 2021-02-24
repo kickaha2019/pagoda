@@ -44,6 +44,10 @@ delete '/expect/:url' do
   delete_expect( d(params[:url]))
 end
 
+post '/forget/:id' do
+  delete_scan( params[:id].to_i)
+end
+
 get '/game/:id' do
   erb :game, :locals => {:id => params[:id].to_i}
 end

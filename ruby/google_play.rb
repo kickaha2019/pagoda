@@ -11,18 +11,18 @@ class GooglePlay
 
 	def find( scanner, lifetime)
 		dir  = scanner.cache + '/' + cache_directory
-		found = []
+		found = {}
 
 		Dir.entries( dir).each do |f|
 			if /\.json$/ =~ f
 				searched = JSON.parse( IO.read( dir + '/' + f))
 				searched.each do |rec|
-					found << [rec[0], rec[1]]
+					found[rec[1]] = rec[0]
 				end
 			end
 		end
 
-		found
+		found.keys.collect {|url| [found[url], url]}
 	end
 
 	def search( name)

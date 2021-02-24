@@ -145,6 +145,14 @@ class Pagoda
       end
     end
 
+    def delete
+      @owner.start_transaction
+      @owner.delete( 'bind', :url, @record[:url])
+      @owner.delete( 'expect', :url, @record[:url])
+      @owner.delete( 'scan', :id, @record[:id])
+      @owner.end_transaction
+    end
+
     def unbind
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])

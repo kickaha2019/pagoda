@@ -23,6 +23,7 @@
       html << scan_action( rec, 'ignore')
       html << scan_action( rec, 'bind')
       html << scan_action( rec, 'unbind')
+      html << scan_action( rec, 'forget') if $debug
       html << '</td></tr>'
     end
 

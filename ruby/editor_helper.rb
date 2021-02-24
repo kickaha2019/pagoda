@@ -74,6 +74,12 @@ module Sinatra
       $pagoda.delete_expect( url)
     end
 
+    def delete_scan( scan_id)
+      scan_rec = $pagoda.scan( scan_id)
+      scan_rec.delete if scan_rec
+      'Deleted'
+    end
+
     def e( text)
       CGI.escape( text)
     end
