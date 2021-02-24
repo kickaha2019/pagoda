@@ -3,14 +3,14 @@ class Table
     @name    = path.split('/')[-1].split('.')[0]
     lines    = IO.readlines( path).collect {|line| line.chomp}
     @columns = lines[0].split( "\t").collect {|name| name.to_sym}
-    @indexes = {}
     @joins   = {}
+    @types   = Hash.new {|h,k| h[k] = :to_s}
 
-    index = @indexes[@columns[0]] = Hash.new {|h1,k1| h1[k1] = []}
-    lines[1..-1].each do |line|
-      fields = coerce_array( line.split( "\t"))
-      index[fields[0]] << fields
+    data = lines[1..-1].collect do |line|
+      line.split( "\t").collect {|v| (v.strip == '') ? nil : v.strip}
     end
+
+    initialize_indexes( data)
   end
 
   def add_index( column_name)
@@ -23,24 +23,6 @@ class Table
         index[row[colind]] << row
       end
     end
-  end
-
-  def coerce( value)
-    if ! value.is_a?( String)
-      value
-    elsif /^(\-|)\d+$/ =~ value
-      value.to_i
-    elsif /^(\-|)(\d*)\.(\d*)$/ =~ value
-      value.to_f
-    elsif value == ''
-      nil
-    else
-      value
-    end
-  end
-
-  def coerce_array( values)
-    values.collect {|value| coerce( value)}
   end
 
   def column_index( column_name)
@@ -66,9 +48,22 @@ class Table
     map
   end
 
-  def delete( column_name, column_value)
-    column_value = coerce( column_value)
+  def declare_integer( column_name)
+    @types[column_name] = :to_i
+    colind = column_index( column_name)
 
+    all_rows = []
+    @indexes[@columns[0]].each_value do |rows|
+      rows.each do |row|
+        row[colind] = row[colind].to_i if row[colind]
+        all_rows << row
+      end
+    end
+
+    initialize_indexes( all_rows)
+  end
+
+  def delete( column_name, column_value)
     if @indexes[column_name].nil?
       add_index( column_name)
     end
@@ -105,8 +100,15 @@ class Table
     end
   end
 
-  def insert( * fields)
-    row = coerce_array( fields)
+  def initialize_indexes( data)
+    @indexes = {}
+    index = @indexes[@columns[0]] = Hash.new {|h1,k1| h1[k1] = []}
+    data.each do |fields|
+      index[fields[0]] << fields
+    end
+  end
+
+  def insert( * row)
     @indexes.each_pair do |index_column, index|
       colind = column_index( index_column)
       raise "No value for index column #{index_column}" if row[colind].nil?

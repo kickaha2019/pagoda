@@ -45,6 +45,10 @@ class Database
     @tables[table_name].size
   end
 
+  def declare_integer( table_name, column_name)
+    @tables[table_name].declare_integer( column_name)
+  end
+
   def delete( table_name, column_name, column_value)
     @tables[table_name].delete( column_name, column_value)
     @transactions.puts "DELETE\t#{table_name}\t#{column_name}\t#{column_value}"

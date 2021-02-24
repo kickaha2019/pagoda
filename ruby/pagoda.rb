@@ -165,6 +165,13 @@ class Pagoda
     @database  = Database.new( ARGV[0])
     @names     = Names.new
     @possibles = nil
+
+    @database.declare_integer( 'alias', :id)
+    @database.declare_integer( 'bind',  :id)
+    @database.declare_integer( 'game',  :id)
+    @database.declare_integer( 'game',  :group_id)
+    @database.declare_integer( 'game',  :year)
+    @database.declare_integer( 'scan',  :id)
     #$database.join( 'scan', :bind, :url, 'bind', :url)
     #$database.join( 'game', :aliases, :id, 'alias', :id)
 
