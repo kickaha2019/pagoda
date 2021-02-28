@@ -3,9 +3,9 @@
 <div class="combos control">
   <%=
     html = []
-    @chosen_site   = scan_site_combo( 'site',   html)
-    @chosen_type   = scan_type_combo( 'type',   @chosen_site, html)
-    @chosen_status = scan_status_combo( 'status', @chosen_site, @chosen_type, html)
+    @chosen_site   = link_site_combo( 'site',   html)
+    @chosen_type   = link_type_combo( 'type',   @chosen_site, html)
+    @chosen_status = link_status_combo( 'status', @chosen_site, @chosen_type, html)
     html.join( "&nbsp;&nbsp;\n")
   %>
 </div>
@@ -20,19 +20,19 @@
 <div id="list"></div>
 
 <script>
-    function load_scan() {
+    function load_link() {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/scan_list", false);
+        xhttp.open("GET", "/link_list", false);
         xhttp.send();
         document.getElementById("list").innerHTML = xhttp.responseText;
 
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/scan", false);
+        xhttp.open("GET", "/page_control/link", false);
         xhttp.send();
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }
 
-    function scan_action( id, action) {
+    function link_action( id, action) {
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/" + action + "/" + id, false);
         xhttp.send();
@@ -44,7 +44,7 @@
     }
 
     function search_input() {
-        set_variable( 'scan_search', document.getElementById( 'search').value);
+        set_variable( 'link_search', document.getElementById( 'search').value);
         load_scan();
     }
 
@@ -58,8 +58,8 @@
         document.getElementById("collation_year" + id).innerHTML = info['year'];
     }
 
-    document.getElementById( 'search').value = get_variable( 'scan_search');
-    load_scan();
+    document.getElementById( 'search').value = get_variable( 'link_search');
+    load_link();
 </script>
 
 </body>

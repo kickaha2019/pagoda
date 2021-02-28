@@ -23,6 +23,10 @@ get '/aliases_list' do
   erb :aliases_list
 end
 
+get '/cache/:timestamp' do
+  get_cache( params[:timestamp].to_i)
+end
+
 get '/check_name/:id/:name' do
   check_name( params[:name], params[:id])
 end
@@ -38,10 +42,6 @@ end
 post '/delete_game' do
   delete_game( params[:id].to_i)
   redirect '/new_game'
-end
-
-delete '/expect/:url' do
-  delete_expect( d(params[:url]))
 end
 
 post '/forget/:id' do
@@ -73,8 +73,20 @@ post '/ignore/:id' do
   ignore_scan( params[:id].to_i)
 end
 
-get '/lost' do
-  erb :lost
+delete '/link/:url' do
+  delete_link( d(params[:url]))
+end
+
+get '/link' do
+  erb :link
+end
+
+get '/link/:url' do
+  erb :link_record, :locals => {:url => params[:url]}
+end
+
+get '/link_list' do
+  erb :link_list
 end
 
 get '/new_game' do
@@ -85,20 +97,8 @@ get '/page_control/:kind' do
   erb :page_control, :locals => {:kind => params[:kind]}
 end
 
-put '/revive/:url' do
-  revive_expect( d(params[:url]))
-end
-
-get '/scan' do
-  erb :scan
-end
-
-get '/scan/:id' do
-  erb :scan_record, :locals => {:id => params[:id].to_i}
-end
-
-get '/scan_list' do
-  erb :scan_list
+put '/reverify/:url' do
+  reverify( d(params[:url]))
 end
 
 get '/selected_game' do
@@ -113,6 +113,6 @@ get '/summary' do
   erb :summary
 end
 
-post '/unbind/:id' do
-  unbind_scan( params[:id].to_i)
+post '/unbind/:url' do
+  unbind_link( params[:url])
 end

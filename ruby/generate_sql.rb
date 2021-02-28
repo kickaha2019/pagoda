@@ -83,10 +83,7 @@ class GenerateSQL
       create_index( 'pagoda_collate', 'id', io)
 
       create_table( 'temp', scan_fields, io)
-      load_table( 'temp',
-                  scan_fields,
-                  @pagoda.scans.select {|s| s.collation},
-                  io)
+      load_table( 'temp', scan_fields, @pagoda.links, io)
       primary_key( 'temp', 'id', io)
       drop_table( 'pagoda_scan', io)
       rename_table( 'temp', 'pagoda_scan', io)
@@ -126,6 +123,7 @@ class GenerateSQL
     io.puts "insert into `#{table_name}`"
     separ = 'values'
     data.each do |rec|
+      next if rec.generate?
       line = [separ]
       delim = '('
       table_fields.each_pair do |k,v|

@@ -1,0 +1,32 @@
+<table class="scan list">
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Actions</th></tr>
+  <%=
+    html = []
+
+    records = link_records
+    current_page = get_variable(:link_page,1).to_i
+    total_pages  = (records.size + 99) /  100
+    current_page = 1 if total_pages < current_page
+
+    records.sort_by! do |rec|
+      [rec.site, rec.type, rec.label.to_s]
+    end
+
+    records[(100*(current_page-1))...(100*current_page)].each do |rec|
+      html << "<tr><td><a href=\"/link/#{rec.url}\">#{h(rec.site)}</a></td>"
+      html << "<td>#{rec.type}</td>"
+      html << "<td><a href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
+      info = collation( rec.url)
+      html << "<td id=\"collation#{rec.timestamp}\"><a href=\"/game/#{info[:game]}\">#{h(info[:name],40)}</a></td>"
+      html << "<td id=\"collation_year#{rec.timestamp}\">#{info[:year]}</td>"
+      html << "<td id=\"status#{rec.timestamp}\">#{link_status(rec)}</td><td>"
+      html << link_action( rec, 'ignore')
+      html << link_action( rec, 'bind')
+      html << link_action( rec, 'unbind')
+      html << link_action( rec, 'forget') if $debug
+      html << '</td></tr>'
+    end
+
+    html.join( "\n")
+  %>
+</table>

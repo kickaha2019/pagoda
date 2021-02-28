@@ -8,6 +8,10 @@ class Pagoda
       @record = rec
     end
 
+    def generate?
+      true
+    end
+
     def method_missing( m, *args, &block)
       if (args.size > 0) || block
         super
@@ -24,6 +28,10 @@ class Pagoda
   end
 
   class PagodaCollation < PagodaRecord
+    def generate?
+      (@record[:valid] == 'Y') && collation
+    end
+
     def rank
       0
     end
@@ -117,11 +125,10 @@ class Pagoda
     end
   end
 
-  class PagodaScan < PagodaRecord
+  class PagodaLink < PagodaRecord
     def bind( id)
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
-      @owner.delete( 'expect', :url, @record[:url])
       @owner.insert( 'bind', {
           url:@record[:url],
           id:id
@@ -134,12 +141,13 @@ class Pagoda
     end
 
     def collation
+      return nil unless @record[:valid] == 'Y'
       binds = @owner.get( 'bind', :url, @record[:url])
       if binds.size > 0
         return nil if binds[0][:id] < 0
         @owner.game( binds[0][:id])
       else
-        game_id = @owner.lookup( @record[:name])
+        game_id = @owner.lookup( @record[:title])
         return nil if game_id.nil?
         @owner.game( game_id)
       end
@@ -148,15 +156,33 @@ class Pagoda
     def delete
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
-      @owner.delete( 'expect', :url, @record[:url])
-      @owner.delete( 'scan', :id, @record[:id])
+      @owner.delete( 'link', :id, @record[:url])
       @owner.end_transaction
+    end
+
+    def generate?
+      (@record[:valid] == 'Y') && collation
+    end
+
+    def id
+      timestamp
+    end
+
+    def label
+      @record[:title]
+    end
+
+    def name
+      @record[:title]
+    end
+
+    def timestamp
+      @record[:timestamp] ? @record[:timestamp].to_i : 0
     end
 
     def unbind
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
-      @owner.delete( 'expect', :url, @record[:url])
       @owner.end_transaction
     end
   end
@@ -171,9 +197,7 @@ class Pagoda
     @database.declare_integer( 'game',  :id)
     @database.declare_integer( 'game',  :group_id)
     @database.declare_integer( 'game',  :year)
-    @database.declare_integer( 'scan',  :id)
-    #$database.join( 'scan', :bind, :url, 'bind', :url)
-    #$database.join( 'game', :aliases, :id, 'alias', :id)
+    @database.declare_integer( 'link',  :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
@@ -185,28 +209,6 @@ class Pagoda
         end
       end
     end
-  end
-
-  # Add to list of URLs expected any scan records
-  # with a collation
-  def add_expected
-    found = false
-    @database.select( 'scan') do |scan_rec|
-      s = PagodaScan.new( self, scan_rec)
-      if s.collation && (! @database.has?( 'expect', :url, s.url))
-        unless found
-          found = true
-          @database.start_transaction
-        end
-        @database.insert( 'expect', {
-            site:s.site,
-            type:s.type,
-            name:s.name,
-            url:s.url
-        })
-      end
-    end
-    @database.end_transaction if found
   end
 
   def aliases
@@ -234,7 +236,7 @@ class Pagoda
   end
 
   def collations
-    scans.select {|s| s.collation}.collect do |s|
+    links.select {|s| s.generate?}.collect do |s|
       PagodaCollation.new( self, {id:s.collation.id, link:s.id})
     end
   end
@@ -252,9 +254,9 @@ class Pagoda
     g.update( params)
   end
 
-  def delete_expect( url)
+  def delete_link( url)
     @database.start_transaction
-    @database.delete( 'expect', :url, url)
+    @database.delete( 'link', :url, url)
     @database.end_transaction
   end
 
@@ -273,38 +275,27 @@ class Pagoda
     selected
   end
 
-  def lost
+  def link( url)
+    PagodaLink.new( self, get( 'link', :url, url)[0])
+  end
+
+  def links
     selected = []
-    @database.select( 'expect') do |rec|
-      e = PagodaExpect.new( self, rec)
-      unless @database.has?( 'scan', :url, e.url)
-        selected << e if (! block_given?) || (yield e)
-      end
-    end
-    selected
-  end
-
-  def revive_expect( url)
-    lost_rec = @database.get( 'expect', :url, url)[0]
-    lost_rec[:label] = lost_rec[:name]
-    lost_rec[:id]    = @database.max_value( 'scan', :id) + 1
-    @database.start_transaction
-    @database.insert( 'scan', lost_rec)
-    @database.end_transaction
-  end
-
-  def scan( id)
-    PagodaScan.new( self, get( 'scan', :id, id.to_i)[0])
-  end
-
-  def scans
-    selected = []
-    @database.select( 'scan') do |rec|
-      s = PagodaScan.new( self, rec)
+    @database.select( 'link') do |rec|
+      s = PagodaLink.new( self, rec)
       selected << s if (! block_given?) || (yield s)
     end
     selected
   end
+
+  # def reverify( url)
+  #   rec = @database.get( 'link', :url, url)[0]
+  #   rec[:valid] = 'Y'
+  #   @database.start_transaction
+  #   @database.delete( 'link', :url, url)
+  #   @database.insert( 'link', rec)
+  #   @database.end_transaction
+  # end
 
   def string_combos( name)
     words = @names.reduce( name).split( ' ')
@@ -358,6 +349,7 @@ class Pagoda
   end
 
   def lookup( name)
+    return nil if name.nil? || (name.strip == '')
     @names.lookup(name)
   end
 

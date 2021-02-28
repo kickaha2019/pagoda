@@ -128,10 +128,10 @@
         <tr><th>Site</th><th>Type</th><th>Scan</th></tr>
         <%=
           html = []
-          $pagoda.scans do |s|
+          $pagoda.links do |s|
             c = s.collation
             if c && @game && (c.id == @game.id)
-              html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a href=\"/scan/#{s.id}\">#{s.name}</a></td></tr>"
+              html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a href=\"/link/#{s.id}\">#{s.name}</a></td></tr>"
             end
           end
           html.join( "\n")

@@ -4,6 +4,7 @@ require_relative 'pagoda'
 module Sinatra
   module EditorHelper
     @@variables = {}
+    @@today     = Time.now.to_i
 
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
@@ -15,19 +16,19 @@ module Sinatra
       games_records(:alias_search).select {|g| g.aliases.size > 0}
     end
 
-    def bind_id( scan_rec)
-      return nil if ! scan_rec.bound?
-      game_rec = scan_rec.collation
+    def bind_id( link_rec)
+      return nil if ! link_rec.bound?
+      game_rec = link_rec.collation
       return -1 if game_rec.nil?
       game_rec.id
     end
 
-    def bind_scan( scan_id)
+    def bind_link( link_url)
       return '' if get_variable(:selected_game).nil?
       selected_id = get_variable(:selected_game).to_i
-      scan_rec = $pagoda.scan( scan_id)
-      return '' if bind_id( scan_rec) == selected_id
-      scan_rec.bind( selected_id)
+      link_rec = $pagoda.link( link_url)
+      return '' if bind_id( link_rec) == selected_id
+      link_rec.bind( selected_id)
       'Bound'
     end
 
@@ -39,14 +40,14 @@ module Sinatra
       "<input type=\"checkbox\" name=\"#{name}\" value=\"Y\" #{checked ? 'checked' : ''} #{extras}>"
     end
 
-    def collation( scan_id)
-      collation = $pagoda.scan( scan_id).collation
+    def collation( link_url)
+      collation = $pagoda.link( link_url).collation
       return {'link':'','year':''} if collation.nil?
-      {'link':"<a href=\"/game/#{collation.id}\">#{collation.name}</a>",'year':"#{collation.year}"}
+      {'game':collation.id, 'name':collation.name,'year':"#{collation.year}"}
     end
 
-    def collation_year( scan_id)
-      collation = $pagoda.scan( scan_id).collation
+    def collation_year( link_url)
+      collation = $pagoda.link( link_url).collation
       collation.nil? ? '' : collation.year
     end
 
@@ -70,13 +71,9 @@ module Sinatra
       game_rec.delete if game_rec != nil
     end
 
-    def delete_expect( url)
-      $pagoda.delete_expect( url)
-    end
-
-    def delete_scan( scan_id)
-      scan_rec = $pagoda.scan( scan_id)
-      scan_rec.delete if scan_rec
+    def delete_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      link_rec.delete if link_rec
       'Deleted'
     end
 
@@ -106,23 +103,106 @@ module Sinatra
       end
     end
 
+    def get_cache( timestamp)
+      IO.read( $cache + "/verified/#{timestamp}.html")
+    end
+
     def get_variable( name, defval=nil)
       @@variables[name.to_sym] ? @@variables[name.to_sym] : defval
     end
 
-    def h(text)
+    def h(text, max_chars=1000)
+      return '' if text.nil?
+      text = text[0...max_chars] if text.size > max_chars
       Rack::Utils.escape_html(text)
     end
 
-    def ignore_scan( scan_id)
-      scan_rec = $pagoda.scan( scan_id)
-      return '' if bind_id( scan_rec) == -1
-      scan_rec.bind( -1)
+    def ignore_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      return '' if bind_id( link_rec) == -1
+      link_rec.bind( -1)
       'Ignored'
     end
 
     def input_element( name, len, value, extras='')
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
+    end
+
+    def link_action( rec, action)
+      "<button onclick=\"link_action( #{rec.id}, '#{action}');\">#{action.capitalize}</button>"
+    end
+
+    def link_records
+      search = get_variable(:link_search)
+      search = '' if search.nil?
+
+      chosen_site   = d(get_variable(:site,'All'))
+      chosen_type   = get_variable(:type,'All')
+      chosen_status = get_variable(:status,'All')
+
+      $pagoda.links do |rec|
+        chosen = rec.name.to_s.downcase.index( search.downcase)
+        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
+        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
+        chosen = false unless (link_status(rec) == chosen_status) || (chosen_status == 'All')
+        chosen
+      end
+    end
+
+    def link_site_combo( combo_name, html)
+      values = $pagoda.links.collect {|s| s.site}.uniq.sort
+      values << 'All'
+      current_value = d(get_variable(combo_name,'All'))
+      unless values.index( current_value)
+        set_variable(combo_name.to_sym, current_value = 'All')
+      end
+      combo_box( combo_name, values, current_value, html)
+      current_value
+    end
+
+    def link_status( rec)
+      if rec.timestamp + (90 * 24 * 60 * 60) < @@today
+        'Lost'
+      elsif rec.bound?
+        rec.collation ? 'Bound' : 'Ignored'
+      elsif rec.collation
+        'Matched'
+      else
+        'Unmatched'
+      end
+    end
+
+    def link_status_combo( combo_name, current_site, current_type, html)
+      values = []
+      $pagoda.links do |rec|
+        next unless (current_site == 'All') || (current_site == rec.site)
+        next unless (current_type == 'All') || (current_type == rec.type)
+        values << link_status( rec)
+      end
+      values = values.uniq.sort
+      values << 'All'
+      current_value = get_variable(combo_name,'All')
+      unless values.index( current_value)
+        set_variable( combo_name, current_value = 'All')
+      end
+      combo_box( combo_name, values, current_value, html)
+      current_value
+    end
+
+    def link_type_combo( combo_name, current_site, html)
+      types = []
+      $pagoda.links do |rec|
+        next unless (current_site == 'All') || (current_site == rec.site)
+        types << rec.type
+      end
+      types = types.uniq.sort
+      types << 'All'
+      current_value = get_variable( combo_name,'All')
+      unless types.index( current_value)
+        set_variable( combo_name, current_value = 'All')
+      end
+      combo_box( combo_name, types, current_value, html)
+      current_value
     end
 
     def lost_forget_action( rec)
@@ -153,83 +233,8 @@ module Sinatra
       summary
     end
 
-    def revive_expect( url)
-      $pagoda.revive_expect( url)
-    end
-
-    def scan_action( rec, action)
-      "<button onclick=\"scan_action( #{rec.id}, '#{action}');\">#{action.capitalize}</button>"
-    end
-
-    def scan_records
-      search = get_variable(:scan_search)
-      search = '' if search.nil?
-
-      chosen_site   = d(get_variable(:site,'All'))
-      chosen_type   = get_variable(:type,'All')
-      chosen_status = get_variable(:status,'All')
-
-      $pagoda.scans do |rec|
-        chosen = rec.name.to_s.downcase.index( search.downcase)
-        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
-        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
-        chosen = false unless (scan_status(rec) == chosen_status) || (chosen_status == 'All')
-        chosen
-      end
-    end
-
-    def scan_site_combo( combo_name, html)
-      values = $pagoda.scans.collect {|s| s.site}.uniq.sort
-      values << 'All'
-      current_value = d(get_variable(combo_name,'All'))
-      unless values.index( current_value)
-        set_variable(combo_name.to_sym, current_value = 'All')
-      end
-      combo_box( combo_name, values, current_value, html)
-      current_value
-    end
-
-    def scan_status( rec)
-      if rec.bound?
-        rec.collation ? 'Bound' : 'Ignored'
-      elsif rec.collation
-        'Matched'
-      else
-        'Unmatched'
-      end
-    end
-
-    def scan_status_combo( combo_name, current_site, current_type, html)
-      values = []
-      $pagoda.scans do |rec|
-        next unless (current_site == 'All') || (current_site == rec.site)
-        next unless (current_type == 'All') || (current_type == rec.type)
-        values << scan_status( rec)
-      end
-      values = values.uniq.sort
-      values << 'All'
-      current_value = get_variable(combo_name,'All')
-      unless values.index( current_value)
-        set_variable( combo_name, current_value = 'All')
-      end
-      combo_box( combo_name, values, current_value, html)
-      current_value
-    end
-
-    def scan_type_combo( combo_name, current_site, html)
-      types = []
-      $pagoda.scans do |rec|
-        next unless (current_site == 'All') || (current_site == rec.site)
-        types << rec.type
-      end
-      types = types.uniq.sort
-      types << 'All'
-      current_value = get_variable( combo_name,'All')
-      unless types.index( current_value)
-        set_variable( combo_name, current_value = 'All')
-      end
-      combo_box( combo_name, types, current_value, html)
-      current_value
+    def reverify( url)
+      $pagoda.reverify( url)
     end
 
     def selected_game
@@ -243,10 +248,10 @@ module Sinatra
 
     def self.setup
       $pagoda = Pagoda.new( ARGV[0])
-      $pagoda.add_expected
+      $cache  = ARGV[1]
 
       $debug = false
-      ARGV[1..-1].each do |arg|
+      ARGV[2..-1].each do |arg|
         $debug = true if /^debug=true$/i =~ arg
       end
     end
@@ -260,26 +265,14 @@ module Sinatra
       end
     end
 
-    def summary_line( site, type, counts, totals, lost, html)
+    def summary_line( site, type, counts, totals, html)
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      if type == ''
-        count = 0
-        lost.each_value {|ls| ls.each_value {|lt| count += lt}}
-        lost[site][type] = count
-      end
-
-      if lost[site][type] > 0
-        html << "<td style=\"background: red\"><a href=\"/lost\" onmousedown=\"set_scan_cookies('#{e(site)}','#{type}','#{status}');\">#{lost[site][type]}</a></td>"
-      else
-        html << "<td></td>"
-      end
-
-      ['Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
-        colour = (status == 'Unmatched') ? 'red' : 'white'
+      ['Lost', 'Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
+        colour = ['Unmatched', 'Lost'].include?(status) ? 'red' : 'white'
         if counts[status] > 0
-          html << "<td style=\"background: #{colour}\"><a href=\"/scan\" onmousedown=\"set_scan_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          html << "<td style=\"background: #{colour}\"><a href=\"/link\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
           totals[status] = 0 if ! totals.has_key?( status)
           totals[status] += counts[status]
         else
@@ -289,11 +282,11 @@ module Sinatra
       html << '</tr>'
     end
 
-    def unbind_scan( scan_id)
-      scan_rec = $pagoda.scan( scan_id)
-      return '' if ! scan_rec.bound?
-      scan_rec.unbind
-      scan_status( scan_rec)
+    def unbind_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      return '' if ! link_rec.bound?
+      link_rec.unbind
+      link_status( link_rec)
     end
 
     def update_game( params)

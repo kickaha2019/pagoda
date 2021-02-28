@@ -1,7 +1,7 @@
 <%= erb :header, :locals => {:page => 'summary'} %>
 
 <script>
-    function set_scan_cookies( site, type, status) {
+    function set_link_cookies( site, type, status) {
         set_variable( 'site', site);
         set_variable( 'type', type);
         set_variable( 'status', status);
@@ -11,7 +11,7 @@
   <div class="checkboxes control">
       <%=
         html = []
-        types = $pagoda.scans.collect {|s| s.type}.uniq.sort
+        types = $pagoda.links.collect {|s| s.type}.uniq.sort
         @types_to_list = {}
 
         none_listed = true
@@ -42,7 +42,7 @@
       html   = []
       totals = Hash.new {|h,k| h[k] = 0}
 
-      records = $pagoda.scans do |rec|
+      records = $pagoda.links do |rec|
         @types_to_list[rec.type]
       end
 
@@ -51,21 +51,20 @@
       end
 
       counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
-      lost = lost_summary
 
       records.each do |rec|
         if (rec.site != site) || (rec.type != type)
-          summary_line( site, type, counts, totals, lost, html)
+          summary_line( site, type, counts, totals, html)
           site   = rec.site
           type   = rec.type
           counts = Hash.new {|h,k| h[k] = 0}
         end
 
-        counts[scan_status(rec)] += 1
+        counts[link_status(rec)] += 1
       end
 
-      summary_line( site, type, counts, totals, lost, html)
-      summary_line( 'Totals', '', totals, {}, lost, html)
+      summary_line( site, type, counts, totals, html)
+      summary_line( 'Totals', '', totals, {}, html)
       html.join( "\n")
     %>
   </table>

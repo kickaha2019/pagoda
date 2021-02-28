@@ -51,7 +51,7 @@ class Database
 
   def delete( table_name, column_name, column_value)
     @tables[table_name].delete( column_name, column_value)
-    @transactions.puts "DELETE\t#{table_name}\t#{column_name}\t#{column_value}"
+    @transactions.puts "DELETE\t#{table_name}\t#{column_name}\t#{column_value.to_s.gsub( /[\t\r\n]/, ' ')}"
   end
 
   def end_transaction
@@ -75,7 +75,7 @@ class Database
 
   def insert( table_name, record)
     fields = @tables[table_name].fields( record)
-    @transactions.puts "INSERT\t" + table_name + "\t" + fields.collect {|v| v.to_s}.join( "\t")
+    @transactions.puts "INSERT\t" + table_name + "\t" + fields.collect {|v| v.to_s.gsub( /[\t\r\n]/, ' ')}.join( "\t")
     @tables[table_name].insert( * fields)
   end
 
