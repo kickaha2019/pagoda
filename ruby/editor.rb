@@ -77,16 +77,16 @@ delete '/link/:url' do
   delete_link( d(params[:url]))
 end
 
-get '/link' do
-  erb :link
-end
-
 get '/link/:url' do
-  erb :link_record, :locals => {:url => params[:url]}
+  erb :link_record, :locals => {:url => d(params[:url])}
 end
 
 get '/link_list' do
   erb :link_list
+end
+
+get '/links' do
+  erb :links
 end
 
 get '/new_game' do

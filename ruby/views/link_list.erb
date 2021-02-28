@@ -13,9 +13,11 @@
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
-      html << "<tr><td><a href=\"/link/#{rec.url}\">#{h(rec.site)}</a></td>"
+      html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
       html << "<td>#{rec.type}</td>"
-      html << "<td><a href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
+      label = rec.label
+      label = '???' unless label && (label.strip != '')
+      html << "<td><a href=\"/cache/#{rec.timestamp}\">#{h(label,40)}<a/></td>"
       info = collation( rec.url)
       html << "<td id=\"collation#{rec.timestamp}\"><a href=\"/game/#{info[:game]}\">#{h(info[:name],40)}</a></td>"
       html << "<td id=\"collation_year#{rec.timestamp}\">#{info[:year]}</td>"

@@ -272,7 +272,7 @@ module Sinatra
       ['Lost', 'Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
         colour = ['Unmatched', 'Lost'].include?(status) ? 'red' : 'white'
         if counts[status] > 0
-          html << "<td style=\"background: #{colour}\"><a href=\"/link\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
+          html << "<td style=\"background: #{colour}\"><a href=\"/links\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
           totals[status] = 0 if ! totals.has_key?( status)
           totals[status] += counts[status]
         else

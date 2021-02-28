@@ -10,7 +10,7 @@
 </script>
 
 <%
-  @rec = $pagoda.scan( id)
+  @rec = $pagoda.link( url)
 %>
 
   <table class="scan_record list">
@@ -19,8 +19,8 @@
     <tr><th>Name</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.name)}<a/>" %></td></tr>
     <tr><th>Label</th><td><%= h(@rec.label) %></td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
-    <tr><th>Status</th><td><%= scan_status(@rec) %></td></tr>
-    <tr><th>Actions</th><td><%= scan_action( @rec, 'ignore') + scan_action( @rec, 'bind') + scan_action( @rec, 'unbind') %></td></tr>
+    <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
+    <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') + link_action( @rec, 'bind') + link_action( @rec, 'unbind') %></td></tr>
 
     <%=
       html = []

@@ -11,42 +11,64 @@ class VerifyLinks
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
   end
 
+  def apply_filter( filter, link, body, title)
+    args = []
+
+    if filter.is_a?( String)
+      name = filter
+    else
+      raise 'Unexpected filters' if filter.size != 1
+      name = filter.keys[0]
+      args = filter.values[0]
+      args = [args] unless args.is_a?( Array)
+    end
+
+    status, valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
+    return status, valid, title
+  end
+
+  def filter_could( link, body, title, suffix)
+    re = Regexp.new( '^' + suffix + '$')
+    if m = re.match( title)
+      title = m[1]
+    end
+    return true, true, title
+  end
+
+  def filter_ios_store( link, body, title)
+    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+) or later/m =~ body
+    return true, false, title if /Requires macOS \d+(|.\d+) or later/m =~ body
+    return false, false, title
+  end
+
+  def filter_must( link, body, title, suffix)
+    re = Regexp.new( '^' + suffix + '$')
+    if m = re.match( title)
+      return true, true, m[1]
+    else
+      return false, false, ''
+    end
+  end
+
   def get_details( link, body)
-    filter = 'pass'
-    filter_args = []
+    status      = true
+    valid       = true
+    title       = get_title( body)
 
     if site = @filters[link[:site]]
-      if type = site[link[:type]]
-        if type.is_a?( String)
-          filter = type
+      if filters = site[link[:type]]
+        if filters.is_a?( Array)
+          filters.each do |filter|
+            status, valid, title = apply_filter( filter, link, body, title)
+            return status, valid, title unless status && valid
+          end
         else
-          raise 'Unexpected filters' if type.size != 1
-          filter = type.keys[0]
-          filter_args = type.values[0]
-          filter_args = [filter_args] unless filter_args.is_a?( Array)
+          status, valid, title = apply_filter( filters, link, body, title)
         end
       end
     end
 
-    status, valid, title = send( ('filter_' + filter).to_sym, link, body, * filter_args)
     return status, valid, title
-  end
-
-  def filter_ios_store( link, body)
-    return true, true, get_title( body)
-  end
-
-  def filter_pass( link, body)
-    return true, true, get_title( body)
-  end
-
-  def filter_suffix( link, body, suffix)
-    i = (title = get_title( body)).index( suffix)
-    if i && (i > 0)
-      return true, true, title[0...i]
-    else
-      return false, false, ''
-    end
   end
 
   def get_title( page)
@@ -54,9 +76,11 @@ class VerifyLinks
       title = m[1].gsub( /\s/, ' ')
       title.force_encoding( 'UTF-8')
       title.encode( 'US-ASCII',
-                    :invalid => :replace,
-                    :undef => :replace,
+                    :replace           => ' ',
+                    :invalid           => :replace,
+                    :undef             => :replace,
                     :universal_newline => true)
+      title.strip.gsub( '  ', ' ')
     else
       ''
     end
