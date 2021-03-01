@@ -9,6 +9,7 @@ end
 
 before do
   cache_control :no_cache
+  refresh_metadata
 end
 
 get '/' do
@@ -35,8 +36,8 @@ get '/collation/:id' do
   collation( params[:id].to_i).to_json
 end
 
-post '/bind/:id' do
-  bind_scan( params[:id].to_i)
+post '/bind/:url' do
+  bind_link( d(params[:url]))
 end
 
 post '/delete_game' do
@@ -44,8 +45,8 @@ post '/delete_game' do
   redirect '/new_game'
 end
 
-post '/forget/:id' do
-  delete_scan( params[:id].to_i)
+post '/forget/:url' do
+  delete_link( d(params[:url]))
 end
 
 get '/game/:id' do
@@ -69,8 +70,8 @@ get '/get_variable/:name' do
   get_variable( params[:name])
 end
 
-post '/ignore/:id' do
-  ignore_scan( params[:id].to_i)
+post '/ignore/:url' do
+  ignore_link( d(params[:url]))
 end
 
 delete '/link/:url' do
@@ -114,5 +115,5 @@ get '/summary' do
 end
 
 post '/unbind/:url' do
-  unbind_link( params[:url])
+  unbind_link( d(params[:url]))
 end

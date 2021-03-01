@@ -3,8 +3,8 @@ require_relative 'pagoda'
 
 module Sinatra
   module EditorHelper
-    @@variables = {}
-    @@today     = Time.now.to_i
+    @@variables            = {}
+    @@today                = Time.now.to_i
 
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
@@ -128,8 +128,8 @@ module Sinatra
       "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
     end
 
-    def link_action( rec, action)
-      "<button onclick=\"link_action( #{rec.id}, '#{action}');\">#{action.capitalize}</button>"
+    def link_action( rec, action, row=0)
+      "<button onclick=\"link_action( '#{e(e(rec.url))}', '#{action}', #{row});\">#{action.capitalize}</button>"
     end
 
     def link_records
@@ -231,6 +231,10 @@ module Sinatra
         summary[rec.site][rec.type] += 1
       end
       summary
+    end
+
+    def refresh_metadata
+      $pagoda.refresh_reduction_cache
     end
 
     def reverify( url)

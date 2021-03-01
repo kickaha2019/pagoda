@@ -1,3 +1,5 @@
+require 'yaml'
+
 require_relative 'database'
 require_relative 'names'
 
@@ -147,7 +149,7 @@ class Pagoda
         return nil if binds[0][:id] < 0
         @owner.game( binds[0][:id])
       else
-        game_id = @owner.lookup( @record[:title])
+        game_id = @owner.lookup( @record[:site], @record[:type], @record[:title])
         return nil if game_id.nil?
         @owner.game( game_id)
       end
@@ -188,7 +190,7 @@ class Pagoda
   end
 
   def initialize( dir)
-    @database  = Database.new( ARGV[0])
+    @database  = Database.new( dir)
     @names     = Names.new
     @possibles = nil
 
@@ -209,6 +211,11 @@ class Pagoda
         end
       end
     end
+
+    @reduction_file      = dir + '/collation.yaml'
+    @reduction_timestamp = 0
+    @reductions          = {}
+    refresh_reduction_cache
   end
 
   def aliases
@@ -348,8 +355,20 @@ class Pagoda
     @names.keys(id)
   end
 
-  def lookup( name)
+  def lookup( site, type, name)
     return nil if name.nil? || (name.strip == '')
+
+    if reductions = @reductions[site]
+      if reductions = reductions[type]
+        reductions.each do |reduction|
+          re = Regexp.new( reduction)
+          if m = re.match( name)
+            name = m[1]
+          end
+        end
+      end
+    end
+
     @names.lookup(name)
   end
 
@@ -367,6 +386,14 @@ class Pagoda
 
   def reduce_name( name)
     @names.reduce(name)
+  end
+
+  def refresh_reduction_cache
+    t = File.mtime( @reduction_file)
+    if @reduction_timestamp != t
+      @reductions          = YAML.load( IO.read( @reduction_file))
+      @reduction_timestamp = t
+    end
   end
 
   def remove_name_id( id)

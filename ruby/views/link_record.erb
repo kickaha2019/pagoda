@@ -1,7 +1,7 @@
 <%= erb :header, :locals => {:page => 'scan_record'} %>
 
 <script>
-    function scan_action( id, action) {
+    function link_action( id, action, row) {
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/" + action + "/" + id, false);
         xhttp.send();

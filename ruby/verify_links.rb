@@ -75,11 +75,11 @@ class VerifyLinks
     if m = /<title>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
       title.force_encoding( 'UTF-8')
-      title.encode( 'US-ASCII',
-                    :replace           => ' ',
-                    :invalid           => :replace,
-                    :undef             => :replace,
-                    :universal_newline => true)
+      title.encode!( 'US-ASCII',
+                     :replace           => ' ',
+                     :invalid           => :replace,
+                     :undef             => :replace,
+                     :universal_newline => true)
       title.strip.gsub( '  ', ' ')
     else
       ''

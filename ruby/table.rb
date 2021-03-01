@@ -25,6 +25,11 @@ class Table
     end
   end
 
+  def coerce( column_name, column_value)
+    return nil if column_value.nil?
+    column_value.send( @types[ column_name])
+  end
+
   def column_index( column_name)
     @columns.index( column_name)
   end
@@ -64,6 +69,8 @@ class Table
   end
 
   def delete( column_name, column_value)
+    column_value = coerce( column_name, column_value)
+
     if @indexes[column_name].nil?
       add_index( column_name)
     end
@@ -90,12 +97,14 @@ class Table
     @columns.collect {|name| record[name]}
   end
 
-  def get( column_name, value)
+  def get( column_name, column_value)
+    column_value = coerce( column_name, column_value)
+
     if @indexes[column_name].nil?
       add_index( column_name)
     end
 
-    @indexes[column_name][value].each do |row|
+    @indexes[column_name][column_value].each do |row|
       yield record( row)
     end
   end
@@ -109,6 +118,10 @@ class Table
   end
 
   def insert( * row)
+    @columns.each_index do |i|
+      row[i] = coerce( @columns[i], row[i])
+    end
+
     @indexes.each_pair do |index_column, index|
       colind = column_index( index_column)
       raise "No value for index column #{index_column}" if row[colind].nil?
@@ -117,17 +130,13 @@ class Table
     record( row)
   end
 
-  # def join( join_name, &block)
-  #   @joins[join_name] = block
-  # end
-
   def next_value( column_name)
     colind    = column_index( column_name)
     max_value = 0
 
     @indexes[@columns[0]].each_value do |rows|
       rows.each do |row|
-        max_value = row[colind] if row[colind] && row[colind] > max_value
+        max_value = row[colind] if row[colind] && row[colind].to_i > max_value
       end
     end
 
@@ -137,9 +146,6 @@ class Table
   def record( fields)
     rec = {}
     fields.each_index {|i| rec[@columns[i]] = fields[i]}
-    # @joins.each_pair do |name,block|
-    #   rec[name] = block.call( rec)
-    # end
     rec
   end
 
