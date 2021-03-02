@@ -27,22 +27,14 @@ class VerifyLinks
     return status, valid, title
   end
 
-  def filter_could( link, body, title, suffix)
-    re = Regexp.new( '^' + suffix + '$')
-    if m = re.match( title)
-      title = m[1]
-    end
-    return true, true, title
-  end
-
   def filter_ios_store( link, body, title)
     return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+) or later/m =~ body
     return true, false, title if /Requires macOS \d+(|.\d+) or later/m =~ body
     return false, false, title
   end
 
-  def filter_must( link, body, title, suffix)
-    re = Regexp.new( '^' + suffix + '$')
+  def filter_suffix( link, body, title, suffix)
+    re = Regexp.new( '^(.*)' + suffix + '.*$')
     if m = re.match( title)
       return true, true, m[1]
     else
@@ -55,6 +47,12 @@ class VerifyLinks
     valid       = true
     title       = get_title( body)
 
+    # 404 errors
+    if /^IIS.*404.*Not Found$/ =~ title
+      return false, false, title
+    end
+
+    # Apply site specific filters
     if site = @filters[link[:site]]
       if filters = site[link[:type]]
         if filters.is_a?( Array)

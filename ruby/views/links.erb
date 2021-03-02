@@ -40,7 +40,7 @@
         document.getElementById("status" + row).innerHTML = '<span class="changed">' +
                                                            xhttp.responseText +
                                                            '</span>';
-        set_collation( id);
+        set_collation( id, row);
     }
 
     function search_input() {
@@ -48,14 +48,14 @@
         load_scan();
     }
 
-    function set_collation( id) {
+    function set_collation( url, row) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open( "GET", "/collation/" + id, false);
+        xhttp.open( "GET", "/collation/" + url, false);
         xhttp.send();
         var info = JSON.parse( xhttp.responseText)
 
-        document.getElementById("collation" + id).innerHTML = info['link'];
-        document.getElementById("collation_year" + id).innerHTML = info['year'];
+        document.getElementById("collation" + row).innerHTML = info['link'];
+        document.getElementById("collation_year" + row).innerHTML = info['year'];
     }
 
     document.getElementById( 'search').value = get_variable( 'link_search');

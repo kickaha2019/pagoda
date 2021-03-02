@@ -32,8 +32,8 @@ get '/check_name/:id/:name' do
   check_name( params[:name], params[:id])
 end
 
-get '/collation/:id' do
-  collation( params[:id].to_i).to_json
+get '/collation/:url' do
+  collation( d(params[:url])).to_json
 end
 
 post '/bind/:url' do

@@ -19,9 +19,9 @@
       html << "<td>#{rec.type}</td>"
       label = rec.label
       label = '???' unless label && (label.strip != '')
-      html << "<td><a href=\"/cache/#{rec.timestamp}\">#{h(label,40)}<a/></td>"
+      html << "<td><a title=\"#{p(label)}\" href=\"/cache/#{rec.timestamp}\">#{h(label,40)}<a/></td>"
       info = collation( rec.url)
-      html << "<td id=\"collation#{row}\"><a href=\"/game/#{info[:game]}\">#{h(info[:name],40)}</a></td>"
+      html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
       html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"
       html << "<td id=\"status#{row}\">#{link_status(rec)}</td><td>"
       html << link_action( rec, 'ignore', row)

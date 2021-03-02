@@ -62,7 +62,11 @@ class Pagoda
 
     def group_name
       if @record[:group_id]
-        @owner.get( 'game', :id, @record[:group_id])[0][:name]
+        if group = @owner.get( 'game', :id, @record[:group_id])[0]
+          group[:name]
+        else
+          nil
+        end
       else
         nil
       end

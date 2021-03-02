@@ -27,6 +27,7 @@ module Sinatra
       return '' if get_variable(:selected_game).nil?
       selected_id = get_variable(:selected_game).to_i
       link_rec = $pagoda.link( link_url)
+      return '' if link_rec.nil?
       return '' if bind_id( link_rec) == selected_id
       link_rec.bind( selected_id)
       'Bound'
@@ -41,9 +42,12 @@ module Sinatra
     end
 
     def collation( link_url)
-      collation = $pagoda.link( link_url).collation
+      link = $pagoda.link( link_url)
+      return {'link':'','year':''} if link.nil?
+      collation = link.collation
       return {'link':'','year':''} if collation.nil?
-      {'game':collation.id, 'name':collation.name,'year':"#{collation.year}"}
+      link_html = "<a title=\"#{p(collation.name)}\" href=\"/game/#{collation.id}\">#{h(collation.name,40)}</a>"
+      {'game':collation.id, 'link':link_html,'year':"#{collation.year}"}
     end
 
     def collation_year( link_url)
@@ -231,6 +235,11 @@ module Sinatra
         summary[rec.site][rec.type] += 1
       end
       summary
+    end
+
+    def p(text)
+      return '' if text.nil?
+      text.gsub( /["'<>&]/, ' ')
     end
 
     def refresh_metadata
