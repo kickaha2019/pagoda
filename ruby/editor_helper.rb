@@ -165,10 +165,12 @@ module Sinatra
     end
 
     def link_status( rec)
-      if rec.timestamp + (90 * 24 * 60 * 60) < @@today
+      lost = (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
+
+      if rec.bound?
+        rec.collation ? (lost ? 'Lost' : 'Bound') : 'Ignored'
+      elsif lost
         'Lost'
-      elsif rec.bound?
-        rec.collation ? 'Bound' : 'Ignored'
       elsif rec.collation
         'Matched'
       else

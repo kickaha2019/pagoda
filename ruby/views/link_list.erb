@@ -17,9 +17,7 @@
       row += 1
       html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
       html << "<td>#{rec.type}</td>"
-      label = rec.label
-      label = '???' unless label && (label.strip != '')
-      html << "<td><a title=\"#{p(label)}\" href=\"/cache/#{rec.timestamp}\">#{h(label,40)}<a/></td>"
+      html << "<td><a title=\"#{p(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
       info = collation( rec.url)
       html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
       html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"

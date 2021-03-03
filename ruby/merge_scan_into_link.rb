@@ -9,6 +9,7 @@ database.select( 'scan') do |rec|
     database.insert( 'link',
                      {:site      => rec[:site],
                              :type      => rec[:type],
+                             :title     => rec[:label],
                              :url       => rec[:url],
                              :timestamp => 1})
     database.end_transaction

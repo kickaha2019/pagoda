@@ -14,12 +14,10 @@ root Root
 	run BrassLantern/Root
 	run Fisicx/Root
 	run GameBoomers/Root
-	run Grabbed/Root
 	run JustAdventure/Root
 	run Metzomagic/Root
 	run MrBillsAdventureland/Root
 	run MysteryManor/Root
-	run Official/Root
 	run Przygodoskop/Root
 	run SpoilerCentre/Root
 	run TapRepeatedly/Root

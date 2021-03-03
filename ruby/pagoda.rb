@@ -175,11 +175,11 @@ class Pagoda
     end
 
     def label
-      @record[:title]
+      (@record[:title] && (@record[:title].strip != '')) ? @record[:title] : '???'
     end
 
     def name
-      @record[:title]
+      label
     end
 
     def timestamp
@@ -210,6 +210,7 @@ class Pagoda
       g = PagodaGame.new( self, game_rec)
       if g.game_type == 'A'
         @names.add( g.name, g.id)
+
         g.aliases.each do |arec|
           @names.add( arec.name, g.id)
         end

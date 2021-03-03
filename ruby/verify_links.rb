@@ -111,6 +111,11 @@ class VerifyLinks
   def oldest( n)
     verified, unverified = [], []
     @database.select( 'link') do |rec|
+
+      # Ignore unbound records
+      bind = @database.get( 'bind', :url, rec[:url])
+      next if bind[0] && (bind[0][:id] == -1)
+
       if rec[:valid] && (rec[:valid] == 'Y')
         verified << rec
       else
