@@ -1,15 +1,12 @@
 class GooglePlay
 	include Common
 
-	def accept( scanner, name, url)
-		true
-	end
-
 	def cache_directory
 		'google_play'
 	end
 
-	def find( scanner, lifetime)
+	def find( scanner, page, lifetime, url2link)
+		return if page > 0
 		dir  = scanner.cache + '/' + cache_directory
 		found = {}
 
@@ -22,7 +19,9 @@ class GooglePlay
 			end
 		end
 
-		found.keys.collect {|url| [found[url], url]}
+		found.keys.each do |url|
+			url2link[url] = {site:title, type:type, title:found[url], url:url}
+		end
 	end
 
 	def search( name)

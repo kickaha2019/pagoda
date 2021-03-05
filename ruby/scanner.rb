@@ -24,22 +24,6 @@ class Scanner
 		@pagoda       = Pagoda.new( dir)
 	end
 
-	def accept_bound_expected( site, urls)
-		unaccepted = {}
-
-		urls.each_pair do |name, url|
-			if @pagoda.has?( 'expect', :url, url) ||
-				 @pagoda.has?( 'bind', :url, url)
-
-				write_match( site, name, url, '')
-			else
-				unaccepted[name] = url
-			end
-		end
-
-		unaccepted
-	end
-
 	def build_pagoda_frequencies
 		frequencies = Hash.new {|h,k| h[k] = 0}
 
@@ -57,11 +41,11 @@ class Scanner
 		frequencies
 	end
 
-	def build_scan_frequencies( found)
+	def build_scan_frequencies
 		frequencies = Hash.new {|h,k| h[k] = 0}
 
-		found.each do |rec|
-			@pagoda.string_combos( rec[0]) do |combo, weight|
+		@url2title.values.each do |title|
+			@pagoda.string_combos( title) do |combo, weight|
 				frequencies[combo] += weight
 			end
 		end
@@ -88,8 +72,42 @@ class Scanner
 		@errors += 1
 	end
 
+	def find_in_sites( lifetime)
+		@url2link = {}
+		(0..1000).each do |page|
+			old_total = @url2link.size
+
+			@sites.each do |site|
+				next if site[:complete]
+
+				old_count = @url2link.size
+				site[:site].find( self, page, lifetime, @url2link)
+
+				if old_count == @url2link.size
+					site[:complete] = true
+				end
+			end
+
+			if old_total == @url2link.size
+				break
+			elsif page >= 500
+				raise 'Too many pages scanned'
+			end
+		end
+	end
+
 	def flush
 		@scan.flush
+	end
+
+	def load_sites
+		@sites = []
+		ARGV[4..-1].each do |site_name|
+			puts "***** Loading #{site_name}"
+			require_relative to_filename( 'sites/' + site_name)
+			site = Kernel.const_get( site_name).new
+			@sites << {name:site_name, site:site, complete:false}
+		end
 	end
 
 	def lowest_frequency( pagoda_freqs, scan_freqs, name)
@@ -105,37 +123,27 @@ class Scanner
 		return freq, match
 	end
 
-	def match_games( pagoda_freqs, site, found, limit)
+	def match_games( limit)
 		list       = []
-		scan_freqs = build_scan_frequencies( found)
+		pagoda_freqs = build_pagoda_frequencies
+		scan_freqs   = build_scan_frequencies
 
-		found.each do |rec|
-			name, url = * rec
-			debug_hook( 'match_games1', name, url)
-			if @pagoda.has?( 'expect', :url, url) ||
-				 @pagoda.has?( 'bind', :url, url)
-
-				debug_hook( 'match_games2', name, url)
-				if yield( name, url)
-					write_match( site, name, url, '')
-				end
-			else
-				freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, name)
-				list << [freq, name, url, combo]
+		@url2link.each_pair do |url, link|
+			debug_hook( 'match_games1', link[:title], url)
+			unless @pagoda.has?( 'link', :url, url)
+				freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, link[:title])
+				list << [freq, link, combo]
 			end
 		end
 
-		list.sort!
+		list.sort_by! {|entry| entry[0]}
 
 		list.each do |entry|
-			name, url = entry[1], entry[2]
-			next if (limit <= 0) || not_a_game( name)
-			debug_hook( 'match_games3', name, url)
-
-			if yield( name, url)
-				limit -= 1
-				write_match( site, name, url, entry[3])
-			end
+			link, combo = entry[1], entry[2]
+			next if (limit <= 0) || not_a_game( link[:title])
+			debug_hook( 'match_games3', link[:title], link[:url])
+			limit -= 1
+			write_match( link, combo)
 		end
 	end
 
@@ -193,26 +201,17 @@ class Scanner
 		end
 	end
 
-	def write_match( site, game, url, join)
-		debug_hook( 'write_match1', game, url)
+	def write_match( link, join)
+		debug_hook( 'write_match1', link[:title], link[:url])
 		@id += 1
-		@scan.puts "#{@id}\t#{site.title}\t#{site.type}\t#{game}\t#{game}\t#{url}\t#{join}"
+		@scan.puts "#{@id}\t#{link[:site]}\t#{link[:type]}\t#{link[:title]}\t#{link[:title]}\t#{link[:url]}\t#{join}"
 	end
 end
 
 scanner = Scanner.new( ARGV[0], ARGV[1])
 scanner.set_not_game_words( 'demo', 'OST', 'soundtrack', 'trailer')
-pagoda_freqs = scanner.build_pagoda_frequencies
-
-ARGV[4..-1].each do |site_name|
-  puts "***** Scanning #{site_name}"
-  require_relative scanner.to_filename( site_name)
-  site = Kernel.const_get( site_name).new
-	found = site.find( scanner, ARGV[2].to_i)
-	scanner.match_games( pagoda_freqs, site, found, ARGV[3].to_i) do |game_name, game_url|
-    site.accept( scanner, game_name, game_url)
-	end
-	scanner.flush
-end
-
+scanner.load_sites
+scanner.find_in_sites( ARGV[2].to_i)
+scanner.match_games( ARGV[3].to_i)
+scanner.flush
 scanner.report

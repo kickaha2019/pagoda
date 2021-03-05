@@ -6,6 +6,8 @@ require "selenium-webdriver"
 require_relative 'pagoda'
 
 module Common
+	@@throttling  = Hash.new {|h,k| h[k] = 0}
+
 	def browser_get( url)
 		@driver = Selenium::WebDriver.for :chrome unless defined?( @driver)
 		@driver.navigate.to url
@@ -14,7 +16,7 @@ module Common
 	end
 
 	def http_get( url, delay = 10)
-		sleep delay
+		throttle( url, delay)
 		uri = URI.parse( url)
 		http = Net::HTTP.new( uri.host, uri.port)
 		if /^https/ =~ url
@@ -25,6 +27,18 @@ module Common
 		response = http.request( Net::HTTP::Get.new(uri.request_uri))
 		response.value
 		response.body
+	end
+
+	def throttle( url, delay)
+		if m = /\/\/([^\/]*)\//.match( url)
+			t = Time.now.to_i
+			if t < delay + @@throttling[m[1]]
+				sleep delay
+			end
+			@@throttling[m[1]] = t
+		else
+			raise "Strange URL"
+		end
 	end
 
 	def to_filename( clazz)
