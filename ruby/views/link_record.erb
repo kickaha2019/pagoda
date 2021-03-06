@@ -20,7 +20,11 @@
     <tr><th>Label</th><td><%= h(@rec.label) %></td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
-    <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') + link_action( @rec, 'bind') + link_action( @rec, 'unbind') %></td></tr>
+    <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
+                                link_action( @rec, 'bind') +
+                                link_action( @rec, 'unbind') +
+                                link_action( @rec, 'forget')
+    %></td></tr>
 
     <%=
       html = []

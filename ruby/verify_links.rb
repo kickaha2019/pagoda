@@ -112,11 +112,11 @@ class VerifyLinks
     verified, unverified = [], []
     @database.select( 'link') do |rec|
 
-      # Ignore unbound records
+      # Unbound records not priority
       bind = @database.get( 'bind', :url, rec[:url])
-      next if bind[0] && (bind[0][:id] == -1)
+      unbound = (bind[0] && (bind[0][:id] == -1))
 
-      if rec[:valid] && (rec[:valid] == 'Y')
+      if unbound || (rec[:valid] && (rec[:valid] == 'Y'))
         verified << rec
       else
         unverified << rec
