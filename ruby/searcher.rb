@@ -69,7 +69,7 @@ end
 searcher = Searcher.new( ARGV[0], ARGV[1])
 
 ARGV[3..-1].each do |site_name|
-  require_relative searcher.to_filename( site_name)
+  require_relative searcher.to_filename( 'sites/' + site_name)
   site = Kernel.const_get( site_name).new
 	searcher.search( site.cache_directory, ARGV[2].to_i) do |game_name|
     site.search( game_name)

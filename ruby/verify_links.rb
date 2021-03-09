@@ -72,12 +72,6 @@ class VerifyLinks
   def get_title( page)
     if m = /<title>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
-      title.force_encoding( 'UTF-8')
-      title.encode!( 'US-ASCII',
-                     :replace           => ' ',
-                     :invalid           => :replace,
-                     :undef             => :replace,
-                     :universal_newline => true)
       title.strip.gsub( '  ', ' ')
     else
       ''
@@ -138,12 +132,19 @@ class VerifyLinks
   end
 
   def verify_page( link, cache)
-    sleep 10
     status, response = http_get( link[:url])
     return unless status
 
-    status, valid, title = get_details( link, response.body)
-    return unless status && (title.strip != '')
+    body = response.body
+    body.force_encoding( 'UTF-8')
+    body.encode!( 'US-ASCII',
+                  :replace           => ' ',
+                  :invalid           => :replace,
+                  :undef             => :replace,
+                  :universal_newline => true)
+
+    status, valid, title = get_details( link, body)
+    return unless status && valid && (title.strip != '')
 
     t = Time.now.to_i
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
@@ -154,12 +155,26 @@ class VerifyLinks
 
     update_link( link)
   end
+
+  def verify_url( url, cache)
+    link = @database.get( 'link', :url, url)[0]
+    if link
+      verify_page( link, cache)
+    else
+      raise "No such linkL: #{url}"
+    end
+  end
 end
 
 vl = VerifyLinks.new( ARGV[0])
-vl.oldest( ARGV[1].to_i) do |link|
-  puts "... Verifying #{link[:url]}"
-  vl.verify_page( link, ARGV[2])
+if /^http/ =~ ARGV[1]
+  vl.verify_url( ARGV[1], ARGV[2])
+else
+  vl.oldest( ARGV[1].to_i) do |link|
+    puts "... Verifying #{link[:url]}"
+    vl.verify_page( link, ARGV[2])
+    sleep 10
+  end
 end
 
 puts "End of verifying"
