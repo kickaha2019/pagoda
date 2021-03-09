@@ -191,6 +191,16 @@ class Pagoda
       @owner.delete( 'bind', :url, @record[:url])
       @owner.end_transaction
     end
+
+    def verified( title, timestamp, valid)
+      @owner.start_transaction
+      @owner.delete( 'link', :url, @record[:url])
+      @record[:title]     = title
+      @record[:timestamp] = timestamp
+      @record[:valid]     = valid
+      @owner.insert( 'link', @record)
+      @owner.end_transaction
+    end
   end
 
   def initialize( dir)

@@ -3,11 +3,11 @@ require 'uri'
 require 'openssl'
 require 'yaml'
 
-require_relative 'database'
+require_relative 'pagoda'
 
 class VerifyLinks
   def initialize( dir)
-    @database = Database.new( dir)
+    @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
   end
 
@@ -53,8 +53,8 @@ class VerifyLinks
     end
 
     # Apply site specific filters
-    if site = @filters[link[:site]]
-      if filters = site[link[:type]]
+    if site = @filters[link.site]
+      if filters = site[link.type]
         if filters.is_a?( Array)
           filters.each do |filter|
             status, valid, title = apply_filter( filter, link, body, title)
@@ -104,35 +104,28 @@ class VerifyLinks
 
   def oldest( n)
     verified, unverified = [], []
-    @database.select( 'link') do |rec|
+    @pagoda.links do |link|
 
       # Unbound records not priority
-      bind = @database.get( 'bind', :url, rec[:url])
+      bind = @pagoda.get( 'bind', :url, link.url)
       unbound = (bind[0] && (bind[0][:id] == -1))
 
-      if unbound || (rec[:valid] && (rec[:valid] == 'Y'))
-        verified << rec
+      if unbound || (link.valid && (link.valid == 'Y'))
+        verified << link
       else
-        unverified << rec
+        unverified << link
       end
     end
 
     unverified.shuffle!
-    verified.sort_by! {|rec| rec[:timestamp] ? rec[:timestamp].to_i : 0}
+    verified.sort_by! {|link| link.timestamp ? link.timestamp : 0}
     links = unverified + verified
     links = links[0...n] if links.size > n
     links.each {|rec| yield rec}
   end
 
-  def update_link( link)
-    @database.start_transaction
-    @database.delete( 'link', :url, link[:url])
-    @database.insert( 'link', link)
-    @database.end_transaction
-  end
-
   def verify_page( link, cache)
-    status, response = http_get( link[:url])
+    status, response = http_get( link.url)
     return unless status
 
     body = response.body
@@ -149,15 +142,11 @@ class VerifyLinks
     t = Time.now.to_i
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
-    link[:title]     = title.strip
-    link[:timestamp] = t
-    link[:valid]     = valid ? 'Y' : 'N'
-
-    update_link( link)
+    link.verified( title.strip, t, valid ? 'Y' : 'N')
   end
 
   def verify_url( url, cache)
-    link = @database.get( 'link', :url, url)[0]
+    link = @pagoda.link( url)
     if link
       verify_page( link, cache)
     else
@@ -171,7 +160,7 @@ if /^http/ =~ ARGV[1]
   vl.verify_url( ARGV[1], ARGV[2])
 else
   vl.oldest( ARGV[1].to_i) do |link|
-    puts "... Verifying #{link[:url]}"
+    puts "... Verifying #{link.url}"
     vl.verify_page( link, ARGV[2])
     sleep 10
   end
