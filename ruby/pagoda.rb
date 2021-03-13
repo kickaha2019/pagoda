@@ -384,19 +384,6 @@ class Pagoda
       end
     end
 
-    # Allow for sites like ACG which put multiple versions of name into game title
-    subnames = name.split( '-')
-    if subnames.size > 1
-      subids = subnames.collect {|subname| @names.lookup( subname)}
-
-      ok = subids[0]
-      subids[1..-1].each do |subid|
-        ok = false unless subid == subids[0]
-      end
-
-      return subids[0] if ok
-    end
-
     @names.lookup(name)
   end
 

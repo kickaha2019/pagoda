@@ -128,6 +128,11 @@ class VerifyLinks
     status, response = http_get( link.url)
     return unless status
 
+    if response.is_a?( Net::HTTPRedirection)
+      link.verified( 'Redirection: ' + response['Location'], Time.now.to_i, 'N')
+      return
+    end
+
     body = response.body
     body.force_encoding( 'UTF-8')
     body.encode!( 'US-ASCII',
@@ -137,7 +142,12 @@ class VerifyLinks
                   :universal_newline => true)
 
     status, valid, title = get_details( link, body)
-    return unless status && valid && (title.strip != '')
+    unless status && valid && (title.strip != '')
+      if link.timestamp < 1000
+        link.verified( link.title, link.timestamp + 1, valid ? 'Y' : 'N')
+      end
+      return
+    end
 
     t = Time.now.to_i
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
