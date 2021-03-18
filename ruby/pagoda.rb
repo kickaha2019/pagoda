@@ -192,12 +192,13 @@ class Pagoda
       @owner.end_transaction
     end
 
-    def verified( title, timestamp, valid)
+    def verified( title, timestamp, valid, redirected)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
       @record[:title]     = title
       @record[:timestamp] = timestamp
       @record[:valid]     = valid
+      @record[:redirect]  = redirected
       @owner.insert( 'link', @record)
       @owner.end_transaction
     end

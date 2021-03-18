@@ -15,16 +15,26 @@ module Common
 		@driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
-	def http_get( url, delay = 10)
+	def http_get( url, delay = 10, headers = {})
 		throttle( url, delay)
 		uri = URI.parse( url)
-		http = Net::HTTP.new( uri.host, uri.port)
-		if /^https/ =~ url
-			http.use_ssl     = true
-			http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+		request = Net::HTTP::Get.new(uri.request_uri)
+		request['Accept']          = 'text/html,application/xhtml+xml,application/xml'
+		request['Accept-Language'] = 'en-gb'
+		request['User-Agent']      = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
+
+		headers.each_pair do |k,v|
+			request[k] = v
 		end
 
-		response = http.request( Net::HTTP::Get.new(uri.request_uri))
+		use_ssl     = uri.scheme == 'https'
+		verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+		response = Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
+			http.request( request)
+		}
+
 		response.value
 		response.body
 	end

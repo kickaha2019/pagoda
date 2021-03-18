@@ -10,6 +10,7 @@ class Names
     @entities = {
         '&aacute;' => 'a',
         '&amp;'    => '&',
+        '&bull;'   => '.',
         '&ccedil;' => 'c',
         '&eacute;' => 'e',
         '&egrave;' => 'e',
@@ -22,6 +23,7 @@ class Names
         '&ocirc;'  => 'o',
         '&quot;'   => '"',
         '&ouml;'   => 'o',
+        '&raquo;'  => '"',
         '&uacute;' => 'u',
         '&uuml;'   => 'u',
         '&#xa1;'   => ' ',

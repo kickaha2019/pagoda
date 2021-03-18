@@ -28,8 +28,10 @@ class VerifyLinks
   end
 
   def filter_ios_store( link, body, title)
-    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+) or later/m =~ body
-    return true, false, title if /Requires macOS \d+(|.\d+) or later/m =~ body
+    return true, true, title if /TouchArcade/m =~ body
+    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
+    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
+    return true, false, title if /Requires macOS \d+(|.\d+)(|.\d+) or later/m =~ body
     return false, false, title
   end
 
@@ -43,13 +45,12 @@ class VerifyLinks
   end
 
   def get_details( link, body)
-    status      = true
-    valid       = true
-    title       = get_title( body)
+    valid  = true
+    title  = orig_title = get_title( body, link.type)
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ title
-      return false, false, title
+      return false, title
     end
 
     # Apply site specific filters
@@ -57,24 +58,25 @@ class VerifyLinks
       if filters = site[link.type]
         if filters.is_a?( Array)
           filters.each do |filter|
-            status, valid, title = apply_filter( filter, link, body, title)
-            return status, valid, title unless status && valid
+            valid, title = apply_filter( filter, link, body, title)
+            break unless valid
           end
         else
-          status, valid, title = apply_filter( filters, link, body, title)
+          valid, title = apply_filter( filters, link, body, title)
         end
       end
     end
 
-    return status, valid, title
+    return valid, valid ? title : orig_title
   end
 
-  def get_title( page)
-    if m = /<title>([^<]*)<\/title>/im.match( page)
+  def get_title( page, defval)
+    if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
       title.strip.gsub( '  ', ' ')
+      (title == '') ? defval : title
     else
-      ''
+      defval
     end
   end
 
@@ -102,36 +104,39 @@ class VerifyLinks
     #response.body
   end
 
+  def http_get_with_redirect( url, depth = 0)
+    status, response = http_get( url)
+    return status, false, response unless status
+
+    if (depth < 4) &&
+        response.is_a?( Net::HTTPRedirection) &&
+        (// =~ response['Location'])
+      status, redirected, response = http_get_with_redirect( response['Location'], depth+1)
+      return status, true, response
+    end
+
+    return status, false, response
+  end
+
   def oldest( n)
-    verified, unverified = [], []
-    @pagoda.links do |link|
+    links = []
+    @pagoda.links {|link| links << link}
+    links.sort_by! {|link| link.timestamp ? link.timestamp : 0}
+    links = links[0...n] if links.size > n
 
-      # Unbound records not priority
-      bind = @pagoda.get( 'bind', :url, link.url)
-      unbound = (bind[0] && (bind[0][:id] == -1))
-
-      if unbound || (link.valid && (link.valid == 'Y'))
-        verified << link
-      else
-        unverified << link
+    File.open( '/Users/peter/temp/verify.csv', 'w') do |io|
+      io.puts 'site,title,url,timestamp,valid'
+      links.each do |link|
+        io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
       end
     end
 
-    unverified.shuffle!
-    verified.sort_by! {|link| link.timestamp ? link.timestamp : 0}
-    links = unverified + verified
-    links = links[0...n] if links.size > n
     links.each {|rec| yield rec}
   end
 
   def verify_page( link, cache)
-    status, response = http_get( link.url)
+    status, redirected, response = http_get_with_redirect( link.url)
     return unless status
-
-    if response.is_a?( Net::HTTPRedirection)
-      link.verified( 'Redirection: ' + response['Location'], Time.now.to_i, 'N')
-      return
-    end
 
     body = response.body
     body.force_encoding( 'UTF-8')
@@ -141,18 +146,19 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
-    status, valid, title = get_details( link, body)
-    unless status && valid && (title.strip != '')
-      if link.timestamp < 1000
-        link.verified( link.title, link.timestamp + 1, valid ? 'Y' : 'N')
-      end
-      return
-    end
+    valid, title = get_details( link, body)
+    # unless status
+    #   File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+    #   if link.timestamp < 1000
+    #     link.verified( link.title, link.timestamp + 1, valid ? 'Y' : 'N')
+    #   end
+    #   return
+    # end
 
     t = Time.now.to_i
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
-    link.verified( title.strip, t, valid ? 'Y' : 'N')
+    link.verified( title.strip, t, valid ? 'Y' : 'N', redirected ? 'Y' : 'N')
   end
 
   def verify_url( url, cache)
