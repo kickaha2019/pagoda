@@ -23,24 +23,23 @@ class VerifyLinks
       args = [args] unless args.is_a?( Array)
     end
 
-    status, valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
-    return status, valid, title
+    valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
+    return valid, title
   end
 
   def filter_ios_store( link, body, title)
-    return true, true, title if /TouchArcade/m =~ body
-    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
-    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
-    return true, false, title if /Requires macOS \d+(|.\d+)(|.\d+) or later/m =~ body
-    return false, false, title
+    return true, title if /TouchArcade/m =~ body
+    return true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
+    return true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
+    return false, title
   end
 
   def filter_suffix( link, body, title, suffix)
     re = Regexp.new( '^(.*)' + suffix + '.*$')
     if m = re.match( title)
-      return true, true, m[1]
+      return true, m[1]
     else
-      return false, false, ''
+      return false, ''
     end
   end
 
@@ -67,7 +66,7 @@ class VerifyLinks
       end
     end
 
-    return valid, valid ? title : orig_title
+    return valid, (valid ? title : orig_title)
   end
 
   def get_title( page, defval)

@@ -20,6 +20,7 @@
     <tr><th>Label</th><td><%= h(@rec.label) %></td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
+    <tr><th>Redirected</th><td><%= @rec.redirect %></td></tr>
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
     <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
                                 link_action( @rec, 'bind') +

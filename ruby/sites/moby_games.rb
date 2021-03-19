@@ -1,4 +1,8 @@
 class MobyGames
+	def complete?
+		true
+	end
+
 	def find( scanner, page, lifetime, url2link)
 		path = scanner.cache + "/mobygames/#{page}.json"
 

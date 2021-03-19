@@ -1,4 +1,8 @@
 class Steam
+	def complete?
+		true
+	end
+
 	def find( scanner, page, lifetime, url2link)
 		return if page > 0
 		path = scanner.cache + '/steam.json'

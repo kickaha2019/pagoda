@@ -1,4 +1,8 @@
 class GOG
+	def complete?
+		true
+	end
+
 	def find( scanner, page, lifetime, url2link)
 		path = scanner.cache + "/gog/#{page}.json"
 

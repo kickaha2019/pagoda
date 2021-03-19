@@ -43,7 +43,7 @@ module Sinatra
 
     def collation( link_url)
       link = $pagoda.link( link_url)
-      return {'link':'','year':''} if link.nil?
+      return {'link':'','year':''} unless link
       collation = link.collation
       return {'link':'','year':''} if collation.nil?
       link_html = "<a title=\"#{p(collation.name)}\" href=\"/game/#{collation.id}\">#{h(collation.name,40)}</a>"

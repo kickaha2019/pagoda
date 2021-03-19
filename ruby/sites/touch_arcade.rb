@@ -1,4 +1,8 @@
 class TouchArcade
+	def complete?
+		true
+	end
+
 	def find( scanner, page, lifetime, url2link)
 		path = scanner.cache + "/touch_arcade/#{page}.json"
 

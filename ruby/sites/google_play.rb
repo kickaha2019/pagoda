@@ -5,6 +5,10 @@ class GooglePlay
 		'google_play'
 	end
 
+	def complete?
+		true
+	end
+
 	def find( scanner, page, lifetime, url2link)
 		return if page > 0
 		dir  = scanner.cache + '/' + cache_directory

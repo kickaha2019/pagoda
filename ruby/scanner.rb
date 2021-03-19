@@ -75,7 +75,7 @@ class Scanner
 	def find_in_sites( lifetime)
 		@url2link = {}
 		(0..1000).each do |page|
-			old_total = @url2link.size
+			complete = true
 
 			@sites.each do |site|
 				next if site[:complete]
@@ -83,12 +83,14 @@ class Scanner
 				old_count = @url2link.size
 				site[:site].find( self, page, lifetime, @url2link)
 
-				if old_count == @url2link.size
+				if old_count == @url2link.size && site[:site].complete?
 					site[:complete] = true
+				else
+					complete = false
 				end
 			end
 
-			if old_total == @url2link.size
+			if complete
 				break
 			elsif page >= 500
 				raise 'Too many pages scanned'
@@ -107,6 +109,26 @@ class Scanner
 			require_relative to_filename( 'sites/' + site_name)
 			site = Kernel.const_get( site_name).new
 			@sites << {name:site_name, site:site, complete:false}
+		end
+	end
+
+	def load_snapshot( path)
+		re = /^#{path.split('.')[0]}_(\d+)\.#{path.split('.')[1]}$/
+		found = []
+
+		Dir.entries( @dir).each do |f|
+			if m = re.match( f)
+				found << m[1].to_i
+			end
+		end
+
+		if found.size > 1
+			found.sort!
+			IO.read( "#{@dir}/#{path.split('.')[0]}_#{found[-2]}.#{path.split('.')[1]}")
+		elsif found.size > 0
+			IO.read( "#{@dir}/#{path.split('.')[0]}_#{found[0]}.#{path.split('.')[1]}")
+		else
+			nil
 		end
 	end
 

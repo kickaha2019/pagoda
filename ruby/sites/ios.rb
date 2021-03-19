@@ -26,6 +26,10 @@ class IOS
 		end
 	end
 
+	def complete?
+		true
+	end
+
 	def get_ios_compatibility( scanner, url, id, reuse=true)
 		path = "#{scanner.cache}/ios_pages/#{id}.html"
 

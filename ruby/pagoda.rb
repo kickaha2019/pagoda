@@ -147,7 +147,7 @@ class Pagoda
     end
 
     def collation
-      return nil unless @record[:valid] == 'Y'
+      return nil unless @record && (@record[:valid] == 'Y')
       binds = @owner.get( 'bind', :url, @record[:url])
       if binds.size > 0
         return nil if binds[0][:id] < 0
