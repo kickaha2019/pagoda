@@ -5,7 +5,7 @@ class GooglePlay
 		'google_play'
 	end
 
-	def complete?
+	def complete?( scanner)
 		true
 	end
 
@@ -28,7 +28,13 @@ class GooglePlay
 		end
 	end
 
-	def search( name)
+	def search( searcher)
+		searcher.search( site.cache_directory, 100) do |game_name|
+			search_for_name( game_name)
+		end
+	end
+
+	def search_for_name( name)
 		name = name.to_s.gsub( /[^A-Za-z0-9]/, ' ').gsub( /\s+/, '%20')
 		page = http_get( 'https://play.google.com/store/search?c=apps&q=' + name, 60)
 		urls = []

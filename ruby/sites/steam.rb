@@ -1,5 +1,5 @@
 class Steam
-	def complete?
+	def complete?( scanner)
 		true
 	end
 
@@ -19,11 +19,12 @@ class Steam
 			text.force_encoding( 'UTF-8')
 			text.encode!( 'US-ASCII',
 										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			url = "https://store.steampowered.com/app/#{record['appid']}"
 			url2link[url] = {site:title,
 											 type:type,
 											 title:text,
-											 url:"https://store.steampowered.com/app/#{record['appid']}"}
-			scanner.debug_hook( 'Steam:urls', text, urls[-1][1])
+											 url:url}
+			scanner.debug_hook( 'Steam:urls', text, url)
 		end
 	end
 

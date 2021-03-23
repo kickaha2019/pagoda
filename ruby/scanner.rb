@@ -44,7 +44,7 @@ class Scanner
 	def build_scan_frequencies
 		frequencies = Hash.new {|h,k| h[k] = 0}
 
-		@url2title.values.each do |title|
+		@url2link.values.each do |title|
 			@pagoda.string_combos( title) do |combo, weight|
 				frequencies[combo] += weight
 			end
@@ -83,7 +83,7 @@ class Scanner
 				old_count = @url2link.size
 				site[:site].find( self, page, lifetime, @url2link)
 
-				if old_count == @url2link.size && site[:site].complete?
+				if old_count == @url2link.size && site[:site].complete?( self)
 					site[:complete] = true
 				else
 					complete = false
@@ -194,6 +194,25 @@ class Scanner
 
 	def report
 		puts "*** #{@errors} errors" if @errors > 0
+	end
+
+	def save_snapshot( urls, path)
+		re = /^#{path.split('.')[0]}_(\d+)\.#{path.split('.')[1]}$/
+		found = []
+
+		Dir.entries( @dir).each do |f|
+			if m = re.match( f)
+				found << m[1].to_i
+			end
+		end
+
+		File.open( "#{@dir}/#{path.split('.')[0]}_#{found.size}.#{path.split('.')[1]}", 'w') do |io|
+			io.print JSON.generate( urls)
+		end
+
+		found.each do |i|
+			File.delete( "#{@dir}/#{path.split('.')[0]}_#{i}.#{path.split('.')[1]}")
+		end
 	end
 
 	def sequences( phrase)

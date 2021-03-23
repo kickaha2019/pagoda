@@ -4,38 +4,41 @@ class Reddit
 	include Common
 
 	def initialize
-		@old_urls = {}
-		@page     = 0
+		@old_urls  = {}
+		@page      = 0
+		@afters    = {}
+		@times     = {}
+		@completed = true
 	end
 
-	def complete?
-		@page >= 400
+	def complete?( scanner)
+		return false if @page < 5
+		unless @completed
+			@old_urls.each_pair do |subreddit, urls|
+				scanner.save_snapshot( urls, 'reddit_' + subreddit + '.json')
+			end
+			@times.each_pair do |subreddit, created|
+				puts "... Reddit #{subreddit} #{Time.at( created.to_i).strftime( '%y-%m-%d')}"
+			end
+			@completed = true
+		end
+		true
 	end
 
 	def find( scanner, page, lifetime, url2link)
-		find_reddit( scanner, page, lifetime, url2link, 'iosgaming')
-		return if page > 0
-		path = scanner.cache + '/reddit.json'
+		@page = page
+		return if complete?( scanner)
 
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
-			body = http_get( 'https://www.reddit.com/r/iosgaming/new.json',
-											 10,
-											 'Accept' => 'application/json')
-			File.open( '/Users/peter/temp/reddit.json', 'w') {|io| io.print body}
-			raise 'Dev'
-		end
-
-		raw = JSON.parse( IO.read( path))['applist']['apps']
-		raw.each do |record|
-			text = record['name']
-			text.force_encoding( 'UTF-8')
-			text.encode!( 'US-ASCII',
-										:invalid => :replace, :undef => :replace, :universal_newline => true)
-			url2link[url] = {site:title,
-											 type:type,
-											 title:text,
-											 url:"https://store.steampowered.com/app/#{record['appid']}"}
-			scanner.debug_hook( 'Steam:urls', text, urls[-1][1])
+		find_reddit( scanner, page, lifetime, url2link, 'iosgaming') do |subreddit, name, link|
+			if m = /.*\.apple\.com\/.*\/app\/.*\/([^\/]*)(\?|$)/.match( link)
+				url = "https://apps.apple.com/us/app/#{m[1]}"
+				url2link[url] = {site:'IOS',
+												 type:'Store',
+												 title:name,
+												 url:url}
+				@old_urls[subreddit][url] = name
+				scanner.debug_hook( 'reddit:ios', name, link)
+			end
 		end
 	end
 
@@ -52,10 +55,43 @@ class Reddit
 			end
 		end
 
-		old_urls['data']['children'].each do |child|
-			puts child['data']['selftext']
+		json = load_json( scanner, lifetime, subreddit)
+		json['data']['children'].each do |child|
+			@times[subreddit] = child['data']['created']
+			find_urls( child['data']['selftext']) do |name, link|
+				name.force_encoding( 'UTF-8')
+				name.encode!( 'US-ASCII',
+											:invalid => :replace, :undef => :replace, :universal_newline => true)
+				yield subreddit, name, link
+			end
 		end
-		puts old_urls['data']['after']
-		raise 'Dev'
+
+		@afters[subreddit] = json['data']['after']
+	end
+
+	def find_urls( text)
+		if m = /^(.*)\[([^\]]*)\]\(([\)]*)\)(.*)$/m.match( text)
+			find_urls( m[1]) {|n,l| yield n,l}
+			yield m[2], m[3]
+			find_urls( m[4]) {|n,l| yield n,l}
+		else
+			text.gsub( /(\s|^)http(s|):\S*(\s|$)/) do |link|
+				yield link.strip, link.strip
+			end
+		end
+	end
+
+	def load_json( scanner, lifetime, subreddit)
+		path = scanner.cache + "/reddit_#{@afters[subreddit]}.json"
+
+		after = @afters[subreddit] ? "&after=#{@afters[subreddit]}" : ''
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
+			body = http_get( "https://www.reddit.com/r/#{subreddit}/new.json?limit=100#{after}",
+											 10,
+											 'Accept' => 'application/json')
+			File.open( path, 'w') {|io| io.print body}
+		end
+
+		JSON.parse( IO.read( path))
 	end
 end

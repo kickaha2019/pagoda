@@ -1,5 +1,5 @@
 class GOG
-	def complete?
+	def complete?( scanner)
 		true
 	end
 

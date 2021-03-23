@@ -1,5 +1,5 @@
 class MobyGames
-	def complete?
+	def complete?( scanner)
 		true
 	end
 

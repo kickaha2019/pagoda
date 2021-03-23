@@ -1,5 +1,5 @@
 class TouchArcade
-	def complete?
+	def complete?( scanner)
 		true
 	end
 
@@ -9,7 +9,11 @@ class TouchArcade
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
 			urls = {}
 
-			raw = scanner.http_get "https://toucharcade.com/category/reviews/page/#{page+1}"
+			begin
+				raw = scanner.http_get "https://toucharcade.com/category/reviews/page/#{page+1}"
+			rescue Exception => bang
+				return
+			end
 
 			raw.split( "\n").each do |line|
 				if m = /<a href=\"([^"]*)\" rel=\"bookmark\">([^<]*)<\/a>/.match( line)

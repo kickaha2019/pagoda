@@ -146,18 +146,18 @@ class VerifyLinks
                   :universal_newline => true)
 
     valid, title = get_details( link, body)
-    # unless status
-    #   File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
-    #   if link.timestamp < 1000
-    #     link.verified( link.title, link.timestamp + 1, valid ? 'Y' : 'N')
-    #   end
-    #   return
-    # end
+    unless valid
+      File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+      if link.timestamp < 1000
+        link.verified( link.title, link.timestamp + 1, 'N', redirected ? 'Y' : 'N')
+      end
+      return
+    end
 
     t = Time.now.to_i
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
-    link.verified( title.strip, t, valid ? 'Y' : 'N', redirected ? 'Y' : 'N')
+    link.verified( title.strip, t, 'Y', redirected ? 'Y' : 'N')
   end
 
   def verify_url( url, cache)

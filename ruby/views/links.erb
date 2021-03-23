@@ -20,7 +20,7 @@
 <div id="list"></div>
 
 <script>
-    function load_link() {
+    function load_links() {
         var xhttp = new XMLHttpRequest();
         xhttp.open("GET", "/link_list", false);
         xhttp.send();
@@ -45,7 +45,7 @@
 
     function search_input() {
         set_variable( 'link_search', document.getElementById( 'search').value);
-        load_scan();
+        load_links();
     }
 
     function set_collation( url, row) {
@@ -59,7 +59,7 @@
     }
 
     document.getElementById( 'search').value = get_variable( 'link_search');
-    load_link();
+    load_links();
 </script>
 
 </body>

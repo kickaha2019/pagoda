@@ -4,7 +4,6 @@
   Command line:
 		Database directory
 		Cache directory
-		How many games to search for in each site
 		One or more sites to search
 =end
 
@@ -12,6 +11,7 @@ require_relative 'common'
 
 class Searcher
 	include Common
+	attr_reader :cache
 
 	def initialize( dir, cache)
 		@dir          = dir
@@ -68,10 +68,8 @@ end
 
 searcher = Searcher.new( ARGV[0], ARGV[1])
 
-ARGV[3..-1].each do |site_name|
+ARGV[2..-1].each do |site_name|
   require_relative searcher.to_filename( 'sites/' + site_name)
   site = Kernel.const_get( site_name).new
-	searcher.search( site.cache_directory, ARGV[2].to_i) do |game_name|
-    site.search( game_name)
-	end
+  site.search( searcher)
 end
