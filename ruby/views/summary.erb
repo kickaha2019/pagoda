@@ -37,10 +37,10 @@
   </div>
 
   <table class="summary list">
-    <tr><th>Site</th><th>Type</th><th>Lost</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
+    <tr><th>Site</th><th>Type</th><th>Invalid</th><th>Unmatched</th><th>Ignored</th><th>Matched</th><th>Bound</th></tr>
     <%=
       html   = []
-      totals = Hash.new {|h,k| h[k] = 0}
+      totals = Hash.new {|h,k| h[k] = [0,0,0]}
 
       records = $pagoda.links do |rec|
         @types_to_list[rec.type]
@@ -50,17 +50,20 @@
         [rec.site.downcase, rec.type]
       end
 
-      counts, site, type = Hash.new {|h,k| h[k] = 0}, '', ''
+      counts, site, type = Hash.new {|h,k| h[k] = [0,0,0]}, '', ''
 
       records.each do |rec|
         if (rec.site != site) || (rec.type != type)
           summary_line( site, type, counts, totals, html)
           site   = rec.site
           type   = rec.type
-          counts = Hash.new {|h,k| h[k] = 0}
+          counts = Hash.new {|h,k| h[k] = [0,0,0]}
         end
 
-        counts[link_status(rec)] += 1
+        c = counts[link_status(rec)]
+        c[0] += 1
+        c[1] += 1 if link_lost?(rec)
+        c[2] += 1 if rec.redirected?
       end
 
       summary_line( site, type, counts, totals, html)

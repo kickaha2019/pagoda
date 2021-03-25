@@ -182,6 +182,10 @@ class Pagoda
       label
     end
 
+    def redirected?
+      @record[:redirect] == 'Y'
+    end
+
     def timestamp
       @record[:timestamp] ? @record[:timestamp].to_i : 0
     end
@@ -190,6 +194,10 @@ class Pagoda
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])
       @owner.end_transaction
+    end
+
+    def valid?
+      @record[:valid] == 'Y'
     end
 
     def verified( title, timestamp, valid, redirected)

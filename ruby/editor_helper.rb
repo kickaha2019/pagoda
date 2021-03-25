@@ -153,6 +153,10 @@ module Sinatra
       end
     end
 
+    def link_lost?( rec)
+      (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
+    end
+
     def link_site_combo( combo_name, html)
       values = $pagoda.links.collect {|s| s.site}.uniq.sort
       values << 'All'
@@ -165,12 +169,10 @@ module Sinatra
     end
 
     def link_status( rec)
-      lost = (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
-
-      if rec.bound?
-        rec.collation ? (lost ? 'Lost' : 'Bound') : 'Ignored'
-      elsif lost
-        'Lost'
+      if ! rec.valid?
+        'Invalid'
+      elsif rec.bound?
+        rec.collation ? 'Bound' : 'Ignored'
       elsif rec.collation
         'Matched'
       else
@@ -284,12 +286,16 @@ module Sinatra
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      ['Lost', 'Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
-        colour = ['Unmatched', 'Lost'].include?(status) ? 'red' : 'white'
-        if counts[status] > 0
-          html << "<td style=\"background: #{colour}\"><a href=\"/links\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{counts[status]}</a></td>"
-          totals[status] = 0 if ! totals.has_key?( status)
-          totals[status] += counts[status]
+      ['Invalid', 'Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
+        c = counts[status]
+        colour = (status == 'Unmatched') ? 'lime' : 'white'
+        colour = 'cyan' if c[2] > 0
+        colour = 'red' if c[1] > 0
+
+        if c[0] > 0
+          html << "<td style=\"background: #{colour}\"><a href=\"/links\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{c[0]}</a></td>"
+          totals[status] = [0,0,0] if ! totals.has_key?( status)
+          c.each_index {|i| totals[status][i] += c[i]}
         else
           html << "<td></td>"
         end
