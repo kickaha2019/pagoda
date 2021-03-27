@@ -83,7 +83,7 @@ class GenerateSQL
       create_index( 'pagoda_collate', 'id', io)
 
       create_table( 'temp', scan_fields, io)
-      load_table( 'temp', scan_fields, @pagoda.links, io)
+      load_table( 'temp', scan_fields, @pagoda.generate_links, io)
       primary_key( 'temp', 'id', io)
       drop_table( 'pagoda_scan', io)
       rename_table( 'temp', 'pagoda_scan', io)

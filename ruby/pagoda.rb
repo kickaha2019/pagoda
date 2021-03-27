@@ -306,6 +306,10 @@ class Pagoda
     selected
   end
 
+  def generate_links
+    links {|link| link.generate?}
+  end
+
   def link( url)
     PagodaLink.new( self, get( 'link', :url, url)[0])
   end

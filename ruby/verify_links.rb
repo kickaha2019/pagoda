@@ -23,33 +23,40 @@ class VerifyLinks
       args = [args] unless args.is_a?( Array)
     end
 
-    valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
-    return valid, title
+    status, valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
+    return status, valid, title
+  end
+
+  def filter_google_play_store( link, body, title)
+    return true, true, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|PUZZLE|ROLE_PLAYING)"/m =~ body
+    return true, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
+    return false, false, title
   end
 
   def filter_ios_store( link, body, title)
-    return true, title if /TouchArcade/m =~ body
-    return true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
-    return true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
-    return false, title
+    return true, true, title if /TouchArcade/m =~ body
+    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
+    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
+    return true, false, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/m =~ body
+    return false, false, title
   end
 
   def filter_suffix( link, body, title, suffix)
     re = Regexp.new( '^(.*)' + suffix + '.*$')
     if m = re.match( title)
-      return true, m[1]
+      return true, true, m[1]
     else
-      return false, ''
+      return false, false, ''
     end
   end
 
   def get_details( link, body)
-    valid  = true
+    valid  = status = true
     title  = orig_title = get_title( body, link.type)
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ title
-      return false, title
+      return false, false, title
     end
 
     # Apply site specific filters
@@ -57,16 +64,16 @@ class VerifyLinks
       if filters = site[link.type]
         if filters.is_a?( Array)
           filters.each do |filter|
-            valid, title = apply_filter( filter, link, body, title)
-            break unless valid
+            status, valid, title = apply_filter( filter, link, body, title)
+            break unless valid && status
           end
         else
-          valid, title = apply_filter( filters, link, body, title)
+          status, valid, title = apply_filter( filters, link, body, title)
         end
       end
     end
 
-    return valid, (valid ? title : orig_title)
+    return status, valid, (valid ? title : orig_title)
   end
 
   def get_title( page, defval)
@@ -145,19 +152,28 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
-    valid, title = get_details( link, body)
-    unless valid
+    status, valid, title = get_details( link, body)
+    unless status
       File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
-      if link.timestamp < 1000
-        link.verified( link.title, link.timestamp + 1, 'N', redirected ? 'Y' : 'N')
-      end
+      # if link.timestamp < 1000
+      #   link.verified( link.title, link.timestamp + 1, 'N', redirected ? 'Y' : 'N')
+      # end
       return
     end
 
+    old_t = link.timestamp
     t = Time.now.to_i
+    while File.exist?( cache + "/#{old_t}.html")
+      sleep 1
+      t = Time.now.to_i
+    end
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
-    link.verified( title.strip, t, 'Y', redirected ? 'Y' : 'N')
+    link.verified( title.strip, t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
+
+    if File.exist?( cache + "/#{old_t}.html")
+      File.delete( cache + "/#{old_t}.html")
+    end
   end
 
   def verify_url( url, cache)
@@ -165,7 +181,7 @@ class VerifyLinks
     if link
       verify_page( link, cache)
     else
-      raise "No such linkL: #{url}"
+      raise "No such link: #{url}"
     end
   end
 end
