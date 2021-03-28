@@ -163,7 +163,7 @@ class VerifyLinks
 
     old_t = link.timestamp
     t = Time.now.to_i
-    while File.exist?( cache + "/#{old_t}.html")
+    while File.exist?( cache + "/#{t}.html")
       sleep 1
       t = Time.now.to_i
     end
