@@ -116,7 +116,7 @@ class VerifyLinks
 
     if (depth < 4) &&
         response.is_a?( Net::HTTPRedirection) &&
-        (// =~ response['Location'])
+        (/^http(s|):/ =~ response['Location'])
       status, redirected, response = http_get_with_redirect( response['Location'], depth+1)
       return status, true, response
     end
@@ -137,7 +137,7 @@ class VerifyLinks
       end
     end
 
-    links.each {|rec| yield rec}
+    links.shuffle.each {|rec| yield rec}
   end
 
   def verify_page( link, cache)
