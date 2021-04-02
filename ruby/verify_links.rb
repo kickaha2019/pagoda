@@ -9,6 +9,7 @@ class VerifyLinks
   def initialize( dir)
     @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
+    @touched = Hash.new {|h,k| h[k] = 0}
   end
 
   def apply_filter( filter, link, body, title)
@@ -25,6 +26,22 @@ class VerifyLinks
 
     status, valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
     return status, valid, title
+  end
+
+  def detect_hang
+    Thread.abort_on_exception = true
+    Thread.new do
+      last_touch = 0
+      while true
+        sleep 60
+        new_touch = @touched.values.inject {|r,e| (r > e) ? r : e}
+        unless new_touch > last_touch
+          puts '*** Hang detected'
+          exit 1
+        end
+        last_touch = new_touch
+      end
+    end
   end
 
   def filter_google_play_store( link, body, title)
@@ -140,6 +157,14 @@ class VerifyLinks
     links.shuffle.each {|rec| yield rec}
   end
 
+  def throttle( url)
+    site = /^(http|https):\/\/([^\/]*)(\/|$)/.match( url)[2]
+    if @touched[site] + 10 > Time.now.to_i
+      sleep 10
+    end
+    @touched[site] = Time.now.to_i
+  end
+
   def verify_page( link, cache)
     status, redirected, response = http_get_with_redirect( link.url)
     return unless status
@@ -190,10 +215,11 @@ vl = VerifyLinks.new( ARGV[0])
 if /^http/ =~ ARGV[1]
   vl.verify_url( ARGV[1], ARGV[2])
 else
+  vl.detect_hang
   vl.oldest( ARGV[1].to_i) do |link|
     puts "... Verifying #{link.url}"
+    vl.throttle( link.url)
     vl.verify_page( link, ARGV[2])
-    sleep 10
   end
 end
 
