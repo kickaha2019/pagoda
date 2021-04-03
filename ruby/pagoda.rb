@@ -30,10 +30,6 @@ class Pagoda
   end
 
   class PagodaCollation < PagodaRecord
-    def generate?
-      (@record[:valid] == 'Y') && collation
-    end
-
     def rank
       0
     end

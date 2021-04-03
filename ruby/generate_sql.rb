@@ -123,7 +123,7 @@ class GenerateSQL
     io.puts "insert into `#{table_name}`"
     separ = 'values'
     data.each do |rec|
-      next if rec.generate?
+      next unless rec.generate?
       line = [separ]
       delim = '('
       table_fields.each_pair do |k,v|
