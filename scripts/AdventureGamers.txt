@@ -6,30 +6,23 @@ root Root
 root Reviews
 	set Type "Review"
 	expect Site Type "Force Majeure II: The Zone" "Force Majeure II: The Zone" Base+"/articles/view/17942"
-	url Base+"/articles/reviews"
-    run Page Site Base Type
+	url Base+"/games/adventures/all"
+  log CACHE_FILENAME
+  run Page Site Base Type
 
 branch Page Site Base Type
 	run Games Site Base Type
 	every A
-    text Marker
-    match Marker "&gt;"
-    attribute href Link
-    match Link "https://adventuregamers.com/articles/reviews/P.*"
-    url Link
+  text Marker
+  match Marker "Next page"
+  attribute href Link
+  match Link "/games/adventure/all-title-asc/page.*"
+  url Base+Link
 	call Page Site Base Type
 
 branch Games Site Base Type
-    every SPAN
-    attribute class Class
-    match Class "article_type"
-    text Text
-    match Text "review"
-    previous A
+  every A
 	attribute href Link
-	if
-		match Link "/.*"
-		set Link Base+Link
-	endif
+  match Link "/games/view/.*"
 	text Title
-	write Site Type Title Title Link
+	write Site Type Title Title Base+Link

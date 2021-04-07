@@ -16,12 +16,13 @@ class Scanner
 	attr_reader :cache
 
 	def initialize( dir, cache)
-		@dir          = dir
-		@cache        = cache
-		@scan         = File.open( @dir + '/scan.txt', 'a')
-		@id           = 100000
-		@errors       = 0
-		@pagoda       = Pagoda.new( dir)
+		@dir      = dir
+		@cache    = cache
+		@scan     = File.open( @dir + '/scan.txt', 'a')
+		@id       = 100000
+		@errors   = 0
+		@pagoda   = Pagoda.new( dir)
+		@settings = YAML.load( IO.read( dir + '/settings.yaml'))
 	end
 
 	def build_pagoda_frequencies
@@ -146,15 +147,19 @@ class Scanner
 	end
 
 	def match_games( limit)
-		list       = []
+		list         = []
 		pagoda_freqs = build_pagoda_frequencies
 		scan_freqs   = build_scan_frequencies
 
 		@url2link.each_pair do |url, link|
 			debug_hook( 'match_games1', link[:title], url)
 			unless @pagoda.has?( 'link', :url, url)
-				freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, link[:title])
-				list << [freq, link, combo]
+				if link[:force]
+					write_match( link, '')
+				else
+					freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, link[:title])
+					list << [freq, link, combo]
+				end
 			end
 		end
 

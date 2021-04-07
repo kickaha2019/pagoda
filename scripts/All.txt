@@ -6,7 +6,6 @@ root Root
 	Column "url" ""
 	Column "join" ""
 	run AdventureClassicGaming/Root
-	run AdventureGamers/Root
 	run AdventureIsland/Root
 	run AdventureLantern/Root
 	run AndrewPlotkin/Root

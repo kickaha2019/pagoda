@@ -14,9 +14,10 @@ class Searcher
 	attr_reader :cache
 
 	def initialize( dir, cache)
-		@dir          = dir
-		@cache        = cache
-		@pagoda       = Pagoda.new( dir)
+		@dir      = dir
+		@cache    = cache
+		@pagoda   = Pagoda.new( dir)
+		@settings = YAML.load( IO.read( dir + '/settings.yaml'))
 	end
 
 	def search( dir, max_searches)

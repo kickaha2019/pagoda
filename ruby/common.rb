@@ -16,6 +16,12 @@ module Common
 	end
 
 	def http_get( url, delay = 10, headers = {})
+		response = http_get_response( url, delay, headers)
+  	response.value
+		response.body
+	end
+
+	def http_get_response( url, delay = 10, headers = {})
 		throttle( url, delay)
 		uri = URI.parse( url)
 
@@ -31,12 +37,21 @@ module Common
 		use_ssl     = uri.scheme == 'https'
 		verify_mode = OpenSSL::SSL::VERIFY_NONE
 
-		response = Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
+		Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
 			http.request( request)
 		}
+	end
 
-		response.value
-		response.body
+	def http_redirect( url, depth = 0)
+		response = http_get_response( url, 1)
+
+		if (depth < 4) &&
+				response.is_a?( Net::HTTPRedirection) &&
+				(/^http(s|):/ =~ response['Location'])
+			return http_redirect( response['Location'], depth+1)
+		end
+
+		url
 	end
 
 	def throttle( url, delay)
@@ -56,5 +71,32 @@ module Common
 			clazz = m[1] + '_' + m[2].downcase + m[3]
 		end
 		clazz.downcase
+	end
+
+	def twitter_feed_links( account)
+		page = http_get( "https://api.twitter.com/2/users/by?usernames=#{account}",
+										 10,
+										 {'Authorization' => "Bearer #{@settings['Twitter']['BEARER_TOKEN']}"})
+		info = JSON.parse( page)
+		id = info['data'][0]['id']
+
+		page = http_get( "https://api.twitter.com/2/users/#{id}/tweets?max_results=100&exclude=retweets&tweet.fields=text,created_at",
+										 10,
+										 {'Authorization' => "Bearer #{@settings['Twitter']['BEARER_TOKEN']}"})
+		page.force_encoding( 'UTF-8')
+		page.encode!( 'US-ASCII',
+									:invalid => :replace, :undef => :replace, :universal_newline => true)
+		info = JSON.parse( page)
+
+		oldest = '9999-12-31'
+		info['data'].each do |tweet|
+			created = tweet['created_at'][0..9]
+			oldest = created if created < oldest
+			tweet['text'].gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
+  			yield http_redirect( found)
+			end
+		end
+
+		puts "... Oldest tweet found for #{account} on #{oldest}"
 	end
 end
