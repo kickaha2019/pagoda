@@ -29,7 +29,7 @@ class GooglePlay
 	end
 
 	def search( searcher)
-		searcher.search( cache_directory, 100) do |game_name|
+		searcher.search( cache_directory, 50) do |game_name|
 			search_for_name( game_name)
 		end
 	end

@@ -1,0 +1,37 @@
+<table class="scan list">
+  <tr><th>Site</th><th>Type</th><th>Timestamp</th><th>Title</th><th>Status</th><th>Actions</th></tr>
+  <%=
+    html = []
+
+    records = verified_records
+    current_page = get_variable(:verified_page,1).to_i
+    total_pages  = (records.size + 99) /  100
+    current_page = 1 if total_pages < current_page
+
+    records.sort_by! do |rec|
+      [rec.timestamp, rec.site, rec.type, rec.label.to_s]
+    end
+
+    row = 0
+    records[(100*(current_page-1))...(100*current_page)].each do |rec|
+      row += 1
+      html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
+      html << "<td>#{rec.type}</td>"
+      if rec.timestamp < 10000
+        html << "<td></td><td><span title=\"#{p(rec.label)}\">#{h(rec.label,40)}<span/></td>"
+      else
+        html << "<td>#{Time.at( rec.timestamp).strftime( "%Y/%m/%d")}</td>"
+        html << "<td><a title=\"#{p(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
+      end
+      colour = link_lost?(rec) ? 'red' : (rec.redirected? ? 'cyan' : 'white')
+      html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"
+      html << link_action( rec, 'ignore', row)
+      html << link_action( rec, 'bind', row)
+      html << link_action( rec, 'unbind', row)
+      html << link_action( rec, 'forget', row)
+      html << '</td></tr>'
+    end
+
+    html.join( "\n")
+  %>
+</table>

@@ -117,3 +117,11 @@ end
 post '/unbind/:url' do
   unbind_link( d(params[:url]))
 end
+
+get '/verified' do
+  erb :verified
+end
+
+get '/verified_list' do
+  erb :verified_list
+end

@@ -136,8 +136,8 @@ module Sinatra
       "<button onclick=\"link_action( '#{e(e(rec.url))}', '#{action}', #{row});\">#{action.capitalize}</button>"
     end
 
-    def link_records
-      search = get_variable(:link_search)
+    def link_records( search = :link_search)
+      search = get_variable( search)
       search = '' if search.nil?
 
       chosen_site   = d(get_variable(:site,'All'))
@@ -323,7 +323,12 @@ module Sinatra
         $pagoda.create_game( params)
       end
     end
-  end
 
+
+    def verified_records
+      link_records( :verified_search)
+    end
+  end
+  
   helpers EditorHelper
 end

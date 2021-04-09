@@ -13,6 +13,7 @@ require_relative 'common'
 
 class Spider
 	include Common
+	attr_reader :cache
 
 	def initialize( dir, cache)
 		@dir      = dir
@@ -20,27 +21,6 @@ class Spider
 		@errors   = 0
 		@pagoda   = Pagoda.new( dir)
 		@settings = YAML.load( IO.read( dir + '/settings.yaml'))
-		@rebases  = Hash.new {|h,k| h[k] = {}}
-		@scans    = Hash.new {|h,k| h[k] = {}}
-
-		handle_rebase 'Adventure Gamers', 'Review' do
-			verified_links do |url|
-				if /^https:\/\/adventuregamers\.com\/.*\/articles\/view\//i =~ url
-					unless /^\d+$/ =~ url.split('/')[-1]
-						p [url]
-						exit 1
-					end
-				end
-			end
-		end
-
-		handle_scan 'Adventure Gamers', 'Review' do
-			twitter_feed_links( 'adventuregamers') do |link|
-				if /^https:\/\/adventuregamers.com\/articles\/view\/.*$/ =~ link
-					add_link( '', link)
-				end
-			end
-		end
 	end
 
 	def add_link( title, url)
@@ -99,27 +79,71 @@ class Spider
 	def scan( site, type)
 		found = false
 
-		@scans.each_pair do |scan_site, types|
-			next unless (site == scan_site) || (site == 'All')
-			types.each_pair do |scan_type, handler|
-				next unless (type == scan_type) || (type == 'All')
-				found = true
+		@settings['scan'].each do |scan|
+			@site = scan['site']
+			@type = scan['type']
+			next unless (site == @site) || (site == 'All')
+   		next unless (type == @type) || (type == 'All')
+	  	found = true
 
-				@site = scan_site
-				@type = scan_type
-				puts "*** Scanning #{@site} #{@type}"
-				before = @pagoda.count( 'link')
-				start = Time.now.to_i
-				handler.call
-				added = @pagoda.count( 'link') - before
-				puts "... #{added} links added" if added > 0
-				puts "... Time taken #{Time.now.to_i - start} seconds"
-			end
+			puts "*** Scanning #{@site} #{@type}"
+			before = @pagoda.count( 'link')
+			start = Time.now.to_i
+			get_site_class( @site).new.send( scan['method'].to_sym, self)
+			added = @pagoda.count( 'link') - before
+			puts "... #{added} links added" if added > 0
+			puts "... Time taken #{Time.now.to_i - start} seconds"
 		end
 
 		unless found
 			error( "No scan for #{site}/#{type}")
 			return
+		end
+	end
+
+	def search( dir, max_searches)
+		site_cache_dir = @cache + '/' + dir
+		newest, time = 0, 0
+
+		Dir.entries( site_cache_dir).each do |f|
+			if m = /^(\d+\.json$)/.match( f)
+				t = File.mtime( site_cache_dir + '/' + f).to_i
+				if t > time
+					newest, time = m[1].to_i, t
+				end
+			end
+		end
+
+		max_game_id, looped = 0, false
+		@pagoda.games.each do |game|
+			max_game_id = game.id if game.id > max_game_id
+		end
+
+		while max_searches > 0
+			newest += 1
+
+			if newest > max_game_id
+				return if looped
+				looped = true
+				newest = 0
+				next
+			end
+
+			unless @pagoda.has?( 'game', :id, newest)
+				next
+			end
+
+			max_searches -= 1
+			game = @pagoda.game( newest)
+			urls = yield game.name
+
+			game.aliases.each do |a|
+				urls += yield a.name
+			end
+
+			File.open( "#{site_cache_dir}/#{newest}.json", 'w') do |io|
+				io.puts urls.to_json
+			end
 		end
 	end
 

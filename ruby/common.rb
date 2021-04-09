@@ -6,13 +6,23 @@ require "selenium-webdriver"
 require_relative 'pagoda'
 
 module Common
-	@@throttling  = Hash.new {|h,k| h[k] = 0}
+	@@throttling   = Hash.new {|h,k| h[k] = 0}
+	@@site_classes = {}
 
 	def browser_get( url)
 		@driver = Selenium::WebDriver.for :chrome unless defined?( @driver)
 		@driver.navigate.to url
 		sleep 15
 		@driver.execute_script('return document.documentElement.outerHTML;')
+	end
+
+	def get_site_class( name)
+		name = 'IOS' if name == 'iOS'
+		unless @@site_classes[name]
+			require_relative "sites/#{name.gsub( ' ', '_').downcase}"
+			@@site_classes[name] = Kernel.const_get( name.gsub( ' ', ''))
+		end
+		@@site_classes[name]
 	end
 
 	def http_get( url, delay = 10, headers = {})
