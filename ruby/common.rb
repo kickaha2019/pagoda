@@ -43,6 +43,7 @@ module Common
 	end
 
 	def http_redirect( url, depth = 0)
+		return url if /\.(jpg|jpeg|png|gif)$/i =~ url
 		response = http_get_response( url, 1)
 
 		if (depth < 4) &&
