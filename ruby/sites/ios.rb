@@ -2,37 +2,6 @@ class IOS
 	@@sections = {'adventure':7002, 'puzzle':7012,'role-playing':7014}
 	@@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 
-	def accept( scanner, name, url)
-		if m = /\/id(\d+)($|\?)/.match( url)
-			begin
-				found, compatible, html = get_ios_compatibility( scanner, url, m[1])
-
-				unless found
-					found, compatible, html = get_ios_compatibility( scanner, url, m[1], false)
-				end
-
-				unless found
-					error( "Compatibility section not found on #{url} for #{name}")
-					File.open( scanner.cache + '/ios_compatibility_not_found.html', 'w') do |io|
-						io.puts html
-					end
-				end
-
-				compatible
-			rescue Exception => bang
-				scanner.error( "Error getting #{name}: #{url}: #{bang.message}")
-				false
-			end
-  	else
-			scanner.error( "Unexpected URL for #{name}: #{url}")
-	  	false
-		end
-	end
-
-	def complete?( scanner)
-		true
-	end
-
 	def get_cache_info( searcher)
 		info = []
 		@@sections.each_key do |section|
@@ -53,34 +22,11 @@ class IOS
 		searcher.cache + "/ios/#{section}#{index+1}.json"
 	end
 
-	# def get_ios_compatibility( scanner, url, id, reuse=true)
-	# 	path = "#{scanner.cache}/ios_pages/#{id}.html"
-	#
-	# 	unless File.exist?( path) && reuse
-	# 		html = scanner.http_get( url)
-	# 		sleep 10
-	# 		html.force_encoding( 'UTF-8')
-	# 		html.encode!( 'US-ASCII',
-	# 									:invalid => :replace, :undef => :replace, :universal_newline => true)
-	# 		File.open( path, 'w') {|io| io.print html}
-	# 	else
-	# 		html = IO.read( path)
-	# 	end
-	#
-	# 	compatible, found = false, false
-	# 	html.gsub( /data-test-bidi>.*?<\/p/m) do |text|
-	# 		found = true
-	# 		compatible = true if /(iOS|iPadOS)/i =~ text
-	# 	end
-	#
-	# 	return found, compatible, html
-	# end
-
-	def find( scanner, page, lifetime, url2link)
+	def find( scanner)
 		Dir.entries( scanner.cache + '/ios').each do |f|
 			if /^ios\-.*\.json$/ =~ f
 				JSON.parse( IO.read( scanner.cache + '/ios/'+ f))['urls'].each_pair do |url,name|
-					url2link[url] = {site:title, type:type, title:name, url:url}
+					suggest( name, url)
 				end
 			end
 		end
@@ -117,13 +63,5 @@ class IOS
 		caches[0..2].each do |cache|
 			refresh_cache( searcher, cache[0], cache[1])
 		end
-	end
-
-	def title
-		'iOS'
-	end
-
-	def type
-		'Store'
 	end
 end

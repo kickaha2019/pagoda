@@ -5,12 +5,7 @@ class GooglePlay
 		'google_play'
 	end
 
-	def complete?( scanner)
-		true
-	end
-
-	def find( scanner, page, lifetime, url2link)
-		return if page > 0
+	def find( scanner)
 		dir  = scanner.cache + '/' + cache_directory
 		found = {}
 
@@ -18,13 +13,9 @@ class GooglePlay
 			if /\.json$/ =~ f
 				searched = JSON.parse( IO.read( dir + '/' + f))
 				searched.each do |rec|
-					found[rec[1]] = rec[0]
+					suggest( rec[0], rec[1])
 				end
 			end
-		end
-
-		found.keys.each do |url|
-			url2link[url] = {site:title, type:type, title:found[url], url:url}
 		end
 	end
 
@@ -53,13 +44,5 @@ class GooglePlay
 		end
 
 		urls
-	end
-
-	def title
-		'Google Play'
-	end
-
-	def type
-		'Store'
 	end
 end

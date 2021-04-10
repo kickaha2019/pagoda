@@ -16,11 +16,13 @@ class Spider
 	attr_reader :cache
 
 	def initialize( dir, cache)
-		@dir      = dir
-		@cache    = cache
-		@errors   = 0
-		@pagoda   = Pagoda.new( dir)
-		@settings = YAML.load( IO.read( dir + '/settings.yaml'))
+		@dir       = dir
+		@cache     = cache
+		@errors    = 0
+		@pagoda    = Pagoda.new( dir)
+		@settings  = YAML.load( IO.read( dir + '/settings.yaml'))
+		@suggested = []
+		set_not_game_words
 	end
 
 	def add_link( title, url)
@@ -36,17 +38,152 @@ class Spider
 		end
 	end
 
+	def add_suggested
+		limit        = @settings['suggested_limit']
+		list         = []
+		pagoda_freqs = build_pagoda_frequencies
+		scan_freqs   = build_scan_frequencies
+
+		@suggested.each do |link|
+			debug_hook( 'reduce_suggested', link[:title], link[:url])
+			unless @pagoda.has?( 'link', :url, link[:url])
+				freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, link[:title])
+				list << [freq, link, combo]
+			end
+		end
+
+		list.sort_by! {|entry| entry[0]}
+
+		list.each do |entry|
+			link, combo = entry[1], entry[2]
+			next if (limit <= 0) || not_a_game( link[:title])
+			debug_hook( 'match_games3', link[:title], link[:url])
+			limit -= 1
+			@pagoda.start_transaction
+			@pagoda.insert( 'link',
+											{:site => link[:site],
+											 :type      => link[:type],
+											 :title     => link[:title],
+											 :url       => link[:url],
+											 :timestamp => 1})
+			@pagoda.end_transaction
+		end
+	end
+
+	def build_pagoda_frequencies
+		frequencies = Hash.new {|h,k| h[k] = 0}
+
+		@pagoda.games.each do |g|
+			@pagoda.string_combos(g.name) do |combo, weight|
+				frequencies[combo] += weight
+			end
+			g.aliases.each do |a|
+				@pagoda.string_combos(a.name) do |combo, weight|
+					frequencies[combo] += weight
+				end
+			end
+		end
+
+		frequencies
+	end
+
+	def build_scan_frequencies
+		frequencies = Hash.new {|h,k| h[k] = 0}
+
+		@url2link.values.each do |title|
+			@pagoda.string_combos( title) do |combo, weight|
+				frequencies[combo] += weight
+			end
+		end
+
+		frequencies
+	end
+
+	def debug_hook( site, name, url=nil)
+		# if (/Alter Ego/i =~ name) || (/63110$/ =~ url)
+		# 	puts "#{site}: #{name} #{url}"
+		# end
+	end
+
 	def error( msg)
 		puts "*** #{msg}"
 		@errors += 1
 	end
 
-	def handle_rebase( site, type, &block)
-		@rebases[site][type] = block
+	def full( site, type)
+		found = false
+
+		@settings['full'].each do |scan|
+			@site = scan['site']
+			@type = scan['type']
+			next unless (site == @site) || (site == 'All')
+			next unless (type == @type) || (type == 'All')
+			found = true
+
+			puts "*** Full scan for site: #{@site} type: #{@type}"
+			before = @pagoda.count( 'link')
+			start = Time.now.to_i
+			get_site_class( @site).new.send( scan['method'].to_sym, self)
+			added = @pagoda.count( 'link') - before
+			puts "... #{added} links added" if added > 0
+			puts "... Time taken #{Time.now.to_i - start} seconds"
+		end
+
+		unless found
+			error( "No full scan for #{site}/#{type}")
+			return
+		end
+
+		add_suggested
 	end
 
-	def handle_scan( site, type, &block)
-		@scans[site][type] = block
+	def incremental( site, type)
+		found = false
+
+		@settings['scan'].each do |scan|
+			@site = scan['site']
+			@type = scan['type']
+			next unless (site == @site) || (site == 'All')
+			next unless (type == @type) || (type == 'All')
+			found = true
+
+			puts "*** Incremental scan for site: #{@site} type: #{@type}"
+			before = @pagoda.count( 'link')
+			start = Time.now.to_i
+			get_site_class( @site).new.send( scan['method'].to_sym, self)
+			added = @pagoda.count( 'link') - before
+			puts "... #{added} links added" if added > 0
+			puts "... Time taken #{Time.now.to_i - start} seconds"
+		end
+
+		unless found
+			error( "No incremental scan for #{site}/#{type}")
+			return
+		end
+	end
+
+	def lowest_frequency( pagoda_freqs, scan_freqs, name)
+		freq, match = 1000000, ''
+		@pagoda.string_combos( name) do |combo, weight|
+			if pagoda_freqs.include?(combo)
+				if scan_freqs[combo] < freq
+					freq  = scan_freqs[combo]
+					match = combo
+				end
+			end
+		end
+		return freq, match
+	end
+
+	def not_a_game( name)
+		phrase_words( name).each do |word|
+			return true if @not_game_words[word]
+		end
+		false
+	end
+
+	def phrase_words( phrase)
+		phrase.to_s.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
 	end
 
 	def rebase( site, type)
@@ -73,31 +210,6 @@ class Spider
 		if @errors > 0
 			puts "*** #{@errors} errors"
 			exit 1
-		end
-	end
-
-	def scan( site, type)
-		found = false
-
-		@settings['scan'].each do |scan|
-			@site = scan['site']
-			@type = scan['type']
-			next unless (site == @site) || (site == 'All')
-   		next unless (type == @type) || (type == 'All')
-	  	found = true
-
-			puts "*** Scanning #{@site} #{@type}"
-			before = @pagoda.count( 'link')
-			start = Time.now.to_i
-			get_site_class( @site).new.send( scan['method'].to_sym, self)
-			added = @pagoda.count( 'link') - before
-			puts "... #{added} links added" if added > 0
-			puts "... Time taken #{Time.now.to_i - start} seconds"
-		end
-
-		unless found
-			error( "No scan for #{site}/#{type}")
-			return
 		end
 	end
 
@@ -145,6 +257,24 @@ class Spider
 				io.puts urls.to_json
 			end
 		end
+	end
+
+	def set_not_game_words
+		@not_game_words = Hash.new {|h,k| h[k] = false}
+
+		@settings['not_game_words'].each do |word|
+			@not_game_words[word.downcase] = true
+		end
+
+		@pagoda.games.each do |game|
+			phrase_words( game.name).each do |word|
+				@not_game_words[word] = false
+			end
+		end
+	end
+
+	def suggest_link( title, url)
+		@suggested << {:site => @site, :type => @type, :title => title, :url => url}
 	end
 
 	def verified_links

@@ -329,6 +329,6 @@ module Sinatra
       link_records( :verified_search)
     end
   end
-  
+
   helpers EditorHelper
 end

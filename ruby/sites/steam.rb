@@ -3,8 +3,7 @@ class Steam
 		true
 	end
 
-	def find( scanner, page, lifetime, url2link)
-		return if page > 0
+	def find( scanner)
 		path = scanner.cache + '/steam.json'
 
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
@@ -20,19 +19,8 @@ class Steam
 			text.encode!( 'US-ASCII',
 										:invalid => :replace, :undef => :replace, :universal_newline => true)
 			url = "https://store.steampowered.com/app/#{record['appid']}"
-			url2link[url] = {site:title,
-											 type:type,
-											 title:text,
-											 url:url}
+			suggest( text, url)
 			scanner.debug_hook( 'Steam:urls', text, url)
 		end
-	end
-
-	def title
-		'Steam'
-	end
-
-	def type
-		'Store'
 	end
 end
