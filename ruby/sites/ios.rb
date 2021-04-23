@@ -26,7 +26,7 @@ class IOS
 		Dir.entries( scanner.cache + '/ios').each do |f|
 			if /^ios\-.*\.json$/ =~ f
 				JSON.parse( IO.read( scanner.cache + '/ios/'+ f))['urls'].each_pair do |url,name|
-					suggest( name, url)
+					scanner.suggest_link( name, url)
 				end
 			end
 		end

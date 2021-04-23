@@ -90,8 +90,8 @@ class Spider
 	def build_scan_frequencies
 		frequencies = Hash.new {|h,k| h[k] = 0}
 
-		@url2link.values.each do |title|
-			@pagoda.string_combos( title) do |combo, weight|
+		@suggested.each do |suggest|
+			@pagoda.string_combos( suggest[:title]) do |combo, weight|
 				frequencies[combo] += weight
 			end
 		end
@@ -140,7 +140,7 @@ class Spider
 	def incremental( site, type)
 		found = false
 
-		@settings['scan'].each do |scan|
+		@settings['incremental'].each do |scan|
 			@site = scan['site']
 			@type = scan['type']
 			next unless (site == @site) || (site == 'All')
@@ -154,6 +154,7 @@ class Spider
 			added = @pagoda.count( 'link') - before
 			puts "... #{added} links added" if added > 0
 			puts "... Time taken #{Time.now.to_i - start} seconds"
+			STDOUT.flush
 		end
 
 		unless found

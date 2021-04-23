@@ -25,6 +25,17 @@ module Common
 		@@site_classes[name]
 	end
 
+	def html_links( url)
+		page = http_get( url)
+		page.force_encoding( 'UTF-8')
+		page.encode!( 'US-ASCII',
+									:invalid => :replace, :undef => :replace, :universal_newline => true)
+
+		page.gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
+			yield found
+		end
+	end
+
 	def http_get( url, delay = 10, headers = {})
 		response = http_get_response( url, delay, headers)
   	response.value

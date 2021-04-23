@@ -13,7 +13,7 @@ class GooglePlay
 			if /\.json$/ =~ f
 				searched = JSON.parse( IO.read( dir + '/' + f))
 				searched.each do |rec|
-					suggest( rec[0], rec[1])
+					scanner.suggest_link( rec[0], rec[1])
 				end
 			end
 		end

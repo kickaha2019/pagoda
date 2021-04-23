@@ -2,7 +2,7 @@ class GOG
 	def find( scanner)
 		path = scanner.cache + "/gog.json"
 
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
 			urls, page, old_count = {}, 0, -1
 
 			while old_count < urls.size
@@ -26,7 +26,29 @@ class GOG
 		end
 
 		JSON.parse( IO.read( path)).each_pair do |url, name|
-			suggest( name, url)
+			scanner.suggest_link( name, url)
+		end
+	end
+
+	def incremental( scanner)
+		# puts "*** Awaiting full scan to be done"
+		# return
+		path   = scanner.cache + "/gog.json"
+		cached = JSON.parse( IO.read( path))
+		added  = false
+
+		scanner.twitter_feed_links( 'gogcom') do |link|
+			if /^https:\/\/www\.gog\.com\/game\// =~ link
+				link = link.split('?')[0]
+				unless cached[link]
+					cached[link] = ''
+					added = true
+				end
+			end
+		end
+
+		if true
+			File.open( path, 'w') {|io| io.print JSON.generate( cached)}
 		end
 	end
 end

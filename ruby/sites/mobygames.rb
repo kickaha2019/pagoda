@@ -2,7 +2,7 @@ class MobyGames
 	def find( scanner)
 		path = scanner.cache + "/mobygames.json"
 
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
 			offset, urls, old_count = 0, {}, -1
 
 			while old_count < urls.size
@@ -26,7 +26,7 @@ class MobyGames
 		end
 
 		JSON.parse( IO.read( path)).each_pair do |url, name|
-			suggest( name, url)
+			scanner.suggest_link( name, url)
 		end
 	end
 end

@@ -6,7 +6,7 @@ class Steam
 	def find( scanner)
 		path = scanner.cache + '/steam.json'
 
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - lifetime * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
 			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
 				raise 'Error retrieving steam data'
 			end
@@ -19,7 +19,7 @@ class Steam
 			text.encode!( 'US-ASCII',
 										:invalid => :replace, :undef => :replace, :universal_newline => true)
 			url = "https://store.steampowered.com/app/#{record['appid']}"
-			suggest( text, url)
+			scanner.suggest_link( text, url)
 			scanner.debug_hook( 'Steam:urls', text, url)
 		end
 	end

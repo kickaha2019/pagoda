@@ -10,6 +10,7 @@ class VerifyLinks
     @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
     @touched = Hash.new {|h,k| h[k] = 0}
+    @current = nil
   end
 
   def apply_filter( filter, link, body, title)
@@ -36,7 +37,7 @@ class VerifyLinks
         sleep 60
         new_touch = @touched.values.inject {|r,e| (r > e) ? r : e}
         unless new_touch > last_touch
-          puts '*** Hang detected'
+          puts "*** Hang detected for #{@current}"
           exit 1
         end
         last_touch = new_touch
@@ -45,7 +46,7 @@ class VerifyLinks
   end
 
   def filter_google_play_store( link, body, title)
-    return true, true, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|PUZZLE|ROLE_PLAYING)"/m =~ body
+    return true, true, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
     return true, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
     return false, false, title
   end
@@ -166,6 +167,7 @@ class VerifyLinks
   end
 
   def verify_page( link, cache)
+    @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
     return unless status
 
@@ -194,7 +196,7 @@ class VerifyLinks
     end
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
-    link.verified( title.strip, t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
+    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
 
     if File.exist?( cache + "/#{old_t}.html")
       File.delete( cache + "/#{old_t}.html")
@@ -214,13 +216,22 @@ end
 vl = VerifyLinks.new( ARGV[0])
 if /^http/ =~ ARGV[1]
   vl.verify_url( ARGV[1], ARGV[2])
+  puts "... Verified #{ARGV[1]}"
 else
+  puts "... Verifying links"
+  count = 0
   vl.detect_hang
   vl.oldest( ARGV[1].to_i) do |link|
-    puts "... Verifying #{link.url}"
+    # puts "... Verifying #{link.url}"
+    count += 1
     vl.throttle( link.url)
-    vl.verify_page( link, ARGV[2])
+    begin
+      vl.verify_page( link, ARGV[2])
+    rescue
+      puts "*** Problem with #{link.url}"
+      raise
+    end
   end
+  puts "... Verified #{count} links"
 end
 
-puts "End of verifying"
