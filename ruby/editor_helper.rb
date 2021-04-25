@@ -170,19 +170,7 @@ module Sinatra
     end
 
     def link_status( rec)
-      if ! rec.valid?
-        if rec.bound? && rec.collation.nil?
-          'Ignored'
-        else
-          'Invalid'
-        end
-      elsif rec.bound?
-        rec.collation ? 'Bound' : 'Ignored'
-      elsif rec.collation
-        'Matched'
-      else
-        'Unmatched'
-      end
+      rec.status
     end
 
     def link_status_combo( combo_name, current_site, current_type, html)

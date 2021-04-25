@@ -178,6 +178,22 @@ class Pagoda
       label
     end
 
+    def status
+      if ! valid?
+        if bound? && collation.nil?
+          'Ignored'
+        else
+          'Invalid'
+        end
+      elsif bound?
+        collation ? 'Bound' : 'Ignored'
+      elsif collation
+        'Matched'
+      else
+        'Unmatched'
+      end
+    end
+
     def redirected?
       @record[:redirect] == 'Y'
     end

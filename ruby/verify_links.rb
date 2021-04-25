@@ -132,9 +132,19 @@ class VerifyLinks
     status, response = http_get( url)
     return status, false, response unless status
 
+    if response.is_a?( Net::HTTPNotFound)
+      return false, false, response
+    end
+
     if (depth < 4) &&
         response.is_a?( Net::HTTPRedirection) &&
         (/^http(s|):/ =~ response['Location'])
+
+      # Ignore Steam age challenge redirects
+      if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
+        return status, false, response
+      end
+
       status, redirected, response = http_get_with_redirect( response['Location'], depth+1)
       return status, true, response
     end
@@ -143,9 +153,17 @@ class VerifyLinks
   end
 
   def oldest( n)
-    links = []
-    @pagoda.links {|link| links << link}
+    links, invalid = [], []
+    @pagoda.links do |link|
+      if link.status == 'Invalid'
+        invalid << link
+      else
+        links << link
+      end
+    end
+
     links.sort_by! {|link| link.timestamp ? link.timestamp : 0}
+    links = invalid + links
     links = links[0...n] if links.size > n
 
     File.open( '/Users/peter/temp/verify.csv', 'w') do |io|

@@ -43,7 +43,6 @@ class TouchArcade
 			if /^https:\/\/toucharcade\.com\/.*-review(-|\/)/ =~ link
 				link = link.split('?')[0]
 				unless cached[link]
-					puts link
 					cached[link] = ''
 					added = true
 				end
@@ -62,7 +61,7 @@ class TouchArcade
 		# end
 
 		if true
-			#File.open( path, 'w') {|io| io.print JSON.generate( cached)}
+			File.open( path, 'w') {|io| io.print JSON.generate( cached)}
 		end
 	end
 end
