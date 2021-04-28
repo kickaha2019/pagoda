@@ -1,41 +1,25 @@
 <%= erb :header, :locals => {:page => 'games'} %>
 
-<table class="search">
-  <tr>
-    <td>
-      <label for="search">Search:</label>
-      <input type="text" id="search" maxlength="40" oninput="search_input()">
-    </td>
-    <td><div id="pages"></div></td>
-  </tr>
-</table>
+<div class="search control">
+  <button onclick="search_input( '<%= "/games?page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/games?search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'games',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [search]}
+  %>&nbsp;&nbsp;
+</div>
 
-<div id="list"></div>
+<%= erb :games_list, :locals => {:page   => page,
+                                 :search => search}  %>
 
 <script>
-    function load_games( search, page) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/games_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
-        xhttp.send();
-        document.getElementById("list").innerHTML = xhttp.responseText;
-
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control?view=games&search=" + encodeURIComponent(search) + "&page=" + page, false);
-        xhttp.send();
-        document.getElementById("pages").innerHTML = xhttp.responseText;
-    }
-
-    function search_input() {
-        load_games( document.getElementById( 'search').value, 1);
-    }
-
     function select_checkbox( id) {
         set_selected_game( id);
-        load_games( <%= "#{search}" %>, <%= page %>);
+        window.location = '/games?page=<%= page %>&search=' + encodeURIComponent( document.getElementById( 'search').value);
     }
-
-    document.getElementById( 'search').value = "#{search}";
-    load_games( <%= "#{search}" %>, <%= page %>);
 </script>
 
 </body>

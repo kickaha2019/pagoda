@@ -1,9 +1,9 @@
-<table class="games list">
+<div id="list"><table class="games list">
   <tr><th>ID</th><th>Name</th><th>Alias</th></tr>
   <%=
     html = []
 
-    records = aliases_records
+    records = aliases_records( search)
     current_page = page
     total_pages  = (records.size + 49) /  50
     current_page = 1 if total_pages < current_page
@@ -27,4 +27,4 @@
 
     html.join( "\n")
   %>
-</table>
+</table></div>

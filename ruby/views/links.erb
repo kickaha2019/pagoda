@@ -11,9 +11,8 @@
 </div>
 
 <div class="search control">
-  <label for="search">Search:&nbsp;</label>
-  <input type="text" id="search" maxlength="40" value="<%= search %>"
-         oninput="search_input( '<%= "/links?site=#{e(site)}&type=#{type}&status=#{status}&page=1" %>')">
+  <button onclick="search_input( '<%= "/links?site=#{e(site)}&type=#{type}&status=#{status}&page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
       url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=#{e(search)}"
       erb :page_control, :locals => {:view => 'link',
@@ -39,10 +38,6 @@
                                                            xhttp.responseText +
                                                            '</span>';
         set_collation( id, row);
-    }
-
-    function search_input( url) {
-        window.location = url + "&search=" + encodeURIComponent( document.getElementById( 'search').value);
     }
 
     function set_collation( url, row) {

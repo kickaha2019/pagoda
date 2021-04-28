@@ -1,39 +1,19 @@
 <%= erb :header, :locals => {:page => 'aliases'} %>
 
-<table class="search">
-  <tr>
-    <td>
-      <label for="search">Search:</label>
-      <input type="text" id="search" maxlength="40" oninput="search_input()">
-    </td>
-    <td><div id="pages"></div></td>
-  </tr>
-</table>
+<div class="search control">
+  <button onclick="search_input( '<%= "/aliases?page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/aliases?search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'aliases',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [search]}
+  %>&nbsp;&nbsp;
+</div>
 
-<div id="list"></div>
-
-<script>
-    function load_aliases( search, page) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/aliases_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
-        xhttp.send();
-        document.getElementById("list").innerHTML = xhttp.responseText;
-
-        xhttp = new XMLHttpRequest();
-        xhttp.open( "GET",
-                    "/page_control?view=aliases&page=" + page + "&search=" + encodeURIComponent(search),
-                    false);
-        xhttp.send();
-        document.getElementById("pages").innerHTML = xhttp.responseText;
-    }
-
-    function search_input() {
-        load_aliases( document.getElementById( 'search').value, 1);
-    }
-
-    document.getElementById( 'search').value = <%= "#{search}" %>;
-    load_aliases( <%= "#{search}" %>, <%= page %>);
-</script>
+<%= erb :aliases_list, :locals => {:page   => page,
+                                   :search => search}  %>
 
 </body>
 </html>

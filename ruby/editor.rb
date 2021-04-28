@@ -17,11 +17,7 @@ get '/' do
 end
 
 get '/aliases' do
-  erb :aliases, :locals => get_locals( params, :search => '')
-end
-
-get '/aliases_list' do
-  erb :aliases_list, :locals => get_locals( params, :search => '', :page => 1)
+  erb :aliases, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 get '/cache/:timestamp' do
@@ -60,10 +56,6 @@ end
 
 get '/games' do
   erb :games, :locals => get_locals( params, :search => '', :page => 1)
-end
-
-get '/games_list' do
-  erb :games_list, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 post '/ignore/:url' do
@@ -112,9 +104,5 @@ post '/unbind/:url' do
 end
 
 get '/verified' do
-  erb :verified, :locals => get_locals( params, :search => '', :page => 1)
-end
-
-get '/verified_list' do
-  erb :verified_list, :locals => get_locals( params, :search => '', :page => 1)
+  erb :verified, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All', :status => 'All')
 end

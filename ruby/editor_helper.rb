@@ -3,7 +3,6 @@ require_relative 'pagoda'
 
 module Sinatra
   module EditorHelper
-    #@@variables            = {}
     @@selected_game = -1
     @@today         = Time.now.to_i
 
@@ -13,8 +12,8 @@ module Sinatra
       checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : true)
     end
 
-    def aliases_records
-      games_records(:alias_search).select {|g| g.aliases.size > 0}
+    def aliases_records( search)
+      games_records( search).select {|g| g.aliases.size > 0}
     end
 
     def bind_id( link_rec)
@@ -96,9 +95,7 @@ module Sinatra
       "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
     end
 
-    def games_records( search_cookie=:game_search)
-      search = get_variable(search_cookie)
-      search = '' if search.nil?
+    def games_records( search)
       $pagoda.games do |game|
         selected = $pagoda.contains_string( game.name, search)
         game.aliases.each do |a|
@@ -254,12 +251,12 @@ module Sinatra
     end
 
     def selected_game
-      return '' if @@selected_game_id < 0
+      return '' if @@selected_game < 0
       $pagoda.get( 'game', :id, @@selected_game.to_i)[0][:name]
     end
 
     def selected_game_id
-      @@selected_game_id
+      @@selected_game
     end
 
     def set_selected_game( id)
@@ -321,11 +318,6 @@ module Sinatra
       else
         $pagoda.create_game( params)
       end
-    end
-
-
-    def verified_records
-      link_records( :verified_search)
     end
   end
 

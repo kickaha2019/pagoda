@@ -1,9 +1,10 @@
+<div id="list">
 <table class="scan list">
   <tr><th>Site</th><th>Type</th><th>Timestamp</th><th>Title</th><th>Status</th><th>Actions</th></tr>
   <%=
     html = []
 
-    records = verified_records
+    records = link_records( site, type, status, search)
     current_page = page.to_i
     total_pages  = (records.size + 99) /  100
     current_page = 1 if total_pages < current_page
@@ -35,3 +36,4 @@
     html.join( "\n")
   %>
 </table>
+</div>

@@ -25,6 +25,10 @@
           window.location = base_url + document.getElementById( cname).value;
       }
 
+      function search_input( url) {
+          window.location = url + "&search=" + encodeURIComponent( document.getElementById( 'search').value);
+      }
+
       function change_page( pname, value) {
           set_variable( pname, value);
           window.location.reload();
