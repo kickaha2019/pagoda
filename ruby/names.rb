@@ -19,6 +19,7 @@ class Names
         '&igrave;' => 'i',
         '&iuml;'   => 'i',
         '&lt;'     => '<',
+        '&mdash;'  => '-',
         '&nbsp;'   => ' ',
         '&ocirc;'  => 'o',
         '&quot;'   => '"',

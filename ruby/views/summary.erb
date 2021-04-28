@@ -12,25 +12,42 @@
       <%=
         html = []
         types = $pagoda.links.collect {|s| s.type}.uniq.sort
-        @types_to_list = {}
+        @types_to_list = []
 
-        none_listed = true
+        @type_flags = {}
         types.each do |type|
-          none_listed = false if get_variable(type)
-        end
-
-        if none_listed
-          types.each {|type| set_variable( type, 'Y')}
-        end
-
-        types.each do |type|
-          checked = ''
-          if get_variable(type) == 'Y'
-            @types_to_list[type] = true
-            checked = 'checked'
+          case type
+            when "Official"
+              @type_flags[type] = official
+            when "Reference"
+              @type_flags[type] = reference
+            when "Review"
+              @type_flags[type] = review
+            when "Store"
+              @type_flags[type] = store
+            when "Walkthrough"
+              @type_flags[type] = walkthrough
           end
-          html << "<span>#{type}:&nbsp;</span>" +
-                  "<input type=\"checkbox\" id=\"#{type}\" value=\"Y\" onclick=\"scan_checkbox('#{type}')\" #{checked}>"
+          @types_to_list << type if @type_flags[type]
+        end
+
+        @types_to_list = types if  @types_to_list.empty?
+
+        types.each do |type|
+          checked = @types_to_list.include?( type) ? 'checked' : ''
+          url, separ = '/summary', '?'
+          types.each do |type1|
+            if type1 != type
+              url += (separ + type1.downcase + '=' + (@type_flags[type1] ? 'Y' : 'N'))
+              separ = '&'
+            end
+          end
+
+          html << <<"CHECKBOX"
+<span>#{type}:&nbsp;</span>
+<input type="checkbox" id="#{type}" value="Y"
+onclick="click_checkbox('#{type}','#{url}&#{type.downcase}=')" #{checked}>
+CHECKBOX
         end
         html.join( "&nbsp;&nbsp;&nbsp;\n")
       %>
@@ -43,7 +60,7 @@
       totals = Hash.new {|h,k| h[k] = [0,0,0]}
 
       records = $pagoda.links do |rec|
-        @types_to_list[rec.type]
+        @types_to_list.include?( rec.type)
       end
 
       records.sort_by! do |rec|

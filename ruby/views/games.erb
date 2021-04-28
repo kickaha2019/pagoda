@@ -13,30 +13,29 @@
 <div id="list"></div>
 
 <script>
-    function load_games() {
+    function load_games( search, page) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/games_list", false);
+        xhttp.open("GET", "/games_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("list").innerHTML = xhttp.responseText;
 
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/games", false);
+        xhttp.open("GET", "/page_control?view=games&search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }
 
     function search_input() {
-        set_variable( 'game_search', document.getElementById( 'search').value);
-        load_games();
+        load_games( document.getElementById( 'search').value, 1);
     }
 
     function select_checkbox( id) {
-        set_variable( 'selected_game', id);
-        load_games();
+        set_selected_game( id);
+        load_games( <%= "#{search}" %>, <%= page %>);
     }
 
-    document.getElementById( 'search').value = get_variable( 'game_search');
-    load_games();
+    document.getElementById( 'search').value = "#{search}";
+    load_games( <%= "#{search}" %>, <%= page %>);
 </script>
 
 </body>

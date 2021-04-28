@@ -17,11 +17,11 @@ get '/' do
 end
 
 get '/aliases' do
-  erb :aliases
+  erb :aliases, :locals => get_locals( params, :search => '')
 end
 
 get '/aliases_list' do
-  erb :aliases_list
+  erb :aliases_list, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 get '/cache/:timestamp' do
@@ -59,15 +59,11 @@ post '/game' do
 end
 
 get '/games' do
-  erb :games
+  erb :games, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 get '/games_list' do
-  erb :games_list
-end
-
-get '/get_variable/:name' do
-  get_variable( params[:name])
+  erb :games_list, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 post '/ignore/:url' do
@@ -82,20 +78,12 @@ get '/link/:url' do
   erb :link_record, :locals => {:url => d(params[:url])}
 end
 
-get '/link_list' do
-  erb :link_list
-end
-
 get '/links' do
-  erb :links
+  erb :links, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All', :status => 'All')
 end
 
 get '/new_game' do
   erb :game, :locals => {:id => -1}
-end
-
-get '/page_control/:kind' do
-  erb :page_control, :locals => {:kind => params[:kind]}
 end
 
 put '/reverify/:url' do
@@ -111,7 +99,12 @@ put '/set_variable/:name/:value' do
 end
 
 get '/summary' do
-  erb :summary
+  erb :summary, :locals => get_locals( params,
+                                       :official    => true,
+                                       :reference   => true,
+                                       :review      => true,
+                                       :store       => true,
+                                       :walkthrough => true)
 end
 
 post '/unbind/:url' do
@@ -119,9 +112,9 @@ post '/unbind/:url' do
 end
 
 get '/verified' do
-  erb :verified
+  erb :verified, :locals => get_locals( params, :search => '', :page => 1)
 end
 
 get '/verified_list' do
-  erb :verified_list
+  erb :verified_list, :locals => get_locals( params, :search => '', :page => 1)
 end

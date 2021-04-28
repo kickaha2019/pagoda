@@ -3,11 +3,11 @@
   <%=
     html = []
 
-    records = games_records
-    current_page = get_variable(:games_page,1).to_i
+    records      = games_records
+    current_page = page
     total_pages  = (records.size + 99) /  100
     current_page = 1 if total_pages < current_page
-    selected     = get_variable(:selected_game,-1).to_i
+    selected     = selected_game_id
     records.sort_by! do |rec|
       rec.name.to_s
     end

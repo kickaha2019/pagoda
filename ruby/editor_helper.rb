@@ -3,8 +3,9 @@ require_relative 'pagoda'
 
 module Sinatra
   module EditorHelper
-    @@variables            = {}
-    @@today                = Time.now.to_i
+    #@@variables            = {}
+    @@selected_game = -1
+    @@today         = Time.now.to_i
 
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
@@ -55,9 +56,9 @@ module Sinatra
       collation.nil? ? '' : collation.year
     end
 
-    def combo_box( combo_name, values, current_value, html)
+    def combo_box( combo_name, values, current_value, base_url, html)
       defn = ["#{combo_name.capitalize}:&nbsp;"]
-      defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}')\">"
+      defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}', '#{base_url}')\">"
       values.each do |value|
         selected = (current_value == value) ? 'selected' : ''
         defn << "<option value=\"#{e(value)}\"#{selected}>#{h(value)}</option>"
@@ -111,9 +112,21 @@ module Sinatra
       IO.read( $cache + "/verified/#{timestamp}.html")
     end
 
-    def get_variable( name, defval=nil)
-      @@variables[name.to_sym] ? @@variables[name.to_sym] : defval
+    def get_locals( params, defs)
+      locals = {}
+      defs.each_pair do |k,v|
+        locals[k] = params[k] ? params[k] : v
+        locals[k] = locals[k].to_i if v.is_a?( Integer)
+        if [true, false].include?( v) && locals[k].is_a?( String)
+          locals[k] = (locals[k] == 'Y')
+        end
+      end
+      locals
     end
+
+    # def get_variable( name, defval=nil)
+    #   @@variables[name.to_sym] ? @@variables[name.to_sym] : defval
+    # end
 
     def h(text, max_chars=1000)
       return '' if text.nil?
@@ -136,19 +149,12 @@ module Sinatra
       "<button onclick=\"link_action( '#{e(e(rec.url))}', '#{action}', #{row});\">#{action.capitalize}</button>"
     end
 
-    def link_records( search = :link_search)
-      search = get_variable( search)
-      search = '' if search.nil?
-
-      chosen_site   = d(get_variable(:site,'All'))
-      chosen_type   = get_variable(:type,'All')
-      chosen_status = get_variable(:status,'All')
-
+    def link_records( site, type, status, search)
       $pagoda.links do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
-        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
-        chosen = false unless (rec.type == chosen_type) || (chosen_type == 'All')
-        chosen = false unless (link_status(rec) == chosen_status) || (chosen_status == 'All')
+        chosen = false unless ((rec.site == site) || (site == 'All'))
+        chosen = false unless (rec.type == type) || (type == 'All')
+        chosen = false unless (link_status(rec) == status) || (status == 'All')
         chosen
       end
     end
@@ -158,22 +164,22 @@ module Sinatra
       (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
     end
 
-    def link_site_combo( combo_name, html)
+    def link_site_combo( combo_name, current_site, current_type, current_status, html)
       values = $pagoda.links.collect {|s| s.site}.uniq.sort
       values << 'All'
-      current_value = d(get_variable(combo_name,'All'))
-      unless values.index( current_value)
-        set_variable(combo_name.to_sym, current_value = 'All')
+      unless values.index( current_site)
+        current_site = 'All'
       end
-      combo_box( combo_name, values, current_value, html)
-      current_value
+      base_url = "/links?status=#{current_status}&type=#{current_type}&site="
+      combo_box( combo_name, values, current_site, base_url, html)
+      current_site
     end
 
     def link_status( rec)
       rec.status
     end
 
-    def link_status_combo( combo_name, current_site, current_type, html)
+    def link_status_combo( combo_name, current_site, current_type, current_status, html)
       values = []
       $pagoda.links do |rec|
         next unless (current_site == 'All') || (current_site == rec.site)
@@ -182,15 +188,15 @@ module Sinatra
       end
       values = values.uniq.sort
       values << 'All'
-      current_value = get_variable(combo_name,'All')
-      unless values.index( current_value)
-        set_variable( combo_name, current_value = 'All')
+      unless values.index( current_status)
+        current_status = 'All'
       end
-      combo_box( combo_name, values, current_value, html)
-      current_value
+      base_url = "/links?site=#{current_site}&type=#{current_type}&status="
+      combo_box( combo_name, values, current_status, base_url, html)
+      current_status
     end
 
-    def link_type_combo( combo_name, current_site, html)
+    def link_type_combo( combo_name, current_site, current_type, current_status, html)
       types = []
       $pagoda.links do |rec|
         next unless (current_site == 'All') || (current_site == rec.site)
@@ -198,12 +204,12 @@ module Sinatra
       end
       types = types.uniq.sort
       types << 'All'
-      current_value = get_variable( combo_name,'All')
-      unless types.index( current_value)
-        set_variable( combo_name, current_value = 'All')
+      unless types.index( current_type)
+        current_type = 'All'
       end
-      combo_box( combo_name, types, current_value, html)
-      current_value
+      base_url = "/links?site=#{current_site}&status=#{current_status}&type="
+      combo_box( combo_name, types, current_type, base_url, html)
+      current_type
     end
 
     def lost_forget_action( rec)
@@ -248,12 +254,16 @@ module Sinatra
     end
 
     def selected_game
-      id = get_variable(:selected_game)
-      id ? $pagoda.get( 'game', :id, id.to_i)[0][:name] : ''
+      return '' if @@selected_game_id < 0
+      $pagoda.get( 'game', :id, @@selected_game.to_i)[0][:name]
     end
 
-    def set_variable( name, value)
-      @@variables[name.to_sym] = value
+    def selected_game_id
+      @@selected_game_id
+    end
+
+    def set_selected_game( id)
+      @@selected_game = id
     end
 
     def self.setup
@@ -286,7 +296,8 @@ module Sinatra
         colour = 'red' if c[1] > 0
 
         if c[0] > 0
-          html << "<td style=\"background: #{colour}\"><a href=\"/links\" onmousedown=\"set_link_cookies('#{e(site)}','#{type}','#{status}');\">#{c[0]}</a></td>"
+          url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=&page=1"
+          html << "<td style=\"background: #{colour}\"><a href=\"#{url}\">#{c[0]}</a></td>"
           totals[status] = [0,0,0] if ! totals.has_key?( status)
           c.each_index {|i| totals[status][i] += c[i]}
         else

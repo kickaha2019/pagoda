@@ -13,25 +13,26 @@
 <div id="list"></div>
 
 <script>
-    function load_aliases() {
+    function load_aliases( search, page) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/aliases_list", false);
+        xhttp.open("GET", "/aliases_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("list").innerHTML = xhttp.responseText;
 
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/aliases", false);
+        xhttp.open( "GET",
+                    "/page_control?view=aliases&page=" + page + "&search=" + encodeURIComponent(search),
+                    false);
         xhttp.send();
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }
 
     function search_input() {
-        set_variable( 'alias_search', document.getElementById( 'search').value);
-        load_aliases();
+        load_aliases( document.getElementById( 'search').value, 1);
     }
 
-    document.getElementById( 'search').value = get_variable( 'alias_search');
-    load_aliases();
+    document.getElementById( 'search').value = <%= "#{search}" %>;
+    load_aliases( <%= "#{search}" %>, <%= page %>);
 </script>
 
 </body>

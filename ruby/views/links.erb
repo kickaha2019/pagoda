@@ -3,35 +3,33 @@
 <div class="combos control">
   <%=
     html = []
-    @chosen_site   = link_site_combo( 'site',   html)
-    @chosen_type   = link_type_combo( 'type',   @chosen_site, html)
-    @chosen_status = link_status_combo( 'status', @chosen_site, @chosen_type, html)
+    @chosen_site   = link_site_combo( 'site', site, type, status, html)
+    @chosen_type   = link_type_combo( 'type',   @chosen_site, type, status, html)
+    @chosen_status = link_status_combo( 'status', @chosen_site, @chosen_type, status, html)
     html.join( "&nbsp;&nbsp;\n")
   %>
 </div>
 
 <div class="search control">
   <label for="search">Search:&nbsp;</label>
-  <input type="text" id="search" maxlength="40" oninput="search_input()">
-  &nbsp;&nbsp;
-  <div id="pages" class="control"></div>
+  <input type="text" id="search" maxlength="40" value="<%= search %>"
+         oninput="search_input( '<%= "/links?site=#{e(site)}&type=#{type}&status=#{status}&page=1" %>')">
+  <%=
+      url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'link',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [@chosen_site, @chosen_type, @chosen_status, search]}
+  %>&nbsp;&nbsp;
 </div>
 
-<div id="list"></div>
+<%= erb :link_list, :locals => {:site   => @chosen_site,
+                                :type   => @chosen_type,
+                                :status => @chosen_status,
+                                :page   => page,
+                                :search => search}  %>
 
 <script>
-    function load_links() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/link_list", false);
-        xhttp.send();
-        document.getElementById("list").innerHTML = xhttp.responseText;
-
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/link", false);
-        xhttp.send();
-        document.getElementById("pages").innerHTML = xhttp.responseText;
-    }
-
     function link_action( id, action, row) {
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/" + action + "/" + id, false);
@@ -43,9 +41,8 @@
         set_collation( id, row);
     }
 
-    function search_input() {
-        set_variable( 'link_search', document.getElementById( 'search').value);
-        load_links();
+    function search_input( url) {
+        window.location = url + "&search=" + encodeURIComponent( document.getElementById( 'search').value);
     }
 
     function set_collation( url, row) {
@@ -57,9 +54,6 @@
         document.getElementById("collation" + row).innerHTML = info['link'];
         document.getElementById("collation_year" + row).innerHTML = info['year'];
     }
-
-    document.getElementById( 'search').value = get_variable( 'link_search');
-    load_links();
 </script>
 
 </body>

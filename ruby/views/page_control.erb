@@ -1,15 +1,16 @@
+<div id="pages" class="control">
 <%=
        html = []
 
-       records      = self.send( "#{kind}_records".to_sym)
-       control_id   = "#{kind}_page".to_sym
-       current_page = get_variable(control_id,1).to_i
+       records      = self.send( "#{view}_records".to_sym, *args)
+       current_page = page
        total_pages  = (records.size + 99) /  100
        current_page = 1 if total_pages < current_page
 
-       html << "<button #{(current_page <= 1) ? 'disabled' : ''} onclick=\"change_page('#{control_id}', #{current_page-1});\">&lt;&lt;</button>"
+       html << "<button #{(current_page <= 1) ? 'disabled' : ''} onclick=\"window.location=#{url}&page=#{current_page-1});\">&lt;&lt;</button>"
        html << "&nbsp;Page #{current_page} of #{total_pages}&nbsp;"
-       html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"change_page('#{control_id}', #{current_page+1});\">&gt;&gt;</button>"
+       html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"window.location=#{url}&page=#{current_page+1});\">&gt;&gt;</button>"
 
        html.join( "\n")
 %>
+</div>

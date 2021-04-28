@@ -20,14 +20,14 @@
 <div id="list"></div>
 
 <script>
-    function load_verified() {
+    function load_verified( search, page) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/verified_list", false);
+        xhttp.open("GET", "/verified_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("list").innerHTML = xhttp.responseText;
 
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/page_control/verified", false);
+        xhttp.open("GET", "/page_control?view=verifieds&search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("pages").innerHTML = xhttp.responseText;
     }
@@ -44,12 +44,11 @@
     }
 
     function search_input() {
-        set_variable( 'link_search', document.getElementById( 'search').value);
-        load_links();
+        load_verified( document.getElementById( 'search').value, 1);
     }
 
-    document.getElementById( 'search').value = get_variable( 'verified_search');
-    load_verified();
+    document.getElementById( 'search').value = <%= "#{search}" %>>;
+    load_verified( <%= "#{search}" %>, <%= page %>);
 </script>
 
 </body>

@@ -21,22 +21,8 @@
     span.changed {background: lime}
   </style>
   <script>
-      function get_variable(cname) {
-          var xhttp = new XMLHttpRequest();
-          xhttp.open("GET", "/get_variable/" + cname, false);
-          xhttp.send();
-          return xhttp.responseText;
-      }
-
-      function set_variable( cname, cvalue) {
-          var xhttp = new XMLHttpRequest();
-          xhttp.open("PUT", "/set_variable/" + cname + "/" + encodeURIComponent( cvalue), false);
-          xhttp.send();
-      }
-
-      function change_combo( cname) {
-          set_variable( cname, document.getElementById( cname).value);
-          window.location.reload();
+      function change_combo( cname, base_url) {
+          window.location = base_url + document.getElementById( cname).value;
       }
 
       function change_page( pname, value) {
@@ -44,9 +30,8 @@
           window.location.reload();
       }
 
-      function scan_checkbox( cname) {
-          set_variable( cname, document.getElementById( cname).checked ? 'Y' : 'N');
-          window.location.reload();
+      function click_checkbox( cname, base_url) {
+          window.location = base_url + (document.getElementById( cname).checked ? 'Y' : 'N');
       }
   </script>
 </head>

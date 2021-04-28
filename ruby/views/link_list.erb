@@ -1,10 +1,10 @@
-<table class="scan list">
+<div id="list"><table class="scan list">
   <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Actions</th></tr>
   <%=
     html = []
 
-    records = link_records
-    current_page = get_variable(:link_page,1).to_i
+    records = link_records( site, type, status, search)
+    current_page = page.to_i
     total_pages  = (records.size + 99) /  100
     current_page = 1 if total_pages < current_page
 
@@ -36,4 +36,4 @@
 
     html.join( "\n")
   %>
-</table>
+</table></div>
