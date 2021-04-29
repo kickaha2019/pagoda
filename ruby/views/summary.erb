@@ -1,13 +1,5 @@
 <%= erb :header, :locals => {:page => 'summary'} %>
 
-<script>
-    function set_link_cookies( site, type, status) {
-        set_variable( 'site', site);
-        set_variable( 'type', type);
-        set_variable( 'status', status);
-    }
-</script>
-
   <div class="checkboxes control">
       <%=
         html = []

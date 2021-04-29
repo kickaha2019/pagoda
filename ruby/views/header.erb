@@ -29,11 +29,6 @@
           window.location = url + "&search=" + encodeURIComponent( document.getElementById( 'search').value);
       }
 
-      function change_page( pname, value) {
-          set_variable( pname, value);
-          window.location.reload();
-      }
-
       function click_checkbox( cname, base_url) {
           window.location = base_url + (document.getElementById( cname).checked ? 'Y' : 'N');
       }

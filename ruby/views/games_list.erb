@@ -3,18 +3,18 @@
   <%=
     html = []
 
-    records      = games_records( search)
-    current_page = page
-    total_pages  = (records.size + 99) /  100
-    current_page = 1 if total_pages < current_page
-    selected     = selected_game_id
+    records       = games_records( search)
+    current_page  = page
+    total_pages   = (records.size + 99) /  100
+    current_page  = 1 if total_pages < current_page
+    selected_game = selected_game_id( selected)
     records.sort_by! do |rec|
       rec.name.to_s
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
-      if selected == rec.id
+      if selected_game == rec.id
         style   = 'style="background: lime"'
         checked = 'checked'
       else

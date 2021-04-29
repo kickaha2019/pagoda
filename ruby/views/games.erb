@@ -12,13 +12,13 @@
   %>&nbsp;&nbsp;
 </div>
 
-<%= erb :games_list, :locals => {:page   => page,
-                                 :search => search}  %>
+<%= erb :games_list, :locals => {:page     => page,
+                                 :search   => search,
+                                 :selected => selected}  %>
 
 <script>
     function select_checkbox( id) {
-        set_selected_game( id);
-        window.location = '/games?page=<%= page %>&search=' + encodeURIComponent( document.getElementById( 'search').value);
+        window.location = '/games?page=<%= page %>&search=' + encodeURIComponent( document.getElementById( 'search').value) + "&selected=" + id;
     }
 </script>
 

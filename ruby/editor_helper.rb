@@ -24,12 +24,11 @@ module Sinatra
     end
 
     def bind_link( link_url)
-      return '' if get_variable(:selected_game).nil?
-      selected_id = get_variable(:selected_game).to_i
+      return '' if @@selected_game < 0
       link_rec = $pagoda.link( link_url)
       return '' if link_rec.nil?
-      return '' if bind_id( link_rec) == selected_id
-      link_rec.bind( selected_id)
+      return '' if bind_id( link_rec) == @@selected_game
+      link_rec.bind( @@selected_game)
       'Bound'
     end
 
@@ -120,10 +119,6 @@ module Sinatra
       end
       locals
     end
-
-    # def get_variable( name, defval=nil)
-    #   @@variables[name.to_sym] ? @@variables[name.to_sym] : defval
-    # end
 
     def h(text, max_chars=1000)
       return '' if text.nil?
@@ -217,14 +212,11 @@ module Sinatra
       "<button onclick=\"revive_expect( '#{e(rec.url)}');\">Restore</button>"
     end
 
-    def lost_records
-      chosen_site = d( get_variable(:site,'All'))
-      chosen_type = get_variable(:type,'All')
-
+    def lost_records( site, type)
       $pagoda.lost do |rec|
         chosen = true
-        chosen = false unless ((rec.site == chosen_site) || (chosen_site == 'All'))
-        chosen = false unless ((rec.type == chosen_type) || (chosen_type == 'All'))
+        chosen = false unless ((rec.site == site) || (site == 'All'))
+        chosen = false unless ((rec.type == type) || (type == 'All'))
         chosen
       end
     end
@@ -255,8 +247,9 @@ module Sinatra
       $pagoda.get( 'game', :id, @@selected_game.to_i)[0][:name]
     end
 
-    def selected_game_id
-      @@selected_game
+    def selected_game_id( new_id)
+      @@selected_game if new_id == 0
+      @@selected_game = new_id
     end
 
     def set_selected_game( id)
