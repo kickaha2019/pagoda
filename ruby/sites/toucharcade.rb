@@ -30,22 +30,23 @@ class TouchArcade
 		end
 
 		JSON.parse( IO.read( path)).each_pair do |url, name|
-			scanner.suggest_link( name, url)
+			scanner.add_link( name, url)
 		end
 	end
 
 	def incremental( scanner)
-		path   = scanner.cache + "/touch_arcade.json"
-		cached = {} # JSON.parse( IO.read( path))
-		added  = false
+		# path   = scanner.cache + "/touch_arcade.json"
+		# cached = {} # JSON.parse( IO.read( path))
+		# added  = false
 
 		scanner.html_links( 'https://toucharcade.com/category/reviews/') do |link|
 			if /^https:\/\/toucharcade\.com\/.*-review(-|\/)/ =~ link
 				link = link.split('?')[0]
-				unless cached[link]
-					cached[link] = ''
-					added = true
-				end
+				scanner.add_link( link, link)
+				# unless cached[link]
+				# 	cached[link] = ''
+				# 	added = true
+				# end
 			end
 		end
 
@@ -60,8 +61,8 @@ class TouchArcade
 		# 	end
 		# end
 
-		if true
-			File.open( path, 'w') {|io| io.print JSON.generate( cached)}
-		end
+		# if true
+		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
+		# end
 	end
 end

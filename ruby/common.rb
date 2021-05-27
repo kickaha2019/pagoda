@@ -115,7 +115,11 @@ module Common
 			created = tweet['created_at'][0..9]
 			oldest = created if created < oldest
 			tweet['text'].gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
-  			yield http_redirect( found)
+				begin
+  				yield http_redirect( found)
+				rescue SocketError
+					puts "!!! Socket error: #{found}"
+				end
 			end
 		end
 

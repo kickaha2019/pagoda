@@ -1,3 +1,13 @@
+#
+# Verify links
+#
+# Command line
+#   Pagoda database directory
+#   URL to validate or number of links to validate
+#   Cache directory
+#   How old in days before revalidating link
+#
+
 require 'net/http'
 require 'uri'
 require 'openssl'
@@ -152,13 +162,15 @@ class VerifyLinks
     return status, false, response
   end
 
-  def oldest( n)
+  def oldest( n, valid_for)
     links, invalid = [], []
+    valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
+
     @pagoda.links do |link|
       if link.status == 'Invalid'
         invalid << link
       else
-        links << link
+        links << link if link.timestamp < valid_from
       end
     end
 
@@ -239,7 +251,7 @@ else
   puts "... Verifying links"
   count = 0
   vl.detect_hang
-  vl.oldest( ARGV[1].to_i) do |link|
+  vl.oldest( ARGV[1].to_i, ARGV[3].to_i) do |link|
     # puts "... Verifying #{link.url}"
     count += 1
     vl.throttle( link.url)
