@@ -1,5 +1,5 @@
 class IOS
-	@@sections = {'adventure':7002, 'puzzle':7012,'role-playing':7014}
+	@@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
 	@@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 
 	def get_cache_info( searcher)
@@ -63,5 +63,6 @@ class IOS
 		caches[0..2].each do |cache|
 			refresh_cache( searcher, cache[0], cache[1])
 		end
+		0
 	end
 end

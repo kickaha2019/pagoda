@@ -35,20 +35,21 @@ class GOG
 		# return
 		path   = scanner.cache + "/gog.json"
 		cached = JSON.parse( IO.read( path))
-		added  = false
+		added  = 0
 
 		scanner.twitter_feed_links( 'gogcom') do |link|
 			if /^https:\/\/www\.gog\.com\/game\// =~ link
 				link = link.split('?')[0]
 				unless cached[link]
 					cached[link] = ''
-					added = true
+					added += 1
 				end
 			end
 		end
 
-		if true
+		if added > 0
 			File.open( path, 'w') {|io| io.print JSON.generate( cached)}
 		end
+		added
 	end
 end

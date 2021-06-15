@@ -26,7 +26,9 @@ class Spider
 	end
 
 	def add_link( title, url)
-		unless @pagoda.has?( 'link', :url, url)
+		if @pagoda.has?( 'link', :url, url)
+			0
+		else
 			@pagoda.start_transaction
 			@pagoda.insert( 'link',
 									    {:site => @site,
@@ -35,6 +37,7 @@ class Spider
 											:url       => url,
 											:timestamp => 1})
 			@pagoda.end_transaction
+			1
 		end
 	end
 
@@ -139,6 +142,7 @@ class Spider
 
 	def incremental( site, type)
 		found = false
+    load_old_redirects( @cache + '/redirects.yaml')
 
 		@settings['incremental'].each do |scan|
 			@site = scan['site']
@@ -148,10 +152,8 @@ class Spider
 			found = true
 
 			puts "*** Incremental scan for site: #{@site} type: #{@type}"
-			before = @pagoda.count( 'link')
 			start = Time.now.to_i
-			get_site_class( @site).new.send( scan['method'].to_sym, self)
-			added = @pagoda.count( 'link') - before
+			added = get_site_class( @site).new.send( scan['method'].to_sym, self)
 			puts "... #{added} links added" if added > 0
 			puts "... Time taken #{Time.now.to_i - start} seconds"
 			STDOUT.flush
@@ -160,7 +162,9 @@ class Spider
 		unless found
 			error( "No incremental scan for #{site}/#{type}")
 			return
-		end
+    end
+
+    save_new_redirects( @cache + '/redirects.yaml')
 	end
 
 	def lowest_frequency( pagoda_freqs, scan_freqs, name)

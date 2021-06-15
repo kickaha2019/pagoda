@@ -23,6 +23,7 @@ class GooglePlay
 		searcher.search( cache_directory, 50) do |game_name|
 			search_for_name( game_name)
 		end
+		0
 	end
 
 	def search_for_name( name)

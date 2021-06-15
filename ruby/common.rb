@@ -6,8 +6,10 @@ require "selenium-webdriver"
 require_relative 'pagoda'
 
 module Common
-	@@throttling   = Hash.new {|h,k| h[k] = 0}
-	@@site_classes = {}
+	@@throttling    = Hash.new {|h,k| h[k] = 0}
+	@@site_classes  = {}
+	@@old_redirects = {}
+	@@new_redirects = {}
 
 	def browser_get( url)
 		@driver = Selenium::WebDriver.for :chrome unless defined?( @driver)
@@ -30,10 +32,12 @@ module Common
 		page.force_encoding( 'UTF-8')
 		page.encode!( 'US-ASCII',
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
+		added = 0
 
 		page.gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
-			yield found
+			added += (yield found)
 		end
+		added
 	end
 
 	def http_get( url, delay = 10, headers = {})
@@ -65,15 +69,36 @@ module Common
 
 	def http_redirect( url, depth = 0)
 		return url if /\.(jpg|jpeg|png|gif)$/i =~ url
+
+		if old = @@old_redirects[url]
+			@@new_redirects[url] = old
+			return old
+		end
+
 		response = http_get_response( url, 1)
 
 		if (depth < 4) &&
 				response.is_a?( Net::HTTPRedirection) &&
 				(/^http(s|):/ =~ response['Location'])
-			return http_redirect( response['Location'], depth+1)
+			url1 = http_redirect( response['Location'], depth+1)
+		else
+			url1 = url
 		end
 
+		@@new_redirects[url] = url1
 		url
+	end
+
+	def load_old_redirects( path)
+		if File.exist?( path)
+			@@old_redirects = YAML.load( IO.read( path))
+		end
+	end
+
+	def save_new_redirects( path)
+		File.open( path, 'w') do |io|
+			io.print @@new_redirects.to_yaml
+		end
 	end
 
 	def throttle( url, delay)
@@ -111,12 +136,14 @@ module Common
 		info = JSON.parse( page)
 
 		oldest = '9999-12-31'
+		added  = 0
+
 		info['data'].each do |tweet|
 			created = tweet['created_at'][0..9]
 			oldest = created if created < oldest
 			tweet['text'].gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
 				begin
-  				yield http_redirect( found)
+  				added += (yield http_redirect( found))
 				rescue SocketError
 					puts "!!! Socket error: #{found}"
 				end
@@ -124,5 +151,6 @@ module Common
 		end
 
 		puts "... Oldest tweet found for #{account} on #{oldest}"
+		added
 	end
 end

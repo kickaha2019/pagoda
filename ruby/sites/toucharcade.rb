@@ -47,6 +47,8 @@ class TouchArcade
 				# 	cached[link] = ''
 				# 	added = true
 				# end
+			else
+				0
 			end
 		end
 
