@@ -127,7 +127,26 @@ module Common
 		info = JSON.parse( page)
 		id = info['data'][0]['id']
 
-		page = http_get( "https://api.twitter.com/2/users/#{id}/tweets?max_results=100&exclude=retweets&tweet.fields=text,created_at",
+		oldest    = '9999-12-31'
+		months2   = (Time.now - 60 * 24 * 60 * 60).strftime( "%Y-%m-%d")
+		oldest_id = nil
+		added     = 0
+
+		while oldest > months2
+			a, oldest, oldest_id = twitter_feed_links1( id, oldest_id) do |found|
+				yield found
+			end
+			added += a
+		end
+
+		puts "... Oldest tweet found for #{account} on #{oldest}"
+		added
+	end
+
+	def twitter_feed_links1( account_id, until_id)
+		before = until_id ? "&until_id=#{until_id}" : ''
+		puts "... Finding tweets for #{account_id} up to #{until_id}"
+		page = http_get( "https://api.twitter.com/2/users/#{account_id}/tweets?max_results=100#{before}&exclude=retweets&tweet.fields=text,created_at,id",
 										 10,
 										 {'Authorization' => "Bearer #{@settings['Twitter']['BEARER_TOKEN']}"})
 		page.force_encoding( 'UTF-8')
@@ -135,22 +154,26 @@ module Common
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
 		info = JSON.parse( page)
 
-		oldest = '9999-12-31'
-		added  = 0
+		oldest    = '0000-00-00'
+		oldest_id = nil
+		added     = 0
 
 		info['data'].each do |tweet|
-			created = tweet['created_at'][0..9]
-			oldest = created if created < oldest
+			if oldest_id.nil? || (oldest_id > tweet['id'])
+				oldest    = tweet['created_at'][0..9]
+				oldest_id = tweet['id']
+			end
+
 			tweet['text'].gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
 				begin
-  				added += (yield http_redirect( found))
+					added += (yield http_redirect( found))
 				rescue SocketError
 					puts "!!! Socket error: #{found}"
 				end
 			end
 		end
 
-		puts "... Oldest tweet found for #{account} on #{oldest}"
-		added
+		oldest = '0000-00-00' unless oldest_id && (oldest_id != until_id)
+		return added, oldest, oldest_id
 	end
 end
