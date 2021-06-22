@@ -69,6 +69,13 @@ class VerifyLinks
     return false, false, title
   end
 
+  def filter_steam_store( link, body, title)
+    return true, true,  title if /on Steam$/ =~ title
+    return true, true,  title if /\/agecheck\/app\// =~ title
+    return true, false, title if /^Welcome to Steam$/ =~ title
+    return false, false, title
+  end
+
   def filter_suffix( link, body, title, suffix)
     re = Regexp.new( '^(.*)' + suffix + '.*$')
     if m = re.match( title)
@@ -151,9 +158,9 @@ class VerifyLinks
         (/^http(s|):/ =~ response['Location'])
 
       # Ignore Steam age challenge redirects
-      if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
-        return status, false, response
-      end
+      # if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
+      #   return status, false, response
+      # end
 
       status, redirected, response = http_get_with_redirect( response['Location'], depth+1)
       return status, true, response
@@ -199,6 +206,7 @@ class VerifyLinks
   def verify_page( link, cache)
     @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
+    #p ['DEBUG100', status, redirected, response]
     return unless status
 
     body = response.body
@@ -210,6 +218,7 @@ class VerifyLinks
                   :universal_newline => true)
 
     status, valid, title = get_details( link, body)
+    #p ['DEBUG200', status, valid, title]
     unless status
       File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
       # if link.timestamp < 1000

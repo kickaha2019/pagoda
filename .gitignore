@@ -4,7 +4,7 @@ SafariEchoURL.scpt
 backup
 bin
 classes.txt
-database
+database/*.txt
 database1
 gog
 games.txt
@@ -21,3 +21,6 @@ cache1
 /build/
 /dist/
 nbproject
+*.sql
+*.old
+settings.yaml

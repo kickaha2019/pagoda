@@ -18,9 +18,9 @@
       html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
       html << "<td>#{rec.type}</td>"
       if rec.timestamp < 10000
-        html << "<td><span title=\"#{p(rec.label)}\">#{h(rec.label,40)}<span/></td>"
+        html << "<td><span title=\"#{t(rec.label)}\">#{h(rec.label,40)}<span/></td>"
       else
-        html << "<td><a title=\"#{p(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
+        html << "<td><a title=\"#{t(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
       end
       info = collation( rec.url)
       html << "<td id=\"collation#{row}\">#{info[:link]}</td>"

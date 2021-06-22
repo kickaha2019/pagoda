@@ -1,0 +1,41 @@
+---
+"Adventure Classic Gaming":
+  Review:
+    suffix: "- Review - Adventure Classic Gaming"
+  Walkthrough:
+    suffix: "- Cheat - Adventure Classic Gaming"
+"Adventure Gamers":
+  Review:
+    suffix: "review | Adventure Gamers"
+GOG:
+  Store:
+    suffix: " on GOG.com"
+Google Play:
+  Store:
+    - google_play_store
+iOS:
+  Store:
+    - ios_store
+Jonas Kyratzes:
+  Official:
+    suffix: "&#8211; Jonas Kyratzes"
+Just Adventure:
+  Review:
+    suffix: "- JustAdventure"
+MobyGames:
+  Reference:
+    suffix: "- MobyGames"
+"Przygodoskop (P)":
+  Review:
+    suffix: "- recenzja -"
+  Walkthrough:
+    suffix: "- solucja -"
+Steam:
+  Store:
+    - steam_store
+Tap Repeatedly:
+  Review:
+    suffix: "Review - Tap-Repeatedly"
+UHS:
+  Walkthrough:
+    suffix: "Hints from UHS"

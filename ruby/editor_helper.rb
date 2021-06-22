@@ -45,7 +45,7 @@ module Sinatra
       return {'link':'','year':''} unless link
       collation = link.collation
       return {'link':'','year':''} if collation.nil?
-      link_html = "<a title=\"#{p(collation.name)}\" href=\"/game/#{collation.id}\">#{h(collation.name,40)}</a>"
+      link_html = "<a title=\"#{t(collation.name)}\" href=\"/game/#{collation.id}\">#{h(collation.name,40)}</a>"
       {'game':collation.id, 'link':link_html,'year':"#{collation.year}"}
     end
 
@@ -229,11 +229,6 @@ module Sinatra
       summary
     end
 
-    def p(text)
-      return '' if text.nil?
-      text.gsub( /["'<>&]/, ' ')
-    end
-
     def refresh_metadata
       $pagoda.refresh_reduction_cache
     end
@@ -295,6 +290,11 @@ module Sinatra
         end
       end
       html << '</tr>'
+    end
+
+    def t(text)
+      return '' if text.nil?
+      text.gsub( /["'<>&]/, ' ')
     end
 
     def unbind_link( link_url)

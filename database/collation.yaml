@@ -1,0 +1,88 @@
+---
+"Adventure Classic Gaming":
+  Review:
+    - "(.*) -"
+"Adventure Lantern":
+  Review:
+    - "(.*) - Adventure Lantern"
+    - "(.*) Review"
+  Walkthrough:
+    - "(.*) - Adventure Lantern"
+    - "(.*) Walkthrough"
+"Andrew Plotkin":
+  Review:
+    - "Zarf Updates: (.*)"
+    - "Mini-Review: (.*)"
+    - "Non-Review: (.*)"
+"Aventura y C&Iacute;A (Sp)":
+  Review:
+    - "(.*) \\| P gina 1.*"
+"Brass Lantern":
+  Review:
+    - "Brass Lantern (.*) Review"
+"fisicx.com":
+  Walkthrough:
+    - "(.*) Walkthrough"
+GameBoomers:
+  Review:
+    - "(.*) [rR]eview by .*"
+  Walkthrough:
+    - "(.*) Cheats"
+    - "(.*) Hints"
+    - "(.*) [wW]alkthrough"
+    - "(.*) [wW]alkthrough by .*"
+    - "(.*) - Game Boomers"
+GOG:
+  Store:
+    - "-\\d+% (.*)"
+"Google Play":
+  Store:
+    - "(.*) - Apps on Google Play"
+iOS:
+  Store:
+    - "(.*) on the app store"
+    - "(.*) on the App Store"
+    - "(.*) on the Mac App Store"
+"Just Adventure":
+  Review:
+    - "Throwback Thursday\\W(.*)"
+metzomagic.com:
+  Review:
+    - "(.*) Review by .*"
+  Walkthrough:
+    - "(.*) Walkthrough by .*"
+MobyGames:
+  Reference:
+    - "(.*) \\(\\d+\\)"
+    - "(.*) for Browser"
+    - "(.*) for DOS"
+    - "(.*) for Gamecube"
+    - "(.*) for Game Boy Color"
+    - "(.*) for NES"
+    - "(.*) for Nintendo .*"
+    - "(.*) for PC-.*"
+    - "(.*) for PlayStation.*"
+    - "(.*) for SEGA.*"
+    - "(.*) for TurboGrafx .*"
+    - "(.*) for Windows.*"
+    - "(.*) for Xbox.*"
+"Mr. Bill's Adventureland":
+  Review:
+    - "(.*) Review - Mr. Bill's Adventureland"
+  Walkthrough:
+    - "(.*) Walkthrough - Mr. Bill's Adventureland"
+Mystery Manor:
+  Review:
+    - "Mystery Manor (.*) Review"
+  Walkthrough:
+    - "(.*) Walkthrough.*"
+Steam:
+  Store:
+    - "Save \\d+% on (.*)"
+TouchArcade:
+  Review:
+    - "(.*) Review .* TouchArcade"
+UHS:
+  Review:
+    - "UHS: (.*)"
+    - "(.*) Review"
