@@ -1,0 +1,41 @@
+<%= erb :header, :locals => {:page => 'arcades'} %>
+
+<div class="search control">
+  <button onclick="search_input( '<%= "/arcades?page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/arcades?search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'arcades',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [search]}
+  %>&nbsp;&nbsp;
+</div>
+
+<div id="list"><table class="arcades list">
+  <tr><th>ID</th><th>Name</th><th>Dexterity</th><th>Difficulty</th><th>Depth</th><th>Genre</th></tr>
+  <%=
+    html = []
+
+    records       = arcades_records( search)
+    current_page  = page
+    total_pages   = (records.size + 99) /  100
+    current_page  = 1 if total_pages < current_page
+    records.sort_by! do |rec|
+      rec.name.to_s
+    end
+
+    records[(100*(current_page-1))...(100*current_page)].each do |rec|
+      html << "<tr>"
+      html << "<td>#{rec.id}</td>"
+      html << "<td><a href=\"/arcade/#{rec.id}\">#{h(rec.name)}</a></td>"
+      html << [:dexterity, :difficulty, :depth, :genre].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
+      html << '</tr>'
+    end
+
+    html.join( "\n")
+  %>
+</table></div>
+
+</body>
+</html>

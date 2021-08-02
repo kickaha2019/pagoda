@@ -92,7 +92,10 @@ class Table
 
   def fields( record)
     record.each_key do |key|
-      raise "Unknown key #{key}" if @columns.index( key).nil?
+      if @columns.index( key).nil?
+        p @columns
+        raise "Unknown key #{key}"
+      end
     end
     @columns.collect {|name| record[name]}
   end

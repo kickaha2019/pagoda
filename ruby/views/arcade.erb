@@ -1,0 +1,84 @@
+<%= erb :header, :locals => {:page => (id >= 0) ? 'arcade' : 'new_arcade'} %>
+
+<script>
+    function check_name( field) {
+        var name = document.getElementsByName(field)[0].value;
+        if (name == '') {return true;}
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET",
+                   "/check_arcade_name/" +
+                   document.getElementById("id").value + "/" +
+                   encodeURIComponent( name),
+                   false);
+        xhttp.send();
+
+        if (xhttp.responseText != 'Y') {
+          alert( name + " already used");
+          return false;
+        } else {
+          return true;
+        }
+    }
+
+    function confirm_delete( label) {
+        return confirm( "Confirm " + label);
+    }
+</script>
+
+<%
+    @game = $pagoda.arcade( id)
+    if @game
+      @create_label  = 'Update'
+      @delete_label  = 'Delete'
+      @delete_method = 'post'
+      @delete_action = "/delete_arcade"
+      @id            = id
+      @name          = @game.name
+      @dexterity     = @game.dexterity
+      @difficulty    = @game.difficulty
+      @depth         = @game.depth
+      @genre         = @game.genre
+    else
+      @create_label  = 'Create'
+      @delete_label  = 'Clear'
+      @delete_method = 'get'
+      @delete_action = "/new_arcade"
+      @id            = $pagoda.next_value( 'arcade', :id)
+      @name          = ''
+      @dexterity     = ''
+      @difficulty    = ''
+      @depth         = ''
+      @genre         = ''
+    end
+%>
+
+<form action="/arcade">
+    <table class="arcade">
+      <tr><th>Id:</th><td><%= input_element( 'id', 6, @id, 'readonly id="id"') %></td></tr>
+
+      <tr><th>Name:</th><td><%= input_element( 'name', 80, @name, 'required') %></td></tr>
+
+      <tr><th>Dexterity:</th><td><%= input_element( 'dexterity', 2, @dexterity) %></td></tr>
+
+      <tr><th>Difficulty:</th><td><%= input_element( 'difficulty', 2, @difficulty) %></td></tr>
+
+      <tr><th>Depth:</th><td><%= input_element( 'depth', 2, @depth) %></td></tr>
+
+      <tr><th>Genre:</th><td><%= input_element( 'genre', 30, @genre) %></td></tr>
+    </table>
+
+    <table class="buttons">
+      <tr>
+        <td>
+          <button formmethod="post" type="submit" onclick="return check_name();"><%= @create_label %></button>
+        </td>
+        <td>
+          <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\" onclick=\"return confirm_delete('#{@delete_label}');\">#{@delete_label}</button>" %>
+        </td>
+      </tr>
+    </table>
+</form>
+
+</body>
+</html>

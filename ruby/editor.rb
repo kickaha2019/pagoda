@@ -20,6 +20,19 @@ get '/aliases' do
   erb :aliases, :locals => get_locals( params, :search => '', :page => 1)
 end
 
+get '/arcade/:id' do
+  erb :arcade, :locals => {:id => params[:id].to_i}
+end
+
+post '/arcade' do
+  update_arcade( params)
+  erb :arcade, :locals => {:id => params[:id].to_i}
+end
+
+get '/arcades' do
+  erb :arcades, :locals => get_locals( params, :search => '', :page => 1)
+end
+
 get '/cache/:timestamp' do
   get_cache( params[:timestamp].to_i)
 end
@@ -34,6 +47,11 @@ end
 
 post '/bind/:url' do
   bind_link( d(params[:url]))
+end
+
+post '/delete_arcade' do
+  delete_arcade( params[:id].to_i)
+  redirect '/new_arcade'
 end
 
 post '/delete_game' do
@@ -72,6 +90,10 @@ end
 
 get '/links' do
   erb :links, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All', :status => 'All')
+end
+
+get '/new_arcade' do
+  erb :arcade, :locals => {:id => -1}
 end
 
 get '/new_game' do

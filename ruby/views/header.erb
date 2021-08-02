@@ -17,6 +17,8 @@
     .link_record th {text-align: left}
     .game th {text-align: left}
     .game input {font-size: 20px}
+    .arcade th {text-align: left}
+    .arcade input {font-size: 20px}
     .scan {font-size: 14px}
     span.changed {background: lime}
   </style>
@@ -40,7 +42,7 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'summary', 'links', 'games', 'aliases', 'new_game', 'verified'].collect do |item|
+      ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified', 'arcades', 'new_arcade'].collect do |item|
         if item == page
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
         elsif item == 'tables'

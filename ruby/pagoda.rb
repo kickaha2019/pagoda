@@ -29,6 +29,33 @@ class Pagoda
     end
   end
 
+  class PagodaArcade < PagodaRecord
+    def delete
+      @owner.start_transaction
+      @owner.delete( 'arcade', :id, id)
+      @owner.end_transaction
+    end
+
+    def sort_name
+      @owner.sort_name( name)
+    end
+
+    def update( params)
+      @owner.start_transaction
+      @owner.delete( 'arcade', :id, id)
+
+      rec = {}
+      [:id, :name, :dexterity, :difficulty, :depth, :genre].each do |field|
+        rec[field] = params[field] ? params[field].strip : nil
+      end
+
+      @record = @owner.insert( 'arcade', rec)
+
+      @owner.end_transaction
+      self
+    end
+  end
+
   class PagodaCollation < PagodaRecord
     def rank
       0
@@ -229,12 +256,15 @@ class Pagoda
     @names     = Names.new
     @possibles = nil
 
-    @database.declare_integer( 'alias', :id)
-    @database.declare_integer( 'bind',  :id)
-    @database.declare_integer( 'game',  :id)
-    @database.declare_integer( 'game',  :group_id)
-    @database.declare_integer( 'game',  :year)
-    @database.declare_integer( 'link',  :timestamp)
+    @database.declare_integer( 'alias',  :id)
+    @database.declare_integer( 'arcade', :dexterity)
+    @database.declare_integer( 'arcade', :difficulty)
+    @database.declare_integer( 'arcade', :depth)
+    @database.declare_integer( 'bind',   :id)
+    @database.declare_integer( 'game',   :id)
+    @database.declare_integer( 'game',   :group_id)
+    @database.declare_integer( 'game',   :year)
+    @database.declare_integer( 'link',   :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
@@ -264,6 +294,21 @@ class Pagoda
     list
   end
 
+  def arcade( id)
+    recs = get( 'arcade', :id, id.to_i)
+    return nil if recs.size <= 0
+    PagodaArcade.new( self, recs[0])
+  end
+
+  def arcades
+    selected = []
+    @database.select( 'arcade') do |rec|
+      g = PagodaArcade.new( self, rec)
+      selected << g if (! block_given?) || (yield g)
+    end
+    selected
+  end
+
   def check_unique_name( name, id)
     return true if name.nil? or name == ''
     @names.check_unique_name( name, id.to_i)
@@ -289,6 +334,11 @@ class Pagoda
     search = search.downcase
     return true if text.downcase.index( search)
     @names.reduce( text).index( search)
+  end
+
+  def create_arcade( params)
+    g = PagodaArcade.new( self, {id:params[:id]})
+    g.update( params)
   end
 
   def create_game( params)
