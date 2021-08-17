@@ -39,6 +39,7 @@
       @difficulty    = @game.difficulty
       @depth         = @game.depth
       @genre         = @game.genre
+      @url           = @game.url
     else
       @create_label  = 'Create'
       @delete_label  = 'Clear'
@@ -50,6 +51,7 @@
       @difficulty    = ''
       @depth         = ''
       @genre         = ''
+      @url           = ''
     end
 %>
 
@@ -66,6 +68,8 @@
       <tr><th>Depth:</th><td><%= input_element( 'depth', 2, @depth) %></td></tr>
 
       <tr><th>Genre:</th><td><%= input_element( 'genre', 30, @genre) %></td></tr>
+
+      <tr><th>URL:</th><td><%= input_element( 'url', 80, @url) %></td></tr>
     </table>
 
     <table class="buttons">

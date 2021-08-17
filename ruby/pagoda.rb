@@ -45,7 +45,7 @@ class Pagoda
       @owner.delete( 'arcade', :id, id)
 
       rec = {}
-      [:id, :name, :dexterity, :difficulty, :depth, :genre].each do |field|
+      [:id, :name, :dexterity, :difficulty, :depth, :genre, :url].each do |field|
         rec[field] = params[field] ? params[field].strip : nil
       end
 
@@ -257,9 +257,10 @@ class Pagoda
     @possibles = nil
 
     @database.declare_integer( 'alias',  :id)
-    @database.declare_integer( 'arcade', :dexterity)
-    @database.declare_integer( 'arcade', :difficulty)
-    @database.declare_integer( 'arcade', :depth)
+    @database.declare_integer( 'arcade', :id)
+    # @database.declare_integer( 'arcade', :dexterity)
+    # @database.declare_integer( 'arcade', :difficulty)
+    # @database.declare_integer( 'arcade', :depth)
     @database.declare_integer( 'bind',   :id)
     @database.declare_integer( 'game',   :id)
     @database.declare_integer( 'game',   :group_id)
