@@ -67,26 +67,26 @@ module Common
 		}
 	end
 
-	def http_redirect( url, depth = 0)
+	def http_redirect( url, depth = 0, debug = false)
+		p ['http_redirect', url, depth] if debug
 		return url if /\.(jpg|jpeg|png|gif)$/i =~ url
 
-		if old = @@old_redirects[url]
-			@@new_redirects[url] = old
-			return old
-		end
-
-		response = http_get_response( url, 1)
-
-		if (depth < 4) &&
-				response.is_a?( Net::HTTPRedirection) &&
-				(/^http(s|):/ =~ response['Location'])
-			url1 = http_redirect( response['Location'], depth+1)
+		if url1 = @@old_redirects[url]
+			p ['http_redirect: cached', url, depth, url1] if debug
 		else
-			url1 = url
+			response = http_get_response( url, 1)
+
+			if (depth < 4) &&
+					response.is_a?( Net::HTTPRedirection) &&
+					(/^http(s|):/ =~ response['Location'])
+				url1 = http_redirect( response['Location'], depth+1, debug)
+			else
+				url1 = url
+			end
 		end
 
 		@@new_redirects[url] = url1
-		url
+		url1
 	end
 
 	def load_old_redirects( path)
@@ -128,13 +128,13 @@ module Common
 		id = info['data'][0]['id']
 
 		oldest    = '9999-12-31'
-		months2   = (Time.now - 60 * 24 * 60 * 60).strftime( "%Y-%m-%d")
+		months2   = (Time.now - 75 * 24 * 60 * 60).strftime( "%Y-%m-%d")
 		oldest_id = nil
 		added     = 0
 
 		while oldest > months2
-			a, oldest, oldest_id = twitter_feed_links1( id, oldest_id) do |found|
-				yield found
+			a, oldest, oldest_id = twitter_feed_links1( id, oldest_id) do |text, found|
+				yield text, found
 			end
 			added += a
 		end
@@ -166,7 +166,8 @@ module Common
 
 			tweet['text'].gsub( /http(s|):\/\/[0-9a-z\/\.\-_]*/mi) do |found|
 				begin
-					added += (yield http_redirect( found))
+					#debug = (/Root Letter/ =~ tweet['text'])
+					added += (yield tweet['text'], http_redirect( found))
 				rescue SocketError
 					puts "!!! Socket error: #{found}"
 				end

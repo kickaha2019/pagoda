@@ -36,7 +36,7 @@ class GOG
 		path   = scanner.cache + "/gog.json"
 		cached = JSON.parse( IO.read( path))
 
-		added = scanner.twitter_feed_links( 'gogcom') do |link|
+		added = scanner.twitter_feed_links( 'gogcom') do |text, link|
 			if /^https:\/\/www\.gog\.com\/game\// =~ link
 				link = link.split('?')[0]
 				if cached[link]
