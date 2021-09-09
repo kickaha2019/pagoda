@@ -16,6 +16,23 @@ module Sinatra
       games_records( search).select {|g| g.aliases.size > 0}
     end
 
+    def arcade_genres
+      ['Adventure',
+       'Arcade',
+       'Card game',
+       'Evolution',
+       'Game',
+       'Platformer',
+       'Puzzle',
+       'Racing',
+       'RPG',
+       'Shooter',
+       'Sports',
+       'Stealth',
+       'Strategy',
+       'Word puzzle']
+    end
+
     def arcades_records( search)
       $pagoda.arcades do |arcade|
         $pagoda.contains_string( arcade.name, search)
@@ -93,6 +110,16 @@ module Sinatra
 
     def e( text)
       CGI.escape( text)
+    end
+
+    def form_combo_box( combo_name, values, current_value)
+      defn = ["<select name=\"#{combo_name}\">"]
+      values.each do |value|
+        selected = (current_value == value) ? 'selected' : ''
+        defn << "<option value=\"#{value}\"#{selected}>#{h(value)}</option>"
+      end
+      defn << '</select>'
+      defn.join('')
     end
 
     def game_group_action()

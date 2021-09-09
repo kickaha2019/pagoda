@@ -61,13 +61,13 @@
 
       <tr><th>Name:</th><td><%= input_element( 'name', 80, @name, 'required') %></td></tr>
 
-      <tr><th>Dexterity:</th><td><%= input_element( 'dexterity', 2, @dexterity) %></td></tr>
+      <tr><th>Dexterity:</th><td><%= form_combo_box( 'dexterity', ['Easy','Medium','Hard'], @dexterity) %></td></tr>
 
-      <tr><th>Difficulty:</th><td><%= input_element( 'difficulty', 2, @difficulty) %></td></tr>
+      <tr><th>Difficulty:</th><td><%= form_combo_box( 'difficulty', ['Easy','Medium','Hard','Variable'], @difficulty) %></td></tr>
 
-      <tr><th>Depth:</th><td><%= input_element( 'depth', 2, @depth) %></td></tr>
+      <tr><th>Depth:</th><td><%= form_combo_box( 'depth', ['Little','Some','Lots'], @depth) %></td></tr>
 
-      <tr><th>Genre:</th><td><%= input_element( 'genre', 30, @genre) %></td></tr>
+      <tr><th>Genre:</th><td><%= form_combo_box( 'genre', arcade_genres, @genre) %></td></tr>
 
       <tr><th>URL:</th><td><%= input_element( 'url', 80, @url) %></td></tr>
     </table>
