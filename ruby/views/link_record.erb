@@ -25,8 +25,7 @@
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
     <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
                                 link_action( @rec, 'bind') +
-                                link_action( @rec, 'unbind') +
-                                link_action( @rec, 'forget')
+                                link_action( @rec, 'unbind')
     %></td></tr>
 
     <%=

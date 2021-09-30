@@ -20,13 +20,13 @@ module Sinatra
       ['Adventure',
        'Arcade',
        'Card game',
-       'Evolution',
        'Game',
        'Platformer',
        'Puzzle',
        'Racing',
        'RPG',
        'Shooter',
+       'Simulation',
        'Sports',
        'Stealth',
        'Strategy',
@@ -184,7 +184,11 @@ module Sinatra
         chosen = rec.name.to_s.downcase.index( search.downcase)
         chosen = false unless ((rec.site == site) || (site == 'All'))
         chosen = false unless (rec.type == type) || (type == 'All')
-        chosen = false unless (link_status(rec) == status) || (status == 'All')
+        if status == 'Flagged'
+          chosen = false unless link_lost?(rec) || rec.redirected?
+        else
+          chosen = false unless (link_status(rec) == status) || (status == 'All')
+        end
         chosen
       end
     end
@@ -312,7 +316,7 @@ module Sinatra
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      ['Invalid', 'Unmatched', 'Ignored', 'Matched', 'Bound'].each do |status|
+      ['Invalid', 'Unmatched', 'Ignored', 'Matched', 'Bound', 'Flagged'].each do |status|
         c = counts[status]
         colour = (status == 'Unmatched') ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0
