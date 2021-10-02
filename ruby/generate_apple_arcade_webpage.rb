@@ -3,8 +3,8 @@ require_relative 'pagoda'
 class AppleArcadeWebpage
   def initialize( dir)
     @games = Pagoda.new( dir).arcades do |arcade|
-      ! (arcade.genre.nil? || (arcade.genre != ''))
-    end
+      ! (arcade.genre.nil? || (arcade.genre == ''))
+    end.sort_by {|game| game.name.downcase}
 
     @dexterities  = ['Easy','Medium','Hard']
     @difficulties = ['Easy','Medium','Hard']
@@ -58,7 +58,7 @@ FILTERS2
 
   def body_list( io)
     io.puts <<BODY_LIST
-<DIV ID="LIST"></DIV>
+<DIV ID="list"></DIV>
 <SCRIPT>
 list_all();
 </SCRIPT>
@@ -192,10 +192,10 @@ HEADER2
     io.puts <<"FUNCTION_ALL1"
 var listing = [];
 function list_all() {
-  listing = [];
+  listing = ['<TABLE><TR><TH>Name</TH><TH>Dexterity</TH><TH>Difficulty</TH><TH>Depth</TH><TH>Genre</TH></TR>'];
 FUNCTION_ALL1
 
-    @games = Pagoda.new( dir).arcades do |arcade|
+    @games.each do |arcade|
       dex = (['Varied'] + @dexterities).index(  arcade.dexterity)
       dif = (['Varied'] + @difficulties).index( arcade.difficulty)
       dep = @depths.index( arcade.depth)
@@ -203,12 +203,13 @@ FUNCTION_ALL1
       next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
 
       io.puts <<"FUNCTION_ALL2"
-    list_one( '#{arcade.name}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
+    list_one( '#{arcade.name.gsub( "'", "\\'")}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
 FUNCTION_ALL2
-    end
+   end
 
     io.puts <<"FUNCTION_ALL3"
-  document.getElementById( 'list').innerHTML = listing.join();
+  listing.push( '</TABLE>');  
+  document.getElementById( 'list').innerHTML = listing.join('');
 }
 FUNCTION_ALL3
   end

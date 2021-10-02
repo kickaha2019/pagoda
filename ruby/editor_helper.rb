@@ -179,13 +179,17 @@ module Sinatra
       "<button onclick=\"link_action( '#{e(e(rec.url))}', '#{action}', #{row});\">#{action.capitalize}</button>"
     end
 
+    def link_flagged?( rec)
+      link_lost?(rec) || rec.redirected?
+    end
+
     def link_records( site, type, status, search)
       $pagoda.links do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
         chosen = false unless ((rec.site == site) || (site == 'All'))
         chosen = false unless (rec.type == type) || (type == 'All')
         if status == 'Flagged'
-          chosen = false unless link_lost?(rec) || rec.redirected?
+          chosen = false unless link_flagged?(rec)
         else
           chosen = false unless (link_status(rec) == status) || (status == 'All')
         end
@@ -219,6 +223,7 @@ module Sinatra
         next unless (current_site == 'All') || (current_site == rec.site)
         next unless (current_type == 'All') || (current_type == rec.type)
         values << link_status( rec)
+        values << 'Flagged' if link_flagged?( rec)
       end
       values = values.uniq.sort
       values << 'All'

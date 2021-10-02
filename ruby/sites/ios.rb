@@ -24,12 +24,14 @@ class IOS
 
 	def find( scanner)
 		Dir.entries( scanner.cache + '/ios').each do |f|
-			if /^ios\-.*\.json$/ =~ f
+			if /\.json$/ =~ f
 				JSON.parse( IO.read( scanner.cache + '/ios/'+ f))['urls'].each_pair do |url,name|
 					scanner.suggest_link( name, url)
 				end
 			end
 		end
+
+		scanner.purge_lost_urls( /^https:\/\/apps\.apple\.com\//)
 	end
 
 	def refresh_cache( searcher, section, letter)

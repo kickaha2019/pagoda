@@ -22,6 +22,7 @@ class Spider
 		@pagoda    = Pagoda.new( dir)
 		@settings  = YAML.load( IO.read( dir + '/settings.yaml'))
 		@suggested = []
+		@suggested_links = {}
 		set_not_game_words
 	end
 
@@ -191,6 +192,17 @@ class Spider
 		phrase.to_s.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
 	end
 
+	def purge_lost_urls( re)
+		@pagoda.links do |link|
+			if re =~ link.url
+				unless @suggested_links[link.url]
+					puts "... Purging #{link.url}"
+					link.delete
+				end
+			end
+		end
+	end
+
 	def rebase( site, type)
 		unless @rebases[site][type]
 			error( "No rebase for #{site}/#{type}")
@@ -280,6 +292,7 @@ class Spider
 
 	def suggest_link( title, url)
 		@suggested << {:site => @site, :type => @type, :title => title, :url => url}
+		@suggested_links[url] = true
 	end
 
 	def verified_links

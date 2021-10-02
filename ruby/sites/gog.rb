@@ -28,6 +28,8 @@ class GOG
 		JSON.parse( IO.read( path)).each_pair do |url, name|
 			scanner.suggest_link( name, url)
 		end
+
+		scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
 	end
 
 	def incremental( scanner)

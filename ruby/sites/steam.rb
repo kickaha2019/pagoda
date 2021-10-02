@@ -22,5 +22,7 @@ class Steam
 			scanner.suggest_link( text, url)
 			scanner.debug_hook( 'Steam:urls', text, url)
 		end
+
+		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
 	end
 end

@@ -17,6 +17,8 @@ class GooglePlay
 				end
 			end
 		end
+
+		scanner.purge_lost_urls( /^https:\/\/play\.google\.com\//)
 	end
 
 	def search( searcher)
