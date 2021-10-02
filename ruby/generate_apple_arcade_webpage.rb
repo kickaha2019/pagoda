@@ -96,8 +96,19 @@ FOOTER
 <HEAD>
 <STYLE>
 .header {display:flex; justify-content: space-between;}
-.note {}
-.title {}
+.note {font-size: 25px;}
+.title {font-size: 30px; font-weight: bold;}
+#list {
+  display: flex;
+  justify-content: center;
+}
+table {
+  font-size: 25px;
+  border-collapse: collapse;
+}
+td, th {border-left: 1px solid black}
+th {border-bottom: 1px solid black}
+td:nth-child(1),th:nth-child(1) {border-left: initial}
 .option {font-size: 30px;
          -moz-user-select: none;
          -webkit-user-select: none;
@@ -108,7 +119,7 @@ FOOTER
          border: 1px solid black;
          border-radius: 5px;
          padding: 5px;}
-.filters {font-size: 30px; margin-top: 10px}
+.filters {font-size: 25px; margin-top: 10px}
 #filters_hidden {
   display: flex;
 }
@@ -119,9 +130,9 @@ FOOTER
   display: inline-block;
 	width: 0;
 	height: 0;
-	border-left: 10px solid transparent;
-	border-right: 10px solid transparent;
-	border-top: 20px solid #555;
+	border-left: 8px solid transparent;
+	border-right: 8px solid transparent;
+	border-top: 16px solid #555;
   margin-top: 7px;
   margin-right: 10px;
 }
@@ -129,9 +140,9 @@ FOOTER
   display: inline-block;
 	width: 0;
 	height: 0;
-	border-top: 10px solid transparent;
-	border-left: 20px solid #555;
-	border-bottom: 10px solid transparent;
+	border-top: 8px solid transparent;
+	border-left: 16px solid #555;
+	border-bottom: 8px solid transparent;
   margin-top: 7px;
   margin-right: 10px;
 }
@@ -203,7 +214,7 @@ FUNCTION_ALL1
       next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
 
       io.puts <<"FUNCTION_ALL2"
-    list_one( '#{arcade.name.gsub( "'", "\\'")}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
+    list_one( '#{arcade.name.gsub( "'", "&#39;")}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
 FUNCTION_ALL2
    end
 
