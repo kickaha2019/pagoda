@@ -15,7 +15,7 @@ class AppleArcadeWebpage
 
   def body_filter( code, attribute, values, io)
     io.puts <<"FILTER1"
-<TR><TH>#{attribute}</TH><TD>
+<TR><TH>#{attribute}:</TH><TD><DIV CLASS="options">
 FILTER1
     values.each_index do |index|
       io.puts <<"FILTER2"
@@ -28,7 +28,7 @@ FILTER2
       @option += 1
     end
     io.puts <<"FILTER3"
-</TD></TR>
+</DIV></TD></TR>
 FILTER3
   end
 
@@ -106,9 +106,15 @@ table {
   font-size: 25px;
   border-collapse: collapse;
 }
-td, th {border-left: 1px solid black}
-th {border-bottom: 1px solid black}
-td:nth-child(1),th:nth-child(1) {border-left: initial}
+
+td, th {padding: 5px}
+#list td, #list th {border-left: 1px solid black}
+#list th {border-bottom: 1px solid black}
+#list td:nth-child(1), #list th:nth-child(1) {border-left: 0px}
+
+#list tr:nth-child(even) td {background: cyan}
+#list tr:nth-child(odd)  td {background: lime}
+
 .option {font-size: 30px;
          -moz-user-select: none;
          -webkit-user-select: none;
@@ -118,7 +124,10 @@ td:nth-child(1),th:nth-child(1) {border-left: initial}
          background-color: yellow;
          border: 1px solid black;
          border-radius: 5px;
-         padding: 5px;}
+         padding: 3px;
+         margin: 5px;
+}
+.options {display: flex; flex-wrap: wrap;}
 .filters {font-size: 25px; margin-top: 10px}
 #filters_hidden {
   display: flex;
@@ -126,6 +135,8 @@ td:nth-child(1),th:nth-child(1) {border-left: initial}
 #filters_shown {
   display: none;
 }
+#filters_shown th:nth-child(1) {text-align: left;}
+
 .triangle_down {
   display: inline-block;
 	width: 0;
