@@ -46,6 +46,18 @@ module Common
 		response.body
 	end
 
+	def http_get_cached( cache_dir, url, lifespan)
+		cache_file = cache_dir + '/' + url.gsub( /[\/:]/, '_')
+		if File.exist?( cache_file) &&
+			 ((File.mtime( cache_file) + lifespan) >= Time.now)
+			IO.read( cache_file)
+		else
+			text = http_get( url)
+			File.open( cache_file, 'w') {|io| io.print text}
+			text
+		end
+	end
+
 	def http_get_response( url, delay = 10, headers = {})
 		throttle( url, delay)
 		uri = URI.parse( url)

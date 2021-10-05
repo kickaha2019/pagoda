@@ -1,7 +1,10 @@
 require_relative 'pagoda'
+require_relative 'common'
 
 class AppleArcadeWebpage
-  def initialize( dir)
+  include Common
+
+  def initialize( dir, cache)
     @games = Pagoda.new( dir).arcades do |arcade|
       ! (arcade.genre.nil? || (arcade.genre == ''))
     end.sort_by {|game| game.name.downcase}
@@ -11,6 +14,8 @@ class AppleArcadeWebpage
     @depths       = ['Little','Some','Lots']
     @genres       = @games.collect {|g| g.genre}.uniq.sort
     @option       = 0
+    @cache        = cache
+    @errors       = 0
   end
 
   def body_filter( code, attribute, values, io)
@@ -75,12 +80,48 @@ BODY_LIST
 TITLE
   end
 
+  def check_for_errors
+    if @errors > 0
+      puts "!!! #{@errors} errors in run"
+      exit 1
+    end
+  end
+
+  def check_name( arcade, ember_json)
+    if arcade.name != ember_json['name'].gsub( '®', '&reg;').gsub( '™', '&trade;')
+      error( "Name mismatch for #{arcade.name} / #{ember_json['name']}")
+    end
+  end
+
   def declare_flags( name, values, io)
     io.puts "var #{name} = [#{values.collect {'1'}.join(',')}];"
   end
 
   def declare_values( name, values, io)
     io.puts "var #{name} = [#{values.collect {|v| "\"#{v}\""}.join(',')}];"
+  end
+
+  def error( msg)
+    puts "!!!  #{msg}"
+    @errors += 1
+  end
+
+  def extract_ember_json( url, html)
+    html.split("\n").each do |line|
+      if m = /^\s*<script[^>]*>({.*)$/.match( line)
+        return JSON.parse( m[1])
+      end
+    end
+    raise "Failed to find ember json in #{url}"
+  end
+
+  def get_ember_json( arcade)
+    if /\.com\/app\// =~ arcade.url
+      apple_page = http_get_cached( @cache, arcade.url, 45 * 24 * 60 * 60)
+      extract_ember_json( arcade.url, apple_page)
+    else
+      {'name' => arcade.name}
+    end
   end
 
   def html_footer( io)
@@ -218,15 +259,21 @@ function list_all() {
 FUNCTION_ALL1
 
     @games.each do |arcade|
-      dex = (['Varied'] + @dexterities).index(  arcade.dexterity)
-      dif = (['Varied'] + @difficulties).index( arcade.difficulty)
-      dep = @depths.index( arcade.depth)
-      gen = @genres.index( arcade.genre)
-      next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
+      begin
+        ember_json = get_ember_json( arcade)
+        check_name( arcade, ember_json)
+        dex = (['Varied'] + @dexterities).index(  arcade.dexterity)
+        dif = (['Varied'] + @difficulties).index( arcade.difficulty)
+        dep = @depths.index( arcade.depth)
+        gen = @genres.index( arcade.genre)
+        next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
 
-      io.puts <<"FUNCTION_ALL2"
-    list_one( '#{arcade.name.gsub( "'", "&#39;")}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
+        io.puts <<"FUNCTION_ALL2"
+      list_one( '#{arcade.name.gsub( "'", "&#39;")}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
 FUNCTION_ALL2
+      rescue Exception => bang
+        error( "#{bang.message} for #{arcade.name}")
+      end
    end
 
     io.puts <<"FUNCTION_ALL3"
@@ -265,11 +312,12 @@ FUNCTION1
   end
 end
 
-g = AppleArcadeWebpage.new( ARGV[0])
-File.open( ARGV[1], 'w') do |io|
+g = AppleArcadeWebpage.new( ARGV[0], ARGV[1])
+File.open( ARGV[2], 'w') do |io|
   g.html_header( io)
   g.body_title( io)
   g.body_filters( io)
   g.body_list( io)
   g.html_footer( io)
 end
+g.check_for_errors
