@@ -12,7 +12,7 @@ class AppleArcadeWebpage
     @dexterities  = ['Easy','Medium','Hard']
     @difficulties = ['Easy','Medium','Hard']
     @depths       = ['Little','Some','Lots']
-    @genres       = @games.collect {|g| g.genre}.uniq.sort
+    @genres       = @games.collect {|g| g.genre}.uniq.sort_by {|name| name.downcase}
     @option       = 0
     @cache        = cache
     @errors       = 0
@@ -75,7 +75,7 @@ BODY_LIST
 <DIV CLASS="header">
 <SPAN CLASS="note">Generated #{today}</SPAN>
 <SPAN ID="title" CLASS="title">List of Apple Arcade games</SPAN>
-<A CLASS="note" HREF="dummy.html">About this page</A>
+<A CLASS="note" HREF="index.html">About this page</A>
 </DIV>
 TITLE
   end
@@ -143,8 +143,10 @@ FOOTER
 
   def html_header( io)
     io.puts <<"HEADER1"
-<HTML>
+<!DOCTYPE html>
+<HTML LANG="en">
 <HEAD>
+<TITLE>List of Apple Arcade games</TITLE>
 <STYLE>
 body {background-color: #242424}
 .header {display:flex; justify-content: space-between;}
@@ -249,8 +251,8 @@ HEADER1
     declare_flags( 'depth',      @depths,       io)
     declare_flags( 'genre',      @genres,       io)
 
-    declare_values( 'dexterities', ['Varied'] + @dexterities, io)
-    declare_values( 'difficulties', ['Varied'] + @difficulties, io)
+    declare_values( 'dexterities', ['Variable'] + @dexterities, io)
+    declare_values( 'difficulties', ['Variable'] + @difficulties, io)
     declare_values( 'depths', @depths, io)
     declare_values( 'genres', @genres, io)
 
@@ -283,8 +285,8 @@ FUNCTION_ALL1
       begin
         ember_json = get_ember_json( arcade)
         check_name( arcade, ember_json)
-        dex = (['Varied'] + @dexterities).index(  arcade.dexterity)
-        dif = (['Varied'] + @difficulties).index( arcade.difficulty)
+        dex = (['Variable'] + @dexterities).index(  arcade.dexterity)
+        dif = (['Variable'] + @difficulties).index( arcade.difficulty)
         dep = @depths.index( arcade.depth)
         gen = @genres.index( arcade.genre)
         next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
