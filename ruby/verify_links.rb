@@ -148,6 +148,7 @@ class VerifyLinks
   end
 
   def http_get_with_redirect( url, depth = 0)
+    #p ['http_get_with_redirect1', url]
     status, response = http_get( url)
     return status, false, response unless status
 
@@ -159,32 +160,48 @@ class VerifyLinks
         response.is_a?( Net::HTTPRedirection) &&
         (/^http(s|):/ =~ response['Location'])
 
+      # Regard as redirected unless temporary redirect
+      redirected = (response.code != '302')
+      #p ['http_get_with_redirect2', url, redirected, response.code]
+
+      # Hack for Steam to ignore app -> app redirects
+      # p ['http_get_with_redirect2', url, response['Location']]
+      # if is_steam_url?( response['Location']) && is_steam_url?( url)
+      #   p ['http_get_with_redirect3', url, response['Location']]
+      #   return status, false, response
+      # end
+
       # Ignore Steam age challenge redirects
       # if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
       #   return status, false, response
       # end
 
-      status, redirected, response = http_get_with_redirect( response['Location'], depth+1)
-      return status, true, response
+      status, _, response = http_get_with_redirect( response['Location'], depth+1)
+      return status, redirected, response
     end
 
     return status, false, response
   end
 
+  # def is_steam_url?( url)
+  #   p ['is_steam_url?', url]
+  #   /^https:\/\/store\.steampowered\.com\/app\/\d+$/ =~ url
+  # end
+
   def oldest( n, valid_for)
-    links, invalid = [], []
+    links, dubious = [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
-      if link.status == 'Invalid'
-        invalid << link
+      if (link.status == 'Invalid') || link.redirected?
+        dubious << link
       else
         links << link if link.timestamp < valid_from
       end
     end
 
     links.sort_by! {|link| link.timestamp ? link.timestamp : 0}
-    links = invalid + links
+    links = dubious + links
     links = links[0...n] if links.size > n
 
     File.open( '/Users/peter/temp/verify.csv', 'w') do |io|
@@ -208,7 +225,7 @@ class VerifyLinks
   def verify_page( link, cache)
     @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
-    #p ['DEBUG100', status, redirected, response]
+    #p ['verify_page1', status, redirected, response]
     return unless status
 
     body = response.body
@@ -220,7 +237,7 @@ class VerifyLinks
                   :universal_newline => true)
 
     status, valid, title = get_details( link, body)
-    #p ['DEBUG200', status, valid, title]
+    #p ['verify_page2', status, valid, title]
     unless status
       File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
       # if link.timestamp < 1000

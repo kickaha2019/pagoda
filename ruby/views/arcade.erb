@@ -38,6 +38,7 @@
       @dexterity     = @game.dexterity
       @difficulty    = @game.difficulty
       @depth         = @game.depth
+      @control       = @game.control
       @genre         = @game.genre
       @url           = @game.url
     else
@@ -50,6 +51,7 @@
       @dexterity     = ''
       @difficulty    = ''
       @depth         = ''
+      @control       = ''
       @genre         = ''
       @url           = ''
     end
@@ -66,6 +68,8 @@
       <tr><th>Difficulty:</th><td><%= form_combo_box( 'difficulty', ['Easy','Medium','Hard','Variable'], @difficulty) %></td></tr>
 
       <tr><th>Depth:</th><td><%= form_combo_box( 'depth', ['Little','Some','Lots'], @depth) %></td></tr>
+
+      <tr><th>Control:</th><td><%= form_combo_box( 'control', ['None','One','Some','Many'], @control) %></td></tr>
 
       <tr><th>Genre:</th><td><%= form_combo_box( 'genre', arcade_genres, @genre) %></td></tr>
 

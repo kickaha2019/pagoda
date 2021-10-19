@@ -12,6 +12,8 @@ class AppleArcadeWebpage
     @dexterities  = ['Easy','Medium','Hard']
     @difficulties = ['Easy','Medium','Hard']
     @depths       = ['Little','Some','Lots']
+    @controlsF     = ['N/A','One','Some','Many']
+    @controlsV     = ['','One','Some','Many']
     @genres       = @games.collect {|g| g.genre}.uniq.sort_by {|name| name.downcase}
     @option       = 0
     @cache        = cache
@@ -52,7 +54,8 @@ FILTERS1
     body_filter( 'a', 'Dexterity',  @dexterities,  io)
     body_filter( 'b', 'Difficulty', @difficulties, io)
     body_filter( 'c', 'Depth',      @depths,       io)
-    body_filter( 'd', 'Genre',      @genres,       io)
+    body_filter( 'd', 'Control',    @controlsF,    io)
+    body_filter( 'e', 'Genre',      @genres,       io)
 
     io.puts <<"FILTERS2"
 </TABLE>
@@ -148,7 +151,7 @@ FOOTER
 <HEAD>
 <TITLE>List of Apple Arcade games</TITLE>
 <STYLE>
-body {background-color: #242424}
+body {background-color: #1C1C1C}
 .header {display:flex; justify-content: space-between;}
 .note {font-size: 25px; color: #BFBFBF;}
 .title {font-size: 30px; font-weight: bold; color: #BFBFBF;}
@@ -175,8 +178,8 @@ table a:visited {color: white}
 #list th {border-bottom: 1px solid white}
 #list td:nth-child(1), #list th:nth-child(1) {border-left: 0px}
 
-#list tr:nth-child(even) td {background: #1C1C1C}
-#list tr:nth-child(odd)  td {background: #3D3D3D}
+#list tr:nth-child(even) td {background: #333333}
+#list tr:nth-child(odd)  td {background: #444444}
 
 .option {font-size: 15px;
          -moz-user-select: none;
@@ -249,12 +252,14 @@ HEADER1
     declare_flags( 'dexterity',  @dexterities,  io)
     declare_flags( 'difficulty', @difficulties, io)
     declare_flags( 'depth',      @depths,       io)
+    declare_flags( 'control',    @controlsV,    io)
     declare_flags( 'genre',      @genres,       io)
 
-    declare_values( 'dexterities', ['Variable'] + @dexterities, io)
+    declare_values( 'dexterities',  ['Variable'] + @dexterities, io)
     declare_values( 'difficulties', ['Variable'] + @difficulties, io)
-    declare_values( 'depths', @depths, io)
-    declare_values( 'genres', @genres, io)
+    declare_values( 'depths',       @depths, io)
+    declare_values( 'controls',     @controlsV, io)
+    declare_values( 'genres',       @genres, io)
 
     list_one_function( io)
     list_all_function( io)
@@ -276,6 +281,7 @@ function list_all() {
              '<TH>Dexterity</TH>',
              '<TH>Difficulty</TH>',
              '<TH>Depth</TH>',
+             '<TH>Control</TH>',
              '<TH>Genre</TH></TR>'];
   total = 0;
   count = 0;
@@ -288,11 +294,12 @@ FUNCTION_ALL1
         dex = (['Variable'] + @dexterities).index(  arcade.dexterity)
         dif = (['Variable'] + @difficulties).index( arcade.difficulty)
         dep = @depths.index( arcade.depth)
+        con = @controlsV.index( arcade.control.nil? ? '' : arcade.control)
         gen = @genres.index( arcade.genre)
-        next if dex.nil? || dif.nil? || dep.nil? || gen.nil?
+        next if dex.nil? || dif.nil? || dep.nil? || gen.nil? || con.nil?
 
         io.puts <<"FUNCTION_ALL2"
-      list_one( '#{e(arcade.name)}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{gen});
+      list_one( '#{e(arcade.name)}', '#{arcade.url}', #{dex}, #{dif}, #{dep}, #{con}, #{gen});
 FUNCTION_ALL2
       rescue Exception => bang
         error( "#{bang.message} for #{arcade.name}")
@@ -309,16 +316,18 @@ FUNCTION_ALL3
 
   def list_one_function( io)
     io.puts <<"FUNCTION1"
-function list_one( name, url, dex, dif, dep, gen) {
+function list_one( name, url, dex, dif, dep, con, gen) {
   total += 1;
   if ((dex > 0) && (!  dexterity[dex-1])) {return;}
   if ((dif > 0) && (! difficulty[dif-1])) {return;}
   if (! depth[dep]) {return;}
+  if (! control[con]) {return;}
   if (! genre[gen]) {return;}
   listing.push( '<TR><TD><A TARGET=“_blank” REL=“nofollow” HREF="' + url + '">' + name + '</A></TD>');
   listing.push( '<TD>' + dexterities[dex] + '</TD>');
   listing.push( '<TD>' + difficulties[dif] + '</TD>');
   listing.push( '<TD>' + depths[dep] + '</TD>');
+  listing.push( '<TD>' + controls[con] + '</TD>');
   listing.push( '<TD>' + genres[gen] + '</TD></TR>');
   count += 1;
 }

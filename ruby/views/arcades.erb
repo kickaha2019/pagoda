@@ -13,7 +13,7 @@
 </div>
 
 <div id="list"><table class="arcades list">
-  <tr><th>ID</th><th>Name</th><th>Dexterity</th><th>Difficulty</th><th>Depth</th><th>Genre</th><th>URL</th></tr>
+  <tr><th>ID</th><th>Name</th><th>Dexterity</th><th>Difficulty</th><th>Depth</th><th>Control</th><th>Genre</th><th>URL</th></tr>
   <%=
     html = []
 
@@ -31,7 +31,7 @@
         html << "<tr>"
         html << "<td>#{rec.id}</td>"
         html << "<td><a href=\"/arcade/#{rec.id}\">#{h(rec.name)}</a></td>"
-        html << [:dexterity, :difficulty, :depth].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
+        html << [:dexterity, :difficulty, :depth, :control].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
         html << "<td>#{genre}</td>"
         html << '<td>'
         html << "<a href=\"#{rec.url}\">Link</a>" if rec.url && (rec.url != '')

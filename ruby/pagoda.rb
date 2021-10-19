@@ -45,7 +45,7 @@ class Pagoda
       @owner.delete( 'arcade', :id, id)
 
       rec = {}
-      [:id, :name, :dexterity, :difficulty, :depth, :genre, :url].each do |field|
+      [:id, :name, :dexterity, :difficulty, :depth, :genre, :url, :control].each do |field|
         rec[field] = params[field] ? params[field].strip : nil
       end
 
