@@ -35,8 +35,8 @@ class VerifyLinks
       args = [args] unless args.is_a?( Array)
     end
 
-    status, valid, title = send( ('filter_' + name).to_sym, link, body, title, * args)
-    return status, valid, title
+    status, valid, ignore, title = send( ('filter_' + name).to_sym, link, body, title, * args)
+    return status, valid, ignore, title
   end
 
   def detect_hang
@@ -56,44 +56,45 @@ class VerifyLinks
   end
 
   def filter_google_play_store( link, body, title)
-    return true, true, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
-    return true, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
-    return false, false, title
+    return true, true, false, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
+    return true, false, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
+    return false, false, false, title
   end
 
   def filter_ios_store( link, body, title)
-    return true, true, title if /TouchArcade/m =~ body
-    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
-    return true, true, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
-    return true, false, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/m =~ body
-    return false, false, title
+    return true, true, false, title if /TouchArcade/m =~ body
+    return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
+    return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
+    return true, false, false, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/m =~ body
+    return false, false, false, title
   end
 
   def filter_steam_store( link, body, title)
     if m = /^(.*) on Steam$/.match( title)
       return true, true, m[1]
     end
-    return true, true,  title if /\/agecheck\/app\// =~ link.url
-    return true, false, title if /^Welcome to Steam$/ =~ title
-    return false, false, title
+    return true, true, false,  title if /\/agecheck\/app\// =~ link.url
+    return true, true, true, title if /^Welcome to Steam$/ =~ title
+    return false, false, false, title
   end
 
   def filter_suffix( link, body, title, suffix)
     re = Regexp.new( '^(.*)' + suffix + '.*$')
     if m = re.match( title)
-      return true, true, m[1]
+      return true, true, false, m[1]
     else
-      return false, false, ''
+      return false, false, false, ''
     end
   end
 
   def get_details( link, body)
     valid  = status = true
+    ignore = false
     title  = orig_title = get_title( body, link.type)
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ title
-      return false, false, title
+      return false, false, false, title
     end
 
     # Apply site specific filters
@@ -101,16 +102,16 @@ class VerifyLinks
       if filters = site[link.type]
         if filters.is_a?( Array)
           filters.each do |filter|
-            status, valid, title = apply_filter( filter, link, body, title)
+            status, valid, ignore, title = apply_filter( filter, link, body, title)
             break unless valid && status
           end
         else
-          status, valid, title = apply_filter( filters, link, body, title)
+          status, valid, ignore, title = apply_filter( filters, link, body, title)
         end
       end
     end
 
-    return status, valid, (valid ? title : orig_title)
+    return status, valid, ignore, (valid ? title : orig_title)
   end
 
   def get_title( page, defval)
@@ -236,7 +237,7 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
-    status, valid, title = get_details( link, body)
+    status, valid, ignore, title = get_details( link, body)
     #p ['verify_page2', status, valid, title]
     unless status
       File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
@@ -255,6 +256,10 @@ class VerifyLinks
     File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
 
     link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
+
+    if ignore
+      link.bind( -1)
+    end
 
     if File.exist?( cache + "/#{old_t}.html")
       File.delete( cache + "/#{old_t}.html")

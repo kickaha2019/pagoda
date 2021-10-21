@@ -25,3 +25,4 @@ nbproject
 *.old
 settings.yaml
 database copy
+.tool-versions
