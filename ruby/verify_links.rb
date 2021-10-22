@@ -65,7 +65,7 @@ class VerifyLinks
     return true, true, false, title if /TouchArcade/m =~ body
     return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
     return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
-    return true, false, false, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/m =~ body
+    return true, true, true, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/mi =~ body
     return false, false, false, title
   end
 
@@ -238,7 +238,7 @@ class VerifyLinks
                   :universal_newline => true)
 
     status, valid, ignore, title = get_details( link, body)
-    #p ['verify_page2', status, valid, title]
+    #p ['verify_page2', status, valid, ignore, title]
     unless status
       File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
       # if link.timestamp < 1000
