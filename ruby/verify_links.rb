@@ -223,11 +223,24 @@ class VerifyLinks
     @touched[site] = Time.now.to_i
   end
 
-  def verify_page( link, cache)
+  def verify_page( link, cache, debug=false)
+    t = Time.now.to_i
     @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
-    #p ['verify_page1', status, redirected, response]
-    return unless status
+    p ['verify_page1', status, redirected, response] if debug
+    unless status
+      if debug
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+      end
+
+      # Give up on iOS games if get 404 back
+      if 'iOS' == link.site
+        link.verified( link.title, t, 'Y', 'N')
+        link.bind( -1)
+      end
+
+      return
+    end
 
     body = response.body
     body.force_encoding( 'UTF-8')
@@ -238,17 +251,15 @@ class VerifyLinks
                   :universal_newline => true)
 
     status, valid, ignore, title = get_details( link, body)
-    #p ['verify_page2', status, valid, ignore, title]
+    p ['verify_page2', status, valid, ignore, title] if debug
     unless status
-      File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
-      # if link.timestamp < 1000
-      #   link.verified( link.title, link.timestamp + 1, 'N', redirected ? 'Y' : 'N')
-      # end
+      if debug
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+      end
       return
     end
 
     old_t = link.timestamp
-    t = Time.now.to_i
     while File.exist?( cache + "/#{t}.html")
       sleep 1
       t = Time.now.to_i
@@ -269,7 +280,7 @@ class VerifyLinks
   def verify_url( url, cache)
     link = @pagoda.link( url)
     if link
-      verify_page( link, cache)
+      verify_page( link, cache, true)
     else
       raise "No such link: #{url}"
     end
