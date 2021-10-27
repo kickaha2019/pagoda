@@ -73,7 +73,7 @@ post '/game' do
 end
 
 get '/games' do
-  erb :games, :locals => get_locals( params, :search => '', :page => 1, :selected => 0)
+  erb :games, :locals => get_locals( params, :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
 end
 
 post '/ignore/:url' do
