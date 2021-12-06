@@ -71,7 +71,7 @@ class VerifyLinks
 
   def filter_steam_store( link, body, title)
     if m = /^(.*) on Steam$/.match( title)
-      return true, true, m[1]
+      return true, true, false, m[1]
     end
     return true, true, false,  title if /\/agecheck\/app\// =~ link.url
     return true, true, true, title if /^Welcome to Steam$/ =~ title
