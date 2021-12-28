@@ -31,7 +31,7 @@
 <script>
     function load_verified( search, page) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/verified_list?search=" + encodeURIComponent(search) + "&page=" + page, false);
+        xhttp.open("GET", "/verified?search=" + encodeURIComponent(search) + "&page=" + page, false);
         xhttp.send();
         document.getElementById("list").innerHTML = xhttp.responseText;
 

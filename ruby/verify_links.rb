@@ -94,7 +94,12 @@ class VerifyLinks
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ title
-      return false, false, false, title
+      return false, false, false, orig_title
+    end
+
+    # Server errors
+    if /Internal Server Error/i =~ title
+      return false, false, false, orig_title
     end
 
     # Apply site specific filters

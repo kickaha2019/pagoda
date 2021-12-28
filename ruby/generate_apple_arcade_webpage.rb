@@ -116,11 +116,19 @@ TITLE
   end
 
   def extract_ember_json( url, html)
+    inside, text = false, []
     html.split("\n").each do |line|
       if m = /^\s*<script[^>]*>({.*)$/.match( line)
         return JSON.parse( m[1])
       end
+
+      if /^\s*<script name="schema:software-application"/ =~ line
+        inside = true
+      elsif inside
+        return JSON.parse( line)
+      end
     end
+
     raise "Failed to find ember json in #{url}"
   end
 
