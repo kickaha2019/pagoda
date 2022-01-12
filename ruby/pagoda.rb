@@ -103,6 +103,16 @@ class Pagoda
       'N'
     end
 
+    def official_site
+      @owner.get( 'bind', :id, id).each do |rec|
+        link = @owner.link( rec[:url])
+        if link.site == 'Website' && link.type == 'Official'
+          return rec[:url]
+        end
+      end
+      ''
+    end
+
     def phone
       'N'
     end
@@ -145,6 +155,13 @@ class Pagoda
         names_seen[name.downcase] = true
       end
 
+      os = official_site
+      if os != params[:website]
+        @owner.delete( 'bind', :url, os)
+        @owner.delete( 'link', :url, os)
+        @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
+        @owner.insert( 'bind', {:url => params[:website], :id => id})
+      end
       @owner.end_transaction
       self
     end

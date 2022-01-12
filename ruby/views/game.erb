@@ -58,6 +58,7 @@
       @developer     = @game.developer
       @publisher     = @game.publisher
       @aliases       = @game.aliases
+      @website       = @game.official_site
     else
       @create_label  = 'Create'
       @delete_label  = 'Clear'
@@ -72,6 +73,7 @@
       @developer     = ''
       @publisher     = ''
       @aliases       = []
+      @website       = ''
     end
 
     while @aliases.size < 10
@@ -94,6 +96,8 @@
       <tr><th>Developer:</th><td><%= input_element( 'developer', 60, @developer) %></td></tr>
 
       <tr><th>Publisher:</th><td><%= input_element( 'publisher', 60, @publisher) %></td></tr>
+
+      <tr><th>Website:</th><td><%= input_element( 'website', 60, @website) %></td></tr>
 
       <tr><th>Type:</th><td><%= input_element( 'game_type', 1, @game_type) %></td></tr>
 

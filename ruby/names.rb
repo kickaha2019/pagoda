@@ -26,6 +26,8 @@ class Names
         '&ouml;'   => 'o',
         '&quot;'   => '"',
         '&raquo;'  => '"',
+        '&reg;'    => ' ',
+        '&trade;'  => ' ',
         '&uacute;' => 'u',
         '&uuml;'   => 'u',
         '&#xa1;'   => ' ',
