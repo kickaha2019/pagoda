@@ -50,11 +50,11 @@ module Common
 		cache_file = cache_dir + '/' + url.gsub( /[\/:]/, '_')
 		if File.exist?( cache_file) &&
 			 ((File.mtime( cache_file) + lifespan) >= Time.now)
-			IO.read( cache_file)
+			return IO.read( cache_file), cache_file
 		else
 			text = http_get( url)
 			File.open( cache_file, 'w') {|io| io.print text}
-			text
+			return text, cache_file
 		end
 	end
 

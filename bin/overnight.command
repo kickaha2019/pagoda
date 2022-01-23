@@ -7,10 +7,10 @@
 #
 # Check Google Archive script run
 #
-set FOUND=`find ~/Synch -name 'ICLOUD_ARCHIVE' -ctime -3h | wc -l`
+set FOUND=`find ~/Synch -name 'CLOUD_ARCHIVE' -ctime -3h | wc -l`
 if ("1" != "$FOUND") then
   echo
-  echo "*** iCloud Archive script may not have been run"
+  echo "*** Cloud Archive script may not have been run"
   echo
   exit
 endif

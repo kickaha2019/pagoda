@@ -90,10 +90,10 @@ TITLE
     end
   end
 
-  def check_name( arcade, ember_json)
+  def check_name( arcade, ember_json, cache_file)
     return unless ember_json['name']
-    if arcade.name != ember_json['name'].gsub( '®', '&reg;').gsub( '™', '&trade;')
-      error( "Name mismatch for #{arcade.name} / #{ember_json['name']}")
+    if arcade.name != ember_json['name'].gsub( '®', '&reg;').gsub( '™', '&trade;').gsub('’',"'")
+      error( "Name mismatch for #{arcade.name} / #{ember_json['name']} in cache file #{cache_file}")
     end
   end
 
@@ -134,10 +134,10 @@ TITLE
 
   def get_ember_json( arcade)
     if /\.com\/app\// =~ arcade.url
-      apple_page = http_get_cached( @cache, arcade.url, 45 * 24 * 60 * 60)
-      extract_ember_json( arcade.url, apple_page)
+      apple_page, cache_file = http_get_cached( @cache, arcade.url, 45 * 24 * 60 * 60)
+      return extract_ember_json( arcade.url, apple_page), cache_file
     else
-      {}
+      return {}, nil
     end
   end
 
@@ -297,8 +297,8 @@ FUNCTION_ALL1
 
     @games.each do |arcade|
       begin
-        ember_json = get_ember_json( arcade)
-        check_name( arcade, ember_json)
+        ember_json, cache_file = get_ember_json( arcade)
+        check_name( arcade, ember_json, cache_file)
         dex = (['Variable'] + @dexterities).index(  arcade.dexterity)
         dif = (['Variable'] + @difficulties).index( arcade.difficulty)
         dep = @depths.index( arcade.depth)

@@ -172,7 +172,7 @@ module Sinatra
     end
 
     def input_element( name, len, value, extras='')
-      "<input type=\"text\" name=\"#{name}\" maxlength=\"#{len}\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
+      "<input type=\"text\" name=\"#{name}\" maxlength=\"200\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
     end
 
     def link_action( rec, action, row=0)

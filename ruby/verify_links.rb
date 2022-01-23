@@ -147,7 +147,7 @@ class VerifyLinks
 
       return true, response
     rescue Exception => bang
-      return false, bang.message, ''
+      return false, bang.message
     end
     #response.value
     #response.body
@@ -235,7 +235,7 @@ class VerifyLinks
     p ['verify_page1', status, redirected, response] if debug
     unless status
       if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.is_a?( String) ? response : response.body}
       end
 
       # Give up on iOS games if get 404 back
