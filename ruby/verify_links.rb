@@ -8,7 +8,7 @@
 #   How old in days before revalidating link
 #
 
-require 'net/http'
+require 'http'
 require 'uri'
 require 'openssl'
 require 'yaml'
@@ -130,63 +130,10 @@ class VerifyLinks
   end
 
   def http_get( url)
-    uri = URI.parse( url)
-
-    request = Net::HTTP::Get.new(uri.request_uri)
-    request['Accept']          = 'text/html,application/xhtml+xml,application/xml'
-    request['Accept-Language'] = 'en-gb'
-    request['User-Agent']      = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
-
-    use_ssl     = uri.scheme == 'https'
-    verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-    begin
-      response = Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
-        http.request( request)
-      }
-
-      return true, response
-    rescue Exception => bang
-      return false, bang.message
-    end
-    #response.value
-    #response.body
-  end
-
-  def http_get_with_redirect( url, depth = 0)
-    #p ['http_get_with_redirect1', url]
-    status, response = http_get( url)
-    return status, false, response unless status
-
-    if response.is_a?( Net::HTTPNotFound)
-      return false, false, response
-    end
-
-    if (depth < 4) &&
-        response.is_a?( Net::HTTPRedirection) &&
-        (/^http(s|):/ =~ response['Location'])
-
-      # Regard as redirected unless temporary redirect
-      redirected = (response.code != '302')
-      #p ['http_get_with_redirect2', url, redirected, response.code]
-
-      # Hack for Steam to ignore app -> app redirects
-      # p ['http_get_with_redirect2', url, response['Location']]
-      # if is_steam_url?( response['Location']) && is_steam_url?( url)
-      #   p ['http_get_with_redirect3', url, response['Location']]
-      #   return status, false, response
-      # end
-
-      # Ignore Steam age challenge redirects
-      # if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
-      #   return status, false, response
-      # end
-
-      status, _, response = http_get_with_redirect( response['Location'], depth+1)
-      return status, redirected, response
-    end
-
-    return status, false, response
+    response = HTTP.get( url)
+    return true, false, response.body.to_s if response.status.success?
+    return true, true, response.body.to_s if response.status.redirect?
+    return false, false, response.status.reason
   end
 
   # def is_steam_url?( url)
@@ -231,11 +178,11 @@ class VerifyLinks
   def verify_page( link, cache, debug=false)
     t = Time.now.to_i
     @current = link.url
-    status, redirected, response = http_get_with_redirect( link.url)
-    p ['verify_page1', status, redirected, response] if debug
+    status, redirected, body = http_get( link.url)
+    p ['verify_page1', status, redirected, body[0..99]] if debug
     unless status
       if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.is_a?( String) ? response : response.body}
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
 
       # Give up on iOS games if get 404 back
@@ -247,7 +194,6 @@ class VerifyLinks
       return
     end
 
-    body = response.body
     body.force_encoding( 'UTF-8')
     body.encode!( 'US-ASCII',
                   :replace           => ' ',
@@ -259,7 +205,7 @@ class VerifyLinks
     p ['verify_page2', status, valid, ignore, title] if debug
     unless status
       if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
       return
     end
@@ -269,7 +215,7 @@ class VerifyLinks
       sleep 1
       t = Time.now.to_i
     end
-    File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
+    File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
 
     link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
 
