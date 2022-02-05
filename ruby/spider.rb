@@ -291,7 +291,7 @@ class Spider
 	end
 
 	def suggest_link( title, url)
-		@suggested << {:site => @site, :type => @type, :title => title, :url => url}
+		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
 		@suggested_links[url] = true
 	end
 

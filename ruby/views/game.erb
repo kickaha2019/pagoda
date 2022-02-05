@@ -59,6 +59,7 @@
       @publisher     = @game.publisher
       @aliases       = @game.aliases
       @website       = @game.official_site
+      @aspects       = @game.aspects
     else
       @create_label  = 'Create'
       @delete_label  = 'Clear'
@@ -74,6 +75,7 @@
       @publisher     = ''
       @aliases       = []
       @website       = ''
+      @aspects       = []
     end
 
     while @aliases.size < 10
@@ -101,6 +103,21 @@
 
       <tr><th>Type:</th><td><%= input_element( 'game_type', 1, @game_type) %></td></tr>
 
+      <tr><th>Aspects:</th><td>
+        <div class="aspects">
+          <%=
+            html = []
+            Pagoda.aspect_names do |aspect|
+              html << aspect
+              html << checkbox_element( "a_#{aspect}", @aspects.include?( aspect))
+              html << '&nbsp;'
+            end
+            html.join( "\n")
+          %>
+        </div>
+
+      </td></tr>
+
       <%=
         html = []
         if $debug
@@ -113,7 +130,7 @@
 
     </table>
 
-    <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between">
+  <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between">
       <table class="small list">
         <tr><th>Alias</th><th>Hidden?</th></tr>
         <%=

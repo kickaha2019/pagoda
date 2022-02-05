@@ -70,6 +70,10 @@ class Pagoda
       @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
     end
 
+    def aspects
+      @owner.get( 'aspect', :id, id).collect {|rec| rec[:aspect]}
+    end
+
     def console
       'N'
     end
@@ -105,9 +109,11 @@ class Pagoda
 
     def official_site
       @owner.get( 'bind', :id, id).each do |rec|
-        link = @owner.link( rec[:url])
-        if link.site == 'Website' && link.type == 'Official'
-          return rec[:url]
+        if @owner.has?( 'link', :url, rec[:url])
+          link = @owner.link( rec[:url])
+          if link.site == 'Website' && link.type == 'Official'
+            return rec[:url]
+          end
         end
       end
       ''
@@ -129,6 +135,7 @@ class Pagoda
       @owner.start_transaction
       @owner.delete( 'game',    :id, id)
       @owner.delete( 'alias',   :id, id)
+      @owner.delete( 'aspect',  :id, id)
       @owner.remove_name_id( id)
 
       rec = {}
@@ -155,6 +162,12 @@ class Pagoda
         names_seen[name.downcase] = true
       end
 
+      Pagoda.aspect_names do |aspect|
+        if params["a_#{aspect}".to_sym]
+          @owner.insert( 'aspect', {:aspect => aspect, :id => id})
+        end
+      end
+
       os = official_site
       if os != params[:website]
         @owner.delete( 'bind', :url, os)
@@ -162,6 +175,7 @@ class Pagoda
         @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
         @owner.insert( 'bind', {:url => params[:website], :id => id})
       end
+
       @owner.end_transaction
       self
     end
@@ -193,7 +207,7 @@ class Pagoda
         return nil if binds[0][:id] < 0
         @owner.game( binds[0][:id])
       else
-        game_id = @owner.lookup( @record[:site], @record[:type], @record[:title])
+        game_id = @owner.lookup( @record[:site], @record[:type], @record[:orig_title])
         return nil if game_id.nil?
         @owner.game( game_id)
       end
@@ -215,11 +229,11 @@ class Pagoda
     end
 
     def label
-      (@record[:title] && (@record[:title].strip != '')) ? @record[:title] : '???'
+      orig_title
     end
 
-    def name
-      label
+    def orig_title
+      (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
     end
 
     def status
@@ -244,6 +258,10 @@ class Pagoda
 
     def timestamp
       @record[:timestamp] ? @record[:timestamp].to_i : 0
+    end
+
+    def title
+      (@record[:title] && (@record[:title].strip != '')) ? @record[:title] : '???'
     end
 
     def unbind
@@ -274,6 +292,7 @@ class Pagoda
     @possibles = nil
 
     @database.declare_integer( 'alias',  :id)
+    @database.declare_integer( 'aspect', :id)
     @database.declare_integer( 'arcade', :id)
     # @database.declare_integer( 'arcade', :dexterity)
     # @database.declare_integer( 'arcade', :difficulty)
@@ -325,6 +344,10 @@ class Pagoda
       selected << g if (! block_given?) || (yield g)
     end
     selected
+  end
+
+  def self.aspect_names
+    ['Action','Adventure','Cards','HOG','Platformer','Puzzle','Racing','RPG','Strategy','Timer'].each {|a| yield a}
   end
 
   def check_unique_name( name, id)

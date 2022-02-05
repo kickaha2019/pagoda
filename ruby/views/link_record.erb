@@ -16,8 +16,8 @@
   <table class="link_record list">
     <tr><th>Site</th><td><%= h(@rec.site) %></td></tr>
     <tr><th>Type</th><td><%= h(@rec.type) %></td></tr>
-    <tr><th>Name</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.name)}<a/>" %></td></tr>
-    <tr><th>Label</th><td><%= h(@rec.label) %></td></tr>
+    <tr><th>Link</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.orig_title)}<a/>" %></td></tr>
+    <tr><th>Title</th><td><%= h(@rec.title) %></td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
     <tr><th>Valid</th><td><%= @rec.valid %></td></tr>
@@ -31,13 +31,13 @@
     <%=
       html = []
       if $debug
-        html << "<tr><th>Reduced name</th><td>#{$pagoda.reduce_name( @rec.name)}</td></tr>"
+        html << "<tr><th>Reduced name</th><td>#{$pagoda.reduce_name( @rec.orig_title)}</td></tr>"
         html << '<tr><th>Bound</th><td>'
         if @rec.bound? && ((id = bind_id( @rec)) >= 0)
           html << game_link( id)
         end
         html << '</td></tr><tr><th>Matches</th><td>'
-        html << $pagoda.matches( $pagoda.reduce_name( @rec.name)).collect do |mid|
+        html << $pagoda.matches( $pagoda.reduce_name( @rec.orig_title)).collect do |mid|
           game_link( mid)
         end.join( '</td></tr><tr><th></th><td>')
         html << '</td></tr>'
