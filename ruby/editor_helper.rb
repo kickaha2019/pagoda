@@ -16,29 +16,6 @@ module Sinatra
       games_records( search).select {|g| g.aliases.size > 0}
     end
 
-    def arcade_genres
-      ['Adventure',
-       'Arcade',
-       'Card game',
-       'Game',
-       'Platformer',
-       'Puzzle',
-       'Racing',
-       'RPG',
-       'Shooter',
-       'Simulation',
-       'Sports',
-       'Stealth',
-       'Strategy',
-       'Word puzzle']
-    end
-
-    def arcades_records( search)
-      $pagoda.arcades do |arcade|
-        $pagoda.contains_string( arcade.name, search)
-      end
-    end
-
     def bind_id( link_rec)
       return nil if ! link_rec.bound?
       game_rec = link_rec.collation
@@ -90,11 +67,6 @@ module Sinatra
 
     def d( text)
       CGI.unescape( text)
-    end
-
-    def delete_arcade( id)
-      arcade_rec = $pagoda.arcade( id)
-      arcade_rec.delete if arcade_rec != nil
     end
 
     def delete_game( id)
@@ -349,15 +321,6 @@ module Sinatra
       return '' if ! link_rec.bound?
       link_rec.unbind
       link_status( link_rec)
-    end
-
-    def update_arcade( params)
-      arcade_rec = $pagoda.arcade( params[:id])
-      if arcade_rec
-        arcade_rec.update( params)
-      else
-        $pagoda.create_arcade( params)
-      end
     end
 
     def update_game( params)
