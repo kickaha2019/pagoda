@@ -1,10 +1,30 @@
 require 'sinatra/base'
 require_relative 'pagoda'
+require_relative 'common'
 
 module Sinatra
   module EditorHelper
+    include Common
+
     @@selected_game = -1
     @@today         = Time.now.to_i
+
+    def add_game_from_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      return '' if $pagoda.has?( 'game', :name, link_rec.orig_title)
+      g = {:name => link_rec.orig_title, :id => $pagoda.next_value( 'game', :id)}
+      begin
+        page = http_get( link_url)
+        ['iOS'].each do |site|
+          get_site_class( site).new.get_game_details( page, g)
+        end
+        $pagoda.create_game( g)
+        "/game/#{g[:id]}"
+      rescue Exception => bang
+        puts bang.message
+        ''
+      end
+    end
 
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
@@ -149,6 +169,10 @@ module Sinatra
 
     def link_action( rec, action, row=0)
       "<button onclick=\"link_action( '#{e(e(rec.url))}', '#{action}', #{row});\">#{action.capitalize}</button>"
+    end
+
+    def link_add_action( rec)
+      "<button onclick=\"link_add_action( '#{e(e(rec.url))}');\">Add</button>"
     end
 
     def link_flagged?( rec)

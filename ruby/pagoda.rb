@@ -112,8 +112,8 @@ class Pagoda
       @owner.remove_name_id( id)
 
       rec = {}
-      [:id, :name, :year, :is_group, :developer, :publisher, :game_type].each do |field|
-        rec[field] = params[field] ? params[field].strip : nil
+      [:id, :name, :year, :is_group, :developer, :publisher].each do |field|
+        rec[field] = params[field] ? params[field].to_s.strip : nil
       end
 
       if params[:group_name]
@@ -142,7 +142,7 @@ class Pagoda
       end
 
       os = official_site
-      if os != params[:website]
+      if params[:website] && (os != params[:website])
         @owner.delete( 'bind', :url, os)
         @owner.delete( 'link', :url, os)
         @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
@@ -275,12 +275,10 @@ class Pagoda
     # Populate names repository
     @database.select( 'game') do |game_rec|
       g = PagodaGame.new( self, game_rec)
-      if g.game_type == 'A'
-        @names.add( g.name, g.id)
+      @names.add( g.name, g.id)
 
-        g.aliases.each do |arec|
-          @names.add( arec.name, g.id)
-        end
+      g.aliases.each do |arec|
+        @names.add( arec.name, g.id)
       end
     end
 

@@ -16,6 +16,10 @@ get '/' do
   erb :tables
 end
 
+post '/add_game_from_link/:url' do
+  add_game_from_link( d(params[:url]))
+end
+
 get '/aliases' do
   erb :aliases, :locals => get_locals( params, :search => '', :page => 1)
 end
