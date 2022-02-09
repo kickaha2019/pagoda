@@ -14,8 +14,11 @@ require 'openssl'
 require 'yaml'
 
 require_relative 'pagoda'
+require_relative 'common'
 
 class VerifyLinks
+  include Common
+
   def initialize( dir)
     @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
@@ -53,6 +56,13 @@ class VerifyLinks
         last_touch = new_touch
       end
     end
+  end
+
+  def filter_apple_app_store( link, body, title)
+    if m = /^(.*) on the App Store$/.match( title.strip)
+      return true, true, false, m[1]
+    end
+    return false, false, false, title
   end
 
   def filter_google_play_store( link, body, title)

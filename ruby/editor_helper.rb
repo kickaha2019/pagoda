@@ -15,7 +15,7 @@ module Sinatra
       g = {:name => link_rec.orig_title, :id => $pagoda.next_value( 'game', :id)}
       begin
         page = http_get( link_url)
-        ['iOS'].each do |site|
+        ['Apple Arcade'].each do |site|
           get_site_class( site).new.get_game_details( page, g)
         end
         $pagoda.create_game( g)

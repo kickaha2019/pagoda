@@ -1,25 +1,6 @@
-require 'json'
-
 class IOS
 	@@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
 	@@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
-
-	def extract_ember_json( html)
-		inside, text = false, []
-		html.split("\n").each do |line|
-			if m = /^\s*<script[^>]*>({.*)$/.match( line)
-				return JSON.parse( m[1])
-			end
-
-			if /^\s*<script name="schema:software-application"/ =~ line
-				inside = true
-			elsif inside
-				return JSON.parse( line)
-			end
-		end
-
-		false
-	end
 
 	def find( scanner)
 		Dir.entries( scanner.cache + '/ios').each do |f|
@@ -51,19 +32,6 @@ class IOS
 	def get_cache_path( searcher, section, letter)
 		index = @@letters.index( letter)
 		searcher.cache + "/ios/#{section}#{index+1}.json"
-	end
-
-	def get_game_details( page, game)
-		if json = extract_ember_json( page)
-			if dp = json['datePublished']
-				if m = /(\d\d\d\d)/.match( dp)
-					game[:year] = m[1]
-				end
-			end
-			if author = json['author']
-				game[:developer] = game[:publisher] = author['name']
-			end
-		end
 	end
 
 	def refresh_cache( searcher, section, letter)

@@ -7,6 +7,9 @@
 "Adventure Gamers":
   Review:
     suffix: "review | Adventure Gamers"
+"Apple Arcade":
+  Store:
+    - apple_app_store
 GOG:
   Store:
     suffix: " on GOG.com"

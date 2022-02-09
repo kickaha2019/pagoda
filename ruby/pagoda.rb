@@ -60,6 +60,17 @@ class Pagoda
       @owner.end_transaction
     end
 
+    def game_type
+      'A'
+    end
+
+    def generate
+      flagged = aspects
+      return false unless flagged.include?( 'Adventure')
+      return false if     flagged.include?( 'Action')
+      true
+    end
+
     def group_name
       if @record[:group_id]
         if group = @owner.get( 'game', :id, @record[:group_id])[0]
@@ -205,6 +216,10 @@ class Pagoda
       orig_title
     end
 
+    def name
+      title
+    end
+
     def orig_title
       (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
     end
@@ -250,10 +265,13 @@ class Pagoda
     def verified( title, timestamp, valid, redirected)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
-      @record[:title]     = title
-      @record[:timestamp] = timestamp
-      @record[:valid]     = valid
-      @record[:redirect]  = redirected
+      @record[:title]      = title
+      ot = @record[:orig_title]
+      ot = title if ot.nil? || (ot.strip == '')
+      @record[:orig_title] = ot
+      @record[:timestamp]  = timestamp
+      @record[:valid]      = valid
+      @record[:redirect]   = redirected
       @owner.insert( 'link', @record)
       @owner.end_transaction
     end
