@@ -81,8 +81,10 @@
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/add_game_from_link/" + id, false);
         xhttp.send();
-        if (xhttp.responseText == '') {return;}
-        window.open( xhttp.responseText);
+        if (xhttp.responseText == '') {
+            return;
+        }
+        window.open(xhttp.responseText);
     }
 
     function set_collation( url, row) {

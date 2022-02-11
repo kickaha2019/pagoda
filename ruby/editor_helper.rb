@@ -11,13 +11,14 @@ module Sinatra
 
     def add_game_from_link( link_url)
       link_rec = $pagoda.link( link_url)
-      return '' if $pagoda.has?( 'game', :name, link_rec.orig_title)
+      game_recs = $pagoda.get( 'game', :name, link_rec.title)
+      return "/game/#{game_recs[0][:id]}" if game_recs.size > 0
+      
+      #p ['add_game_from_link', link_url]
       g = {:name => link_rec.orig_title, :id => $pagoda.next_value( 'game', :id)}
       begin
         page = http_get( link_url)
-        ['Apple Arcade'].each do |site|
-          get_site_class( site).new.get_game_details( page, g)
-        end
+        get_site_class( link_rec.site).new.get_game_details( link_url, page, g)
         $pagoda.create_game( g)
         "/game/#{g[:id]}"
       rescue Exception => bang

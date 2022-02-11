@@ -29,7 +29,7 @@ class AppleArcade
 		end
 	end
 
-  def get_game_details( page, game)
+  def get_game_details( url, page, game)
     if json = extract_ember_json( page)
       if dp = json['datePublished']
         if m = /(\d\d\d\d)/.match( dp)
