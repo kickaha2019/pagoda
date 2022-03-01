@@ -1,60 +1,86 @@
 class GOG
+	def extract_card_product( html)
+		html.split("\n").each do |line|
+			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)
+				return JSON.parse( m[1])
+			end
+		end
+		false
+	end
+
 	def find( scanner)
 		path = scanner.cache + "/gog.json"
 
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			urls, page, old_count = {}, 0, -1
+			urls, page, added = {}, 0, 1
 
-			while old_count < urls.size
-				old_count = urls.size
-				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&sort=release_asc"
+			while (added > 0) && (page < 1000)
+				added = 0
+				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=asc:releaseDate"
+				#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
+				#raw = IO.read( '/Users/peter/temp/gog.html')
 
-				raw.split( ' ng-href="').each do |line|
-					if m = /^(\/game[^"]*)">[^>]*>([^<]*)</.match( line)
-						text = m[2]
-						text.force_encoding( 'UTF-8')
-						text.encode!( 'US-ASCII',
-													:invalid => :replace, :undef => :replace, :universal_newline => true)
-						urls['https://www.gog.com' + m[1]] = text
+				url = nil
+				raw.split( '<').each do |line|
+					if m = /href="(https:\/\/www\.gog\.com\/game\/[^"]*)"/.match( line)
+						url = m[1]
 					end
+					if m = /title="([^"]*)"/.match( line)
+						if url
+							text = m[1]
+							text.force_encoding( 'UTF-8')
+							text.encode!( 'US-ASCII',
+														:invalid => :replace, :undef => :replace, :universal_newline => true)
+							added += scanner.add_link( text, url)
+              url = nil
+            end
+          end
 				end
 
 				page += 1
 			end
-
-			File.open( path, 'w') {|io| io.print JSON.generate( urls)}
 		end
 
-		JSON.parse( IO.read( path)).each_pair do |url, name|
-			scanner.suggest_link( name, url)
-		end
+		# JSON.parse( IO.read( path)).each_pair do |url, name|
+		# 	scanner.suggest_link( name, url)
+		# end
+		#
+		# scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
+	end
 
-		scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
+	def get_game_details( url, page, game)
+		if info = extract_card_product( page)
+			game[:name]      = info['title']
+			game[:publisher] = info['publisher']
+			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ')
+			game[:year]      = info['globalReleaseDate'][0..3]
+		end
 	end
 
 	def incremental( scanner)
 		# puts "*** Awaiting full scan to be done"
 		# return
-		path   = scanner.cache + "/gog.json"
-		cached = JSON.parse( IO.read( path))
+		# path   = scanner.cache + "/gog.json"
+		# cached = JSON.parse( IO.read( path))
 
-		added = scanner.twitter_feed_links( 'gogcom') do |text, link|
+		scanner.twitter_feed_links( 'gogcom') do |text, link|
 			if /^https:\/\/www\.gog\.com\/game\// =~ link
 				link = link.split('?')[0]
-				if cached[link]
-					0
-				else
-					cached[link] = ''
-					1
-				end
+				scanner.add_link( '', link)
+			# 	if cached[link]
+			# 		0
+			# 	else
+			# 		cached[link] = ''
+			# 		1
+			# 	end
 			else
 				0
 			end
 		end
 
-		if added > 0
-			File.open( path, 'w') {|io| io.print JSON.generate( cached)}
-		end
-		added
+		# if added > 0
+		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
+		# end
+		# added
 	end
 end

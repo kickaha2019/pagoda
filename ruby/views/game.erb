@@ -53,7 +53,6 @@
       @name          = @game.name
       @group         = (@game.is_group == 'Y')
       @group_name    = @game.group_name
-      @game_type     = @game.game_type
       @year          = @game.year
       @developer     = @game.developer
       @publisher     = @game.publisher
@@ -69,7 +68,6 @@
       @name          = ''
       @group         = false
       @group_name    = ''
-      @game_type     = 'A'
       @year          = ''
       @developer     = ''
       @publisher     = ''
@@ -101,16 +99,15 @@
 
       <tr><th>Website:</th><td><%= input_element( 'website', 80, @website) %></td></tr>
 
-      <tr><th>Type:</th><td><%= input_element( 'game_type', 1, @game_type) %></td></tr>
-
       <tr><th>Aspects:</th><td>
         <div class="aspects">
           <%=
             html = []
             Pagoda.aspect_names do |aspect|
+              html << '<div>'
               html << aspect
               html << checkbox_element( "a_#{aspect}", @aspects.include?( aspect))
-              html << '&nbsp;'
+              html << '</div>'
             end
             html.join( "\n")
           %>

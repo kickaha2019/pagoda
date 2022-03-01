@@ -19,6 +19,13 @@ class AdventureGamers
 		page.split("\n").each do |line|
 			if m = /"gtin":"(.*)"/.match(line)
 				url = m[1]
+				break
+			end
+			if m1 = /<a href="(https:\/\/adventuregamers\.com\/games\/view\/\d+)">([^<]*)<\/a>/.match( line)
+				if m1[2] == game[:name]
+					url = m1[1]
+					break
+				end
 			end
 		end
 		return unless url

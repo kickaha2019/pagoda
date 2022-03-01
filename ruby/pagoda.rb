@@ -67,7 +67,9 @@ class Pagoda
     def generate
       flagged = aspects
       return false unless flagged.include?( 'Adventure')
-      return false if     flagged.include?( 'Action')
+      ['Action','HOG','Physics','Platformer','QT events','Stealth','VR'].each do |unwanted|
+        return false if flagged.include?( unwanted)
+      end
       true
     end
 
@@ -317,7 +319,9 @@ class Pagoda
   end
 
   def self.aspect_names
-    ['Action','Adventure','Cards','HOG','Platformer','Puzzle','Racing','RPG','Strategy','Timer'].each {|a| yield a}
+    ['Action','Adventure','Cards','HOG','Investigation','Maze','Physics','Platformer',
+     'Puzzle','QT events','Racing','RPG','Shooter','Slider','Stealth',
+     'Strategy','Timer','Tower Defense','VR','Word puzzle'].each {|a| yield a}
   end
 
   def check_unique_name( name, id)

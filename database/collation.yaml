@@ -38,7 +38,7 @@ GOG:
 "Google Play":
   Store:
     - "(.*) - Apps on Google Play"
-iOS:
+Apple:
   Store:
     - "(.*) on the app store"
     - "(.*) on the App Store"

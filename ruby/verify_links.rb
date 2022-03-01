@@ -58,7 +58,7 @@ class VerifyLinks
     end
   end
 
-  def filter_apple_app_store( link, body, title)
+  def filter_apple_store( link, body, title)
     if m = /^(.*) on the App Store$/.match( title.strip)
       return true, true, false, m[1]
     end
@@ -68,14 +68,6 @@ class VerifyLinks
   def filter_google_play_store( link, body, title)
     return true, true, false, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
     return true, false, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
-    return false, false, false, title
-  end
-
-  def filter_ios_store( link, body, title)
-    return true, true, false, title if /TouchArcade/m =~ body
-    return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) or later/m =~ body
-    return true, true, false, title if /Requires (iOS|iPadOS) \d+(|.\d+)(|.\d+) and the Apple Arcade/m =~ body
-    return true, true, true, title if /Requires MacOS \d+(|.\d+)(|.\d+) or later/mi =~ body
     return false, false, false, title
   end
 

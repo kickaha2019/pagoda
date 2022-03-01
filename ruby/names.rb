@@ -29,6 +29,7 @@ class Names
         '&reg;'    => ' ',
         '&trade;'  => ' ',
         '&uacute;' => 'u',
+        '&ucirc;'  => 'u',
         '&uuml;'   => 'u',
         '&#xa1;'   => ' ',
         '&#xb0;'   => ' ',

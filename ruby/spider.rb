@@ -195,7 +195,7 @@ class Spider
 	def purge_lost_urls( re)
 		@pagoda.links do |link|
 			if re =~ link.url
-				unless @suggested_links[link.url]
+				unless @suggested_links[link.url] || link.collation
 					puts "... Purging #{link.url}"
 					link.delete
 				end

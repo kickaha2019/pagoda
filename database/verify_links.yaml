@@ -7,18 +7,15 @@
 "Adventure Gamers":
   Review:
     suffix: "review | Adventure Gamers"
-"Apple Arcade":
+Apple:
   Store:
-    - apple_app_store
+    - apple_store
 GOG:
   Store:
     suffix: " on GOG.com"
 Google Play:
   Store:
     - google_play_store
-iOS:
-  Store:
-    - ios_store
 Jonas Kyratzes:
   Official:
     suffix: "&#8211; Jonas Kyratzes"

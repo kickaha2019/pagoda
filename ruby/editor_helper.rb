@@ -11,13 +11,18 @@ module Sinatra
 
     def add_game_from_link( link_url)
       link_rec = $pagoda.link( link_url)
-      game_recs = $pagoda.get( 'game', :name, link_rec.title)
-      return "/game/#{game_recs[0][:id]}" if game_recs.size > 0
-      
+      if collated = link_rec.collation
+        return "/game/#{collated.id}"
+      end
+
       #p ['add_game_from_link', link_url]
       g = {:name => link_rec.orig_title, :id => $pagoda.next_value( 'game', :id)}
       begin
-        page = http_get( link_url)
+        if link_rec.timestamp > 1000
+          page = get_cache( link_rec.timestamp)
+        else
+          page = http_get( link_url)
+        end
         get_site_class( link_rec.site).new.get_game_details( link_url, page, g)
         $pagoda.create_game( g)
         "/game/#{g[:id]}"
