@@ -180,6 +180,11 @@ class Names
     @reduced2ids[reduce(name)].clone
   end
 
+  def missed?( name)
+    ids = @reduced2ids[reduce(name)]
+    ids.size > 0
+  end
+
   def reduce( name)
     # if /Girl Who/ =~ name.to_s
     #   puts "DEBUG100"

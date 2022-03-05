@@ -85,7 +85,7 @@ module Sinatra
       defn << "<select id=\"#{combo_name}\" onchange=\"change_combo('#{combo_name}', '#{base_url}')\">"
       values.each do |value|
         selected = (current_value == value) ? 'selected' : ''
-        defn << "<option value=\"#{e(value)}\"#{selected}>#{h(value)}</option>"
+        defn << "<option value=\"#{e(value.gsub('?',''))}\"#{selected}>#{h(value)}</option>"
       end
       defn << '</select>'
       html << defn.join('')
@@ -192,6 +192,8 @@ module Sinatra
         chosen = false unless (rec.type == type) || (type == 'All')
         if status == 'Flagged'
           chosen = false unless link_flagged?(rec)
+        elsif status == 'Missed'
+          chosen = false unless link_missed?( rec)
         else
           chosen = false unless (link_status(rec) == status) || (status == 'All')
         end
@@ -202,6 +204,10 @@ module Sinatra
     def link_lost?( rec)
       return false if link_status(rec) == 'Ignored'
       (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
+    end
+
+    def link_missed?( rec)
+      rec.missed?
     end
 
     def link_site_combo( combo_name, current_site, current_type, current_status, html)
@@ -226,6 +232,7 @@ module Sinatra
         next unless (current_type == 'All') || (current_type == rec.type)
         values << link_status( rec)
         values << 'Flagged' if link_flagged?( rec)
+        values << 'Missed?' if link_missed?( rec)
       end
       values = values.uniq.sort
       values << 'All'
@@ -323,7 +330,7 @@ module Sinatra
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      ['Invalid', 'Unmatched', 'Ignored', 'Matched', 'Bound', 'Flagged'].each do |status|
+      ['Invalid', 'Unmatched', 'Ignored', 'Matched', 'Bound', 'Flagged', 'Missed'].each do |status|
         c = counts[status]
         colour = (status == 'Unmatched') ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0

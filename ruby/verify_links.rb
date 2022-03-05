@@ -251,6 +251,14 @@ class VerifyLinks
     end
 
     body = response.body
+
+    # Try converting odd characters
+    begin
+      body = body.gsub( '–', '-').gsub( '’', "'")
+    rescue
+    end
+
+    # Force to US ASCII
     body.force_encoding( 'UTF-8')
     body.encode!( 'US-ASCII',
                   :replace           => ' ',

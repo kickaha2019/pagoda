@@ -218,6 +218,14 @@ class Pagoda
       orig_title
     end
 
+    def missed?
+      return false unless @record
+      binds = @owner.get( 'bind', :url, @record[:url])
+      return false unless binds.size > 0
+      return false unless binds[0][:id] < 0
+      @owner.missed?( @record[:site], @record[:type], @record[:orig_title])
+    end
+
     def name
       title
     end
@@ -290,6 +298,7 @@ class Pagoda
     @database.declare_integer( 'game',   :id)
     @database.declare_integer( 'game',   :group_id)
     @database.declare_integer( 'game',   :year)
+    @database.declare_integer( 'link',   :collation)
     @database.declare_integer( 'link',   :timestamp)
 
     # Populate names repository
@@ -336,6 +345,13 @@ class Pagoda
       return false unless check_unique_name( params["alias#{index}"], id)
     end
     true
+  end
+
+  def clear_collation_ids( id)
+    to_clear = links.select {|s| s.cached_collation == id}
+    to_clear.each do |s|
+      s.clear_collation_id
+    end
   end
 
   def collations
@@ -457,23 +473,16 @@ class Pagoda
 
   def lookup( site, type, name)
     return nil if name.nil? || (name.strip == '')
-
-    if reductions = @reductions[site]
-      if reductions = reductions[type]
-        reductions.each do |reduction|
-          re = Regexp.new( reduction)
-          if m = re.match( name)
-            name = m[1]
-          end
-        end
-      end
-    end
-
-    @names.lookup(name)
+    @names.lookup( reduce_for_site( site, type, name))
   end
 
   def matches( name)
     @names.matches(name)
+  end
+
+  def missed?( site, type, name)
+    return nil if name.nil? || (name.strip == '')
+    @names.missed?( reduce_for_site( site, type, name))
   end
 
   def next_value( table_name, column_name)
@@ -486,6 +495,21 @@ class Pagoda
 
   def reduce_name( name)
     @names.reduce(name)
+  end
+
+  def reduce_for_site( site, type, name)
+    if reductions = @reductions[site]
+      if reductions = reductions[type]
+        reductions.each do |reduction|
+          re = Regexp.new( reduction)
+          if m = re.match( name)
+            name = m[1]
+          end
+        end
+      end
+    end
+
+    name
   end
 
   def refresh_reduction_cache
