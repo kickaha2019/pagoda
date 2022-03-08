@@ -103,7 +103,7 @@
         <div class="aspects">
           <%=
             html = []
-            Pagoda.aspect_names do |aspect|
+            $pagoda.aspect_names do |aspect|
               html << '<div>'
               html << aspect
               html << checkbox_element( "a_#{aspect}", @aspects.include?( aspect))

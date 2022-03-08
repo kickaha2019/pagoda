@@ -31,13 +31,13 @@
     <%=
       html = []
       if $debug
-        html << "<tr><th>Reduced name</th><td>#{$pagoda.reduce_name( @rec.orig_title)}</td></tr>"
+        html << "<tr><th>Reduced name</th><td>#{ @rec.reduced_name}</td></tr>"
         html << '<tr><th>Bound</th><td>'
         if @rec.bound? && ((id = bind_id( @rec)) >= 0)
           html << game_link( id)
         end
         html << '</td></tr><tr><th>Matches</th><td>'
-        html << $pagoda.matches( $pagoda.reduce_name( @rec.orig_title)).collect do |mid|
+        html << $pagoda.matches( @rec.reduced_name).collect do |mid|
           game_link( mid)
         end.join( '</td></tr><tr><th></th><td>')
         html << '</td></tr>'

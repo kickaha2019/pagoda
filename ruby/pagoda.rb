@@ -148,7 +148,7 @@ class Pagoda
         names_seen[name.downcase] = true
       end
 
-      Pagoda.aspect_names do |aspect|
+      @owner.aspect_names do |aspect|
         if params["a_#{aspect}".to_sym]
           @owner.insert( 'aspect', {:aspect => aspect, :id => id})
         end
@@ -193,7 +193,7 @@ class Pagoda
         return nil if binds[0][:id] < 0
         @owner.game( binds[0][:id])
       else
-        game_id = @owner.lookup( @record[:site], @record[:type], @record[:orig_title])
+        game_id = @owner.lookup( reduced_name)
         return nil if game_id.nil?
         @owner.game( game_id)
       end
@@ -223,7 +223,7 @@ class Pagoda
       binds = @owner.get( 'bind', :url, @record[:url])
       return false unless binds.size > 0
       return false unless binds[0][:id] < 0
-      @owner.missed?( @record[:site], @record[:type], @record[:orig_title])
+      @owner.missed?( reduced_name)
     end
 
     def name
@@ -232,6 +232,14 @@ class Pagoda
 
     def orig_title
       (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
+    end
+
+    def redirected?
+      @record[:redirect] == 'Y'
+    end
+
+    def reduced_name
+      @owner.reduce_name( @record[:site], @record[:type], @record[:orig_title])
     end
 
     def status
@@ -248,10 +256,6 @@ class Pagoda
       else
         'Unmatched'
       end
-    end
-
-    def redirected?
-      @record[:redirect] == 'Y'
     end
 
     def timestamp
@@ -298,7 +302,6 @@ class Pagoda
     @database.declare_integer( 'game',   :id)
     @database.declare_integer( 'game',   :group_id)
     @database.declare_integer( 'game',   :year)
-    @database.declare_integer( 'link',   :collation)
     @database.declare_integer( 'link',   :timestamp)
 
     # Populate names repository
@@ -327,10 +330,10 @@ class Pagoda
     list
   end
 
-  def self.aspect_names
-    ['Action','Adventure','Cards','HOG','Investigation','Maze','Physics','Platformer',
-     'Puzzle','QT events','Racing','RPG','Shooter','Slider','Stealth',
-     'Strategy','Timer','Tower Defense','VR','Word puzzle'].each {|a| yield a}
+  def aspect_names
+    @database.select( 'aspect_names') do |record|
+      yield record[:aspect]
+    end
   end
 
   def check_unique_name( name, id)
@@ -471,18 +474,18 @@ class Pagoda
     @names.keys(id)
   end
 
-  def lookup( site, type, name)
+  def lookup( name)
     return nil if name.nil? || (name.strip == '')
-    @names.lookup( reduce_for_site( site, type, name))
+    @names.lookup( name)
   end
 
   def matches( name)
     @names.matches(name)
   end
 
-  def missed?( site, type, name)
+  def missed?( name)
     return nil if name.nil? || (name.strip == '')
-    @names.missed?( reduce_for_site( site, type, name))
+    @names.missed?( name)
   end
 
   def next_value( table_name, column_name)
@@ -493,11 +496,7 @@ class Pagoda
     @database.rebuild
   end
 
-  def reduce_name( name)
-    @names.reduce(name)
-  end
-
-  def reduce_for_site( site, type, name)
+  def reduce_name( site, type, name)
     if reductions = @reductions[site]
       if reductions = reductions[type]
         reductions.each do |reduction|
@@ -509,7 +508,7 @@ class Pagoda
       end
     end
 
-    name
+    @names.reduce(name)
   end
 
   def refresh_reduction_cache
@@ -522,6 +521,12 @@ class Pagoda
 
   def remove_name_id( id)
     @names.remove(id)
+  end
+
+  def select( table_name)
+    @database.select( table_name) do |rec|
+      yield rec
+    end
   end
 
   def sort_name( name)
