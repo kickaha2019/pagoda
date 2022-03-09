@@ -51,44 +51,33 @@ CHECKBOX
       html   = []
       totals = Hash.new {|h,k| h[k] = [0,0,0]}
 
-      records = $pagoda.links do |rec|
-        @types_to_list.include?( rec.type)
-      end
+      links_by_site_and_type do |site, type, links|
+        next unless @types_to_list.include?( type)
+        counts = Hash.new {|h,k| h[k] = [0,0,0]}
 
-      records.sort_by! do |rec|
-        [rec.site.downcase, rec.type]
-      end
-
-      counts, site, type = Hash.new {|h,k| h[k] = [0,0,0]}, '', ''
-
-      records.each do |rec|
-        if (rec.site != site) || (rec.type != type)
-          summary_line( site, type, counts, totals, html)
-          site   = rec.site
-          type   = rec.type
-          counts = Hash.new {|h,k| h[k] = [0,0,0]}
-        end
-
-        status = link_status(rec)
-        c = counts[status]
-        c[0] += 1
-        c[1] += 1 if link_lost?(rec)
-        c[2] += 1 if rec.redirected?
-
-        if link_lost?(rec) || rec.redirected?
-          c = counts['Flagged']
+        links.each do |rec|
+          status = link_status(rec)
+          c = counts[status]
           c[0] += 1
           c[1] += 1 if link_lost?(rec)
           c[2] += 1 if rec.redirected?
+
+          if link_lost?(rec) || rec.redirected?
+            c = counts['Flagged']
+            c[0] += 1
+            c[1] += 1 if link_lost?(rec)
+            c[2] += 1 if rec.redirected?
+          end
+
+          if link_missed?(rec)
+            c = counts['Missed']
+            c[0] += 1
+          end
         end
 
-        if link_missed?(rec)
-          c = counts['Missed']
-          c[0] += 1
-        end
+        summary_line( site, type, counts, totals, html)
       end
 
-      summary_line( site, type, counts, totals, html)
       summary_line( 'Totals', '', totals, {}, html)
       html.join( "\n")
     %>

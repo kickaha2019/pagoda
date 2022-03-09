@@ -44,7 +44,7 @@
         if rec.timestamp < 10000
           html << "<td><span title=\"#{t(rec.orig_title)}\">#{h(rec.orig_title,40)}<span/></td>"
         else
-          html << "<td><a title=\"#{t(rec.orig_title)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.orig_title,40)}<a/></td>"
+          html << "<td><a title=\"#{t(rec.orig_title)}\" href=\"#{rec.url}\">#{h(rec.orig_title,40)}<a/></td>"
         end
         info = collation( rec.url)
         html << "<td id=\"collation#{row}\">#{info[:link]}</td>"

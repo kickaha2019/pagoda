@@ -25,6 +25,7 @@ module Sinatra
         end
         get_site_class( link_rec.site).new.get_game_details( link_url, page, g)
         $pagoda.create_game( g)
+        link_rec.bind( g[:id])
         "/game/#{g[:id]}"
       rescue Exception => bang
         puts bang.message
@@ -50,11 +51,19 @@ module Sinatra
     end
 
     def bind_link( link_url)
-      return '' if @@selected_game < 0
       link_rec = $pagoda.link( link_url)
       return '' if link_rec.nil?
-      return '' if bind_id( link_rec) == @@selected_game
-      link_rec.bind( @@selected_game)
+
+      bind_game = @@selected_game
+      if bind_game < 0
+        if col = link_rec.collation
+          bind_game = col.id
+        end
+      end
+
+      return '' if bind_game < 0
+      return '' if bind_id( link_rec) == bind_game
+      link_rec.bind( bind_game)
       'Bound'
     end
 
@@ -258,6 +267,18 @@ module Sinatra
       base_url = "/links?site=#{current_site}&status=#{current_status}&type="
       combo_box( combo_name, types, current_type, base_url, html)
       current_type
+    end
+
+    def links_by_site_and_type
+      cache = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = []}}
+      $pagoda.links do |rec|
+        cache[rec.site][rec.type] << rec
+      end
+      cache.keys.sort.each do |site|
+        cache[site].keys.sort.each do |type|
+          yield site, type, cache[site][type]
+        end
+      end
     end
 
     def lost_forget_action( rec)
