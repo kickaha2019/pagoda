@@ -24,6 +24,9 @@ find ~/Caches/Pagoda -mtime +365 -delete
 #java -Djsse.enableSNIExtension=false -Xmx512M -classpath dist/Pagoda.jar com.alofmethbin.rintrah.Scanner $PAGODA/scripts ~/Caches/Pagoda $PAGODA/database/scan.txt All/Root
 #if ($status != 0) exit 1
 
+# Regenerate phrase frequencies
+ruby ruby/determine_phrase_frequencies.rb database 50
+
 # Scan Steam GOG etc for games that might match
 setenv PATH $PAGODA/ruby:$PATH
 ruby ruby/spider.rb database ~/Caches/Pagoda full All All

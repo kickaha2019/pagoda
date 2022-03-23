@@ -292,6 +292,7 @@ class Pagoda
   end
 
   def initialize( dir)
+    @dir       = dir
     @database  = Database.new( dir)
     @names     = Names.new
     @possibles = nil
@@ -314,9 +315,10 @@ class Pagoda
       end
     end
 
-    @reduction_file      = dir + '/collation.yaml'
-    @reduction_timestamp = 0
-    @reductions          = {}
+    @reduction_file         = dir + '/collation.yaml'
+    @reduction_timestamp    = 0
+    @reductions             = {}
+    @aspect_names_timestamp = 0
     refresh_reduction_cache
   end
 
@@ -331,8 +333,11 @@ class Pagoda
   end
 
   def aspect_names
-    @database.select( 'aspect_names') do |record|
-      yield record[:aspect]
+    unless @aspect_names_timestamp == File.mtime( @dir + '/aspect_names.csv')
+      @aspect_names = IO.readlines( @dir + '/aspect_names.csv')[1..-1].collect {|l| l.chomp}.select {|l| l != ''}
+    end
+    @aspect_names.each do |name|
+      yield name
     end
   end
 

@@ -54,11 +54,10 @@ module Sinatra
       link_rec = $pagoda.link( link_url)
       return '' if link_rec.nil?
 
-      bind_game = @@selected_game
-      if bind_game < 0
-        if col = link_rec.collation
-          bind_game = col.id
-        end
+      if col = link_rec.collation
+        bind_game = col.id
+      else
+        bind_game = @@selected_game
       end
 
       return '' if bind_game < 0

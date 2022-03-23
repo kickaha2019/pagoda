@@ -24,3 +24,5 @@ synch.rb
 apple_fix.command
 copy_to_temp.command
 grabber.command
+*.csv
+*.html
