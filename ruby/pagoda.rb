@@ -193,9 +193,7 @@ class Pagoda
         return nil if binds[0][:id] < 0
         @owner.game( binds[0][:id])
       else
-        game_id = @owner.lookup( reduced_name)
-        return nil if game_id.nil?
-        @owner.game( game_id)
+        nil
       end
     end
 
@@ -216,14 +214,6 @@ class Pagoda
 
     def label
       orig_title
-    end
-
-    def missed?
-      return false unless @record
-      binds = @owner.get( 'bind', :url, @record[:url])
-      return false unless binds.size > 0
-      return false unless binds[0][:id] < 0
-      @owner.missed?( reduced_name)
     end
 
     def name
@@ -251,10 +241,8 @@ class Pagoda
         end
       elsif bound?
         collation ? 'Bound' : 'Ignored'
-      elsif collation
-        'Matched'
       else
-        'Unmatched'
+        'Free'
       end
     end
 
@@ -479,18 +467,8 @@ class Pagoda
     @names.keys(id)
   end
 
-  def lookup( name)
-    return nil if name.nil? || (name.strip == '')
-    @names.lookup( name)
-  end
-
   def matches( name)
     @names.matches(name)
-  end
-
-  def missed?( name)
-    return nil if name.nil? || (name.strip == '')
-    @names.missed?( name)
   end
 
   def next_value( table_name, column_name)

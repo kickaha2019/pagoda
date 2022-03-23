@@ -174,18 +174,8 @@ class Names
     @id2reduced[id.to_i].clone
   end
 
-  def lookup( name)
-    ids = @reduced2ids[reduce(name)]
-    (ids.size == 1) ? ids[0] : nil
-  end
-
   def matches( name)
     @reduced2ids[reduce(name)].clone
-  end
-
-  def missed?( name)
-    ids = @reduced2ids[reduce(name)]
-    ids.size > 0
   end
 
   def reduce( name)
