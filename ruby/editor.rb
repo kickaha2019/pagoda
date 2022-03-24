@@ -24,6 +24,14 @@ get '/aliases' do
   erb :aliases, :locals => get_locals( params, :search => '', :page => 1)
 end
 
+post '/bind/:url' do
+  bind_link( d(params[:url]))
+end
+
+post '/bind/:url/:game' do
+  bind_link( d(params[:url]), params[:game].to_i)
+end
+
 get '/cache/:timestamp' do
   get_cache( params[:timestamp].to_i)
 end
@@ -34,10 +42,6 @@ end
 
 get '/collation/:url' do
   collation( d(params[:url])).to_json
-end
-
-post '/bind/:url' do
-  bind_link( d(params[:url]))
 end
 
 post '/delete_game' do

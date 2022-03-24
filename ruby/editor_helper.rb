@@ -50,11 +50,13 @@ module Sinatra
       game_rec.id
     end
 
-    def bind_link( link_url)
+    def bind_link( link_url, game_id=nil)
       link_rec = $pagoda.link( link_url)
       return '' if link_rec.nil?
 
-      if col = link_rec.collation
+      if ! game_id.nil?
+        bind_game = game_id
+      elsif col = link_rec.collation
         bind_game = col.id
       else
         bind_game = @@selected_game
@@ -187,6 +189,10 @@ module Sinatra
 
     def link_add_action( rec)
       "<button onclick=\"link_add_action( '#{e(e(rec.url))}');\">Add</button>"
+    end
+
+    def link_bind_action( rec, game_id)
+      "<button onclick=\"link_bind_action( '#{e(e(rec.url))}', #{game_id});\">Bind</button>"
     end
 
     def link_flagged?( rec)

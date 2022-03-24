@@ -3,6 +3,7 @@
 # Get Hostgator settings
 #
 source ~/Documents/Security/hostgator/setup.csh
+if ($status != 0) exit 1
 
 # -----------------------------------------------------------------
 #
@@ -22,7 +23,7 @@ endif
 #
 cd $0:h
 cd ../database
-sftp $SSH_SERVER <<PUT
+$SFTP $SERVER <<PUT
 put pagoda.sql
 PUT
 
@@ -31,7 +32,7 @@ PUT
 # Secondly load pagoda.sql into the Pagoda MySQL database
 # then delete pagoda.sql
 #
-ssh $SSH_SERVER <<LOAD
+$SSH $SERVER <<LOAD
 mysql -e 'source pagoda.sql' $PAGODA_DB
 rm pagoda.sql
 LOAD

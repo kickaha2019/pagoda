@@ -1,10 +1,9 @@
 class Names
   def initialize
-    @cache    = {}
-    @id2reduced  = Hash.new {|h,k| h[k] = []}
-    @reduced2ids = Hash.new {|h,k| h[k] = []}
-    @id2names    = Hash.new {|h,k| h[k] = []}
-    @names2ids   = {}
+    @cache     = {}
+    @combo2ids = Hash.new {|h,k| h[k] = []}
+    @id2names   = Hash.new {|h,k| h[k] = []}
+    @names2ids  = {}
 
     # HTML entity codes
     @entities = {
@@ -130,34 +129,9 @@ class Names
     @names2ids[name] =  id
     @id2names[id]    << name
 
-    if m = /^(.*)(\s+\d+\s*):(.*)$/.match( name)
-      add_reduced( reduce( m[1] + m[2]), id)
-      add_reduced( reduce( m[1] + ' ' + m[3]), id)
-      add_reduced( reduce( m[3]), id)
-      add_reduced( reduce( m[3] + ' ' + m[1]), id)
-      add_reduced( reduce( m[3] + ' ' + m[1] + ' ' + m[2]), id)
-    elsif m = /^(.*)(:|-)\s(.*)$/.match( name)
-      add_reduced( reduce( m[1]), id)
-      add_reduced( reduce( m[3]), id)
-      add_reduced( reduce( m[3] + ' ' + m[1]), id)
+    string_combos( reduce( name)) do |combo, weight|
+      @combo2ids[combo] << id
     end
-    add_reduced( reduce(name), id)
-  end
-
-  def add_reduced( name, id)
-    if m = /^([^0-9:]*) ([\d]+) ([^0-9]*)$/.match( name)
-      add_reduced( m[1] + ' ' + m[2], id)
-      add_reduced( m[1] + ' ' + m[3], id)
-    end
-
-    if m = /^(.*) 1$/.match( name)
-      add_reduced( m[1], id)
-    end
-
-    ids  = @reduced2ids[name]
-    ids << id unless ids.index(id)
-    names = @id2reduced[id]
-    names << name unless names.index( name)
   end
 
   def check_unique_name( name, id)
@@ -168,14 +142,6 @@ class Names
     else
       true
     end
-  end
-
-  def keys( id)
-    @id2reduced[id.to_i].clone
-  end
-
-  def matches( name)
-    @reduced2ids[reduce(name)].clone
   end
 
   def reduce( name)
@@ -210,20 +176,13 @@ class Names
     @cache[name] = reduced
   end
 
-  def reduced_names
-    @reduced2ids.each_pair {|name,ids| yield name, ids}
-  end
-
-  def remove( id)
+  def remove( name, id)
     id = id.to_i
-    @id2reduced[id].each do |name|
-      @reduced2ids[name].delete_if {|nid| nid == id}
+    string_combos( reduce( name)) do |combo, weight|
+      @combo2ids[combo].delete( id)
     end
-    @id2reduced.delete(id)
 
-    @id2names[id].each do |name|
-      @names2ids.delete( name)
-    end
+    @names2ids.delete( name)
     @id2names.delete(id)
   end
 
@@ -251,5 +210,38 @@ class Names
 
     # Replace punctuation by blanks
     reduced.gsub( /[^a-z0-9]/, ' ').strip
+  end
+
+  def string_combos( name)
+    words = reduce( name).split( ' ')
+    words.each {|word| yield word, 125}
+
+    (0..(words.size-2)).each do |i|
+      yield words[i..(i+1)].join(' '), 25
+    end
+
+    (0..(words.size-3)).each do |i|
+      yield words[i..(i+2)].join(' '), 5
+    end
+
+    (0..(words.size-4)).each do |i|
+      yield words[i..(i+3)].join(' '), 1
+    end
+  end
+
+  def suggest( name, limit)
+    found = Hash.new {|h,k| h[k] = 1000}
+    string_combos( name) do |combo, weight|
+      ids = @combo2ids[combo]
+      ids.each do |id|
+        found[id] = ids.size if ids.size < found[id]
+      end
+    end
+
+    list = found.keys.collect {|id| [id, found[id]]}.sort_by {|e| e[1]}
+    list = list[0...limit] if limit < list.size
+    list.each do |e|
+      yield e[0]
+    end
   end
 end

@@ -52,11 +52,14 @@ class Pagoda
     end
 
     def delete
+      @owner.delete_name( name, id)
+      aliases.each do |a|
+        @owner.delete_name( a.name, id)
+      end
       @owner.start_transaction
       @owner.delete( 'game',    :id, id)
       @owner.delete( 'alias',   :id, id)
       @owner.delete( 'bind',    :id, id)
-      @owner.remove_name_id( id)
       @owner.end_transaction
     end
 
@@ -64,7 +67,7 @@ class Pagoda
       'A'
     end
 
-    def generate
+    def generate?
       flagged = aspects
       return false unless flagged.include?( 'Adventure')
       ['Action','HOG','Physics','Platformer','QT events','Stealth','VR'].each do |unwanted|
@@ -118,11 +121,15 @@ class Pagoda
     end
 
     def update( params)
+      @owner.delete_name( name, id)
+      aliases.each do |a|
+        @owner.delete_name( a.name, id)
+      end
+
       @owner.start_transaction
       @owner.delete( 'game',    :id, id)
       @owner.delete( 'alias',   :id, id)
       @owner.delete( 'aspect',  :id, id)
-      @owner.remove_name_id( id)
 
       rec = {}
       [:id, :name, :year, :is_group, :developer, :publisher].each do |field|
@@ -244,6 +251,10 @@ class Pagoda
       else
         'Free'
       end
+    end
+
+    def suggest
+      @owner.suggest( orig_title) {|game| yield game}
     end
 
     def timestamp
@@ -417,20 +428,11 @@ class Pagoda
   # end
 
   def string_combos( name)
-    words = @names.reduce( name).split( ' ')
-    words.each {|word| yield word, 125}
+    @names.string_combos( name) {|combo, weight| yield combo, weight}
+  end
 
-    (0..(words.size-2)).each do |i|
-      yield words[i..(i+1)].join(' '), 25
-    end
-
-    (0..(words.size-3)).each do |i|
-      yield words[i..(i+2)].join(' '), 5
-    end
-
-    (0..(words.size-4)).each do |i|
-      yield words[i..(i+3)].join(' '), 1
-    end
+  def suggest( name)
+    @names.suggest( name, 20) {|game_id| yield game(game_id)}
   end
 
   # Wrapper methods for calls to database and names logic
@@ -441,6 +443,10 @@ class Pagoda
 
   def count( table_name)
     @database.count( table_name)
+  end
+
+  def delete_name( name, id)
+    @names.remove( name, id)
   end
 
   def end_transaction
@@ -465,10 +471,6 @@ class Pagoda
 
   def keys( id)
     @names.keys(id)
-  end
-
-  def matches( name)
-    @names.matches(name)
   end
 
   def next_value( table_name, column_name)
@@ -500,10 +502,6 @@ class Pagoda
       @reductions          = YAML.load( IO.read( @reduction_file))
       @reduction_timestamp = t
     end
-  end
-
-  def remove_name_id( id)
-    @names.remove(id)
   end
 
   def select( table_name)

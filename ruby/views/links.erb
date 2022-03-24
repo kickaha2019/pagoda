@@ -39,7 +39,7 @@
       row = 0
       records[(100*(current_page-1))...(100*current_page)].each do |rec|
         row += 1
-        html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
+        html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
         html << "<td>#{rec.type}</td>"
         if rec.timestamp < 10000
           html << "<td><span title=\"#{t(rec.orig_title)}\">#{h(rec.orig_title,40)}<span/></td>"

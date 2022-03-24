@@ -115,16 +115,6 @@
 
       </td></tr>
 
-      <%=
-        html = []
-        if $debug
-          html << '<tr><th>Keys:</th><td>' +
-                  $pagoda.keys( @id).join( '</td></tr><tr><th></th><td>') +
-                  '</td></tr>'
-        end
-        html.join( "\n")
-      %>
-
     </table>
 
   <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between">

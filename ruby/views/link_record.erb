@@ -7,6 +7,13 @@
         xhttp.send();
         window.location.reload();
     }
+
+    function link_bind_action( id, game) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/bind/" + id + "/" + game, false);
+        xhttp.send();
+        window.location.reload();
+    }
 </script>
 
 <%
@@ -21,6 +28,7 @@
     <tr><th>Title</th><td><%= h(@rec.title) %></td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
+    <tr><th>Collation</th><td><%= @rec.collation ? game_link(@rec.collation.id) : '' %>
     <tr><th>Valid</th><td><%= @rec.valid %></td></tr>
     <tr><th>Redirected</th><td><%= @rec.redirect %></td></tr>
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
@@ -33,15 +41,25 @@
       html = []
       if $debug
         html << "<tr><th>Reduced name</th><td>#{ @rec.reduced_name}</td></tr>"
-        html << '<tr><th>Bound</th><td>'
-        if @rec.bound? && ((id = bind_id( @rec)) >= 0)
-          html << game_link( id)
-        end
         html << '</td></tr>'
       end
       html.join( "\n")
     %>
   </table>
 
+  <table class="list">
+    <tr><th>Game</th><th>Developer</th><th>Publisher</th><th>Year</th><th>Actions</th></tr>
+    <%=
+      html = []
+      @rec.suggest do |game|
+        html << "<tr><td><a href=\"/game/#{game.id}\">#{h(game.name)}</a></td>"
+        html << "<td>#{game.developer}</td>"
+        html << "<td>#{game.publisher}</td>"
+        html << "<td>#{game.year}</td>"
+        html << "<td>#{ link_bind_action( @rec, game.id)}</td>"
+      end
+      html.join( "\n")
+    %>
+  </table>
 </body>
 </html>
