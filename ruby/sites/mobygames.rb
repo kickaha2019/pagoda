@@ -29,4 +29,33 @@ class MobyGames
 			scanner.suggest_link( name, url)
 		end
 	end
+
+	def get_game_details( url, page, game)
+		publisher, developer, release = false, false, false
+		page.split("<div").each do |line|
+			if />Published\s+by</ =~ line
+				#p ['get_game_details1', line]
+				publisher = true
+			elsif />Developed\s+by</ =~ line
+				#p ['get_game_details2', line]
+				developer = true
+			elsif />Released</ =~ line
+				#p ['get_game_details3', line]
+				release = true
+			elsif m = />([^<]*)<\/a>/.match( line)
+				text = m[1].gsub( '&nbsp;', ' ')
+				#p ['get_game_details4', text]
+				if publisher
+					game[:publisher] = text
+				elsif developer
+					game[:developer] = text
+				elsif release
+					if m2 = /(\d\d\d\d)$/m.match( text)
+						game[:year] = m2[1]
+					end
+				end
+				publisher, developer, release = false, false, false
+			end
+		end
+	end
 end

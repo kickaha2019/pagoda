@@ -8,8 +8,8 @@ set PAGODA=`pwd`
 setenv PATH $PAGODA/ruby:$PATH
 
 # Regenerate phrase frequencies
-date
-ruby ruby/determine_phrase_frequencies.rb database 50
+#date
+#ruby ruby/determine_phrase_frequencies.rb database 50
 
 # Scan for new links on some sites
 date

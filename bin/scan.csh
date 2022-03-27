@@ -25,7 +25,7 @@ find ~/Caches/Pagoda -mtime +365 -delete
 #if ($status != 0) exit 1
 
 # Regenerate phrase frequencies
-ruby ruby/determine_phrase_frequencies.rb database 50
+#ruby ruby/determine_phrase_frequencies.rb database 50
 
 # Scan Steam GOG etc for games that might match
 setenv PATH $PAGODA/ruby:$PATH
