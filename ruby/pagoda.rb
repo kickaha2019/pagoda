@@ -296,13 +296,16 @@ class Pagoda
     @names     = Names.new
     @possibles = nil
 
-    @database.declare_integer( 'alias',  :id)
-    @database.declare_integer( 'aspect', :id)
-    @database.declare_integer( 'bind',   :id)
-    @database.declare_integer( 'game',   :id)
-    @database.declare_integer( 'game',   :group_id)
-    @database.declare_integer( 'game',   :year)
-    @database.declare_integer( 'link',   :timestamp)
+    @database.declare_integer( 'alias',          :id)
+    @database.declare_integer( 'aspect',         :id)
+    @database.declare_integer( 'aspect_suggest', :game)
+    @database.declare_integer( 'aspect_suggest', :cache)
+    @database.declare_integer( 'aspect_suggest', :timestamp)
+    @database.declare_integer( 'bind',           :id)
+    @database.declare_integer( 'game',           :id)
+    @database.declare_integer( 'game',           :group_id)
+    @database.declare_integer( 'game',           :year)
+    @database.declare_integer( 'link',           :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|

@@ -7,10 +7,6 @@ cd ..
 set PAGODA=`pwd`
 setenv PATH $PAGODA/ruby:$PATH
 
-# Regenerate phrase frequencies
-#date
-#ruby ruby/determine_phrase_frequencies.rb database 50
-
 # Scan for new links on some sites
 date
 ruby ruby/spider.rb database ~/Caches/Pagoda incremental All All
@@ -21,10 +17,10 @@ date
 ruby ruby/verify_links.rb database 1000 ~/Caches/Pagoda/verified 30
 if ($status != 0) exit 1
 
-# Search some sites by game name
-#date
-#ruby ruby/searcher.rb database ~/Caches/Pagoda GooglePlay IOS
+# Suggest some aspects
 date
+ruby ruby/suggest_aspects.rb database ~/Caches/Pagoda 200
+if ($status != 0) exit 1
 
 # Backup current database files
 rsync -rvt --delete database ~/temp/Pagoda
