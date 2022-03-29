@@ -29,18 +29,18 @@ class Steam
 	def get_game_details( url, page, game)
 		publisher, developer, release = false, false, false
 		page.split("<div").each do |line|
-			if />Publisher:</ =~ line
-				p ['get_game_details1', line]
+			if />Publisher:<\/div/ =~ line
+				#p ['get_game_details1', line]
 				publisher = true
-			elsif />Developer:</ =~ line
-				p ['get_game_details2', line]
+			elsif />Developer:<\/div/ =~ line
+				#p ['get_game_details2', line]
 				developer = true
-			elsif />Release Date:</ =~ line
-				p ['get_game_details3', line]
+			elsif />Release Date:<\/div/ =~ line
+				#p ['get_game_details3', line]
 				release = true
 			elsif m = />([^<]+)<\//.match( line)
 				text = m[1].gsub( '&nbsp;', ' ')
-				p ['get_game_details4', text]
+				#p ['get_game_details4', text]
 				if publisher
 					game[:publisher] = text
 				elsif developer

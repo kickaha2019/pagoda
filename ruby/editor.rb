@@ -94,8 +94,16 @@ get '/selected_game' do
   selected_game
 end
 
+post '/set_aspect/:game/:aspect' do
+  set_aspect( params[:game].to_i, d(params[:aspect]))
+end
+
 put '/set_variable/:name/:value' do
   set_variable( params[:name], params[:value])
+end
+
+get '/suggest_aspects' do
+  erb :suggest_aspects, get_locals( params, :page => 1)
 end
 
 get '/summary' do

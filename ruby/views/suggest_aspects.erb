@@ -1,0 +1,54 @@
+<%= erb :header, :locals => {:page => 'scan'} %>
+
+<div class="search control">
+  <%=
+      url = "/suggest_aspects"
+      erb :page_control, :locals => {:view => 'suggest',
+                                     :page => 1, #page,
+                                     :url  => url,
+                                     :args => []}
+  %>&nbsp;&nbsp;
+</div>
+
+<div id="list"><table class="scan list">
+  <tr><th>Game</th><th>Aspects</th><th>Actions</th></tr>
+  <%=
+      html = []
+
+      records = suggest_records
+      current_page = 1 #page.to_i
+      total_pages  = (records.size + 99) /  100
+      current_page = 1 if total_pages < current_page
+
+      records.sort_by! do |rec|
+        - rec[:timestamp]
+      end
+
+      row = 0
+      records[(100*(current_page-1))...(100*current_page)].each do |rec|
+        row += 1
+        html << "<tr><td><a target=\"_blank\" href=\"/game/#{rec[:game]}\">#{h(rec[:name])}</a></td>"
+        html << "<td>#{rec[:aspect]}</td>"
+        html << "<td><button onclick=\""
+        rec[:aspect].split(',').each do |a|
+            html << "set_aspect( #{rec[:game]}, '#{a}');"
+        end
+        html << "\")>Set aspects</button></td></tr>"
+        html << "<tr><td colspan=\"3\">#{h(rec[:text])}"
+        html << '</td></tr>'
+      end
+
+      html.join( "\n")
+  %>
+</table></div>
+
+<script>
+    function set_aspect( id, aspect) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/set_aspect/" + id + "/" + encodeURIComponent(aspect), false);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>

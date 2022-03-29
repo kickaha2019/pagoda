@@ -326,6 +326,15 @@ module Sinatra
       @@selected_game = id
     end
 
+    def set_aspect( game_id, aspect)
+      game = $pagoda.game( game_id)
+      unless game.aspects.include?( aspect)
+        $pagoda.start_transaction
+        $pagoda.insert( 'aspect', {:id => game_id, :aspect => aspect})
+        $pagoda.end_transaction
+      end
+    end
+
     def self.setup
       $pagoda = Pagoda.new( ARGV[0])
       $cache  = ARGV[1]
@@ -343,6 +352,14 @@ module Sinatra
       else
         name
       end
+    end
+
+    def suggest_records
+      recs = $pagoda.select( 'aspect_suggest') {true}
+      recs.each do |rec|
+        rec[:name] = $pagoda.game( rec[:game]).name
+      end
+      recs
     end
 
     def summary_line( site, type, counts, totals, html)

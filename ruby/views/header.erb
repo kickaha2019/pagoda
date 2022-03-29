@@ -44,11 +44,13 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified'].collect do |item|
+      ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified', 'aspects?'].collect do |item|
         if item == page
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
         elsif item == 'tables'
           "<a href=\"/\">#{item.capitalize}</a>"
+        elsif item == 'aspects?'
+          "<a href=\"/suggest_aspects\">#{item.capitalize}</a>"
         else
           "<a href=\"/#{item}\">#{item.capitalize.gsub('_', ' ')}</a>"
         end

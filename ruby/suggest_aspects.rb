@@ -19,29 +19,34 @@ class SuggestAspects
   end
 
   def match( game, rule)
+    aspects = game.aspects
+    set     = true
+    rule['aspect'].split(',').each do |a|
+      set = false unless aspects.include?( a.strip)
+    end
+    return if set
+
     @pagoda.get( 'bind', :id, game.id).each do |bind|
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
         next if link[:timestamp].nil?
         next if /\)$/ =~ link[:site]
         page = IO.read( "#{@cache}/verified/#{link[:timestamp]}.html")
-        scanner = StringScanner.new( page)
-        unless scanner.skip_until( Regexp.new(rule['match'])).nil?
-          pos = scanner.pointer
-          from = pos - 500
-          from = 0 if from < 0
-          to = pos + 500
-          to = page.size - 1 if to >= page.size
-          text = page[from..to].gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( /\s+/, ' ')
-          text = text.gsub( /(^|<)[^>]*>/, ' ')
-          text = text.gsub( /<[^>]*(>|$)/, ' ')
-          yield rule['aspects'], text, link[:timestamp]
+        if rule['match'].is_a?( String)
+          text = scan( page, rule['match'])
+        else
+          rule['match'].each do |re|
+            text = scan( page, re) unless text
+          end
+        end
+        if text
+          yield rule['aspect'], text, link[:timestamp]
         end
       end
     end
   end
 
   def record( game, rule, aspects, text, cache)
-    p ['record', game.name, rule, aspects, text, cache]
+    #p ['record', game.name, rule, aspects, text, cache]
     @pagoda.start_transaction
     @pagoda.delete( 'aspect_suggest', :game, game.id)
     @pagoda.insert( 'aspect_suggest',
@@ -52,6 +57,22 @@ class SuggestAspects
                              :text      => text,
                              :timestamp => Time.now.to_i})
     @pagoda.end_transaction
+  end
+
+  def scan( page, regex)
+    scanner = StringScanner.new( page)
+    unless scanner.skip_until( Regexp.new(regex, Regexp::MULTILINE)).nil?
+      pos = scanner.pointer
+      from = pos - 500
+      from = 0 if from < 0
+      to = pos + 500
+      to = page.size - 1 if to >= page.size
+      text = page[from..to].gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( /\s+/, ' ')
+      text = text.gsub( /(^|<)[^>]*>/, ' ')
+      text = text.gsub( /<[^>]*(>|$)/, ' ')
+      return text
+    end
+    nil
   end
 
   def suggest( game, last_rule)
