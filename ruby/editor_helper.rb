@@ -56,8 +56,6 @@ module Sinatra
 
       if ! game_id.nil?
         bind_game = game_id
-      elsif col = link_rec.collation
-        bind_game = col.id
       else
         bind_game = @@selected_game
       end

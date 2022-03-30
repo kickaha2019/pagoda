@@ -11,7 +11,7 @@
 </div>
 
 <div id="list"><table class="scan list">
-  <tr><th>Game</th><th>Aspects</th><th>Actions</th></tr>
+  <tr><th>Game</th><th>Cache</th><th>Aspects</th><th>Actions</th></tr>
   <%=
       html = []
 
@@ -28,13 +28,14 @@
       records[(100*(current_page-1))...(100*current_page)].each do |rec|
         row += 1
         html << "<tr><td><a target=\"_blank\" href=\"/game/#{rec[:game]}\">#{h(rec[:name])}</a></td>"
+        html << "<td><a target=\"_blank\" href=\"/cache/#{rec[:cache]}\">#{rec[:site] ? h(rec[:site]) : 'Cache'}</a></td>"
         html << "<td>#{rec[:aspect]}</td>"
         html << "<td><button onclick=\""
         rec[:aspect].split(',').each do |a|
             html << "set_aspect( #{rec[:game]}, '#{a}');"
         end
         html << "\")>Set aspects</button></td></tr>"
-        html << "<tr><td colspan=\"3\">#{h(rec[:text])}"
+        html << "<tr><td colspan=\"4\">#{h(rec[:text])}"
         html << '</td></tr>'
       end
 

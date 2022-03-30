@@ -5,7 +5,9 @@ class SuggestAspects
   def initialize( dir, cache)
     @pagoda = Pagoda.new( dir)
     @cache  = cache
-    @rules  = YAML.load( IO.read( dir + '/aspect_suggest.yaml'))
+    defn    = YAML.load( IO.read( dir + '/aspect_suggest.yaml'))
+    @rules  = defn['rules']
+    @sites  = defn['sites']
   end
 
   def games
@@ -16,6 +18,20 @@ class SuggestAspects
     end
     list = map.keys.collect {|k| [k, map[k][0], map[k][1]]}
     list.sort_by {|e| e[1]}.each {|e| yield @pagoda.game(e[0]), e[2]}
+  end
+
+  def get_page( site, timestamp)
+    page = IO.read( "#{@cache}/verified/#{timestamp}.html")
+
+    if @sites[site]
+      page = page.scan( Regexp.new(@sites[site]['scan'],Regexp::MULTILINE)).join( ' ')
+    end
+
+    page = page.gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( '&amp;', '&').gsub( /\s+/, ' ')
+    page = page.gsub( /(^|<)[^>]*>/m, ' ')
+    page = page.gsub( /<[^>]*(>|$)/m, ' ')
+
+    page
   end
 
   def match( game, rule)
@@ -30,7 +46,8 @@ class SuggestAspects
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
         next if link[:timestamp].nil?
         next if /\)$/ =~ link[:site]
-        page = IO.read( "#{@cache}/verified/#{link[:timestamp]}.html")
+        page = get_page( link[:site], link[:timestamp])
+
         if rule['match'].is_a?( String)
           text = scan( page, rule['match'])
         else
@@ -39,13 +56,13 @@ class SuggestAspects
           end
         end
         if text
-          yield rule['aspect'], text, link[:timestamp]
+          yield rule['aspect'], text, link[:timestamp], link[:site]
         end
       end
     end
   end
 
-  def record( game, rule, aspects, text, cache)
+  def record( game, rule, aspects, text, cache, site)
     #p ['record', game.name, rule, aspects, text, cache]
     @pagoda.start_transaction
     @pagoda.delete( 'aspect_suggest', :game, game.id)
@@ -55,6 +72,7 @@ class SuggestAspects
                              :rule      => rule,
                              :cache     => cache,
                              :text      => text,
+                             :site      => site,
                              :timestamp => Time.now.to_i})
     @pagoda.end_transaction
   end
@@ -63,13 +81,11 @@ class SuggestAspects
     scanner = StringScanner.new( page)
     unless scanner.skip_until( Regexp.new(regex, Regexp::MULTILINE)).nil?
       pos = scanner.pointer
-      from = pos - 500
+      from = pos - 200
       from = 0 if from < 0
-      to = pos + 500
+      to = pos + 200
       to = page.size - 1 if to >= page.size
-      text = page[from..to].gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( /\s+/, ' ')
-      text = text.gsub( /(^|<)[^>]*>/, ' ')
-      text = text.gsub( /<[^>]*(>|$)/, ' ')
+      text = page[from..to]
       return text
     end
     nil
@@ -77,15 +93,15 @@ class SuggestAspects
 
   def suggest( game, last_rule)
     ((last_rule+1)...(@rules.size)).each do |i|
-      match( game, @rules[i]) do |aspects, text, cache|
-        yield i, aspects, text, cache
+      match( game, @rules[i]) do |aspects, text, cache, site|
+        yield i, aspects, text, cache, site
         return
       end
     end
 
     (0..last_rule).each do |i|
       match( game, @rules[i]) do |aspects, text, cache|
-        yield i, aspects, text, cache
+        yield i, aspects, text, cache, site
         return
       end
     end
@@ -96,8 +112,8 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 suggested = 0
 sa.games do |game, last_rule|
   #p ['games1', game.name, game.id, last_rule]
-  sa.suggest( game, last_rule) do |rule, aspects, text, cache|
-    sa.record( game, rule, aspects, text, cache)
+  sa.suggest( game, last_rule) do |rule, aspects, text, cache, site|
+    sa.record( game, rule, aspects, text, cache, site)
     suggested += 1
     exit if suggested >= ARGV[2].to_i
   end
