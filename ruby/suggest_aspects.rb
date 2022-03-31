@@ -1,7 +1,10 @@
 require 'yaml'
+require_relative 'common'
 require_relative 'pagoda'
 
 class SuggestAspects
+  include Common
+
   def initialize( dir, cache)
     @pagoda = Pagoda.new( dir)
     @cache  = cache
@@ -23,8 +26,9 @@ class SuggestAspects
   def get_page( site, timestamp)
     page = IO.read( "#{@cache}/verified/#{timestamp}.html")
 
-    if @sites[site]
-      page = page.scan( Regexp.new(@sites[site]['scan'],Regexp::MULTILINE)).join( ' ')
+    if @sites.include?( site)
+      site = get_site_class( site).new
+      page = site.get_game_description( page)
     end
 
     page = page.gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( '&amp;', '&').gsub( /\s+/, ' ')
@@ -109,6 +113,11 @@ class SuggestAspects
 end
 
 sa = SuggestAspects.new( ARGV[0], ARGV[1])
+
+#puts sa.get_page( 'GOG', 1646346107)
+#puts sa.get_page( 'Steam', 1647566107)
+#raise 'Testing'
+
 suggested = 0
 sa.games do |game, last_rule|
   #p ['games1', game.name, game.id, last_rule]

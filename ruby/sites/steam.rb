@@ -26,6 +26,10 @@ class Steam
 		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
 	end
 
+	def get_game_description( page)
+		page.scan( Regexp.new( /<a href="https:\/\/store.steampowered.com\/tags\/en\/[^<]*<\/a>/m)).join( ' ')
+	end
+
 	def get_game_details( url, page, game)
 		publisher, developer, release = false, false, false
 		page.split("<div").each do |line|

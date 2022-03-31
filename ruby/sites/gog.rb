@@ -48,6 +48,14 @@ class GOG
 		# scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
 	end
 
+	def get_game_description( page)
+		if info = extract_card_product( page)
+			info['description'] + ' ' + info['tags'].collect {|tag| tag['slug']}.join( ' ')
+		else
+			''
+		end
+	end
+
 	def get_game_details( url, page, game)
 		if info = extract_card_product( page)
 			game[:name]      = info['title']
