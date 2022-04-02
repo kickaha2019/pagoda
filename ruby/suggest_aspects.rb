@@ -38,47 +38,41 @@ class SuggestAspects
     page
   end
 
-  def match( game, rule)
+  def match( game, rule, page)
+    #p ['match1', game.name]
     aspects = game.aspects
     set     = true
     rule['aspect'].split(',').each do |a|
-      set = false unless aspects.include?( a.strip)
+      set = false if aspects[a.strip].nil?
     end
     return if set
 
-    @pagoda.get( 'bind', :id, game.id).each do |bind|
-      @pagoda.get( 'link', :url, bind[:url]).each do |link|
-        next if link[:timestamp].nil?
-        next if /\)$/ =~ link[:site]
-        page = get_page( link[:site], link[:timestamp])
-
-        if rule['match'].is_a?( String)
-          text = scan( page, rule['match'])
-        else
-          rule['match'].each do |re|
-            text = scan( page, re) unless text
-          end
-        end
-        if text
-          yield rule['aspect'], text, link[:timestamp], link[:site]
-        end
+    if rule['match'].is_a?( String)
+      text = scan( page, rule['match'])
+    else
+      rule['match'].shuffle.each do |re|
+        text = scan( page, re) unless text
       end
+    end
+
+    if text
+      yield text
     end
   end
 
-  def record( game, rule, aspects, text, cache, site)
-    #p ['record', game.name, rule, aspects, text, cache]
+  def record( game, aspects, text, cache, site)
+    #p ['record', game.name, aspects, text, cache, site]
     @pagoda.start_transaction
     @pagoda.delete( 'aspect_suggest', :game, game.id)
     @pagoda.insert( 'aspect_suggest',
                     {:game      => game.id,
                              :aspect    => aspects,
-                             :rule      => rule,
                              :cache     => cache,
                              :text      => text,
                              :site      => site,
                              :timestamp => Time.now.to_i})
     @pagoda.end_transaction
+    cache > 0
   end
 
   def scan( page, regex)
@@ -95,20 +89,22 @@ class SuggestAspects
     nil
   end
 
-  def suggest( game, last_rule)
-    ((last_rule+1)...(@rules.size)).each do |i|
-      match( game, @rules[i]) do |aspects, text, cache, site|
-        yield i, aspects, text, cache, site
-        return
+  def suggest( game)
+    @pagoda.get( 'bind', :id, game.id).shuffle.each do |bind|
+      @pagoda.get( 'link', :url, bind[:url]).each do |link|
+        next if link[:timestamp].nil?
+        next if /\)$/ =~ link[:site]
+        page = get_page( link[:site], link[:timestamp])
+
+        @rules.shuffle.each do |rule|
+          match( game, rule, page) do |text|
+            return rule['aspect'], text, link[:timestamp], link[:site]
+          end
+        end
       end
     end
 
-    (0..last_rule).each do |i|
-      match( game, @rules[i]) do |aspects, text, cache|
-        yield i, aspects, text, cache, site
-        return
-      end
-    end
+    return '', '', 0, ''
   end
 end
 
@@ -118,12 +114,12 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 #puts sa.get_page( 'Steam', 1647566107)
 #raise 'Testing'
 
-suggested = 0
+suggested = scanned = 0
+puts "... Suggesting aspects"
 sa.games do |game, last_rule|
   #p ['games1', game.name, game.id, last_rule]
-  sa.suggest( game, last_rule) do |rule, aspects, text, cache, site|
-    sa.record( game, rule, aspects, text, cache, site)
-    suggested += 1
-    exit if suggested >= ARGV[2].to_i
-  end
+  suggested += 1 if sa.record( game, * sa.suggest( game))
+  scanned += 1
+  break if scanned >= ARGV[2].to_i
 end
+puts "... Suggested #{suggested} aspects"

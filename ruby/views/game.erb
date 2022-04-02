@@ -73,7 +73,7 @@
       @publisher     = ''
       @aliases       = []
       @website       = ''
-      @aspects       = []
+      @aspects       = {}
     end
 
     while @aliases.size < 10
@@ -106,7 +106,7 @@
             $pagoda.aspect_names do |aspect|
               html << '<div>'
               html << aspect
-              html << checkbox_element( "a_#{aspect}", @aspects.include?( aspect))
+              html << checkbox_element( "a_#{aspect}", @aspects[aspect])
               html << '</div>'
             end
             html.join( "\n")

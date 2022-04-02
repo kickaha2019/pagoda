@@ -324,13 +324,17 @@ module Sinatra
       @@selected_game = id
     end
 
-    def set_aspect( game_id, aspect)
-      game = $pagoda.game( game_id)
-      unless game.aspects.include?( aspect)
-        $pagoda.start_transaction
-        $pagoda.insert( 'aspect', {:id => game_id, :aspect => aspect})
-        $pagoda.end_transaction
+    def set_aspect( game_id, aspect, flag)
+      game            = $pagoda.game( game_id)
+      aspects         = game.aspects
+      aspects[aspect] = (flag != 'N')
+
+      $pagoda.start_transaction
+      $pagoda.delete( 'aspect', :id, game_id)
+      aspects.each_pair do |a,f|
+        $pagoda.insert( 'aspect', {:id => game_id, :aspect => a, :flag => (f ? 'Y' : 'N')})
       end
+      $pagoda.end_transaction
     end
 
     def self.setup
@@ -353,7 +357,18 @@ module Sinatra
     end
 
     def suggest_records
-      recs = $pagoda.select( 'aspect_suggest') {true}
+      recs = $pagoda.select( 'aspect_suggest') do |rec|
+        game    = $pagoda.game( rec[:game])
+        aspects = game.aspects
+        check   = false
+
+        rec[:aspect].split(',').each do |aspect|
+          check = true if aspects[aspect].nil?
+        end
+
+        check
+      end
+
       recs.each do |rec|
         rec[:name] = $pagoda.game( rec[:game]).name
       end

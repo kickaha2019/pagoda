@@ -94,8 +94,8 @@ get '/selected_game' do
   selected_game
 end
 
-post '/set_aspect/:game/:aspect' do
-  set_aspect( params[:game].to_i, d(params[:aspect]))
+post '/set_aspect/:game/:aspect/:flag' do
+  set_aspect( params[:game].to_i, d(params[:aspect]), params[:flag])
 end
 
 put '/set_variable/:name/:value' do

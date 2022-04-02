@@ -240,6 +240,7 @@ class Names
 
     list = found.keys.collect {|id| [id, found[id]]}.sort_by {|e| e[1]}
     list = list[0...limit] if limit < list.size
+    list = list.select {|rec| rec[1] < 30}
     list.each do |e|
       yield e[0]
     end

@@ -44,7 +44,9 @@ class Pagoda
     end
 
     def aspects
-      @owner.get( 'aspect', :id, id).collect {|rec| rec[:aspect]}
+      map = {}
+      @owner.get( 'aspect', :id, id).each {|rec| map[rec[:aspect]] = (rec[:flag] != 'N')}
+      map
     end
 
     def console
@@ -69,9 +71,9 @@ class Pagoda
 
     def generate?
       flagged = aspects
-      return false unless flagged.include?( 'Adventure')
+      return false unless flagged['Adventure']
       ['Action','HOG','Physics','Platformer','QT events','Stealth','VR'].each do |unwanted|
-        return false if flagged.include?( unwanted)
+        return false if flagged[unwanted]
       end
       true
     end
@@ -121,6 +123,8 @@ class Pagoda
     end
 
     def update( params)
+      old_aspects = aspects
+
       @owner.delete_name( name, id)
       aliases.each do |a|
         @owner.delete_name( a.name, id)
@@ -157,8 +161,12 @@ class Pagoda
 
       @owner.aspect_names do |aspect|
         if params["a_#{aspect}".to_sym]
-          @owner.insert( 'aspect', {:aspect => aspect, :id => id})
+          old_aspects[aspect] = true
         end
+      end
+
+      old_aspects.each_pair do |a,f|
+        $pagoda.insert( 'aspect', {:id => id, :aspect => a, :flag => (f ? 'Y' : 'N')})
       end
 
       os = official_site

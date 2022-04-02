@@ -32,9 +32,14 @@
         html << "<td>#{rec[:aspect]}</td>"
         html << "<td><button onclick=\""
         rec[:aspect].split(',').each do |a|
-            html << "set_aspect( #{rec[:game]}, '#{a}');"
+            html << "set_aspect( #{rec[:game]}, '#{a}', 'Y');"
         end
-        html << "\")>Set aspects</button></td></tr>"
+        html << "\")>Confirm</button>"
+        html << "<button onclick=\""
+        rec[:aspect].split(',').each do |a|
+            html << "set_aspect( #{rec[:game]}, '#{a}', 'N');"
+        end
+        html << "\")>Deny</button></td></tr>"
         html << "<tr><td colspan=\"4\">#{h(rec[:text])}"
         html << '</td></tr>'
       end
@@ -44,9 +49,9 @@
 </table></div>
 
 <script>
-    function set_aspect( id, aspect) {
+    function set_aspect( id, aspect, flag) {
         var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/set_aspect/" + id + "/" + encodeURIComponent(aspect), false);
+        xhttp.open( "POST", "/set_aspect/" + id + "/" + encodeURIComponent(aspect) + "/" + flag, false);
         xhttp.send();
     }
 </script>
