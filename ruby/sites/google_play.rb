@@ -21,6 +21,10 @@ class GooglePlay
 		scanner.purge_lost_urls( /^https:\/\/play\.google\.com\//)
 	end
 
+	def get_game_description( page)
+		''
+	end
+
 	def search( searcher)
 		searcher.search( cache_directory, 50) do |game_name|
 			search_for_name( game_name)

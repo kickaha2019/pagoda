@@ -1,7 +1,35 @@
+require 'json'
 require_relative '../common'
 
 class AdventureGamers
 	include Common
+
+	def extract_json( html)
+		inside, text = false, []
+
+		html.split("\n").each do |line|
+			#p line if /script type="application\// =~ line
+			if /<script type="application\/ld\+json">/ =~ line
+				inside, text = true, []
+			elsif inside
+				if m=/^(.*)<\/script>/.match( line)
+					text = text.join( ' ') + ' ' + m[1]
+					begin
+						json = JSON.parse( text)
+						return json if json['review']
+						inside, text = false, []
+					rescue
+						File.open( '/tmp/bad.json', 'w') {|io| io.puts text}
+						return false
+					end
+				else
+					text << line.chomp
+				end
+			end
+		end
+
+		false
+	end
 
 	def find( scanner)
 		scanner.twitter_feed_links( 'adventuregamers') do |text, link|
@@ -10,6 +38,14 @@ class AdventureGamers
 			else
 				0
 			end
+		end
+	end
+
+	def get_game_description( page)
+		if json = extract_json( page)
+			json['review']['reviewBody']
+		else
+			page
 		end
 	end
 

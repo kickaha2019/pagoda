@@ -53,6 +53,14 @@ class Apple
     searcher.cache + "/ios/#{section}#{index+1}.json"
   end
 
+  def get_game_description( page)
+    if json = extract_ember_json( page)
+      json['description']
+    else
+      page
+    end
+  end
+
   def get_game_details( url, page, game)
     if json = extract_ember_json( page)
       if dp = json['datePublished']

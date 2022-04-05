@@ -23,11 +23,12 @@ class SuggestAspects
     list.sort_by {|e| e[1]}.each {|e| yield @pagoda.game(e[0]), e[2]}
   end
 
-  def get_page( site, timestamp)
+  def get_page( site_name, timestamp)
     page = IO.read( "#{@cache}/verified/#{timestamp}.html")
 
-    if @sites.include?( site)
-      site = get_site_class( site).new
+    if @sites.include?( site_name)
+      site = get_site_class( site_name).new
+      p ['get_page1', site_name, timestamp]
       page = site.get_game_description( page)
     end
 
@@ -112,6 +113,9 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 
 #puts sa.get_page( 'GOG', 1646346107)
 #puts sa.get_page( 'Steam', 1647566107)
+#puts sa.get_page( 'Apple', 1646698190)
+#puts sa.get_page( 'Google Play', 1646606091)
+#puts sa.get_page( 'Adventure Gamers', 1647813039)
 #raise 'Testing'
 
 suggested = scanned = 0

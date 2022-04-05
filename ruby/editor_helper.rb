@@ -362,8 +362,10 @@ module Sinatra
         aspects = game.aspects
         check   = false
 
-        rec[:aspect].split(',').each do |aspect|
-          check = true if aspects[aspect].nil?
+        if rec[:aspect]
+          rec[:aspect].split(',').each do |aspect|
+            check = true if aspects[aspect].nil?
+          end
         end
 
         check
