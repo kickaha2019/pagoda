@@ -22,7 +22,6 @@ class VerifyLinks
   def initialize( dir)
     @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
-    @touched = Hash.new {|h,k| h[k] = 0}
     @current = nil
   end
 
@@ -40,22 +39,6 @@ class VerifyLinks
 
     status, valid, ignore, title = send( ('filter_' + name).to_sym, link, body, title, * args)
     return status, valid, ignore, title
-  end
-
-  def detect_hang
-    Thread.abort_on_exception = true
-    Thread.new do
-      last_touch = 0
-      while true
-        sleep 60
-        new_touch = @touched.values.inject {|r,e| (r > e) ? r : e}
-        unless new_touch > last_touch
-          puts "*** Hang detected for #{@current}"
-          exit 1
-        end
-        last_touch = new_touch
-      end
-    end
   end
 
   def filter_apple_store( link, body, title)
@@ -132,71 +115,6 @@ class VerifyLinks
     end
   end
 
-  def http_get( url)
-    uri = URI.parse( url)
-
-    request = Net::HTTP::Get.new(uri.request_uri)
-    request['Accept']          = 'text/html,application/xhtml+xml,application/xml'
-    request['Accept-Language'] = 'en-gb'
-    request['User-Agent']      = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'
-
-    use_ssl     = uri.scheme == 'https'
-    verify_mode = OpenSSL::SSL::VERIFY_NONE
-
-    begin
-      response = Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
-        http.request( request)
-      }
-
-      return true, response
-    rescue Exception => bang
-      return false, bang.message
-    end
-    #response.value
-    #response.body
-  end
-
-  def http_get_with_redirect( url, depth = 0)
-    #p ['http_get_with_redirect1', url]
-    status, response = http_get( url)
-    return status, false, response unless status
-
-    if response.is_a?( Net::HTTPNotFound)
-      return false, false, response
-    end
-
-    if (depth < 4) &&
-        response.is_a?( Net::HTTPRedirection) &&
-        (/^http(s|):/ =~ response['Location'])
-
-      # Regard as redirected unless temporary redirect
-      redirected = (response.code != '302')
-      #p ['http_get_with_redirect2', url, redirected, response.code]
-
-      # Hack for Steam to ignore app -> app redirects
-      # p ['http_get_with_redirect2', url, response['Location']]
-      # if is_steam_url?( response['Location']) && is_steam_url?( url)
-      #   p ['http_get_with_redirect3', url, response['Location']]
-      #   return status, false, response
-      # end
-
-      # Ignore Steam age challenge redirects
-      # if /^https:\/\/store.steampowered.com\/agecheck\/app\/\d+($|\/)/ =~ response['Location']
-      #   return status, false, response
-      # end
-
-      status, _, response = http_get_with_redirect( response['Location'], depth+1)
-      return status, redirected, response
-    end
-
-    return status, false, response
-  end
-
-  # def is_steam_url?( url)
-  #   p ['is_steam_url?', url]
-  #   /^https:\/\/store\.steampowered\.com\/app\/\d+$/ =~ url
-  # end
-
   def oldest( n, valid_for)
     links, dubious = [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
@@ -221,14 +139,6 @@ class VerifyLinks
     end
 
     links.shuffle.each {|rec| yield rec}
-  end
-
-  def throttle( url)
-    site = /^(http|https):\/\/([^\/]*)(\/|$)/.match( url)[2]
-    if @touched[site] + 10 > Time.now.to_i
-      sleep 10
-    end
-    @touched[site] = Time.now.to_i
   end
 
   def verify_page( link, cache, debug=false)
@@ -268,19 +178,23 @@ class VerifyLinks
 
     status, valid, ignore, title = get_details( link, body)
     p ['verify_page2', status, valid, ignore, title] if debug
-    unless status
-      if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
-      end
-      return
-    end
 
+    # Save old timestamp and get new unused timestamp
     old_t = link.timestamp
     while File.exist?( cache + "/#{t}.html")
       sleep 1
       t = Time.now.to_i
     end
-    File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
+
+    # If OK save page to cache else to temp area
+    if status
+      File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
+    else
+      if debug
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+      end
+      return
+    end
 
     link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
 

@@ -34,37 +34,28 @@ class TouchArcade
 		end
 	end
 
-	def incremental( scanner)
-		# path   = scanner.cache + "/touch_arcade.json"
-		# cached = {} # JSON.parse( IO.read( path))
-		# added  = false
+	def get_game_description( page)
+		text, inside = [], false
+		page.split( "\n").each do |line|
+			if /class="entry-content"/ =~ line
+				inside = true
+			elsif /data-wpusb-component="buttons-section"/ =~ line
+				inside = false
+			elsif inside
+				text << line.chomp
+			end
+		end
+		text.join( ' ')
+	end
 
+	def incremental( scanner)
 		scanner.html_links( 'https://toucharcade.com/category/reviews/') do |link|
 			if /^https:\/\/toucharcade\.com\/.*-review(-|\/)/ =~ link
 				link = link.split('?')[0]
 				scanner.add_link( link, link)
-				# unless cached[link]
-				# 	cached[link] = ''
-				# 	added = true
-				# end
 			else
 				0
 			end
 		end
-
-		# scanner.twitter_feed_links( 'toucharcade') do |link|
-		# 	if /^https:\/\/toucharcade\.com\/.*-review(-|\/)/ =~ link
-		# 		link = link.split('?')[0]
-		# 		unless cached[link]
-		# 			puts link
-		# 			cached[link] = ''
-		# 			added = true
-		# 		end
-		# 	end
-		# end
-
-		# if true
-		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
-		# end
 	end
 end

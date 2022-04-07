@@ -41,11 +41,7 @@
         row += 1
         html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
         html << "<td>#{rec.type}</td>"
-        if rec.timestamp < 10000
-          html << "<td><span title=\"#{t(rec.orig_title)}\">#{h(rec.orig_title,40)}<span/></td>"
-        else
-          html << "<td><a target=\"_blank\" title=\"#{t(rec.orig_title)}\" href=\"#{rec.url}\">#{h(rec.orig_title,40)}<a/></td>"
-        end
+        html << "<td><a target=\"_blank\" title=\"#{t(rec.orig_title)}\" href=\"#{rec.url}\">#{h(rec.orig_title,40)}<a/></td>"
         info = collation( rec.url)
         html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
         html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"

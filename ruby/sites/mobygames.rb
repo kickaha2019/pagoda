@@ -1,4 +1,7 @@
 class MobyGames
+	def check_child_link( url, text, anchor)
+	end
+
 	def find( scanner)
 		path = scanner.cache + "/mobygames.json"
 

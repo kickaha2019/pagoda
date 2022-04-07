@@ -3,7 +3,9 @@ require 'net/http'
 require 'net/https'
 require 'uri'
 require "selenium-webdriver"
+
 require_relative 'pagoda'
+require_relative 'sites/default_site'
 
 module Common
 	@@throttling    = Hash.new {|h,k| h[k] = 0}
@@ -18,11 +20,31 @@ module Common
 		@driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
+	def detect_hang
+		Thread.abort_on_exception = true
+		Thread.new do
+			last_touch = 0
+			while true
+				sleep 60
+				new_touch = @@throttling.values.inject {|r,e| (r > e) ? r : e}
+				unless new_touch > last_touch
+					puts "*** Hang detected for #{@current}"
+					exit 1
+				end
+				last_touch = new_touch
+			end
+		end
+	end
+
 	def get_site_class( name)
 		name = 'IOS' if name == 'iOS'
 		unless @@site_classes[name]
-			require_relative "sites/#{name.gsub( ' ', '_').downcase}"
-			@@site_classes[name] = Kernel.const_get( name.gsub( ' ', ''))
+      begin
+  			require_relative "sites/#{name.gsub( ' ', '_').downcase}"
+	  		@@site_classes[name] = Kernel.const_get( name.gsub( ' ', ''))
+      rescue
+        @@site_classes[name] = DefaultSite
+      end
 		end
 		@@site_classes[name]
 	end
@@ -79,6 +101,33 @@ module Common
 		}
 	end
 
+	def http_get_with_redirect( url, depth = 0)
+		#p ['http_get_with_redirect1', url]
+		begin
+			response = http_get_response( url)
+		rescue Exception => bang
+			return false, false, bang.message
+		end
+
+		if response.is_a?( Net::HTTPNotFound)
+			return false, false, response
+		end
+
+		if (depth < 4) &&
+				response.is_a?( Net::HTTPRedirection) &&
+				(/^http(s|):/ =~ response['Location'])
+
+			# Regard as redirected unless temporary redirect
+			redirected = (response.code != '302')
+			#p ['http_get_with_redirect2', url, redirected, response.code]
+
+			status, _, response = http_get_with_redirect( response['Location'], depth+1)
+			return status, redirected, response
+		end
+
+		return status, false, response
+	end
+
 	def http_redirect( url, depth = 0, debug = false)
 		p ['http_redirect', url, depth] if debug
 		return url if /\.(jpg|jpeg|png|gif)$/i =~ url
@@ -113,7 +162,7 @@ module Common
 		end
 	end
 
-	def throttle( url, delay)
+	def throttle( url, delay=10)
 		if m = /\/\/([^\/]*)\//.match( url)
 			t = Time.now.to_i
 			if t < delay + @@throttling[m[1]]
@@ -132,7 +181,7 @@ module Common
 		clazz.downcase
 	end
 
-	def twitter_feed_links( account)
+	def twitter_feed_links( account, days=75)
 		page = http_get( "https://api.twitter.com/2/users/by?usernames=#{account}",
 										 10,
 										 {'Authorization' => "Bearer #{@settings['Twitter']['BEARER_TOKEN']}"})
@@ -140,7 +189,7 @@ module Common
 		id = info['data'][0]['id']
 
 		oldest    = '9999-12-31'
-		months2   = (Time.now - 75 * 24 * 60 * 60).strftime( "%Y-%m-%d")
+		months2   = (Time.now - days * 24 * 60 * 60).strftime( "%Y-%m-%d")
 		oldest_id = nil
 		added     = 0
 

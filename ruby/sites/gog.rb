@@ -1,4 +1,7 @@
 class GOG
+	def check_child_link( url, text, anchor)
+	end
+
 	def extract_card_product( html)
 		html.split("\n").each do |line|
 			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)

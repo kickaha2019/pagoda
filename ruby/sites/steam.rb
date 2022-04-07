@@ -1,4 +1,7 @@
 class Steam
+	def check_child_link( url, text, anchor)
+	end
+
 	def complete?( scanner)
 		true
 	end

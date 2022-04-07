@@ -4,6 +4,9 @@ class Apple
   @@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
   @@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 
+  def check_child_link( url, text, anchor)
+  end
+
   def extract_ember_json( html)
     inside, text = false, []
     html.split("\n").each do |line|
@@ -22,6 +25,14 @@ class Apple
   end
 
   def full( scanner)
+    scanner.link_page_anchors( 'TouchArcade') do |game, url, text|
+      if text.downcase == 'buy now'
+        if m = /\/link\/.*apple\.com.*\/app\/(.*)\?/.match( url)
+          scanner.add_link( game, "https://apps.apple.com/app/#{m[1]}")
+        end
+      end
+    end
+
     Dir.entries( scanner.cache + '/ios').each do |f|
       if /\.json$/ =~ f
         JSON.parse( IO.read( scanner.cache + '/ios/'+ f))['urls'].each_pair do |url,name|
@@ -82,7 +93,16 @@ class Apple
 			else
 				0
 			end
-		end
+    end
+
+    scanner.twitter_feed_links( 'appstoregames', 900) do |text, link|
+      m = /^https:\/\/apps\.apple\.com\/(\w\w\/|)app\/[^\/]*\/([a-z0-9]*)\?/.match( link)
+      if m
+        scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
+      else
+        0
+      end
+    end
 	end
 
   def refresh_cache( searcher, section, letter)

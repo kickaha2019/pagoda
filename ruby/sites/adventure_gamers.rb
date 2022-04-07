@@ -1,34 +1,9 @@
-require 'json'
 require_relative '../common'
 
 class AdventureGamers
 	include Common
 
-	def extract_json( html)
-		inside, text = false, []
-
-		html.split("\n").each do |line|
-			#p line if /script type="application\// =~ line
-			if /<script type="application\/ld\+json">/ =~ line
-				inside, text = true, []
-			elsif inside
-				if m=/^(.*)<\/script>/.match( line)
-					text = text.join( ' ') + ' ' + m[1]
-					begin
-						json = JSON.parse( text)
-						return json if json['review']
-						inside, text = false, []
-					rescue
-						File.open( '/tmp/bad.json', 'w') {|io| io.puts text}
-						return false
-					end
-				else
-					text << line.chomp
-				end
-			end
-		end
-
-		false
+	def check_child_link( url, text, anchor)
 	end
 
 	def find( scanner)
@@ -42,11 +17,19 @@ class AdventureGamers
 	end
 
 	def get_game_description( page)
-		if json = extract_json( page)
-			json['review']['reviewBody']
-		else
-			page
+		inside, text = false, []
+		page.split( "\n").each do |line|
+			if m = /"reviewBody": "(.*)$/.match( line.chomp)
+				#p ['get_game_description1', m[1]]
+				inside, text = true, [m[1]]
+			elsif inside && (m1 = /^([^"]*)"/.match( line))
+				text << m1[1]
+				return text.join( ' ')
+			elsif inside
+				text << line.chomp
+			end
 		end
+		page
 	end
 
 	def get_game_details( url, page, game)

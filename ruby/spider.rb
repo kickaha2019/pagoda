@@ -168,6 +168,20 @@ class Spider
     save_new_redirects( @cache + '/redirects.yaml')
 	end
 
+	def link_page_anchors( site)
+		@pagoda.links do |link|
+			next unless link.site == site
+			next unless link.valid? && link.bound? && link.collation
+			page = IO.read( @cache + "/verified/#{link.timestamp}.html")
+			page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
+				if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
+					next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
+					yield link.collation.name, m[1], anchor[1]
+				end
+			end
+		end
+	end
+
 	def lowest_frequency( pagoda_freqs, scan_freqs, name)
 		freq, match = 1000000, ''
 		@pagoda.string_combos( name) do |combo, weight|

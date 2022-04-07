@@ -10,7 +10,6 @@ class SuggestAspects
     @cache  = cache
     defn    = YAML.load( IO.read( dir + '/aspect_suggest.yaml'))
     @rules  = defn['rules']
-    @sites  = defn['sites']
   end
 
   def games
@@ -26,11 +25,9 @@ class SuggestAspects
   def get_page( site_name, timestamp)
     page = IO.read( "#{@cache}/verified/#{timestamp}.html")
 
-    if @sites.include?( site_name)
-      site = get_site_class( site_name).new
-      p ['get_page1', site_name, timestamp]
-      page = site.get_game_description( page)
-    end
+    site = get_site_class( site_name).new
+    #p ['get_page1', site_name, timestamp]
+    page = site.get_game_description( page)
 
     page = page.gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( '&amp;', '&').gsub( /\s+/, ' ')
     page = page.gsub( /(^|<)[^>]*>/m, ' ')
@@ -116,6 +113,8 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 #puts sa.get_page( 'Apple', 1646698190)
 #puts sa.get_page( 'Google Play', 1646606091)
 #puts sa.get_page( 'Adventure Gamers', 1647813039)
+#puts sa.get_page( 'Website', 1647727550)
+#puts sa.get_page( 'TouchArcade', 1646962827)
 #raise 'Testing'
 
 suggested = scanned = 0
