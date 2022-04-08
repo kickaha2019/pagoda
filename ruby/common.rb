@@ -42,7 +42,7 @@ module Common
       begin
   			require_relative "sites/#{name.gsub( ' ', '_').downcase}"
 	  		@@site_classes[name] = Kernel.const_get( name.gsub( ' ', ''))
-      rescue
+      rescue LoadError
         @@site_classes[name] = DefaultSite
       end
 		end
@@ -163,14 +163,14 @@ module Common
 	end
 
 	def throttle( url, delay=10)
-		if m = /\/\/([^\/]*)\//.match( url)
+		if m = /\/\/([^\/]*)(\/|$)/.match( url)
 			t = Time.now.to_i
 			if t < delay + @@throttling[m[1]]
 				sleep delay
 			end
 			@@throttling[m[1]] = t
 		else
-			raise "Strange URL"
+			raise "Strange URL: #{url}"
 		end
 	end
 

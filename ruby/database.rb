@@ -7,10 +7,8 @@ class Database
     @tables = {}
 
     Dir.entries( dir).each do |f|
-      if m = /^(.*)\.txt$/.match( f)
-        if m[1] != 'transaction'
-          @tables[m[1]] = Table.new( dir + '/' + f)
-        end
+      if m = /^(.*)\.tsv$/.match( f)
+        @tables[m[1]] = Table.new( dir + '/' + f)
       end
     end
 
@@ -21,7 +19,7 @@ class Database
       lines = IO.readlines(@transactions_file).collect {|line| line.chomp}
       lines.each_index do |i|
         if /^timestamp/ =~ lines[i]
-          path = dir + '/' + lines[i].split("\t")[1] + '.txt'
+          path = dir + '/' + lines[i].split("\t")[1] + '.tsv'
           ts   = lines[i].split("\t")[2].to_i
           raise "Wrong timestamp for #{path}" if ts != File.mtime( path).to_i
         end
@@ -37,9 +35,9 @@ class Database
     end
   end
 
-  def combinations( table_name, * columns)
-    @tables[table_name].combinations( * columns)
-  end
+  # def combinations( table_name, * columns)
+  #   @tables[table_name].combinations( * columns)
+  # end
 
   def count( table_name)
     @tables[table_name].size
@@ -117,7 +115,7 @@ class Database
   def rebuild
     if File.exist?( @transactions_file)
       @tables.each_pair do |name, table|
-        table.save( @dir + '/' + name + '.txt')
+        table.save( @dir + '/' + name + '.tsv')
       end
 
       File.delete( @transactions_file)
@@ -134,10 +132,8 @@ class Database
     unless File.exist?( @transactions_file)
       File.open(@transactions_file, 'w') do |io|
         Dir.entries( @dir).each do |f|
-          if m = /^(.*)\.txt$/.match( f)
-            if m[1] != 'transaction'
-              io.puts "timestamp\t#{m[1]}\t#{File.mtime( @dir + '/' + f).to_i}"
-            end
+          if m = /^(.*)\.tsv$/.match( f)
+            io.puts "timestamp\t#{m[1]}\t#{File.mtime( @dir + '/' + f).to_i}"
           end
         end
       end

@@ -26,3 +26,4 @@ copy_to_temp.command
 grabber.command
 *.csv
 *.html
+*.tsv

@@ -18,7 +18,7 @@ class DatabaseTest < Minitest::Test
     end
     to_delete = []
     Dir.entries( @dir).each do |f|
-      to_delete << f if /\.txt$/ =~ f
+      to_delete << f if /\.(tsv|txt)$/ =~ f
     end
     to_delete.each {|f| File.delete( @dir + '/' + f)}
   end
@@ -33,7 +33,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_bad_timestamp
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "timestamp\tdata\t111"
     ok = true
     begin
@@ -46,34 +46,44 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_broken_transaction_ignored
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred"
     db = load_database
     assert_equal 0, db.count('data')
   end
 
-  def test_combinations
-    write 'data.txt', "id\tname"
-    db = load_database
-    db.start_transaction
-    db.insert( 'data', {id:1, name:'fred'})
-    db.insert( 'data', {id:2, name:'bill'})
-    db.insert( 'data', {id:3, name:'fred'})
-    combs = db.combinations( 'data', :name, :id)
-    assert_equal 2, combs.size
-    assert_equal 2, combs['fred'].size
-    assert_equal 2, combs['bill'].keys[0]
-  end
+  # def test_combinations
+  #   write 'data.tsv', "id\tname"
+  #   db = load_database
+  #   db.start_transaction
+  #   db.insert( 'data', {id:1, name:'fred'})
+  #   db.insert( 'data', {id:2, name:'bill'})
+  #   db.insert( 'data', {id:3, name:'fred'})
+  #   combs = db.combinations( 'data', :name, :id)
+  #   assert_equal 2, combs.size
+  #   assert_equal 2, combs['fred'].size
+  #   assert_equal 2, combs['bill'].keys[0]
+  # end
 
   def test_count
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"
     db = load_database
     assert_equal 1, db.count('data')
   end
 
+  def test_declare_integer
+    write 'data.tsv', "id\tname\n1\tfred"
+    db = load_database
+    get = db.get( 'data', :id, '1')[0]
+    assert_equal( '1', get[:id])
+    db.declare_integer( 'data', :id)
+    get = db.get( 'data', :id, '1')[0]
+    assert_equal( 1, get[:id])
+  end
+
   def test_delete
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"
     db = load_database
     assert_equal 1, db.count('data')
@@ -85,7 +95,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_get
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     db = load_database
     db.start_transaction
     db.insert( 'data', {id:1, name:'fred'})
@@ -97,8 +107,18 @@ class DatabaseTest < Minitest::Test
     assert ! got.nil?
   end
 
+  def test_has
+    write 'data.tsv', "id\tname"
+    db = load_database
+    db.start_transaction
+    db.insert( 'data', {id:1, name:'fred'})
+    db.end_transaction
+    assert db.has?( 'data', :name, 'fred')
+    assert ! db.has?( 'data', :name, 'bill')
+  end
+
   def test_index_delete
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"
     db = load_database
     assert_equal 1, db.get('data', :name, 'fred').size
@@ -110,7 +130,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_index_get
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nINSERT\tdata\t1\tbill\nEND"
     db = load_database
     assert_equal 2, db.get('data', :id, 1).size
@@ -123,7 +143,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_insert
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     db = load_database
     assert_equal 0, db.count('data')
     db.start_transaction
@@ -134,7 +154,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_insert_unknown_fields
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     db = load_database
     ok = true
     begin
@@ -148,28 +168,40 @@ class DatabaseTest < Minitest::Test
     assert ok
   end
 
-  def test_join
-    write 'data1.txt', "id\tkey"
-    write 'data2.txt', "key\tname"
-    db = load_database
-    db.join( 'data1', :name, :key, 'data2', :key)
-    db.start_transaction
-    db.insert( 'data1', {id:1, key:'F1'})
-    db.insert( 'data2', {key:'F1', name:'fred'})
-    db.end_transaction
+  # def test_join
+  #   write 'data1.tsv', "id\tkey"
+  #   write 'data2.tsv', "key\tname"
+  #   db = load_database
+  #   db.join( 'data1', :name, :key, 'data2', :key)
+  #   db.start_transaction
+  #   db.insert( 'data1', {id:1, key:'F1'})
+  #   db.insert( 'data2', {key:'F1', name:'fred'})
+  #   db.end_transaction
+  #
+  #   found = false
+  #   db.select( 'data1') do |rec|
+  #     assert_equal 1, rec[:name].size
+  #     assert_equal 'fred', rec[:name][0][:name]
+  #     found = true
+  #   end
+  #   assert found
+  # end
 
-    found = false
-    db.select( 'data1') do |rec|
-      assert_equal 1, rec[:name].size
-      assert_equal 'fred', rec[:name][0][:name]
-      found = true
-    end
-    assert found
+  def test_max_value
+    write 'data.tsv', "id\theight"
+    db = load_database
+    db.declare_integer( 'data', :height)
+    assert_equal 1, db.next_value( 'data', :id)
+    db.start_transaction
+    db.insert( 'data', {id:5, height:7})
+    db.end_transaction
+    assert_equal 7, db.max_value( 'data', :height)
   end
 
   def test_next_value
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     db = load_database
+    db.declare_integer( 'data', :id)
     assert_equal 1, db.next_value( 'data', :id)
     db.start_transaction
     db.insert( 'data', {id:5, name:'fred'})
@@ -178,23 +210,39 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_rebuild
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"
     db = load_database
     db.rebuild
-    ends_with( 'data.txt', "id\tname\n1\tfred")
+    ends_with( 'data.tsv', "id\tname\n1\tfred")
     assert ! File.exist?( @dir + '/transaction.txt')
   end
 
+  def test_select
+    write 'data.tsv', "id\tname"
+    db = load_database
+    db.start_transaction
+    db.insert( 'data', {id:1, name:'fred'})
+    db.end_transaction
+    got = false
+    rows = db.select( 'data') do |rec|
+      assert 'fred', rec[:name]
+      got = true
+    end
+    assert ! got.nil?
+    assert 1, rows.size
+    assert 'fred', rows[0][:name]
+  end
+
   def test_transaction_delete
-    write 'data.txt', "id\tname\n1\tfred"
+    write 'data.tsv', "id\tname\n1\tfred"
     write 'transaction.txt', "BEGIN\nDELETE\tdata\tid\t1\nEND"
     db = load_database
     assert_equal 0, db.count( 'data')
   end
 
   def test_unique
-    write 'data.txt', "id\tname"
+    write 'data.tsv', "id\tname"
     db = load_database
     db.start_transaction
     db.insert( 'data', {id:1, name:'fred'})

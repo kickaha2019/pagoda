@@ -35,24 +35,24 @@ class Table
     @columns.index( column_name)
   end
 
-  def combinations( * cols)
-    map = {}
-    @indexes[@columns[0]].each_value do |rows|
-      rows.each do |row|
-        m = map
-        cols.each do |col|
-          v = row[column_index(col)]
-          raise "Column value nil" if v.nil?
-          if m.key?(v)
-            m = m[v]
-          else
-            m = m[v] = {}
-          end
-        end
-      end
-    end
-    map
-  end
+  # def combinations( * cols)
+  #   map = {}
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       m = map
+  #       cols.each do |col|
+  #         v = row[column_index(col)]
+  #         raise "Column value nil" if v.nil?
+  #         if m.key?(v)
+  #           m = m[v]
+  #         else
+  #           m = m[v] = {}
+  #         end
+  #       end
+  #     end
+  #   end
+  #   map
+  # end
 
   def declare_integer( column_name)
     @types[column_name] = :to_i

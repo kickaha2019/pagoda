@@ -95,7 +95,7 @@ class Apple
 			end
     end
 
-    scanner.twitter_feed_links( 'appstoregames', 900) do |text, link|
+    scanner.twitter_feed_links( 'appstoregames', 1200) do |text, link|
       m = /^https:\/\/apps\.apple\.com\/(\w\w\/|)app\/[^\/]*\/([a-z0-9]*)\?/.match( link)
       if m
         scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
