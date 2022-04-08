@@ -337,6 +337,16 @@ module Sinatra
       $pagoda.end_transaction
     end
 
+    def set_official_checked( game_id)
+      p ['set_official_checked', game_id]
+      $pagoda.get( 'bind', :id, game_id).each do |bind_rec|
+        link = $pagoda.link( bind_rec[:url])
+        if link.site == 'Website'
+          link.set_checked
+        end
+      end
+    end
+
     def self.setup
       $pagoda = Pagoda.new( ARGV[0])
       $cache  = ARGV[1]
@@ -409,6 +419,12 @@ module Sinatra
       return '' if ! link_rec.bound?
       link_rec.unbind
       link_status( link_rec)
+    end
+
+    def unchecked_bound_official_website_records
+      $pagoda.links do |link|
+        link.bound? && link.collation && link.valid? && (link.site == 'Website') && (link.changed != 'N')
+      end
     end
 
     def update_game( params)

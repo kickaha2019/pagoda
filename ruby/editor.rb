@@ -86,6 +86,10 @@ get '/new_game' do
   erb :game, :locals => {:id => -1}
 end
 
+get '/reports' do
+  erb :reports
+end
+
 put '/reverify/:url' do
   reverify( d(params[:url]))
 end
@@ -96,6 +100,10 @@ end
 
 post '/set_aspect/:game/:aspect/:flag' do
   set_aspect( params[:game].to_i, d(params[:aspect]), params[:flag])
+end
+
+post '/set_official_checked/:game' do
+  set_official_checked( params[:game].to_i)
 end
 
 put '/set_variable/:name/:value' do
@@ -117,6 +125,10 @@ end
 
 post '/unbind/:url' do
   unbind_link( d(params[:url]))
+end
+
+get '/unchecked_bound_official_websites' do
+  erb :unchecked_bound_official_websites, get_locals( params, :page => 1)
 end
 
 get '/verified' do

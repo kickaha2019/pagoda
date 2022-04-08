@@ -71,8 +71,10 @@ class Pagoda
 
     def generate?
       flagged = aspects
+      known = @owner.aspect_names
       return false unless flagged['Adventure']
-      ['Action','HOG','Physics','Platformer','QT events','Stealth','VR'].each do |unwanted|
+      ['Action','HOG','Physics','Platformer','Stealth','Visual novel','VR'].each do |unwanted|
+        raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
         return false if flagged[unwanted]
       end
       true
@@ -247,6 +249,15 @@ class Pagoda
       @owner.reduce_name( @record[:site], @record[:type], @record[:orig_title])
     end
 
+    def set_checked
+      p ['set_checked1', @record[:url]]
+      @owner.start_transaction
+      @owner.delete( 'link', :url, @record[:url])
+      @record[:changed] = 'N'
+      @owner.insert( 'link', @record)
+      @owner.end_transaction
+    end
+
     def status
       if ! valid?
         if bound? && collation.nil?
@@ -283,7 +294,7 @@ class Pagoda
       @record[:valid] == 'Y'
     end
 
-    def verified( title, timestamp, valid, redirected)
+    def verified( title, timestamp, valid, redirected, changed)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
       @record[:title]      = title
@@ -293,6 +304,7 @@ class Pagoda
       @record[:timestamp]  = timestamp
       @record[:valid]      = valid
       @record[:redirect]   = redirected
+      @record[:changed]    = changed ? 'Y' : @record[:changed]
       @owner.insert( 'link', @record)
       @owner.end_transaction
     end

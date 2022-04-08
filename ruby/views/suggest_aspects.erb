@@ -1,9 +1,9 @@
-<%= erb :header, :locals => {:page => 'scan'} %>
+<%= erb :header, :locals => {:page => 'suggest_aspects'} %>
 
 <div class="search control">
   <%=
       url = "/suggest_aspects"
-      erb :page_control, :locals => {:view => 'suggest',
+      erb :page_control, :locals => {:view => 'suggest_aspects',
                                      :page => 1, #page,
                                      :url  => url,
                                      :args => []}

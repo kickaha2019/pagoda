@@ -1,0 +1,52 @@
+<%= erb :header, :locals => {:page => 'unchecked_bound_official_website'} %>
+
+<div class="search control">
+  <%=
+      url = "/unchecked_bound_official_websites"
+      erb :page_control, :locals => {:view => 'unchecked_bound_official_website',
+                                     :page => 1, #page,
+                                     :url  => url,
+                                     :args => []}
+  %>&nbsp;&nbsp;
+</div>
+
+<div id="list"><table class="scan list" style="width: 95%; table-layout: fixed">
+  <tr><th>Game</th><th>Website</th><th>Actions</th></tr>
+  <%=
+      html = []
+
+      records = unchecked_bound_official_website_records
+      current_page = 1 #page.to_i
+      total_pages  = (records.size + 99) /  100
+      current_page = 1 if total_pages < current_page
+
+      row = 0
+      records[(100*(current_page-1))...(100*current_page)].each do |rec|
+        row += 1
+        html << "<tr><td><a target=\"_blank\" href=\"/game/#{rec.collation.id}\">#{h(rec.collation.name)}</a></td>"
+        html << "<td><a target=\"_blank\" href=\"/cache/#{rec.timestamp}\">#{rec.orig_title}</a></td>"
+        html << "<td><button onclick=\"checked( #{rec.collation.id})\">Checked</button>"
+        html << "<button onclick=\"gather( #{rec.collation.id})\">Gather</button>"
+        html << '</td></tr>'
+      end
+
+      html.join( "\n")
+  %>
+</table></div>
+
+<script>
+    function checked( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/set_official_checked/" + id, false);
+        xhttp.send();
+    }
+
+    function gather( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/gather/" + id, false);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>

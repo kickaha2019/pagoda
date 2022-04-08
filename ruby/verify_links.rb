@@ -150,13 +150,6 @@ class VerifyLinks
       if debug
         File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.is_a?( String) ? response : response.body}
       end
-
-      # Give up on iOS games if get 404 back
-      if 'iOS' == link.site
-        link.verified( link.title, t, 'Y', 'N')
-        link.bind( -1)
-      end
-
       return
     end
 
@@ -179,8 +172,12 @@ class VerifyLinks
     status, valid, ignore, title = get_details( link, body)
     p ['verify_page2', status, valid, ignore, title] if debug
 
-    # Save old timestamp and get new unused timestamp
-    old_t = link.timestamp
+    # Save old timestamp and page, get new unused timestamp
+    old_t, old_page, changed = link.timestamp, '', false
+    if File.exist?( cache + "/#{old_t}.html")
+      old_page = IO.read( cache + "/#{old_t}.html")
+    end
+
     while File.exist?( cache + "/#{t}.html")
       sleep 1
       t = Time.now.to_i
@@ -188,15 +185,16 @@ class VerifyLinks
 
     # If OK save page to cache else to temp area
     if status
-      File.open( cache + "/#{t}.html", 'w') {|io| io.print response.body}
+      File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
+      changed = (body.strip != old_page.strip)
     else
       if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.body}
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
       return
     end
 
-    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N')
+    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N', changed)
 
     if ignore
       link.bind( -1)
