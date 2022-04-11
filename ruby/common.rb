@@ -103,6 +103,7 @@ module Common
 
 	def http_get_with_redirect( url, depth = 0)
 		#p ['http_get_with_redirect1', url]
+		status = true
 		begin
 			response = http_get_response( url)
 		rescue Exception => bang

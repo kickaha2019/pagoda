@@ -1,8 +1,7 @@
-class GooglePlay
-	include Common
+require_relative 'default_site'
 
-	def check_child_link( url, text, anchor)
-	end
+class GooglePlay < DefaultSite
+	include Common
 
 	def cache_directory
 		'google_play'
@@ -26,9 +25,6 @@ class GooglePlay
 
 	def get_game_description( page)
 		''
-	end
-
-	def get_game_details( url, page, game)
 	end
 
 	def search( searcher)

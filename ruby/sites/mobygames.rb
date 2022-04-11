@@ -1,7 +1,6 @@
-class MobyGames
-	def check_child_link( url, text, anchor)
-	end
+require_relative 'default_site'
 
+class MobyGames < DefaultSite
 	def find( scanner)
 		path = scanner.cache + "/mobygames.json"
 

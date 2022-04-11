@@ -1,10 +1,8 @@
 require_relative '../common'
+require_relative 'default_site'
 
-class AdventureGamers
+class AdventureGamers < DefaultSite
 	include Common
-
-	def check_child_link( url, text, anchor)
-	end
 
 	def find( scanner)
 		scanner.twitter_feed_links( 'adventuregamers') do |text, link|

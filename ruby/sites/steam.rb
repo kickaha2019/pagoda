@@ -1,7 +1,6 @@
-class Steam
-	def check_child_link( url, text, anchor)
-	end
+require_relative 'default_site'
 
+class Steam < DefaultSite
 	def complete?( scanner)
 		true
 	end

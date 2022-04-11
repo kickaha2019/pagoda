@@ -146,14 +146,13 @@ class VerifyLinks
     @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
     p ['verify_page1', status, redirected, response] if debug
+    body = response.is_a?( String) ? response : response.body
+
     unless status
       if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print response.is_a?( String) ? response : response.body}
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
-      return
     end
-
-    body = response.body
 
     # Try converting odd characters
     begin

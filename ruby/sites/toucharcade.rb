@@ -1,4 +1,6 @@
-class TouchArcade
+require_relative 'default_site'
+
+class TouchArcade < DefaultSite
 	def find( scanner)
 		path = scanner.cache + "/touch_arcade.json"
 

@@ -15,7 +15,7 @@
   <%=
       html = []
 
-      records = suggest_records
+      records = suggest_aspects_records
       current_page = 1 #page.to_i
       total_pages  = (records.size + 99) /  100
       current_page = 1 if total_pages < current_page

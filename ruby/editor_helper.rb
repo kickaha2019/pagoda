@@ -28,7 +28,7 @@ module Sinatra
         link_rec.bind( g[:id])
         "/game/#{g[:id]}"
       rescue Exception => bang
-        puts bang.message
+        puts( bang.message + "\n" + bang.backtrace.join( "\n"))
         ''
       end
     end
@@ -366,7 +366,7 @@ module Sinatra
       end
     end
 
-    def suggest_records
+    def suggest_aspects_records
       recs = $pagoda.select( 'aspect_suggest') do |rec|
         game    = $pagoda.game( rec[:game])
         aspects = game.aspects

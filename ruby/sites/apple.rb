@@ -1,11 +1,9 @@
 require 'json'
+require_relative 'default_site'
 
-class Apple
+class Apple < DefaultSite
   @@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
   @@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
-
-  def check_child_link( url, text, anchor)
-  end
 
   def extract_ember_json( html)
     inside, text = false, []
@@ -87,23 +85,34 @@ class Apple
 
 	def incremental( scanner)
 		scanner.twitter_feed_links( 'applearcade') do |text, link|
-			m = /^https:\/\/apps\.apple\.com\/app\/[^\/]*\/([a-z0-9]*)\?/.match( link)
-			if m
+      if m = match_link( link)
 				scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
 			else
 				0
 			end
     end
 
-    scanner.twitter_feed_links( 'appstoregames', 1200) do |text, link|
-      m = /^https:\/\/apps\.apple\.com\/(\w\w\/|)app\/[^\/]*\/([a-z0-9]*)\?/.match( link)
-      if m
+    scanner.twitter_feed_links( 'appstoregames', 1700) do |text, link|
+      if m = match_link( link)
+        #io.puts "... #{link}"
         scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
       else
+        #io.puts "??? #{link}"
         0
       end
     end
 	end
+
+  def match_link( link)
+    m = /^https:\/\/apps\.apple\.com\/\w\w\/app\/[^\/]*\/(id[0-9]*)\?/.match( link)
+    unless m
+      m = /^https:\/\/apps\.apple\.com\/app\/[^\/]*\/(id[0-9]*)\?/.match( link)
+    end
+    unless m
+      m = /^https:\/\/apps\.apple\.com\/app\/(id[0-9]*)\?/.match( link)
+    end
+    m
+  end
 
   def refresh_cache( searcher, section, letter)
     path = get_cache_path( searcher, section, letter)

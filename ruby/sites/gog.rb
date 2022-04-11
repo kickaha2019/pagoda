@@ -1,7 +1,6 @@
-class GOG
-	def check_child_link( url, text, anchor)
-	end
+require_relative 'default_site'
 
+class GOG < DefaultSite
 	def extract_card_product( html)
 		html.split("\n").each do |line|
 			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)
@@ -63,8 +62,8 @@ class GOG
 		if info = extract_card_product( page)
 			game[:name]      = info['title']
 			game[:publisher] = info['publisher']
-			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ')
-			game[:year]      = info['globalReleaseDate'][0..3]
+			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ') if info['developers']
+			game[:year]      = info['globalReleaseDate'][0..3] if info['globalReleaseDate']
 		end
 	end
 

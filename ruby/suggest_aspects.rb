@@ -45,11 +45,18 @@ class SuggestAspects
     end
     return if set
 
+    ignores = []
+    if rule['ignore'].is_a?( String)
+      ignores << Regexp.new( rule['ignore'], Regexp::IGNORECASE | Regexp::MULTILINE)
+    elsif rule['ignore']
+      ignores = rule['ignore'].collect {|e| Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)}
+    end
+
     if rule['match'].is_a?( String)
-      text = scan( page, rule['match'])
+      text = scan( page, rule['match'], ignores)
     else
       rule['match'].shuffle.each do |re|
-        text = scan( page, re) unless text
+        text = scan( page, re, ignores) unless text
       end
     end
 
@@ -73,17 +80,29 @@ class SuggestAspects
     cache > 0
   end
 
-  def scan( page, regex)
+  def scan( page, regex, ignores)
     scanner = StringScanner.new( page)
-    unless scanner.skip_until( Regexp.new(regex, Regexp::MULTILINE)).nil?
+    while scanner.skip_until( Regexp.new(regex, Regexp::IGNORECASE | Regexp::MULTILINE)) do
       pos = scanner.pointer
-      from = pos - 200
-      from = 0 if from < 0
-      to = pos + 200
-      to = page.size - 1 if to >= page.size
-      text = page[from..to]
-      return text
+
+      ignore = false
+      ignores.each do |re|
+        if re.match( scanner.peek( 50))
+          ignore = true
+          break
+        end
+      end
+
+      unless ignore
+        from = pos - 200
+        from = 0 if from < 0
+        to = pos + 200
+        to = page.size - 1 if to >= page.size
+        text = page[from..to]
+        return text
+      end
     end
+
     nil
   end
 
