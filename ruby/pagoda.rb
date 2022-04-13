@@ -337,10 +337,10 @@ class Pagoda
       end
     end
 
-    @reduction_file         = dir + '/collation.yaml'
-    @reduction_timestamp    = 0
-    @reductions             = {}
-    @aspect_names_timestamp = 0
+    @reduction_file        = dir + '/collation.yaml'
+    @reduction_timestamp   = 0
+    @reductions            = {}
+    @aspect_info_timestamp = 0
     refresh_reduction_cache
   end
 
@@ -355,8 +355,9 @@ class Pagoda
   end
 
   def aspect_names
-    unless @aspect_names_timestamp == File.mtime( @dir + '/aspect_names.csv')
-      @aspect_names = IO.readlines( @dir + '/aspect_names.csv')[1..-1].collect {|l| l.chomp}.select {|l| l != ''}
+    unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
+      @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
+      @aspect_names = YAML.load( IO.read( @dir + '/aspects.yaml')).keys
     end
     @aspect_names.each do |name|
       yield name

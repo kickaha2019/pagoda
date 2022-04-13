@@ -6,20 +6,23 @@ class SuggestAspects
   include Common
 
   def initialize( dir, cache)
-    @pagoda = Pagoda.new( dir)
-    @cache  = cache
-    defn    = YAML.load( IO.read( dir + '/aspect_suggest.yaml'))
-    @rules  = defn['rules']
+    @pagoda  = Pagoda.new( dir)
+    @cache   = cache
+    @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
   end
 
-  def games
-    map = {}
-    @pagoda.games {|g| map[g.id] = [0,-1]}
-    @pagoda.select( 'aspect_suggest') do |suggest|
-      map[suggest[:game]] = [suggest[:timestamp], suggest[:rule]] unless suggest[:timestamp].nil?
+  def games( name)
+    if name
+      yield @pagoda.game( name)
+      return
     end
-    list = map.keys.collect {|k| [k, map[k][0], map[k][1]]}
-    list.sort_by {|e| e[1]}.each {|e| yield @pagoda.game(e[0]), e[2]}
+    map = {}
+    @pagoda.games {|g| map[g.id] = 0}
+    @pagoda.select( 'aspect_suggest') do |suggest|
+      map[suggest[:game]] = suggest[:timestamp] unless suggest[:timestamp].nil?
+    end
+    list = map.keys.collect {|k| [k, map[k]]}
+    list.sort_by {|e| e[1]}.each {|e| yield @pagoda.game(e[0])}
   end
 
   def get_page( site_name, timestamp)
@@ -36,28 +39,23 @@ class SuggestAspects
     page
   end
 
-  def match( game, rule, page)
+  def match( game, aspect_name, page)
     #p ['match1', game.name]
     aspects = game.aspects
-    set     = true
-    rule['aspect'].split(',').each do |a|
-      set = false if aspects[a.strip].nil?
-    end
-    return if set
+    return unless aspects[aspect_name].nil?
 
-    ignores = []
-    if rule['ignore'].is_a?( String)
-      ignores << Regexp.new( rule['ignore'], Regexp::IGNORECASE | Regexp::MULTILINE)
-    elsif rule['ignore']
-      ignores = rule['ignore'].collect {|e| Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)}
-    end
+    matches = @aspects[aspect_name]['match']
+    matches = [matches] if matches.is_a?( String)
+    ignores = @aspects[aspect_name]['ignore']
+    ignores = [ignores] if ignores.is_a?( String)
+    ignores = [] if ignores.nil?
 
-    if rule['match'].is_a?( String)
-      text = scan( page, rule['match'], ignores)
-    else
-      rule['match'].shuffle.each do |re|
-        text = scan( page, re, ignores) unless text
-      end
+    ignores = ignores.collect {|e| Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)}
+
+    text = nil
+    matches.each do |m|
+      re = Regexp.new( m, Regexp::IGNORECASE | Regexp::MULTILINE)
+      text = scan( page, re, ignores) unless text
     end
 
     if text
@@ -82,21 +80,23 @@ class SuggestAspects
 
   def scan( page, regex, ignores)
     scanner = StringScanner.new( page)
-    while scanner.skip_until( Regexp.new(regex, Regexp::IGNORECASE | Regexp::MULTILINE)) do
+    while scanner.skip_until( regex) do
       pos = scanner.pointer
 
       ignore = false
       ignores.each do |re|
-        if re.match( scanner.peek( 50))
+        start = pos - scanner.matched_size
+        #p [re, page[start..(start+49)]]
+        if re.match( page[start..(start+49)])
           ignore = true
           break
         end
       end
 
       unless ignore
-        from = pos - 200
+        from = pos - 200  - scanner.matched_size
         from = 0 if from < 0
-        to = pos + 200
+        to = from + 400
         to = page.size - 1 if to >= page.size
         text = page[from..to]
         return text
@@ -106,16 +106,24 @@ class SuggestAspects
     nil
   end
 
-  def suggest( game)
+  def suggest( game, aspect_arg, site_arg)
+    possible_aspects = []
+    if aspect_arg
+      possible_aspects << aspect_arg
+    else
+      possible_aspects = @aspects.keys.select {|k| @aspects[k]['match']}.shuffle
+    end
+
     @pagoda.get( 'bind', :id, game.id).shuffle.each do |bind|
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
         next if link[:timestamp].nil?
         next if /\)$/ =~ link[:site]
+        next if site_arg && (link[:site] != site_arg)
         page = get_page( link[:site], link[:timestamp])
 
-        @rules.shuffle.each do |rule|
-          match( game, rule, page) do |text|
-            return rule['aspect'], text, link[:timestamp], link[:site]
+        possible_aspects.each do |aspect_name|
+          match( game, aspect_name, page) do |text|
+            return aspect_name, text, link[:timestamp], link[:site]
           end
         end
       end
@@ -137,11 +145,13 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 #raise 'Testing'
 
 suggested = scanned = 0
+to_scan = ARGV[3] ? 1 : ARGV[2].to_i
+
 puts "... Suggesting aspects"
-sa.games do |game, last_rule|
+sa.games( ARGV[3] ? ARGV[2] : nil) do |game|
   #p ['games1', game.name, game.id, last_rule]
-  suggested += 1 if sa.record( game, * sa.suggest( game))
+  suggested += 1 if sa.record( game, * sa.suggest( game, ARGV[3], ARGV[4]))
   scanned += 1
-  break if scanned >= ARGV[2].to_i
+  break if scanned >= to_scan
 end
 puts "... Suggested #{suggested} aspects"
