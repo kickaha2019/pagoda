@@ -22,7 +22,6 @@ class VerifyLinks
   def initialize( dir)
     @pagoda  = Pagoda.new( dir)
     @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
-    @current = nil
   end
 
   def apply_filter( filter, link, body, title)
@@ -115,6 +114,58 @@ class VerifyLinks
     end
   end
 
+  def http_get_threaded( url)
+    @http_get_threaded_url = url
+    @http_get_threaded_got = nil
+
+    Thread.new do
+      begin
+        response = http_get_response( url)
+        if url == @http_get_threaded_url
+          if response.is_a?( Net::HTTPNotFound)
+            @http_get_threaded_got = [false, 'Not found']
+          else
+            @http_get_threaded_got = [true, response]
+          end
+        end
+      rescue Exception => bang
+        if url == @http_get_threaded_url
+          @http_get_threaded_got = [false, bang.message]
+        end
+      end
+    end
+
+    (0...600).each do
+      sleep 0.1
+      unless @http_get_threaded_got.nil?
+        return * @http_get_threaded_got
+      end
+    end
+
+    sleep 300
+    return false, "Timeout"
+  end
+
+  def http_get_with_redirect( url, depth = 0)
+    #p ['http_get_with_redirect1', url]
+    redirected = false
+    status, response = http_get_threaded( url)
+
+    if status && (depth < 4) &&
+        response.is_a?( Net::HTTPRedirection) &&
+        (/^http(s|):/ =~ response['Location'])
+
+      # Regard as redirected unless temporary redirect
+      redirected = (response.code != '302')
+      #p ['http_get_with_redirect2', url, redirected, response.code]
+
+      status, _, response = http_get_with_redirect( response['Location'], depth+1)
+      return status, redirected, response
+    end
+
+    return status, false, response
+  end
+
   def oldest( n, valid_for)
     links, dubious = [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
@@ -122,7 +173,7 @@ class VerifyLinks
     @pagoda.links do |link|
       if (link.status == 'Invalid') || link.redirected?
         dubious << link
-      else
+      elsif link.status != 'Ignore'
         links << link if link.timestamp < valid_from
       end
     end
@@ -143,7 +194,6 @@ class VerifyLinks
 
   def verify_page( link, cache, debug=false)
     t = Time.now.to_i
-    @current = link.url
     status, redirected, response = http_get_with_redirect( link.url)
     p ['verify_page1', status, redirected, response] if debug
     body = response.is_a?( String) ? response : response.body
@@ -152,6 +202,8 @@ class VerifyLinks
       if debug
         File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
+      puts "*** #{link.url}: #{body}"
+      return
     end
 
     # Try converting odd characters
@@ -183,15 +235,8 @@ class VerifyLinks
     end
 
     # If OK save page to cache else to temp area
-    if status
-      File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
-      changed = (body.strip != old_page.strip)
-    else
-      if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
-      end
-      return
-    end
+    File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
+    changed = (body.strip != old_page.strip)
 
     link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N', changed)
 
@@ -221,7 +266,6 @@ if /^http/ =~ ARGV[1]
 else
   puts "... Verifying links"
   count = 0
-  vl.detect_hang
   vl.oldest( ARGV[1].to_i, ARGV[3].to_i) do |link|
     # puts "... Verifying #{link.url}"
     count += 1

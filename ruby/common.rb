@@ -20,22 +20,6 @@ module Common
 		@driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
-	def detect_hang
-		Thread.abort_on_exception = true
-		Thread.new do
-			last_touch = 0
-			while true
-				sleep 60
-				new_touch = @@throttling.values.inject {|r,e| (r > e) ? r : e}
-				unless new_touch > last_touch
-					puts "*** Hang detected for #{@current}"
-					exit 1
-				end
-				last_touch = new_touch
-			end
-		end
-	end
-
 	def get_site_class( name)
 		name = 'IOS' if name == 'iOS'
 		unless @@site_classes[name]
@@ -99,34 +83,6 @@ module Common
 		Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
 			http.request( request)
 		}
-	end
-
-	def http_get_with_redirect( url, depth = 0)
-		#p ['http_get_with_redirect1', url]
-		status = true
-		begin
-			response = http_get_response( url)
-		rescue Exception => bang
-			return false, false, bang.message
-		end
-
-		if response.is_a?( Net::HTTPNotFound)
-			return false, false, response
-		end
-
-		if (depth < 4) &&
-				response.is_a?( Net::HTTPRedirection) &&
-				(/^http(s|):/ =~ response['Location'])
-
-			# Regard as redirected unless temporary redirect
-			redirected = (response.code != '302')
-			#p ['http_get_with_redirect2', url, redirected, response.code]
-
-			status, _, response = http_get_with_redirect( response['Location'], depth+1)
-			return status, redirected, response
-		end
-
-		return status, false, response
 	end
 
 	def http_redirect( url, depth = 0, debug = false)
@@ -194,11 +150,14 @@ module Common
 		oldest_id = nil
 		added     = 0
 
-		while oldest > months2
-			a, oldest, oldest_id = twitter_feed_links1( id, oldest_id) do |text, found|
-				yield text, found
+		begin
+			while oldest > months2
+				a, oldest, oldest_id = twitter_feed_links1( id, oldest_id) do |text, found|
+					yield text, found
+				end
+				added += a
 			end
-			added += a
+		rescue
 		end
 
 		puts "... Oldest tweet found for #{account} on #{oldest}"

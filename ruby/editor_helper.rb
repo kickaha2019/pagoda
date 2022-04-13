@@ -200,6 +200,9 @@ module Sinatra
     def link_records( site, type, status, search)
       $pagoda.links do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
+        unless chosen
+          chosen = rec.url.downcase.index( search.downcase)
+        end
         chosen = false unless ((rec.site == site) || (site == 'All'))
         chosen = false unless (rec.type == type) || (type == 'All')
         if status == 'Flagged'
