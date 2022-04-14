@@ -171,9 +171,10 @@ class VerifyLinks
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
+      next if link.status == 'Ignore'
       if (link.status == 'Invalid') || link.redirected?
         dubious << link
-      elsif link.status != 'Ignore'
+      else
         links << link if link.timestamp < valid_from
       end
     end

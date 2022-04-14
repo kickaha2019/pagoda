@@ -129,7 +129,7 @@ class Names
     @names2ids[name] =  id
     @id2names[id]    << name
 
-    string_combos( reduce( name)) do |combo, weight|
+    string_combos( reduce( name)) do |combo|
       @combo2ids[combo] << id
     end
   end
@@ -142,6 +142,17 @@ class Names
     else
       true
     end
+  end
+
+  def rarity( name)
+    freq = 1000000
+
+    string_combos( name) do |combo|
+      ids = @combo2ids[combo]
+      freq = ids.size if ids.size < freq
+    end
+
+    freq
   end
 
   def reduce( name)
@@ -178,7 +189,7 @@ class Names
 
   def remove( name, id)
     id = id.to_i
-    string_combos( reduce( name)) do |combo, weight|
+    string_combos( reduce( name)) do |combo|
       @combo2ids[combo].delete( id)
     end
 
@@ -214,24 +225,24 @@ class Names
 
   def string_combos( name)
     words = reduce( name).split( ' ')
-    words.each {|word| yield word, 125}
+    words.each {|word| yield word}
 
     (0..(words.size-2)).each do |i|
-      yield words[i..(i+1)].join(' '), 25
+      yield words[i..(i+1)].join(' ')
     end
 
     (0..(words.size-3)).each do |i|
-      yield words[i..(i+2)].join(' '), 5
+      yield words[i..(i+2)].join(' ')
     end
 
     (0..(words.size-4)).each do |i|
-      yield words[i..(i+3)].join(' '), 1
+      yield words[i..(i+3)].join(' ')
     end
   end
 
   def suggest( name, limit)
     found = Hash.new {|h,k| h[k] = 1000}
-    string_combos( name) do |combo, weight|
+    string_combos( name) do |combo|
       ids = @combo2ids[combo]
       ids.each do |id|
         found[id] = ids.size if ids.size < found[id]

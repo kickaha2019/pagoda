@@ -2,7 +2,6 @@ require 'json'
 require 'net/http'
 require 'net/https'
 require 'uri'
-require "selenium-webdriver"
 
 require_relative 'pagoda'
 require_relative 'sites/default_site'

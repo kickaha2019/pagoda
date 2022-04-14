@@ -45,21 +45,19 @@ class Spider
 	def add_suggested
 		limit        = @settings['suggested_limit']
 		list         = []
-		pagoda_freqs = build_pagoda_frequencies
-		scan_freqs   = build_scan_frequencies
 
 		@suggested.each do |link|
 			debug_hook( 'reduce_suggested', link[:title], link[:url])
 			unless @pagoda.has?( 'link', :url, link[:url])
-				freq, combo = lowest_frequency( pagoda_freqs, scan_freqs, link[:title])
-				list << [freq, link, combo]
+				freq = lowest_frequency( link[:title])
+				list << [freq, link]
 			end
 		end
 
 		list.sort_by! {|entry| entry[0]}
 
 		list.each do |entry|
-			link, combo = entry[1], entry[2]
+			link = entry[1]
 			next if (limit <= 0) || not_a_game( link[:title])
 			debug_hook( 'match_games3', link[:title], link[:url])
 			limit -= 1
@@ -72,35 +70,6 @@ class Spider
 											 :timestamp => 1})
 			@pagoda.end_transaction
 		end
-	end
-
-	def build_pagoda_frequencies
-		frequencies = Hash.new {|h,k| h[k] = 0}
-
-		@pagoda.games.each do |g|
-			@pagoda.string_combos(g.name) do |combo, weight|
-				frequencies[combo] += weight
-			end
-			g.aliases.each do |a|
-				@pagoda.string_combos(a.name) do |combo, weight|
-					frequencies[combo] += weight
-				end
-			end
-		end
-
-		frequencies
-	end
-
-	def build_scan_frequencies
-		frequencies = Hash.new {|h,k| h[k] = 0}
-
-		@suggested.each do |suggest|
-			@pagoda.string_combos( suggest[:title]) do |combo, weight|
-				frequencies[combo] += weight
-			end
-		end
-
-		frequencies
 	end
 
 	def debug_hook( site, name, url=nil)
@@ -182,17 +151,8 @@ class Spider
 		end
 	end
 
-	def lowest_frequency( pagoda_freqs, scan_freqs, name)
-		freq, match = 1000000, ''
-		@pagoda.string_combos( name) do |combo, weight|
-			if pagoda_freqs.include?(combo)
-				if scan_freqs[combo] < freq
-					freq  = scan_freqs[combo]
-					match = combo
-				end
-			end
-		end
-		return freq, match
+	def lowest_frequency( name)
+    @pagoda.rarity( name)
 	end
 
 	def not_a_game( name)

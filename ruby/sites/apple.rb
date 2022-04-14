@@ -92,7 +92,7 @@ class Apple < DefaultSite
 			end
     end
 
-    scanner.twitter_feed_links( 'appstoregames', 1900) do |text, link|
+    scanner.twitter_feed_links( 'appstoregames', 1000) do |text, link|
       if m = match_link( link)
         #io.puts "... #{link}"
         scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")

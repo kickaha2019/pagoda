@@ -452,7 +452,7 @@ class Pagoda
   # end
 
   def string_combos( name)
-    @names.string_combos( name) {|combo, weight| yield combo, weight}
+    @names.string_combos( name) {|combo| yield combo}
   end
 
   def suggest( name)
@@ -499,6 +499,10 @@ class Pagoda
 
   def next_value( table_name, column_name)
     @database.next_value( table_name, column_name)
+  end
+
+  def rarity( name)
+    @names.rarity( name)
   end
 
   def rebuild
