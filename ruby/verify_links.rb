@@ -148,7 +148,7 @@ class VerifyLinks
 
   def http_get_with_redirect( url, depth = 0)
     #p ['http_get_with_redirect1', url]
-    redirected = false
+    comment = nil
     status, response = http_get_threaded( url)
 
     if status && (depth < 4) &&
@@ -156,14 +156,15 @@ class VerifyLinks
         (/^http(s|):/ =~ response['Location'])
 
       # Regard as redirected unless temporary redirect
-      redirected = (response.code != '302')
+      comment = 'Redirected' if response.code != '302'
       #p ['http_get_with_redirect2', url, redirected, response.code]
 
-      status, _, response = http_get_with_redirect( response['Location'], depth+1)
-      return status, redirected, response
+      status, comment1, response = http_get_with_redirect( response['Location'], depth+1)
+      comment = comment1 if comment1
+      return status, comment, response
     end
 
-    return status, false, response
+    return status, status ? nil : response, response
   end
 
   def oldest( n, valid_for)
@@ -172,7 +173,7 @@ class VerifyLinks
 
     @pagoda.links do |link|
       next if link.status == 'Ignore'
-      if (link.status == 'Invalid') || link.redirected?
+      if (link.status == 'Invalid') || link.comment
         dubious << link
       else
         links << link if link.timestamp < valid_from
@@ -195,8 +196,8 @@ class VerifyLinks
 
   def verify_page( link, cache, debug=false)
     t = Time.now.to_i
-    status, redirected, response = http_get_with_redirect( link.url)
-    p ['verify_page1', status, redirected, response] if debug
+    status, comment, response = http_get_with_redirect( link.url)
+    p ['verify_page1', status, comment, response] if debug
     body = response.is_a?( String) ? response : response.body
 
     unless status
@@ -204,7 +205,6 @@ class VerifyLinks
         File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
       end
       puts "*** #{link.url}: #{body}"
-      return
     end
 
     # Try converting odd characters
@@ -221,8 +221,13 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
-    status, valid, ignore, title = get_details( link, body)
-    p ['verify_page2', status, valid, ignore, title] if debug
+    if status
+      status, valid, ignore, title = get_details( link, body)
+      p ['verify_page2', status, valid, ignore, title] if debug
+    else
+      valid = ignore = false
+      title = link.title
+    end
 
     # Save old timestamp and page, get new unused timestamp
     old_t, old_page, changed = link.timestamp, '', false
@@ -239,7 +244,7 @@ class VerifyLinks
     File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
     changed = (body.strip != old_page.strip)
 
-    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', redirected ? 'Y' : 'N', changed)
+    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', comment, changed)
 
     if ignore
       link.bind( -1)

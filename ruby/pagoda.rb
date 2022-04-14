@@ -241,10 +241,6 @@ class Pagoda
       (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
     end
 
-    def redirected?
-      @record[:redirect] == 'Y'
-    end
-
     def reduced_name
       @owner.reduce_name( @record[:site], @record[:type], @record[:orig_title])
     end
@@ -294,7 +290,7 @@ class Pagoda
       @record[:valid] == 'Y'
     end
 
-    def verified( title, timestamp, valid, redirected, changed)
+    def verified( title, timestamp, valid, comment, changed)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
       @record[:title]      = title
@@ -303,7 +299,7 @@ class Pagoda
       @record[:orig_title] = ot
       @record[:timestamp]  = timestamp
       @record[:valid]      = valid
-      @record[:redirect]   = redirected
+      @record[:comment]    = comment
       @record[:changed]    = changed ? 'Y' : @record[:changed]
       @owner.insert( 'link', @record)
       @owner.end_transaction

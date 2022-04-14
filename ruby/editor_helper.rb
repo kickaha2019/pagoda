@@ -149,7 +149,9 @@ module Sinatra
     end
 
     def get_cache( timestamp)
-      IO.read( $cache + "/verified/#{timestamp}.html")
+      path = $cache + "/verified/#{timestamp}.html"
+      return '' unless File.exist?( path)
+      IO.read( path)
     end
 
     def get_locals( params, defs)
@@ -194,7 +196,7 @@ module Sinatra
     end
 
     def link_flagged?( rec)
-      link_lost?(rec) || rec.redirected?
+      link_lost?(rec) || rec.comment
     end
 
     def link_records( site, type, status, search)

@@ -32,6 +32,10 @@ class MobyGames < DefaultSite
 		end
 	end
 
+	def get_game_description( page)
+		page
+	end
+
 	def get_game_details( url, page, game)
 		publisher, developer, release = false, false, false
 		page.split("<div").each do |line|
