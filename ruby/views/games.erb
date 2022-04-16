@@ -1,14 +1,14 @@
 <%= erb :header, :locals => {:page => 'games'} %>
 
 <div class="search control">
-  <button onclick="search_input( '<%= "/games?page=1" %>')">Search</button>
+  <button onclick="search_input( '<%= "/games?page=1&aspect=#{aspect}" %>')">Search</button>
   <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
       url = "/games?search=#{e(search)}"
       erb :page_control, :locals => {:view => 'games',
                                      :page => page,
                                      :url  => url,
-                                     :args => [search]}
+                                     :args => [aspect,search]}
   %>&nbsp;&nbsp;
 </div>
 
@@ -17,7 +17,7 @@
   <%=
     html = []
 
-    records       = games_records( search)
+    records       = games_records( aspect, search)
     current_page  = page
     total_pages   = (records.size + 99) /  100
     current_page  = 1 if total_pages < current_page
@@ -52,7 +52,7 @@
     function select_checkbox( id) {
         var x = window.pageXOffset;
         var y = window.pageYOffset;
-        window.location = '/games?page=<%= page %>&search=' +
+        window.location = '/games?aspect=<%= aspect %>&page=<%= page %>&search=' +
             encodeURIComponent( document.getElementById( 'search').value) +
             "&selected=" + id +
             "&x=" + x + "&y=" + y;

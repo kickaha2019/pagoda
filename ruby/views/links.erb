@@ -23,7 +23,7 @@
 </div>
 
 <div id="list"><table class="scan list">
-  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Actions</th></tr>
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Comment</th><th>Actions</th></tr>
   <%=
       html = []
 
@@ -47,6 +47,7 @@
         html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"
         colour = link_lost?(rec) ? 'red' : (rec.redirected? ? 'cyan' : 'white')
         html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"
+        html << "#{rec.comment}</td><td>"
         html << link_action( rec, 'ignore', row)
         html << link_action( rec, 'bind', row)
         html << link_action( rec, 'unbind', row)

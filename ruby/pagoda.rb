@@ -350,12 +350,16 @@ class Pagoda
     list
   end
 
-  def aspect_names
+  def aspect_info
     unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
       @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
-      @aspect_names = YAML.load( IO.read( @dir + '/aspects.yaml')).keys
+      @aspect_info = YAML.load( IO.read( @dir + '/aspects.yaml'))
     end
-    @aspect_names.each do |name|
+    @aspect_info
+  end
+
+  def aspect_names
+    aspect_info.each_key do |name|
       yield name
     end
   end

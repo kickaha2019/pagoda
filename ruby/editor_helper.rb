@@ -138,12 +138,27 @@ module Sinatra
       "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
     end
 
-    def games_records( search)
+    def games_by_aspect_records
+      map = Hash.new {|h,k| h[k] = 0}
+      $pagoda.games do |game|
+        game.aspects.each_key {|a| map[a] += 1}
+      end
+      $pagoda.aspect_info.keys.sort.collect do |aspect|
+        [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
+      end
+    end
+
+    def games_records( aspect, search)
       $pagoda.games do |game|
         selected = $pagoda.contains_string( game.name, search)
         game.aliases.each do |a|
           selected = true if $pagoda.contains_string( a.name, search)
         end
+
+        if selected && (aspect != '')
+          selected = game.aspects[aspect]
+        end
+
         selected
       end
     end

@@ -174,6 +174,7 @@ class VerifyLinks
     @pagoda.links do |link|
       next if link.status == 'Ignore'
       if (link.status == 'Invalid') || link.comment
+        #puts "Dubious: #{link.url} / #{link.comment}"
         dubious << link
       else
         links << link if link.timestamp < valid_from
@@ -273,7 +274,7 @@ else
   puts "... Verifying links"
   count = 0
   vl.oldest( ARGV[1].to_i, ARGV[3].to_i) do |link|
-    # puts "... Verifying #{link.url}"
+    #puts "... Verifying #{link.url}"
     count += 1
     vl.throttle( link.url)
     begin

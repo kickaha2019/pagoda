@@ -13,11 +13,48 @@ class WebsiteFiltersPage
     end
   end
 
+  def button( name, info, status)
+    return <<"BUTTON"
+<div class="button #{status}" 
+     draggable="true"
+     ondragstart="drag( event, #{info['index']})" 
+     ondragover="event.preventDefault()"
+     ondrop="drop(event)">#{name}</div>
+BUTTON
+  end
+
   def generate( output_file)
     File.open( output_file, 'w') do |io|
       write_header( io)
       write_footer( io)
     end
+  end
+
+  def write_drag_script( io)
+    io.puts <<"DRAG"
+function drag(ev) {
+    ev.dataTransfer.setData("index", index);
+}
+DRAG
+  end
+
+  def write_drop_script( io)
+    io.puts <<"DROP"
+function drop(ev) {
+    ev.preventDefault();
+    var index = ev.dataTransfer.getData("index");
+    var flag = '';
+    var className = ev.target.className;
+    if ( className.test( "include") ) {
+      flag = "Y";
+    }
+    if ( className.test( "exclude") ) {
+      flag = "N";
+    }
+    window.localStorage.setItem( "pagoda.aspect." + index, flag);
+    refresh();
+}
+DROP
   end
 
   def write_footer( io)
@@ -38,6 +75,8 @@ FOOTER
 </style>
 <script>
 HEADER1
+    write_drag_script( io)
+    write_drop_script( io)
     write_refresh_script( io)
     io.puts <<"HEADER2"
 </script>
@@ -52,12 +91,35 @@ function refresh() {
   var excluded = '';
   var included = '';
   var inactive = '';
+  var flag     = '';
+  var button   = '';
 REFRESH1
     @aspects.each_pair do |name, info|
       io.puts <<"REFRESH_ASPECT"
-  var flag = window.localStorage.getItem( "pagoda.aspect.#{info['index']}");
-  var button = "<button onclick=\"link_bind_action( '#{e(e(rec.url))}', #{game_id});\">Bind</button>""
+  flag = window.localStorage.getItem( "pagoda.aspect.#{info['index']}");
+  status = 'ignore';
+  if (flag == 'Y') {status = 'include';}
+  if (flag == 'N') {status = 'exclude';}
+  button = #{button( name, info, status)};
+  if (flag == 'Y') {
+    included = included + button;
+  }
+  else if (flag == 'N') {
+    excluded = excluded + button;
+  }
+  else {
+    inactive = inactive + button;
+  }
 REFRESH_ASPECT
+      io.puts <<"REFRESH2"
+   var excluded_box = document.getElementById( "excluded");
+   excluded_box.innerHTML = excluded;
+   var included_box = document.getElementById( "included");
+   included_box.innerHTML = included;
+   var unused_box = document.getElementById( "inactive");
+   unused_box.innerHTML = inactive;
+}
+REFRESH2
     end
   end
 end

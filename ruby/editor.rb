@@ -24,6 +24,10 @@ get '/aliases' do
   erb :aliases, :locals => get_locals( params, :search => '', :page => 1)
 end
 
+get '/aspects' do
+  erb :aspects
+end
+
 post '/bind/:url' do
   bind_link( d(params[:url]))
 end
@@ -63,7 +67,8 @@ post '/game' do
 end
 
 get '/games' do
-  erb :games, :locals => get_locals( params, :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
+  erb :games,
+      :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
 end
 
 post '/ignore/:url' do
