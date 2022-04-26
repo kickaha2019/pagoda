@@ -1,0 +1,95 @@
+---
+"1st person":
+  index:  1
+  match:
+  - first\Wperson
+  - "1st\\Wperson"
+  - \WFPP\W
+"2D":
+  index:  30
+  match:
+  - \W2D\W
+"3D":
+  index:  6
+  match:
+  - \W3D\W
+"3rd person":
+  index: 2
+  match:
+  - third\Wperson
+  - "3rd\\Wperson"
+  - \WTPP\W
+Action:
+  index: 3
+  match:
+  - \WAction\WRPG
+  - \WAction\WAdventure
+Adventure:
+  index: 10
+Building:
+  index: 28
+Cards:
+  index: 11
+Choices:
+  index: 4
+  match:
+  - Choose Your Own Adventure
+  - Quick\WTime\WEvents
+  - QT\WEvents
+  - QTE
+FMV:
+  index:  0
+  match:
+  - FMV
+  - full motion video
+HOG:
+  index:  12
+Investigation:
+  index:  13
+"Match 3":
+  index: 7
+  match:
+  - Match 3
+Maze:
+  index: 5
+  match:  \WMaze\W
+MMORPG:
+  index: 27
+Physics:
+  index: 14
+Platformer:
+  index: 15
+Puzzle:
+  index: 16
+Racing:
+  index: 17
+"Resource management":
+  index: 18
+RPG:
+  index: 19
+Shooter:
+  index: 20
+Simulation:
+  index: 21
+Slider:
+  index: 22
+Stealth:
+  index: 23
+Strategy:
+  index: 24
+Timer:
+  index: 9
+  match:
+  - Timed sequence
+  - Timed puzzle
+  - puzzles limited by time
+"Tower Defense":
+  index: 8
+  match:
+  - Tower Defense
+"Visual novel":
+  index: 25
+VR:
+  index: 26
+"Word puzzle":
+  index: 29

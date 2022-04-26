@@ -125,7 +125,10 @@ class Pagoda
     end
 
     def update( params)
-      old_aspects = aspects
+      old_aspects = {}
+      aspects.each_pair do |k,v|
+        old_aspects[k] = v unless v
+      end
 
       @owner.delete_name( name, id)
       aliases.each do |a|

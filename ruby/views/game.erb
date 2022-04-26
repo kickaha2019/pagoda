@@ -99,6 +99,8 @@
 
       <tr><th>Website:</th><td><%= input_element( 'website', 80, @website) %></td></tr>
 
+      <tr><th>Search:</th><td><%= google_search( [@name, @developer, @publisher]) %></td></tr>
+
       <tr><th>Aspects:</th><td>
         <div class="aspects">
           <%=

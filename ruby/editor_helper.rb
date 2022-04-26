@@ -181,6 +181,11 @@ module Sinatra
       locals
     end
 
+    def google_search( texts)
+      text = texts.join( ' ').downcase.gsub( /[^0-9a-z]/, ' ').gsub( ' ', '+')
+      "<a target=\"_blank\" href=\"https://www.google.com/search?q=#{text}\">Google</a>"
+    end
+
     def h(text, max_chars=1000)
       return '' if text.nil?
       text = text[0...max_chars] if text.size > max_chars

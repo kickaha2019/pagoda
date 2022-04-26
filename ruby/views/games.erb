@@ -1,4 +1,4 @@
-<%= erb :header, :locals => {:page => 'games'} %>
+<%= erb :header, :locals => {:page => 'games', :aspect => aspect} %>
 
 <div class="search control">
   <button onclick="search_input( '<%= "/games?page=1&aspect=#{aspect}" %>')">Search</button>

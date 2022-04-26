@@ -45,7 +45,7 @@
   <tr><td>
     <%=
       ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified', 'reports'].collect do |item|
-        if item == page
+        if (item == page) && ((item != 'Games') || (aspect == ''))
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
         elsif item == 'tables'
           "<a href=\"/\">#{item.capitalize}</a>"

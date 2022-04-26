@@ -26,8 +26,21 @@ BUTTON
   def generate( output_file)
     File.open( output_file, 'w') do |io|
       write_header( io)
+      write_container( 'Include', 'include', io)
+      write_container( 'Unused',  'unused',  io)
+      write_container( 'Exclude', 'exclude', io)
       write_footer( io)
     end
+  end
+
+  def write_container( title, name, io)
+    io.puts <<"CONTAINER"
+<table class="frame">
+  <tr><td>Corner</td><td>Title</td><td>Corner</td></tr>
+  <tr><td>Side</td><td><div id="#{name}" class="container #{name}"></div></td><td>Side</td></tr>
+  <tr><td>Corner</td><td>Bottom</td><td>Corner</td></tr>
+</table>
+CONTAINER
   end
 
   def write_drag_script( io)
@@ -72,6 +85,7 @@ FOOTER
 <html>
 <head>
 <style>
+.container {background: grey; width: 600px; min-height: 300px}
 </style>
 <script>
 HEADER1
@@ -87,40 +101,46 @@ HEADER2
 
   def write_refresh_script( io)
     io.puts <<"REFRESH1"
-function refresh() {
-  var excluded = '';
-  var included = '';
-  var inactive = '';
-  var flag     = '';
-  var button   = '';
-REFRESH1
-    @aspects.each_pair do |name, info|
-      io.puts <<"REFRESH_ASPECT"
-  flag = window.localStorage.getItem( "pagoda.aspect.#{info['index']}");
-  status = 'ignore';
+function make_button( name, index, status) {
+  return '<div class="button ' + status + '"' +
+         ' draggable="true"' +
+         ' ondragstart="drag( event, ' + index + ')"' + 
+         ' ondragover="event.preventDefault()"' +
+         ' ondrop="drop(event)">' +name + '</div>';
+}
+
+function add_button( name, index, contents) {
+  var flag = window.localStorage.getItem( "pagoda.aspect." + index);
+  var status = 'ignore';
   if (flag == 'Y') {status = 'include';}
   if (flag == 'N') {status = 'exclude';}
-  button = #{button( name, info, status)};
+  button = make_button( name, index, status);
   if (flag == 'Y') {
-    included = included + button;
+    contents.included = contents.included + button;
   }
   else if (flag == 'N') {
-    excluded = excluded + button;
+    contents.excluded = contents.excluded + button;
   }
   else {
-    inactive = inactive + button;
+    contents.unused = contents.unused + button;
   }
-REFRESH_ASPECT
-      io.puts <<"REFRESH2"
-   var excluded_box = document.getElementById( "excluded");
-   excluded_box.innerHTML = excluded;
-   var included_box = document.getElementById( "included");
-   included_box.innerHTML = included;
-   var unused_box = document.getElementById( "inactive");
-   unused_box.innerHTML = inactive;
+}
+
+function refresh() {
+  const contents = {excluded:'', included:'', unused: ''};
+REFRESH1
+    @aspects.each_pair do |name, info|
+      io.puts "add_button( '#{name}', #{info['index']}, contents);"
+    end
+    io.puts <<"REFRESH2"
+  var excluded_box = document.getElementById( "exclude");
+  excluded_box.innerHTML = contents.excluded;
+  var included_box = document.getElementById( "include");
+  included_box.innerHTML = contents.included;
+  var unused_box = document.getElementById( "unused");
+  unused_box.innerHTML = contents.inactive;
 }
 REFRESH2
-    end
   end
 end
 
