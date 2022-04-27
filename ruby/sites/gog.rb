@@ -67,6 +67,47 @@ class GOG < DefaultSite
 		end
 	end
 
+	def filter( info, page, rec)
+		p ['filter1', rec]
+		tags  = info['tags']
+		found = ''
+
+		if m = /"tags":\[([^\]]*)\]/mi.match( page)
+			found += m[1]
+		end
+
+		if m = /"gameTags":\[([^\]]*)\]/mi.match( page)
+			found += m[1]
+		end
+
+		if found == ''
+			rec[:valid]   = false
+			rec[:comment] = 'No tags'
+			return false
+		end
+
+		rec[:ignore] = true
+		found.scan( /"name":"([^"]*)"/) do |tag|
+			if tags[tag[0]] == 'accept'
+				rec[:ignore] = false
+			elsif tags[tag[0]].nil?
+				rec[:valid]   = false
+				rec[:comment] = 'Unknown tag: ' + tag[0]
+				return false
+			end
+		end
+
+		p ['filter2', rec]
+		found.scan( /"name":"([^"]*)"/) do |tag|
+			p [tag, tags[tag[0]]]
+			if tags[tag[0]] == 'reject'
+				rec[:ignore] = true
+			end
+		end
+
+		true
+	end
+
 	def incremental( scanner)
 		# puts "*** Awaiting full scan to be done"
 		# return

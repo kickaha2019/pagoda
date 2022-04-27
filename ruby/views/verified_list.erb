@@ -19,10 +19,10 @@
       html << "<tr><td><a href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
       html << "<td>#{rec.type}</td>"
       if rec.timestamp < 10000
-        html << "<td></td><td><span title=\"#{p(rec.label)}\">#{h(rec.label,40)}<span/></td>"
+        html << "<td></td><td><span title=\"#{h(rec.label)}\">#{h(rec.label,40)}<span/></td>"
       else
         html << "<td>#{Time.at( rec.timestamp).strftime( "%Y/%m/%d")}</td>"
-        html << "<td><a title=\"#{p(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
+        html << "<td><a title=\"#{h(rec.label)}\" href=\"/cache/#{rec.timestamp}\">#{h(rec.label,40)}<a/></td>"
       end
       colour = link_lost?(rec) ? 'red' : (rec.comment? ? 'cyan' : 'white')
       html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"

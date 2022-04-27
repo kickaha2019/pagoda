@@ -20,11 +20,12 @@ class VerifyLinks
   include Common
 
   def initialize( dir)
-    @pagoda  = Pagoda.new( dir)
-    @filters = YAML.load( IO.read( dir + '/verify_links.yaml'))
+    @pagoda   = Pagoda.new( dir)
+    @filters  = YAML.load( IO.read( dir + '/verify_links.yaml'))
+    @gog_info = YAML.load( IO.read( dir + '/gog.yaml'))
   end
 
-  def apply_filter( filter, link, body, title)
+  def apply_filter( filter, link, body, rec)
     args = []
 
     if filter.is_a?( String)
@@ -36,72 +37,92 @@ class VerifyLinks
       args = [args] unless args.is_a?( Array)
     end
 
-    status, valid, ignore, title = send( ('filter_' + name).to_sym, link, body, title, * args)
-    return status, valid, ignore, title
+    send( ('filter_' + name).to_sym, link, body, rec, * args)
   end
 
-  def filter_apple_store( link, body, title)
-    if m = /^(.*) on the App Store$/.match( title.strip)
-      return true, true, false, m[1]
-    end
-    return false, false, false, title
-  end
-
-  def filter_google_play_store( link, body, title)
-    return true, true, false, title if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
-    return true, false, false, title if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
-    return false, false, false, title
-  end
-
-  def filter_steam_store( link, body, title)
-    if m = /^(.*) on Steam$/.match( title)
-      return true, true, false, m[1]
-    end
-    return true, true, false,  title if /\/agecheck\/app\// =~ link.url
-    return true, true, false,  title if /^Site Error$/ =~ title
-    return true, true, true, title if /^Welcome to Steam$/ =~ title
-    return false, false, false, title
-  end
-
-  def filter_suffix( link, body, title, suffix)
-    re = Regexp.new( '^(.*)' + suffix + '.*$')
-    if m = re.match( title)
-      return true, true, false, m[1]
+  def filter_apple_store( link, body, rec)
+    if m = /^(.*) on the App Store$/.match( rec[:title].strip)
+      rec[:title] = m[1]
+      true
     else
-      return false, false, false, ''
+      rec[:valid] = false
+      false
     end
   end
 
-  def get_details( link, body)
-    valid  = status = true
-    ignore = false
-    title  = orig_title = get_title( body, link.type)
+  def filter_gog_store( link, body, rec)
+    p ['filter_gog_store1', rec]
+    if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
+      rec[:title] = m[1]
+      gog = get_site_class( 'GOG').new
+      p ['filter_gog_store2', rec]
+      gog.filter( @gog_info, body, rec)
+    else
+      rec[:valid] = false
+      false
+    end
+  end
+
+  def filter_google_play_store( link, body, rec)
+    return true if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
+    rec[:valid] = false
+    return true if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
+    false
+  end
+
+  def filter_steam_store( link, body, rec)
+    if m = /^(.*) on Steam$/.match( rec[:title].strip)
+      rec[:title] = m[1]
+      return true
+    end
+    return true if /\/agecheck\/app\//  =~ link.url
+    return true if /^Site Error$/       =~ rec[:title]
+    return true if /^Welcome to Steam$/ =~ rec[:title]
+    rec[:valid] = false
+    false
+  end
+
+  def filter_suffix( link, body, rec, suffix)
+    re = Regexp.new( '^(.*)' + suffix + '.*$')
+    if m = re.match( rec[:title])
+      rec[:title] = m[1]
+      true
+    else
+      rec[:valid] = false
+      false
+    end
+  end
+
+  def get_details( link, body, rec)
+    status = true
+    rec[:title] = get_title( body, link.type)
 
     # 404 errors
-    if /^IIS.*404.*Not Found$/ =~ title
-      return false, false, false, orig_title
+    if /^IIS.*404.*Not Found$/ =~ rec[:title]
+      rec[:valid]   = false
+      rec[:comment] = 'Not found'
+      return false
     end
 
     # Server errors
-    if /Internal Server Error/i =~ title
-      return false, false, false, orig_title
+    if /Internal Server Error/i =~ rec[:title]
+      rec[:valid]   = false
+      rec[:comment] = 'Server error'
+      return false
     end
 
     # Apply site specific filters
     if site = @filters[link.site]
       if filters = site[link.type]
-        if filters.is_a?( Array)
-          filters.each do |filter|
-            status, valid, ignore, title = apply_filter( filter, link, body, title)
-            break unless valid && status
-          end
-        else
-          status, valid, ignore, title = apply_filter( filters, link, body, title)
+        filters = [filters] unless filters.is_a?( Array)
+        filters.each do |filter|
+          status = apply_filter( filter, link, body, rec)
+          break unless rec[:valid] && status
         end
       end
     end
 
-    return status, valid, ignore, (valid ? title : orig_title)
+    return status
   end
 
   def get_title( page, defval)
@@ -196,7 +217,6 @@ class VerifyLinks
   end
 
   def verify_page( link, cache, debug=false)
-    t = Time.now.to_i
     status, comment, response = http_get_with_redirect( link.url)
     p ['verify_page1', status, comment, response] if debug
     body = response.is_a?( String) ? response : response.body
@@ -222,12 +242,14 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
+    rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:false}
     if status
-      status, valid, ignore, title = get_details( link, body)
-      p ['verify_page2', status, valid, ignore, title] if debug
+      #status, valid, ignore, comment, title = get_details( link, body, rec)
+      status = get_details( link, body, rec)
+      p ['verify_page2', status, rec] if debug
     else
-      valid = ignore = false
-      title = link.title
+      rec[:valid] = false
+      rec[:title] = link.title
     end
 
     # Save old timestamp and page, get new unused timestamp
@@ -236,18 +258,19 @@ class VerifyLinks
       old_page = IO.read( cache + "/#{old_t}.html")
     end
 
-    while File.exist?( cache + "/#{t}.html")
+    while File.exist?( cache + "/#{rec[:timestamp]}.html")
       sleep 1
-      t = Time.now.to_i
+      rec[:timestamp] = Time.now.to_i
     end
 
     # If OK save page to cache else to temp area
-    File.open( cache + "/#{t}.html", 'w') {|io| io.print body}
-    changed = (body.strip != old_page.strip)
+    File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
+    rec[:changed] = (body.strip != old_page.strip)
 
-    link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', comment, changed)
+    link.verified( rec)
+    #link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', comment, changed)
 
-    if ignore
+    if rec[:ignore]
       link.bind( -1)
     end
 

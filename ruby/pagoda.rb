@@ -218,7 +218,7 @@ class Pagoda
     end
 
     def comment?
-      @record[:comment]
+      @record[:comment] && (@record[:comment].strip != '')
     end
 
     def delete
@@ -297,17 +297,17 @@ class Pagoda
       @record[:valid] == 'Y'
     end
 
-    def verified( title, timestamp, valid, comment, changed)
+    def verified( rec)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
-      @record[:title]      = title
+      @record[:title]      = rec[:title]
       ot = @record[:orig_title]
-      ot = title if ot.nil? || (ot.strip == '')
+      ot = rec[:title] if ot.nil? || (ot.strip == '')
       @record[:orig_title] = ot
-      @record[:timestamp]  = timestamp
-      @record[:valid]      = valid
-      @record[:comment]    = comment
-      @record[:changed]    = changed ? 'Y' : @record[:changed]
+      @record[:timestamp]  = rec[:timestamp]
+      @record[:valid]      = rec[:valid] ? 'Y' : 'N'
+      @record[:comment]    = rec[:comment]
+      @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
       @owner.insert( 'link', @record)
       @owner.end_transaction
     end

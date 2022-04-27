@@ -12,7 +12,7 @@ Apple:
     - apple_store
 GOG:
   Store:
-    suffix: " on GOG.com"
+    - gog_store
 Google Play:
   Store:
     - google_play_store

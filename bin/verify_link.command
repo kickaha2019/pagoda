@@ -6,5 +6,5 @@ cd $0:h
 cd ..
 set PAGODA=`pwd`
 setenv PATH $PAGODA/ruby:$PATH
-#ruby ruby/verify_links.rb database 'https://apps.apple.com/app/id1586517737' ~/Caches/Pagoda/verified
-ruby ruby/verify_links.rb database 100 ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://www.gog.com/game/atom_rpg_trudograd' ~/Caches/Pagoda/verified
+#ruby ruby/verify_links.rb database 100 ~/Caches/Pagoda/verified
