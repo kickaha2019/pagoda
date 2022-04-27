@@ -1,0 +1,68 @@
+---
+tags:
+  Action:       ignore
+  Adventure:    accept
+  Arcade:       reject
+  Atmospheric:  ignore
+  Building:     ignore
+  "Card Game":  ignore
+  Chess:        reject
+  "Choices Matter": ignore
+  Classic:      ignore
+  Combat:       reject
+  Comedy:       ignore
+  CRPG:         accept
+  "Detective-mystery":  ignore
+  Dystopian:    ignore
+  Economic:     ignore
+  Educational:  ignore
+  Espionage:    ignore
+  Exploration:  ignore
+  FPP:          ignore
+  FPS:          reject
+  Fantasy:      ignore
+  Fighting:     reject
+  "Hidden Object":  reject
+  Historical:   ignore
+  Horror:       ignore
+  Isometric:    ignore
+  JRPG:         accept
+  Managerial:   ignore
+  Metroidvania: ignore
+  Modern:       ignore
+  Mystery:      ignore
+  Narrative:    ignore
+  Naval:        ignore
+  "Off-road":   ignore
+  "Open World": ignore
+  Pinball:      reject
+  Platformer:   reject
+  "Point-and-click":  ignore
+  "Post-apocalyptic": ignore
+  Programming:  ignore
+  Puzzle:       accept
+  Racing:       reject
+  Rally:        reject
+  "Real-time":  ignore
+  Roguelike:    ignore
+  "Role-playing": accept
+  Sandbox:      ignore
+  Science:      ignore
+  "Sci-fi":     ignore
+  "Shoot 'em Up": reject
+  Shooter:      reject
+  Simulation:   ignore
+  Soccer:       reject
+  Sports:       reject
+  Stealth:      ignore
+  "Story Rich": ignore
+  Strategy:     ignore
+  Survival:     ignore
+  TPP:          ignore
+  Tactical:     ignore
+  "Team sport": reject
+  Touring:      ignore
+  "Turn-based": ignore
+  "Turn-Based": ignore
+  "Virtual life": reject
+  "Visual Novel": accept
