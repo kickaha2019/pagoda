@@ -217,6 +217,10 @@ class Pagoda
       end
     end
 
+    def comment?
+      @record[:comment]
+    end
+
     def delete
       @owner.start_transaction
       @owner.delete( 'bind', :url, @record[:url])

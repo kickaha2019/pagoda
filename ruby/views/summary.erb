@@ -60,13 +60,13 @@ CHECKBOX
           c = counts[status]
           c[0] += 1
           c[1] += 1 if link_lost?(rec)
-          c[2] += 1 if rec.redirected?
+          c[2] += 1 if rec.comment?
 
-          if link_lost?(rec) || rec.redirected?
+          if link_lost?(rec) || rec.comment?
             c = counts['Flagged']
             c[0] += 1
             c[1] += 1 if link_lost?(rec)
-            c[2] += 1 if rec.redirected?
+            c[2] += 1 if rec.comment?
           end
         end
 

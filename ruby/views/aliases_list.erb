@@ -3,7 +3,7 @@
   <%=
     html = []
 
-    records = aliases_records( search)
+    records = aliases_records( '', search)
     current_page = page
     total_pages  = (records.size + 49) /  50
     current_page = 1 if total_pages < current_page

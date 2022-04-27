@@ -39,8 +39,8 @@ module Sinatra
       checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : true)
     end
 
-    def aliases_records( search)
-      games_records( search).select {|g| g.aliases.size > 0}
+    def aliases_records( aspect, search)
+      games_records( aspect, search).select {|g| g.aliases.size > 0}
     end
 
     def bind_id( link_rec)
