@@ -68,7 +68,6 @@ class GOG < DefaultSite
 	end
 
 	def filter( info, page, rec)
-		p ['filter1', rec]
 		tags  = info['tags']
 		found = ''
 
@@ -97,9 +96,7 @@ class GOG < DefaultSite
 			end
 		end
 
-		p ['filter2', rec]
 		found.scan( /"name":"([^"]*)"/) do |tag|
-			p [tag, tags[tag[0]]]
 			if tags[tag[0]] == 'reject'
 				rec[:ignore] = true
 			end

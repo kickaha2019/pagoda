@@ -38,6 +38,7 @@ tags:
   Pinball:      reject
   Platformer:   reject
   "Point-and-click":  ignore
+  "Point&Click":  ignore
   "Post-apocalyptic": ignore
   Programming:  ignore
   Puzzle:       accept

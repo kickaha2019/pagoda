@@ -35,11 +35,12 @@ BUTTON
 
   def write_container( title, name, io)
     io.puts <<"CONTAINER"
-<table class="frame">
-  <tr><td>Corner</td><td>Title</td><td>Corner</td></tr>
-  <tr><td>Side</td><td><div id="#{name}" class="container #{name}"></div></td><td>Side</td></tr>
-  <tr><td>Corner</td><td>Bottom</td><td>Corner</td></tr>
-</table>
+<div class="frame2">
+  <div class="frame1">
+    <div id="#{name}" class="container #{name}"></div>
+  </div>
+  <div class="title"><div></div><span>#{title}</span><div></div></div>
+</div>
 CONTAINER
   end
 
@@ -75,6 +76,7 @@ DROP
 <script>
 refresh();
 </script>
+</div>
 </body>
 </html>
 FOOTER
@@ -85,7 +87,15 @@ FOOTER
 <html>
 <head>
 <style>
+.page {margin-left: auto; margin-right: auto; width: 690px}
 .container {background: grey; width: 600px; min-height: 300px}
+.frame1 {padding: 20px; border: 5px solid blue}
+.frame2 {padding: 20px; margin-top: 10px; position: relative}
+.title {position: absolute; top: 15px; left: 45px; display: flex; width: 600px}
+.title div {background: blue; border-top: 5px solid white; border-bottom: 5px solid white; 
+            flex-grow: 1; height: 5px}
+.title span {font-size: 20px; color: blue; background: white; position: relative; top: -5px; left: 0px;
+             padding-left: 10px; padding-right: 10px}
 </style>
 <script>
 HEADER1
@@ -96,6 +106,7 @@ HEADER1
 </script>
 </head>
 <body>
+<div class="page">
 HEADER2
   end
 

@@ -43,6 +43,24 @@ module Sinatra
       games_records( aspect, search).select {|g| g.aliases.size > 0}
     end
 
+    def aspect_element( name, value)
+      html = []
+      colour, setting = 'white', '?'
+      if value == false
+        colour, setting = 'red', 'N'
+      end
+      if value == true
+        colour, setting = 'lime', 'Y'
+      end
+      html = <<"ASPECT_ELEMENT"
+<div id="d_#{name}" style="background: #{colour}" onselect="return false" onclick="change_aspect( '#{name}'); return false">  
+<span>#{name}</span>     
+<input id="i_#{name}" type="hidden" name="a_#{name}" value="#{setting}">
+</div>
+ASPECT_ELEMENT
+      html.gsub( />\s+</m, '><')
+    end
+
     def bind_id( link_rec)
       return nil if ! link_rec.bound?
       game_rec = link_rec.collation

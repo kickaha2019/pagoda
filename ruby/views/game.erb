@@ -40,6 +40,24 @@
         if (xhttp.responseText == '') {return;}
         document.getElementById("group").value = xhttp.responseText;
     }
+
+    function change_aspect( name) {
+        var del = document.getElementById("d_" + name);
+        var iel = document.getElementById("i_" + name);
+        var value = iel.value;
+        if (value == 'Y') {
+            iel.value = 'N';
+            del.style.backgroundColor = "red";
+        }
+        if (value == 'N') {
+            iel.value = '?';
+            del.style.backgroundColor = "white";
+        }
+        if (value == '?') {
+            iel.value = 'Y';
+            del.style.backgroundColor = "lime";
+        }
+    }
 </script>
 
 <%
@@ -106,10 +124,7 @@
           <%=
             html = []
             $pagoda.aspect_names do |aspect|
-              html << '<div>'
-              html << aspect
-              html << checkbox_element( "a_#{aspect}", @aspects[aspect])
-              html << '</div>'
+              html << aspect_element( "#{aspect}", @aspects[aspect])
             end
             html.join( "\n")
           %>

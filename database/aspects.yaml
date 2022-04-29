@@ -61,14 +61,10 @@ Platformer:
   index: 15
 Puzzle:
   index: 16
-Racing:
-  index: 17
 "Resource management":
   index: 18
 RPG:
   index: 19
-Shooter:
-  index: 20
 Simulation:
   index: 21
 Slider:

@@ -45,7 +45,14 @@ class Pagoda
 
     def aspects
       map = {}
-      @owner.get( 'aspect', :id, id).each {|rec| map[rec[:aspect]] = (rec[:flag] != 'N')}
+      @owner.get( 'aspect', :id, id).each do |rec|
+        f, a = rec[:flag], rec[:aspect]
+        if f == 'Y'
+          map[a] = true
+        elsif f == 'N'
+          map[a] = false
+        end
+      end
       map
     end
 
@@ -125,11 +132,6 @@ class Pagoda
     end
 
     def update( params)
-      old_aspects = {}
-      aspects.each_pair do |k,v|
-        old_aspects[k] = v unless v
-      end
-
       @owner.delete_name( name, id)
       aliases.each do |a|
         @owner.delete_name( a.name, id)
@@ -165,21 +167,20 @@ class Pagoda
       end
 
       @owner.aspect_names do |aspect|
-        if params["a_#{aspect}".to_sym]
-          old_aspects[aspect] = true
+        f = params["a_#{aspect}".to_sym]
+        if ['Y','N'].include?( f)
+          $pagoda.insert( 'aspect', {:id => id, :aspect => aspect, :flag => f})
         end
-      end
-
-      old_aspects.each_pair do |a,f|
-        $pagoda.insert( 'aspect', {:id => id, :aspect => a, :flag => (f ? 'Y' : 'N')})
       end
 
       os = official_site
       if params[:website] && (os != params[:website])
         @owner.delete( 'bind', :url, os)
         @owner.delete( 'link', :url, os)
-        @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
-        @owner.insert( 'bind', {:url => params[:website], :id => id})
+        if params[:website] != ''
+          @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
+          @owner.insert( 'bind', {:url => params[:website], :id => id})
+        end
       end
 
       @owner.end_transaction

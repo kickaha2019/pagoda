@@ -51,11 +51,12 @@ class VerifyLinks
   end
 
   def filter_gog_store( link, body, rec)
-    p ['filter_gog_store1', rec]
     if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
       rec[:title] = m[1]
+      if m1 = /^\-\d+% (.*)$/.match( rec[:title])
+        rec[:title] = m1[1]
+      end
       gog = get_site_class( 'GOG').new
-      p ['filter_gog_store2', rec]
       gog.filter( @gog_info, body, rec)
     else
       rec[:valid] = false
