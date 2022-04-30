@@ -41,7 +41,8 @@
         document.getElementById("group").value = xhttp.responseText;
     }
 
-    function change_aspect( name) {
+    function change_aspect( event, name) {
+        event.preventDefault();
         var del = document.getElementById("d_" + name);
         var iel = document.getElementById("i_" + name);
         var value = iel.value;

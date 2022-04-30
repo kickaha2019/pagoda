@@ -178,7 +178,7 @@ class VerifyLinks
         (/^http(s|):/ =~ response['Location'])
 
       # Regard as redirected unless temporary redirect
-      comment = 'Redirected' if response.code != '302'
+      comment = 'Redirected to ' + response['Location'] if response.code != '302'
       #p ['http_get_with_redirect2', url, redirected, response.code]
 
       status, comment1, response = http_get_with_redirect( response['Location'], depth+1)
@@ -213,6 +213,7 @@ class VerifyLinks
         io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
       end
     end
+    #raise 'Dev'
 
     links.shuffle.each {|rec| yield rec}
   end

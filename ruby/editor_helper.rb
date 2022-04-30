@@ -53,7 +53,7 @@ module Sinatra
         colour, setting = 'lime', 'Y'
       end
       html = <<"ASPECT_ELEMENT"
-<div id="d_#{name}" style="background: #{colour}" onselect="return false" onclick="change_aspect( '#{name}'); return false">  
+<div id="d_#{name}" style="background: #{colour}" onclick="change_aspect( event, '#{name}')">  
 <span>#{name}</span>     
 <input id="i_#{name}" type="hidden" name="a_#{name}" value="#{setting}">
 </div>

@@ -57,12 +57,12 @@ MMORPG:
   index: 27
 Physics:
   index: 14
-Platformer:
-  index: 15
 Puzzle:
   index: 16
 "Resource management":
   index: 18
+Roguelike:
+  index: 17
 RPG:
   index: 19
 Simulation:

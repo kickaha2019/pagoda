@@ -80,7 +80,7 @@ class Pagoda
       flagged = aspects
       known = @owner.aspect_names
       return false unless flagged['Adventure']
-      ['Action','HOG','Physics','Platformer','Stealth','Visual novel','VR'].each do |unwanted|
+      ['Action','HOG','Physics','Roguelike','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
         return false if flagged[unwanted]
       end

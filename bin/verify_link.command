@@ -14,5 +14,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://www.uhs-hints.com/uhsweb/vampyre.php
 # http://www.gameboomers.com/reviews/Gg/AGoldenWake/AGoldenWake.htm
 
-ruby ruby/verify_links.rb database 'https://www.gog.com/game/elite_warriors_vietnam' ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://www.gog.com/game/blake_stone_planet_strike' ~/Caches/Pagoda/verified
 #ruby ruby/verify_links.rb database 100 ~/Caches/Pagoda/verified

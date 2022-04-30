@@ -37,7 +37,8 @@ BUTTON
     io.puts <<"CONTAINER"
 <div class="frame2">
   <div class="frame1">
-    <div id="#{name}" class="container #{name}"></div>
+    <div id="#{name}" class="container #{name}" 
+         ondragover="event.preventDefault()" ondrop="drop(event)"></div>
   </div>
   <div class="title"><div></div><span>#{title}</span><div></div></div>
 </div>
@@ -46,7 +47,7 @@ CONTAINER
 
   def write_drag_script( io)
     io.puts <<"DRAG"
-function drag(ev) {
+function drag(ev,index) {
     ev.dataTransfer.setData("index", index);
 }
 DRAG
@@ -59,10 +60,10 @@ function drop(ev) {
     var index = ev.dataTransfer.getData("index");
     var flag = '';
     var className = ev.target.className;
-    if ( className.test( "include") ) {
+    if ( className.includes( "include") ) {
       flag = "Y";
     }
-    if ( className.test( "exclude") ) {
+    if ( className.includes( "exclude") ) {
       flag = "N";
     }
     window.localStorage.setItem( "pagoda.aspect." + index, flag);
@@ -96,6 +97,8 @@ FOOTER
             flex-grow: 1; height: 5px}
 .title span {font-size: 20px; color: blue; background: white; position: relative; top: -5px; left: 0px;
              padding-left: 10px; padding-right: 10px}
+.button {display: inline-block; border: 1px solid black; border-radius: 5px; background: cyan; font-size: 18px;
+         margin: 3px;}
 </style>
 <script>
 HEADER1
@@ -149,7 +152,7 @@ REFRESH1
   var included_box = document.getElementById( "include");
   included_box.innerHTML = contents.included;
   var unused_box = document.getElementById( "unused");
-  unused_box.innerHTML = contents.inactive;
+  unused_box.innerHTML = contents.unused;
 }
 REFRESH2
   end
