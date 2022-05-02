@@ -60,4 +60,8 @@ class Steam < DefaultSite
 			end
 		end
 	end
+
+	def name
+		'Steam'
+	end
 end

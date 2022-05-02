@@ -8,7 +8,6 @@ require_relative 'sites/default_site'
 
 module Common
 	@@throttling    = Hash.new {|h,k| h[k] = 0}
-	@@site_classes  = {}
 	@@old_redirects = {}
 	@@new_redirects = {}
 
@@ -17,19 +16,6 @@ module Common
 		@driver.navigate.to url
 		sleep 15
 		@driver.execute_script('return document.documentElement.outerHTML;')
-	end
-
-	def get_site_class( name)
-		name = 'IOS' if name == 'iOS'
-		unless @@site_classes[name]
-      begin
-  			require_relative "sites/#{name.gsub( ' ', '_').downcase}"
-	  		@@site_classes[name] = Kernel.const_get( name.gsub( ' ', ''))
-      rescue LoadError
-        @@site_classes[name] = DefaultSite
-      end
-		end
-		@@site_classes[name]
 	end
 
 	def html_links( url)

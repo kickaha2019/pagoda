@@ -1,6 +1,6 @@
 require_relative 'default_site'
 
-class GOG < DefaultSite
+class Gog < DefaultSite
 	def extract_card_product( html)
 		html.split("\n").each do |line|
 			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)

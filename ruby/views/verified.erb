@@ -3,9 +3,9 @@
 <div class="combos control">
   <%=
     html = []
-    @chosen_site   = link_site_combo( 'site', site, type, status, html)
-    @chosen_type   = link_type_combo( 'type',   @chosen_site, type, status, html)
-    @chosen_status = link_status_combo( 'status', @chosen_site, @chosen_type, status, html)
+    @chosen_site   = link_site_combo( 'verified', 'site', site, type, status, html)
+    @chosen_type   = link_type_combo( 'verified', 'type',   @chosen_site, type, status, html)
+    @chosen_status = link_status_combo( 'verified', 'status', @chosen_site, @chosen_type, status, html)
     html.join( "&nbsp;&nbsp;\n")
   %>
 </div>
@@ -15,10 +15,10 @@
   <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
       url = "/verified?search=#{e(search)}"
-      erb :page_control, :locals => {:view => 'aliases',
+      erb :page_control, :locals => {:view => 'link',
                                      :page => page,
                                      :url  => url,
-                                     :args => ['', search]}
+                                     :args => [@chosen_site, @chosen_type, @chosen_status, search]}
   %>&nbsp;&nbsp;
 </div>
 

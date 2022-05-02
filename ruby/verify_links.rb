@@ -56,7 +56,7 @@ class VerifyLinks
       if m1 = /^\-\d+% (.*)$/.match( rec[:title])
         rec[:title] = m1[1]
       end
-      gog = get_site_class( 'GOG').new
+      gog = @pagoda.get_site_handler( 'GOG')
       gog.filter( @gog_info, body, rec)
     else
       rec[:valid] = false

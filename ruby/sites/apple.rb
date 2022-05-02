@@ -114,6 +114,10 @@ class Apple < DefaultSite
     m
   end
 
+  def name
+    'Apple'
+  end
+
   def refresh_cache( searcher, section, letter)
     path = get_cache_path( searcher, section, letter)
 

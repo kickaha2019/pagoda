@@ -66,9 +66,11 @@ class Pagoda
         @owner.delete_name( a.name, id)
       end
       @owner.start_transaction
-      @owner.delete( 'game',    :id, id)
-      @owner.delete( 'alias',   :id, id)
-      @owner.delete( 'bind',    :id, id)
+      @owner.delete( 'game',           :id,   id)
+      @owner.delete( 'alias',          :id,   id)
+      @owner.delete( 'bind',           :id,   id)
+      @owner.delete( 'aspect',         :id,   id)
+      @owner.delete( 'aspect_suggest', :game, id)
       @owner.end_transaction
     end
 
@@ -346,6 +348,8 @@ class Pagoda
     @reductions            = {}
     @aspect_info_timestamp = 0
     refresh_reduction_cache
+
+    load_site_handlers
   end
 
   def aliases
@@ -437,6 +441,11 @@ class Pagoda
     links {|link| link.generate?}
   end
 
+  def get_site_handler( site)
+    raise "No handler for #{site}" unless @site_handlers[site]
+    @site_handlers[site]
+  end
+
   def link( url)
     PagodaLink.new( self, get( 'link', :url, url)[0])
   end
@@ -448,6 +457,18 @@ class Pagoda
       selected << s if (! block_given?) || (yield s)
     end
     selected
+  end
+
+  def load_site_handlers
+    @site_handlers = {}
+    dir = File.dirname( self.method( :load_site_handlers).source_location[0])
+    Dir.new( dir + '/sites').entries.each do |f|
+      if m = /^(.*).rb$/.match( f)
+        require( dir + '/sites/' + f)
+        handler = Kernel.const_get( m[1].split('_').collect {|w| w.capitalize}.join( '')).new
+        @site_handlers[ handler.name] = handler
+      end
+    end
   end
 
   # def reverify( url)

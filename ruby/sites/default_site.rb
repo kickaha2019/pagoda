@@ -8,4 +8,8 @@ class DefaultSite
 
   def get_game_details( url, page, game)
   end
+
+  def name
+    'Website'
+  end
 end

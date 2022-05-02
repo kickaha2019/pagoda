@@ -96,7 +96,7 @@ class Spider
 			puts "*** Full scan for site: #{@site} type: #{@type}"
 			before = @pagoda.count( 'link')
 			start = Time.now.to_i
-			get_site_class( @site).new.send( scan['method'].to_sym, self)
+			@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
 			added = @pagoda.count( 'link') - before
 			puts "... #{added} links added" if added > 0
 			puts "... Time taken #{Time.now.to_i - start} seconds"
@@ -123,7 +123,7 @@ class Spider
 
 			puts "*** Incremental scan for site: #{@site} type: #{@type}"
 			start = Time.now.to_i
-			added = get_site_class( @site).new.send( scan['method'].to_sym, self)
+			added = @pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
 			puts "... #{added} links added" if added > 0
 			puts "... Time taken #{Time.now.to_i - start} seconds"
 			STDOUT.flush

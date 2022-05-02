@@ -23,7 +23,7 @@ module Sinatra
         else
           page = http_get( link_url)
         end
-        get_site_class( link_rec.site).new.get_game_details( link_url, page, g)
+        $pagoda.get_site_handler( link_rec.site).get_game_details( link_url, page, g)
         $pagoda.create_game( g)
         link_rec.bind( g[:id])
         "/game/#{g[:id]}"
@@ -259,13 +259,13 @@ ASPECT_ELEMENT
       (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
     end
 
-    def link_site_combo( combo_name, current_site, current_type, current_status, html)
+    def link_site_combo( view, combo_name, current_site, current_type, current_status, html)
       values = $pagoda.links.collect {|s| s.site}.uniq.sort
       values << 'All'
       unless values.index( current_site)
         current_site = 'All'
       end
-      base_url = "/links?status=#{current_status}&type=#{current_type}&site="
+      base_url = "/#{view}?status=#{current_status}&type=#{current_type}&site="
       combo_box( combo_name, values, current_site, base_url, html)
       current_site
     end
@@ -274,7 +274,7 @@ ASPECT_ELEMENT
       rec.status
     end
 
-    def link_status_combo( combo_name, current_site, current_type, current_status, html)
+    def link_status_combo( view, combo_name, current_site, current_type, current_status, html)
       values = []
       $pagoda.links do |rec|
         next unless (current_site == 'All') || (current_site == rec.site)
@@ -287,12 +287,12 @@ ASPECT_ELEMENT
       unless values.index( current_status)
         current_status = 'All'
       end
-      base_url = "/links?site=#{current_site}&type=#{current_type}&status="
+      base_url = "/#{view}?site=#{current_site}&type=#{current_type}&status="
       combo_box( combo_name, values, current_status, base_url, html)
       current_status
     end
 
-    def link_type_combo( combo_name, current_site, current_type, current_status, html)
+    def link_type_combo( view, combo_name, current_site, current_type, current_status, html)
       types = []
       $pagoda.links do |rec|
         next unless (current_site == 'All') || (current_site == rec.site)
@@ -303,7 +303,7 @@ ASPECT_ELEMENT
       unless types.index( current_type)
         current_type = 'All'
       end
-      base_url = "/links?site=#{current_site}&status=#{current_status}&type="
+      base_url = "/#{view}?site=#{current_site}&status=#{current_status}&type="
       combo_box( combo_name, types, current_type, base_url, html)
       current_type
     end

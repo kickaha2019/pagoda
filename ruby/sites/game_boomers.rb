@@ -14,4 +14,8 @@ class GameBoomers < DefaultSite
 	def get_game_description( page)
 		page
 	end
+
+	def name
+		'GameBoomers'
+	end
 end

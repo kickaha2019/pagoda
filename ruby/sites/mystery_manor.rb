@@ -14,4 +14,8 @@ class MysteryManor < DefaultSite
 	def get_game_description( page)
 		page
 	end
+
+	def name
+		'Mystery Manor'
+	end
 end

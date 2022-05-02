@@ -64,4 +64,8 @@ class MobyGames < DefaultSite
 			end
 		end
 	end
+
+	def name
+		'MobyGames'
+	end
 end

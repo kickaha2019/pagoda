@@ -94,4 +94,8 @@ class Reddit
 
 		JSON.parse( IO.read( path))
 	end
+
+	def name
+		'Reddit'
+	end
 end

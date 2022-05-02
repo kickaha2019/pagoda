@@ -28,7 +28,7 @@ class SuggestAspects
   def get_page( site_name, timestamp)
     page = IO.read( "#{@cache}/verified/#{timestamp}.html")
 
-    site = get_site_class( site_name).new
+    site = @pagoda.get_site_handler( site_name)
     #p ['get_page1', site_name, timestamp]
     page = site.get_game_description( page)
 

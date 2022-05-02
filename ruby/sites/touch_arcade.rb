@@ -60,4 +60,8 @@ class TouchArcade < DefaultSite
 			end
 		end
 	end
+
+  def name
+    'TouchArcade'
+  end
 end

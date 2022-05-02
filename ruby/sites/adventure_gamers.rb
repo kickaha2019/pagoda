@@ -67,4 +67,8 @@ class AdventureGamers < DefaultSite
 			end
 		end
 	end
+
+  def name
+    'Adventure Gamers'
+  end
 end
