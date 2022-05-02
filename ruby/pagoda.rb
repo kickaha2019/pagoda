@@ -349,6 +349,7 @@ class Pagoda
     @aspect_info_timestamp = 0
     refresh_reduction_cache
 
+    @cached_yaml = {}
     load_site_handlers
   end
 
@@ -444,6 +445,13 @@ class Pagoda
   def get_site_handler( site)
     raise "No handler for #{site}" unless @site_handlers[site]
     @site_handlers[site]
+  end
+
+  def get_yaml( f)
+    unless @cached_yaml[f]
+      @cached_yaml[f] = YAML.load( IO.read( @dir + '/' + f))
+    end
+    @cached_yaml[f]
   end
 
   def link( url)

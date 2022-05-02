@@ -1,6 +1,6 @@
 require_relative 'default_site'
 
-class Gog < DefaultSite
+class GoodOldGames < DefaultSite
 	def extract_card_product( html)
 		html.split("\n").each do |line|
 			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)
@@ -50,24 +50,19 @@ class Gog < DefaultSite
 		# scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
 	end
 
-	def get_game_description( page)
-		if info = extract_card_product( page)
-			info['description'] + ' ' + info['tags'].collect {|tag| tag['slug']}.join( ' ')
+	def filter( pagoda, link, page, rec)
+		if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
+			rec[:title] = m[1]
+			if m1 = /^\-\d+% (.*)$/.match( rec[:title])
+				rec[:title] = m1[1]
+			end
 		else
-			''
+			rec[:valid]   = false
+			rec[:comment] = 'Unexpected title'
+			return false
 		end
-	end
 
-	def get_game_details( url, page, game)
-		if info = extract_card_product( page)
-			game[:name]      = info['title']
-			game[:publisher] = info['publisher']
-			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ') if info['developers']
-			game[:year]      = info['globalReleaseDate'][0..3] if info['globalReleaseDate']
-		end
-	end
-
-	def filter( info, page, rec)
+		info = pagoda.get_yaml( 'gog.yaml')
 		tags  = info['tags']
 		found = ''
 
@@ -105,6 +100,23 @@ class Gog < DefaultSite
 		true
 	end
 
+	def get_game_description( page)
+		if info = extract_card_product( page)
+			info['description'] + ' ' + info['tags'].collect {|tag| tag['slug']}.join( ' ')
+		else
+			''
+		end
+	end
+
+	def get_game_details( url, page, game)
+		if info = extract_card_product( page)
+			game[:name]      = info['title']
+			game[:publisher] = info['publisher']
+			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ') if info['developers']
+			game[:year]      = info['globalReleaseDate'][0..3] if info['globalReleaseDate']
+		end
+	end
+
 	def incremental( scanner)
 		# puts "*** Awaiting full scan to be done"
 		# return
@@ -130,5 +142,9 @@ class Gog < DefaultSite
 		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
 		# end
 		# added
+	end
+
+	def name
+		'GOG'
 	end
 end

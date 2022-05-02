@@ -21,77 +21,6 @@ class VerifyLinks
 
   def initialize( dir)
     @pagoda   = Pagoda.new( dir)
-    @filters  = YAML.load( IO.read( dir + '/verify_links.yaml'))
-    @gog_info = YAML.load( IO.read( dir + '/gog.yaml'))
-  end
-
-  def apply_filter( filter, link, body, rec)
-    args = []
-
-    if filter.is_a?( String)
-      name = filter
-    else
-      raise 'Unexpected filters' if filter.size != 1
-      name = filter.keys[0]
-      args = filter.values[0]
-      args = [args] unless args.is_a?( Array)
-    end
-
-    send( ('filter_' + name).to_sym, link, body, rec, * args)
-  end
-
-  def filter_apple_store( link, body, rec)
-    if m = /^(.*) on the App Store$/.match( rec[:title].strip)
-      rec[:title] = m[1]
-      true
-    else
-      rec[:valid] = false
-      false
-    end
-  end
-
-  def filter_gog_store( link, body, rec)
-    if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
-      rec[:title] = m[1]
-      if m1 = /^\-\d+% (.*)$/.match( rec[:title])
-        rec[:title] = m1[1]
-      end
-      gog = @pagoda.get_site_handler( 'GOG')
-      gog.filter( @gog_info, body, rec)
-    else
-      rec[:valid] = false
-      false
-    end
-  end
-
-  def filter_google_play_store( link, body, rec)
-    return true if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
-    rec[:valid] = false
-    return true if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
-    false
-  end
-
-  def filter_steam_store( link, body, rec)
-    if m = /^(.*) on Steam$/.match( rec[:title].strip)
-      rec[:title] = m[1]
-      return true
-    end
-    return true if /\/agecheck\/app\//  =~ link.url
-    return true if /^Site Error$/       =~ rec[:title]
-    return true if /^Welcome to Steam$/ =~ rec[:title]
-    rec[:valid] = false
-    false
-  end
-
-  def filter_suffix( link, body, rec, suffix)
-    re = Regexp.new( '^(.*)' + suffix + '.*$')
-    if m = re.match( rec[:title])
-      rec[:title] = m[1]
-      true
-    else
-      rec[:valid] = false
-      false
-    end
   end
 
   def get_details( link, body, rec)
@@ -112,18 +41,8 @@ class VerifyLinks
       return false
     end
 
-    # Apply site specific filters
-    if site = @filters[link.site]
-      if filters = site[link.type]
-        filters = [filters] unless filters.is_a?( Array)
-        filters.each do |filter|
-          status = apply_filter( filter, link, body, rec)
-          break unless rec[:valid] && status
-        end
-      end
-    end
-
-    return status
+    # Apply site specific filter
+    @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
   end
 
   def get_title( page, defval)

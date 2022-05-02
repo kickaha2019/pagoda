@@ -14,6 +14,16 @@ class AdventureGamers < DefaultSite
 		end
 	end
 
+	def filter( pagoda, link, page, rec)
+		if m = /^(.*)- review | Adventure Gamers/.match( rec[:title].strip)
+			rec[:title] = m[1].strip
+			true
+		else
+			rec[:valid] = false
+			false
+		end
+	end
+
 	def get_game_description( page)
 		inside, text = false, []
 		page.split( "\n").each do |line|

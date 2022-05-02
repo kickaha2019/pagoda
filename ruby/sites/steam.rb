@@ -28,6 +28,18 @@ class Steam < DefaultSite
 		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
 	end
 
+	def filter( pagoda, link, page, rec)
+		if m = /^(.*) on Steam$/.match( rec[:title].strip)
+			rec[:title] = m[1]
+			return true
+		end
+		return true if /\/agecheck\/app\//  =~ link.url
+		return true if /^Site Error$/       =~ rec[:title]
+		return true if /^Welcome to Steam$/ =~ rec[:title]
+		rec[:valid] = false
+		false
+	end
+
 	def get_game_description( page)
 		page.scan( Regexp.new( /<a href="https:\/\/store.steampowered.com\/tags\/en\/[^<]*<\/a>/m)).join( ' ')
 	end

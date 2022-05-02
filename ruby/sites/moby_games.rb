@@ -32,6 +32,16 @@ class MobyGames < DefaultSite
 		end
 	end
 
+	def filter( pagoda, link, page, rec)
+		if m = /^(.*)- MobyGames/.match( rec[:title].strip)
+			rec[:title] = m[1].strip
+			true
+		else
+			rec[:valid] = false
+			false
+		end
+	end
+
 	def get_game_description( page)
 		page
 	end

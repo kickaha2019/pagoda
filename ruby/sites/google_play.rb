@@ -23,6 +23,13 @@ class GooglePlay < DefaultSite
 		scanner.purge_lost_urls( /^https:\/\/play\.google\.com\//)
 	end
 
+	def filter( pagoda, link, page, rec)
+		return true if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ body
+		rec[:valid] = false
+		return true if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ body
+		false
+	end
+
 	def get_game_description( page)
 		''
 	end

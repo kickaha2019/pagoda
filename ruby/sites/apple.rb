@@ -22,6 +22,16 @@ class Apple < DefaultSite
     false
   end
 
+  def filter( pagoda, link, page, rec)
+    if m = /^(.*) on the App Store$/.match( rec[:title].strip)
+      rec[:title] = m[1]
+      true
+    else
+      rec[:valid] = false
+      false
+    end
+  end
+
   def full( scanner)
     scanner.link_page_anchors( 'TouchArcade') do |game, url, text|
       if text.downcase == 'buy now'
