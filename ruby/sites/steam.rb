@@ -14,23 +14,46 @@ class Steam < DefaultSite
 			end
 		end
 
-		raw = JSON.parse( IO.read( path))['applist']['apps']
-		raw.each do |record|
-			text = record['name']
-			text.force_encoding( 'UTF-8')
-			text.encode!( 'US-ASCII',
-										:invalid => :replace, :undef => :replace, :universal_newline => true)
-			url = "https://store.steampowered.com/app/#{record['appid']}"
-			scanner.suggest_link( text, url)
-			scanner.debug_hook( 'Steam:urls', text, url)
-		end
-
-		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
+		# raw = JSON.parse( IO.read( path))['applist']['apps']
+		# raw.each do |record|
+		# 	text = record['name']
+		# 	text.force_encoding( 'UTF-8')
+		# 	text.encode!( 'US-ASCII',
+		# 								:invalid => :replace, :undef => :replace, :universal_newline => true)
+		# 	url = "https://store.steampowered.com/app/#{record['appid']}"
+		# 	scanner.suggest_link( text, url)
+		# 	scanner.debug_hook( 'Steam:urls', text, url)
+		# end
+		#
+		# scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
 	end
 
 	def filter( pagoda, link, page, rec)
 		if m = /^(.*) on Steam$/.match( rec[:title].strip)
 			rec[:title] = m[1]
+
+			tags = get_tags( page)
+			if tags.size > 0
+				tag_info = pagoda.get_yaml( 'steam.yaml')['tags']
+				rec[:ignore] = true
+
+				tags.each do |tag|
+					if tag_info[tag] == 'accept'
+						rec[:ignore] = false
+					elsif tag_info[tag].nil?
+						rec[:valid]   = false
+						rec[:comment] = 'Unknown tag: ' + tag
+						return false
+					end
+				end
+
+				tags.each do |tag|
+					if tag_info[tag] == 'reject'
+						rec[:ignore] = true
+					end
+				end
+			end
+
 			return true
 		end
 		return true if /\/agecheck\/app\//  =~ link.url
@@ -41,7 +64,7 @@ class Steam < DefaultSite
 	end
 
 	def get_game_description( page)
-		page.scan( Regexp.new( /<a href="https:\/\/store.steampowered.com\/tags\/en\/[^<]*<\/a>/m)).join( ' ')
+		get_tags( page).join( ' ')
 	end
 
 	def get_game_details( url, page, game)
@@ -71,6 +94,34 @@ class Steam < DefaultSite
 				publisher, developer, release = false, false, false
 			end
 		end
+	end
+
+	def get_tags( page)
+		tags = []
+		page.scan( /<a\s+href="https:\/\/store.steampowered.com\/tags\/en\/[^>]*>([^<]*)</) do |tag|
+			tags << tag[0].strip
+		end
+		tags
+	end
+
+	def incremental( scanner)
+		path  = scanner.cache + '/steam.json'
+		raw   = JSON.parse( IO.read( path))['applist']['apps']
+		count = 0
+
+		raw.each do |record|
+			text = record['name']
+			text.force_encoding( 'UTF-8')
+			text.encode!( 'US-ASCII',
+										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			url = "https://store.steampowered.com/app/#{record['appid']}"
+			scanner.debug_hook( 'Steam:urls', text, url)
+			count += scanner.add_link( text, url)
+
+			break if count >= 10
+		end
+
+		count
 	end
 
 	def name

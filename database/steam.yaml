@@ -1,0 +1,400 @@
+---
+tags:
+  Exploration: ignore
+  Walking Simulator: ignore
+  Female Protagonist: ignore
+  3D: ignore
+  Third Person: ignore
+  VR: ignore
+  LGBTQ+: ignore
+  Story Rich: ignore
+  Cute: ignore
+  Relaxing: ignore
+  Stylized: ignore
+  Family Friendly: ignore
+  Atmospheric: ignore
+  Emotional: ignore
+  Adventure: accept
+  Nature: ignore
+  Singleplayer: ignore
+  Indie: ignore
+  Narrative: ignore
+  Short: ignore
+  Dinosaurs: ignore
+  Quick-Time Events: ignore
+  Point &amp; Click: ignore
+  Action: ignore
+  Episodic: ignore
+  Movie: ignore
+  Sci-fi: ignore
+  Horror: ignore
+  Survival: ignore
+  Open World: ignore
+  Casual: ignore
+  Simulation: ignore
+  Puzzle: accept
+  Puzzle Platformer: reject
+  Platformer: reject
+  Visual Novel: ignore
+  2D: ignore
+  Pixel Graphics: ignore
+  Anime: ignore
+  Colorful: ignore
+  Thriller: ignore
+  Logic: ignore
+  Mystery: ignore
+  Great Soundtrack: ignore
+  Violent: ignore
+  Surreal: ignore
+  Minimalist: ignore
+  First-Person: ignore
+  Beautiful: ignore
+  Music: ignore
+  Dark: ignore
+  3D Platformer: reject
+  Physics: ignore
+  Experience: ignore
+  Psychological Horror: ignore
+  Gore: ignore
+  Demons: ignore
+  Psychological: ignore
+  Mature: ignore
+  Narration: ignore
+  Fantasy: ignore
+  Touch-Friendly: ignore
+  Retro: ignore
+  Interactive Fiction: reject
+  Text-Based: reject
+  Choices Matter: ignore
+  Multiple Endings: ignore
+  Crime: ignore
+  Drama: ignore
+  RPG: accept
+  Modern: ignore
+  Philosophical: ignore
+  Historical: ignore
+  Experimental: ignore
+  Strategy: ignore
+  Free to Play: ignore
+  Farming Sim: ignore
+  Mars: ignore
+  Management: ignore
+  Sexual Content: ignore
+  Nudity: ignore
+  Romance: ignore
+  Comedy: ignore
+  Time Travel: ignore
+  Cartoony: ignore
+  Hand-drawn: ignore
+  1990's: ignore
+  Conversation: ignore
+  Conspiracy: ignore
+  Cats: ignore
+  Dark Humor: ignore
+  Robots: ignore
+  Arcade: reject
+  Co-op: ignore
+  Roguelite: ignore
+  4 Player Local: ignore
+  Loot: ignore
+  Abstract: ignore
+  Local Co-Op: ignore
+  Cartoon: ignore
+  Top-Down: ignore
+  Multiplayer: ignore
+  Level Editor: ignore
+  Hidden Object: reject
+  Lovecraftian: ignore
+  Survival Horror: ignore
+  Investigation: ignore
+  Detective: ignore
+  Escape Room: ignore
+  Underwater: ignore
+  Education: ignore
+  Science: ignore
+  Kickstarter: ignore
+  Funny: ignore
+  2D Platformer: ignore
+  Dark Comedy: ignore
+  Post-apocalyptic: ignore
+  Cinematic: ignore
+  Metroidvania: ignore
+  Difficult: ignore
+  Side Scroller: ignore
+  Tower Defense: ignore
+  Replay Value: ignore
+  Addictive: ignore
+  Building: ignore
+  Shooter: reject
+  Bullet Hell: reject
+  Shoot 'Em Up: ignore
+  Time Management: ignore
+  Futuristic: ignore
+  Space: ignore
+  Bullet Time: ignore
+  Controller: ignore
+  Time Manipulation: ignore
+  Tutorial: ignore
+  Turn-Based: ignore
+  Online Co-Op: ignore
+  Party-Based RPG: accept
+  Tabletop: ignore
+  Software: ignore
+  Hacking: ignore
+  Cyberpunk: ignore
+  Programming: ignore
+  Heist: ignore
+  Immersive Sim: ignore
+  Typing: ignore
+  Magic: ignore
+  Old School: ignore
+  Fighting: reject
+  Action-Adventure: reject
+  Co-op Campaign: ignore
+  Linear: ignore
+  Immersive: ignore
+  Steampunk: ignore
+  PvE: ignore
+  Early Access: ignore
+  Zombies: ignore
+  Mythology: ignore
+  Supernatural: ignore
+  Psychedelic: ignore
+  Minigames: ignore
+  Dark Fantasy: ignore
+  FPS: reject
+  Ninja: ignore
+  Fast-Paced: ignore
+  Match 3: reject
+  Turn-Based Tactics: ignore
+  Card Game: ignore
+  Medieval: ignore
+  Card Battler: ignore
+  Turn-Based Strategy: ignore
+  Deckbuilding: ignore
+  Turn-Based Combat: ignore
+  Tactical: ignore
+  Combat: reject
+  Grid-Based Movement: ignore
+  Stealth: ignore
+  2.5D: ignore
+  Destruction: ignore
+  War: ignore
+  World War II: ignore
+  Rhythm: ignore
+  Classic: ignore
+  Sandbox: ignore
+  Utilities: ignore
+  Game Development: ignore
+  Dungeons &amp; Dragons: ignore
+  Open World Survival Craft: ignore
+  Procedural Generation: ignore
+  Crafting: ignore
+  Inventory Management: ignore
+  Realistic: ignore
+  World War I: ignore
+  RPGMaker: ignore
+  Comic Book: ignore
+  Dog: ignore
+  Soundtrack: ignore
+  Noir: ignore
+  6DOF: ignore
+  Dynamic Narration: ignore
+  Character Action Game: ignore
+  Choose Your Own Adventure: ignore
+  Collectathon: ignore
+  Benchmark: ignore
+  Dystopian: ignore
+  Action RPG: reject
+  Action Roguelike: reject
+  Hack and Slash: reject
+  Agriculture: ignore
+  Fishing: ignore
+  Life Sim: ignore
+  City Builder: ignore
+  America: ignore
+  Racing: ignore
+  Political Sim: ignore
+  Political: ignore
+  Lore-Rich: ignore
+  Gambling: ignore
+  PvP: ignore
+  3D Vision: ignore
+  Steam Machine: ignore
+  Tactical RPG: accept
+  Strategy RPG: accept
+  Wargame: ignore
+  Hex Grid: ignore
+  Character Customization: ignore
+  Team-Based: ignore
+  Class-Based: ignore
+  Based On A Novel: ignore
+  Cold War: ignore
+  Skating: reject
+  Skateboarding: reject
+  Sports: reject
+  Combat Racing: reject
+  Split Screen: ignore
+  Vehicular Combat: ignore
+  Third-Person Shooter: reject
+  Superhero: ignore
+  Aliens: ignore
+  Transhumanism: ignore
+  Cooking: ignore
+  Alternate History: ignore
+  Basketball: reject
+  eSports: reject
+  Trading: ignore
+  Local Multiplayer: ignore
+  Dragons: ignore
+  Sequel: ignore
+  Clicker: ignore
+  Artificial Intelligence: ignore
+  Precision Platformer: reject
+  Hero Shooter: reject
+  Perma Death: ignore
+  Runner: reject
+  Parkour: ignore
+  Score Attack: ignore
+  LEGO: ignore
+  Memes: ignore
+  Gothic: ignore
+  Nonlinear: ignore
+  Assassin: ignore
+  Space Sim: ignore
+  Top-Down Shooter: reject
+  Asymmetric VR: ignore
+  Asynchronous Multiplayer: ignore
+  RTS: reject
+  Action RTS: reject
+  Dating Sim: ignore
+  JRPG: accept
+  Dungeon Crawler: ignore
+  Flight: reject
+  3D Fighter: reject
+  Arena Shooter: reject
+  Isometric: ignore
+  Design &amp; Illustration: ignore
+  Souls-like: ignore
+  Pirates: ignore
+  1980s: ignore
+  Creature Collector: ignore
+  Sokoban: ignore
+  Otome: ignore
+  Board Game: ignore
+  2D Fighter: reject
+  Beat 'em up: reject
+  Satire: ignore
+  Parody: ignore
+  Massively Multiplayer: reject
+  MMORPG: reject
+  Spectacle fighter: ignore
+  CRPG: accept
+  Transportation: ignore
+  Resource Management: ignore
+  Military: ignore
+  Music-Based Procedural Generation: ignore
+  GameMaker: ignore
+  Real Time Tactics: reject
+  Economy: ignore
+  Jet: ignore
+  MOBA: ignore
+  Roguelike: ignore
+  Mystery Dungeon: ignore
+  Traditional Roguelike: ignore
+  God Game: ignore
+  Hentai: reject
+  NSFW: ignore
+  Time Attack: ignore
+  Web Publishing: ignore
+  Illuminati: ignore
+  Pinball: ignore
+  Idler: ignore
+  Driving: reject
+  Competitive: ignore
+  Trains: ignore
+  Mouse only: ignore
+  Auto Battler: reject
+  Battle Royale: reject
+  Remake: ignore
+  On-Rails Shooter: reject
+  Cult Classic: ignore
+  Twin Stick Shooter: reject
+  Swordplay: reject
+  Western: ignore
+  Snow: ignore
+  Hunting: ignore
+  Roguelike Deckbuilder: ignore
+  Automobile Sim: ignore
+  Moddable: ignore
+  Base Building: ignore
+  Colony Sim: ignore
+  Real-Time: reject
+  Unforgiving: ignore
+  4X: ignore
+  Soccer: reject
+  Real-Time with Pause: ignore
+  Mod: ignore
+  Mechs: ignore
+  Animation &amp; Modeling: ignore
+  Voxel: ignore
+  Diplomacy: ignore
+  Grand Strategy: ignore
+  Warhammer 40K: reject
+  Politics: ignore
+  Underground: ignore
+  Offroad: ignore
+  Mining: ignore
+  Boss Rush: ignore
+  Tennis: reject
+  Ambient: ignore
+  Social Deduction: ignore
+  Voice Control: ignore
+  Werewolves: ignore
+  Capitalism: ignore
+  Golf: reject
+  Video Production: ignore
+  Solitaire: ignore
+  Party Game: ignore
+  Party: ignore
+  Looter Shooter: reject
+  Football: reject
+  Bikes: reject
+  Motorbike: reject
+  Naval: ignore
+  Naval Combat: ignore
+  Horses: ignore
+  Tanks: ignore
+  Sailing: ignore
+  Trivia: ignore
+  Mini Golf: ignore
+  FMV: ignore
+  Nostalgia: ignore
+  Automation: ignore
+  Villain Protagonist: ignore
+  Intentionally Awkward Controls: ignore
+  Martial Arts: reject
+  Medical Sim: ignore
+  Trading Card Game: ignore
+  Blood: ignore
+  Vampire: ignore
+  Crowdfunded: ignore
+  Faith: ignore
+  Foreign: ignore
+  Documentary: ignore
+  Gun Customization: ignore
+  Well-Written: ignore
+  Word Game: ignore
+  Instrumental Music: ignore
+  Gaming: ignore
+  Epic: ignore
+  Electronic Music: ignore
+  Games Workshop: ignore
+  Archery: reject
+  Silent Protagonist: ignore
+  Software Training: ignore
+  Chess: ignore
+  Vikings: ignore
+  Spaceships: ignore
+  Rome: ignore
+  Audio Production: ignore

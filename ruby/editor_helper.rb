@@ -234,7 +234,7 @@ ASPECT_ELEMENT
     end
 
     def link_flagged?( rec)
-      link_lost?(rec) || rec.comment
+      link_lost?(rec) || rec.comment?
     end
 
     def link_records( site, type, status, search)

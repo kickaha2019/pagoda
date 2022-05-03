@@ -1,38 +1,55 @@
 ---
 tags:
+  "2D":         ignore
+  "4X":         reject
   Action:       ignore
   Adventure:    accept
   Arcade:       reject
   Atmospheric:  ignore
   Building:     ignore
   "Card Game":  ignore
+  Casual:       ignore
   Chess:        reject
   "Choices Matter": ignore
   Classic:      ignore
   Combat:       reject
   Comedy:       ignore
   CRPG:         accept
+  Dark:         ignore
   "Detective-mystery":  ignore
   Dystopian:    ignore
   Economic:     ignore
   Educational:  ignore
   Espionage:    ignore
   Exploration:  ignore
+  "First-Person": ignore
   FPP:          ignore
   FPS:          reject
   Fantasy:      ignore
+  "Female Protagonist": ignore
   Fighting:     reject
+  Flight:       ignore
+  FMV:          ignore
+  Funny:        ignore
+  "Good Old Game":  ignore
+  "Great Soundtrack": ignore
   "Hidden Object":  reject
   Historical:   ignore
   Horror:       ignore
+  Indie:        ignore
+  Investigation:  ignore
   Isometric:    ignore
   JRPG:         accept
+  Logic:        accept
+  Management:   ignore
   Managerial:   ignore
   Metroidvania: ignore
   Modern:       ignore
+  Multiplayer:  reject
   Mystery:      ignore
   Narrative:    ignore
   Naval:        ignore
+  Nudity:       ignore
   "Off-road":   ignore
   "Open World": ignore
   Pinball:      reject
@@ -47,9 +64,11 @@ tags:
   "Real-time":  ignore
   Roguelike:    ignore
   "Role-playing": accept
+  RTS:          reject
   Sandbox:      ignore
   Science:      ignore
   "Sci-fi":     ignore
+  "Sexual Content": ignore
   "Shoot 'em Up": reject
   Shooter:      reject
   Simulation:   ignore
@@ -59,11 +78,13 @@ tags:
   "Story Rich": ignore
   Strategy:     ignore
   Survival:     ignore
+  "Third Person": ignore
   TPP:          ignore
   Tactical:     ignore
   "Team sport": reject
   Touring:      ignore
   "Turn-based": ignore
   "Turn-Based": ignore
+  Violent:      ignore
   "Virtual life": reject
   "Visual Novel": accept
