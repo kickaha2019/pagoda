@@ -1,6 +1,11 @@
 require_relative 'default_site'
 
 class GoodOldGames < DefaultSite
+  def initialize
+    @info         = nil
+    @info_changed = 0
+  end
+
 	def extract_card_product( html)
 		html.split("\n").each do |line|
 			if m = /^\s*cardProduct: ({.*)\s*,\s*$/.match( line)
@@ -62,8 +67,8 @@ class GoodOldGames < DefaultSite
 			return false
 		end
 
-		info = pagoda.get_yaml( 'gog.yaml')
-		tags  = info['tags']
+		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
+		tags  = @info['tags']
 		found = ''
 
 		if m = /"tags":\[([^\]]*)\]/mi.match( page)
@@ -84,10 +89,9 @@ class GoodOldGames < DefaultSite
 		found.scan( /"name":"([^"]*)"/) do |tag|
 			if tags[tag[0]] == 'accept'
 				rec[:ignore] = false
-			elsif tags[tag[0]].nil?
-				rec[:valid]   = false
-				rec[:comment] = 'Unknown tag: ' + tag[0]
-				return false
+      elsif tags[tag[0]].nil?
+        tags[tag[0]] = 'ignore'
+        @info_changed += 1
 			end
 		end
 
@@ -146,5 +150,12 @@ class GoodOldGames < DefaultSite
 
 	def name
 		'GOG'
-	end
+  end
+
+  def terminate( pagoda)
+    if @info_changed > 0
+      pagoda.put_yaml( @info, 'gog.yaml')
+      puts "... #{@info_changed} tags added to gog.yaml"
+    end
+  end
 end

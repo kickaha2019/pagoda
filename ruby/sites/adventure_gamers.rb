@@ -15,7 +15,7 @@ class AdventureGamers < DefaultSite
 	end
 
 	def filter( pagoda, link, page, rec)
-		if m = /^(.*)- review | Adventure Gamers/.match( rec[:title].strip)
+		if m = /^(.*)(-|) review \| Adventure Gamers/.match( rec[:title].strip)
 			rec[:title] = m[1].strip
 			true
 		else

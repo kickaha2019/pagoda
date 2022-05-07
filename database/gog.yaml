@@ -1,90 +1,197 @@
 ---
 tags:
-  "2D":         ignore
-  "4X":         reject
-  Action:       ignore
-  Adventure:    accept
-  Arcade:       reject
-  Atmospheric:  ignore
-  Building:     ignore
-  "Card Game":  ignore
-  Casual:       ignore
-  Chess:        reject
-  "Choices Matter": ignore
-  Classic:      ignore
-  Combat:       reject
-  Comedy:       ignore
-  CRPG:         accept
-  Dark:         ignore
-  "Detective-mystery":  ignore
-  Dystopian:    ignore
-  Economic:     ignore
-  Educational:  ignore
-  Espionage:    ignore
-  Exploration:  ignore
-  "First-Person": ignore
-  FPP:          ignore
-  FPS:          reject
-  Fantasy:      ignore
-  "Female Protagonist": ignore
-  Fighting:     reject
-  Flight:       ignore
-  FMV:          ignore
-  Funny:        ignore
-  "Good Old Game":  ignore
-  "Great Soundtrack": ignore
-  "Hidden Object":  reject
-  Historical:   ignore
-  Horror:       ignore
-  Indie:        ignore
-  Investigation:  ignore
-  Isometric:    ignore
-  JRPG:         accept
-  Logic:        accept
-  Management:   ignore
-  Managerial:   ignore
+  2D: ignore
+  4X: reject
+  Action: ignore
+  Adventure: accept
+  Arcade: reject
+  Atmospheric: ignore
+  Building: ignore
+  Card Game: ignore
+  Casual: ignore
+  Chess: reject
+  Choices Matter: ignore
+  Classic: ignore
+  Combat: reject
+  Comedy: ignore
+  CRPG: accept
+  Dark: ignore
+  Detective-mystery: ignore
+  Dystopian: ignore
+  Economic: ignore
+  Educational: ignore
+  Espionage: ignore
+  Exploration: ignore
+  First-Person: ignore
+  FPP: ignore
+  FPS: reject
+  Fantasy: ignore
+  Female Protagonist: ignore
+  Fighting: reject
+  Flight: ignore
+  FMV: ignore
+  Funny: ignore
+  Good Old Game: ignore
+  Great Soundtrack: ignore
+  Hidden Object: reject
+  Historical: ignore
+  Horror: ignore
+  Indie: ignore
+  Investigation: ignore
+  Isometric: ignore
+  JRPG: accept
+  Logic: accept
+  Management: ignore
+  Managerial: ignore
   Metroidvania: ignore
-  Modern:       ignore
-  Multiplayer:  reject
-  Mystery:      ignore
-  Narrative:    ignore
-  Naval:        ignore
-  Nudity:       ignore
-  "Off-road":   ignore
-  "Open World": ignore
-  Pinball:      reject
-  Platformer:   reject
-  "Point-and-click":  ignore
-  "Point&Click":  ignore
-  "Post-apocalyptic": ignore
-  Programming:  ignore
-  Puzzle:       accept
-  Racing:       reject
-  Rally:        reject
-  "Real-time":  ignore
-  Roguelike:    ignore
-  "Role-playing": accept
-  RTS:          reject
-  Sandbox:      ignore
-  Science:      ignore
-  "Sci-fi":     ignore
-  "Sexual Content": ignore
-  "Shoot 'em Up": reject
-  Shooter:      reject
-  Simulation:   ignore
-  Soccer:       reject
-  Sports:       reject
-  Stealth:      ignore
-  "Story Rich": ignore
-  Strategy:     ignore
-  Survival:     ignore
-  "Third Person": ignore
-  TPP:          ignore
-  Tactical:     ignore
-  "Team sport": reject
-  Touring:      ignore
-  "Turn-based": ignore
-  "Turn-Based": ignore
-  Violent:      ignore
-  "Virtual life": reject
-  "Visual Novel": accept
+  Modern: ignore
+  Multiplayer: reject
+  Mystery: ignore
+  Narrative: ignore
+  Naval: ignore
+  Nudity: ignore
+  Off-road: ignore
+  Open World: ignore
+  Pinball: reject
+  Platformer: reject
+  Point-and-click: ignore
+  Point&Click: ignore
+  Post-apocalyptic: ignore
+  Programming: ignore
+  Puzzle: accept
+  Racing: reject
+  Rally: reject
+  Real-time: ignore
+  Roguelike: ignore
+  Role-playing: accept
+  RTS: reject
+  Sandbox: ignore
+  Science: ignore
+  Sci-fi: ignore
+  Sexual Content: ignore
+  Shoot 'em Up: reject
+  Shooter: reject
+  Simulation: ignore
+  Soccer: reject
+  Sports: reject
+  Stealth: ignore
+  Story Rich: ignore
+  Strategy: ignore
+  Survival: ignore
+  Third Person: ignore
+  TPP: ignore
+  Tactical: ignore
+  Team sport: reject
+  Touring: ignore
+  Turn-based: ignore
+  Turn-Based: ignore
+  Violent: ignore
+  Virtual life: reject
+  Visual Novel: accept
+  Local Multiplayer: ignore
+  Physics: ignore
+  Noir: ignore
+  Psychological: ignore
+  Shoot'EmUp: reject
+  Hack and Slash: ignore
+  Time Manipulation: ignore
+  Only On GOG: ignore
+  Difficult: ignore
+  Realistic: ignore
+  Western: ignore
+  Space: ignore
+  Family Friendly: ignore
+  Relaxing: ignore
+  Surreal: ignore
+  Military: ignore
+  Resource Management: ignore
+  Base Building: ignore
+  Gore: ignore
+  Split Screen: ignore
+  Dinosaurs: ignore
+  World War II: ignore
+  Tanks: ignore
+  Education: ignore
+  LifeSim: ignore
+  War: ignore
+  Magic: ignore
+  Top-Down: ignore
+  Psychological Horror: ignore
+  Real-Time: ignore
+  Cartoony: ignore
+  Cyberpunk: ignore
+  Grand Strategy: ignore
+  Crime: ignore
+  Text-Based: reject
+  Medieval: ignore
+  Dark Comedy: ignore
+  Parody: ignore
+  Trading: ignore
+  Crafting: ignore
+  Robots: ignore
+  Pixel Graphics: ignore
+  Thriller: ignore
+  Supernatural: ignore
+  Petting Dogs: ignore
+  Werewolves: ignore
+  Tactical RPG: accept
+  Ninja: ignore
+  Pirates: ignore
+  Underwater: ignore
+  World War I: ignore
+  Football: ignore
+  Choose Your Own Adventure: accept
+  Procedural Generation: ignore
+  Perma Death: ignore
+  Board Game: ignore
+  Emotional: ignore
+  Dungeon Crawler: ignore
+  Local Co-Op: ignore
+  Puzzle Platformer: reject
+  LevelEditor: ignore
+  Mature: ignore
+  Remake: ignore
+  Lovecraftian: ignore
+  Superhero: ignore
+  Steampunk: ignore
+  Tabletop: ignore
+  Mythology: ignore
+  Vikings: ignore
+  City builder: ignore
+  Walking Simulator: ignore
+  LGBTQ+: ignore
+  Beat 'em up: reject
+  Tower Defense: ignore
+  Underground: ignore
+  Martial Arts: ignore
+  Vampire: ignore
+  Zombies: ignore
+  Politics: ignore
+  Trains: ignore
+  Multiple Endings: ignore
+  VR: ignore
+  Short: ignore
+  Romance: ignore
+  Transportation: ignore
+  Roguelite: ignore
+  Fishing: ignore
+  Dog: ignore
+  Sniper: reject
+  Survival Horror: ignore
+  Dating Sim: ignore
+  Rhythm: ignore
+  Souls-like: ignore
+  Typing: ignore
+  Cooking: ignore
+  Philosophical: ignore
+  Deckbuilding: ignore
+  Party Game: ignore
+  Escape Room: ignore
+  Bullet Hell: ignore
+  Cats: ignore
+  Nature: ignore
+  Match3: ignore
+  NSFW: ignore
+  Twin Stick Shooter: ignore
+  Movie: ignore
+  Hentai: ignore

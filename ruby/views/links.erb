@@ -88,7 +88,7 @@
         var xhttp = new XMLHttpRequest();
         xhttp.open( "GET", "/collation/" + url, false);
         xhttp.send();
-        var info = JSON.parse( xhttp.responseText)
+        var info = JSON.parse( xhttp.responseText);
 
         document.getElementById("collation" + row).innerHTML = info['link'];
         document.getElementById("collation_year" + row).innerHTML = info['year'];

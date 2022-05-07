@@ -28,6 +28,7 @@ class Table
 
   def coerce( column_name, column_value)
     return nil if column_value.nil?
+    return nil if column_value.is_a?( String) && (column_value.strip == '')
     column_value.send( @types[ column_name])
   end
 

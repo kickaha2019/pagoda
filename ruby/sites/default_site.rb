@@ -16,4 +16,7 @@ class DefaultSite
   def name
     'Website'
   end
+
+  def terminate( pagoda)
+  end
 end

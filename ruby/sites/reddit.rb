@@ -1,6 +1,6 @@
 require 'json'
 
-class Reddit
+class Reddit < DefaultSite
 	include Common
 
 	def initialize

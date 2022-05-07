@@ -42,9 +42,13 @@
     }
 
     function gather( id) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/gather/" + id, false);
-        xhttp.send();
+        let url = prompt("Website URL", "");
+        if (url != null) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.open("POST", "/gather/" + id + '/' + encodeURIComponent(url), false);
+          xhttp.send();
+          alert( xhttp.responseText);
+        }
     }
 </script>
 

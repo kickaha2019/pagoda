@@ -109,7 +109,7 @@ class VerifyLinks
   end
 
   def oldest( n, valid_for)
-    links, dubious = [], []
+    links, free, bound, dubious = [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
@@ -117,24 +117,38 @@ class VerifyLinks
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
         dubious << link
+      elsif link.status == 'Free'
+        free << link
       else
-        links << link if link.timestamp < valid_from
+        bound << link if link.timestamp < valid_from
       end
     end
 
-    links.sort_by! {|link| link.timestamp ? link.timestamp : 0}
-    links = dubious + links
-    links = links[0...n] if links.size > n
+    free.sort_by! {|link| link.timestamp ? link.timestamp : 0}
+    bound.sort_by! {|link| link.timestamp ? link.timestamp : 0}
 
-    File.open( '/Users/peter/temp/verify.csv', 'w') do |io|
-      io.puts 'site,title,url,timestamp,valid'
-      links.each do |link|
-        io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
+    {'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
+      File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
+        io.puts 'site,title,url,timestamp,valid'
+        v.each do |link|
+          io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
+        end
       end
     end
     #raise 'Dev'
 
+    links = dubious
+    bound.each_index do |i|
+      links << free[i] if i < free.size
+      links << bound[i]
+    end
+
+    links = links[0...n] if links.size > n
     links.shuffle.each {|rec| yield rec}
+  end
+
+  def terminate
+    @pagoda.terminate
   end
 
   def verify_page( link, cache, debug=false)
@@ -188,6 +202,10 @@ class VerifyLinks
     File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
 
+    # Warn if ignoring link bound to a game
+    if rec[:ignore] && link.collation
+      rec[:comment] = "Was bound to #{link.collation.name}"
+    end
     link.verified( rec)
     #link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', comment, changed)
 
@@ -230,4 +248,4 @@ else
   end
   puts "... Verified #{count} links"
 end
-
+vl.terminate

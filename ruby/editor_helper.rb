@@ -181,6 +181,12 @@ ASPECT_ELEMENT
       end
     end
 
+    def gather( game_id, url)
+      site, url = $pagoda.correlate_site( url)
+      return "No site found for url" unless site
+      $pagoda.game( game_id).add_link( site, url)
+    end
+
     def get_cache( timestamp)
       path = $cache + "/verified/#{timestamp}.html"
       return '' unless File.exist?( path)
@@ -234,7 +240,7 @@ ASPECT_ELEMENT
     end
 
     def link_flagged?( rec)
-      link_lost?(rec) || rec.comment?
+      link_lost?(rec) || rec.comment
     end
 
     def link_records( site, type, status, search)

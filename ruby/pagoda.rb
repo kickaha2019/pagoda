@@ -220,9 +220,11 @@ class Pagoda
       end
     end
 
-    def comment?
-      @record[:comment] && (@record[:comment].strip != '')
-    end
+    # def comment?
+    #   return false unless @record[:comment]
+    #   raise 'Unexpected comment value' if @record[:comment].strip == ''
+    #   @record[:comment].strip != ''
+    # end
 
     def delete
       @owner.start_transaction
@@ -448,10 +450,7 @@ class Pagoda
   end
 
   def get_yaml( f)
-    unless @cached_yaml[f]
-      @cached_yaml[f] = YAML.load( IO.read( @dir + '/' + f))
-    end
-    @cached_yaml[f]
+    YAML.load( IO.read( @dir + '/' + f))
   end
 
   def link( url)
@@ -477,6 +476,10 @@ class Pagoda
         @site_handlers[ handler.name] = handler
       end
     end
+  end
+
+  def put_yaml( data, f)
+    File.open( @dir + '/' + f, 'w') {|io| io.print data.to_yaml}
   end
 
   # def reverify( url)
@@ -591,5 +594,9 @@ class Pagoda
 
   def start_transaction
     @database.start_transaction
+  end
+
+  def terminate
+    @site_handlers.each_value {|handler| handler.terminate( self)}
   end
 end

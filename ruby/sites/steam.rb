@@ -1,6 +1,11 @@
 require_relative 'default_site'
 
 class Steam < DefaultSite
+	def initialize
+		@info         = nil
+		@info_changed = 0
+	end
+
 	def complete?( scanner)
 		true
 	end
@@ -34,16 +39,16 @@ class Steam < DefaultSite
 
 			tags = get_tags( page)
 			if tags.size > 0
-				tag_info = pagoda.get_yaml( 'steam.yaml')['tags']
+				@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+				tag_info = @info['tags']
 				rec[:ignore] = true
 
 				tags.each do |tag|
 					if tag_info[tag] == 'accept'
 						rec[:ignore] = false
 					elsif tag_info[tag].nil?
-						rec[:valid]   = false
-						rec[:comment] = 'Unknown tag: ' + tag
-						return false
+						tags[tag[0]] = 'ignore'
+						@info_changed += 1
 					end
 				end
 
@@ -126,5 +131,12 @@ class Steam < DefaultSite
 
 	def name
 		'Steam'
+	end
+
+	def terminate( pagoda)
+		if @info_changed > 0
+			pagoda.put_yaml( @info, 'steam.yaml')
+			puts "... #{@info_changed} tags added to steam.yaml"
+		end
 	end
 end
