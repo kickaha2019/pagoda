@@ -40,7 +40,12 @@ class GooglePlay < DefaultSite
 
 	def search( searcher)
 		searcher.search( cache_directory, 50) do |game_name|
-			search_for_name( game_name)
+			begin
+				search_for_name( game_name)
+			rescue Net::OpenTimeout
+				puts "*** Timeout Google Play search for #{game_name}"
+				[]
+			end
 		end
 		0
 	end

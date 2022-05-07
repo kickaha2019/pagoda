@@ -5,6 +5,13 @@ class Apple < DefaultSite
   @@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
   @@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 
+  def correlate_url( url)
+    if m = /\/apps\.apple\.com\/[a-z]*\/app\/.*\/(.*)$/.match( url)
+      return "Apple", "Store", "https://apps.apple.com/app/#{m[1]}"
+    end
+    return nil, nil, nil
+  end
+
   def extract_ember_json( html)
     inside, text = false, []
     html.split("\n").each do |line|

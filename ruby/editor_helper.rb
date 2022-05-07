@@ -181,10 +181,22 @@ ASPECT_ELEMENT
       end
     end
 
-    def gather( game_id, url)
-      site, url = $pagoda.correlate_site( url)
+    def gather( game_id, gather_url)
+      site, type, url = $pagoda.correlate_site( gather_url)
       return "No site found for url" unless site
-      $pagoda.game( game_id).add_link( site, url)
+
+      game = $pagoda.game( game_id)
+      unless $pagoda.has?( 'link', :url, url)
+        $pagoda.add_link( site, type, game.title, url)
+      end
+
+      link = $pagoda.link( url)
+      if link.bound?
+        'URL already bound'
+      else
+        link.bind( game_id)
+        ''
+      end
     end
 
     def get_cache( timestamp)

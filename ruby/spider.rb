@@ -30,14 +30,7 @@ class Spider
 		if @pagoda.has?( 'link', :url, url)
 			0
 		else
-			@pagoda.start_transaction
-			@pagoda.insert( 'link',
-									    {:site => @site,
-											:type      => @type,
-											:title     => title,
-											:url       => url,
-											:timestamp => 1})
-			@pagoda.end_transaction
+			@pagoda.add_link( @site, @type, title, url)
 			1
 		end
 	end

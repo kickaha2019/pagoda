@@ -413,6 +413,16 @@ class Pagoda
     @names.reduce( text).index( search)
   end
 
+  def correlate_site( url)
+    site = type = link = nil
+    @site_handlers.each_value do |handler|
+      site, type, link = handler.correlate_url( url)
+      #p [handler.name, site, type, link]
+      break if site
+    end
+    return site, type, link
+  end
+
   def create_game( params)
     raise 'Names not unique' unless check_unique_names( params)
     g = PagodaGame.new( self, {id:params[:id]})
@@ -500,6 +510,17 @@ class Pagoda
   end
 
   # Wrapper methods for calls to database and names logic
+
+  def add_link( site, type, title, url)
+    start_transaction
+    insert( 'link',
+                    {:site => site,
+                     :type      => type,
+                     :title     => title,
+                     :url       => url,
+                     :timestamp => 1})
+    end_transaction
+  end
 
   def add_name( name, id)
     @names.add(name, id)

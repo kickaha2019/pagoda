@@ -178,7 +178,7 @@ tags:
   Dog: ignore
   Sniper: reject
   Survival Horror: ignore
-  Dating Sim: ignore
+  Dating Sim: reject
   Rhythm: ignore
   Souls-like: ignore
   Typing: ignore
@@ -187,11 +187,11 @@ tags:
   Deckbuilding: ignore
   Party Game: ignore
   Escape Room: ignore
-  Bullet Hell: ignore
+  Bullet Hell: reject
   Cats: ignore
   Nature: ignore
-  Match3: ignore
+  Match3: reject
   NSFW: ignore
-  Twin Stick Shooter: ignore
+  Twin Stick Shooter: reject
   Movie: ignore
   Hentai: ignore
