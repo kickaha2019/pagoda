@@ -258,7 +258,6 @@ class Pagoda
     end
 
     def set_checked
-      p ['set_checked1', @record[:url]]
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
       @record[:changed] = 'N'

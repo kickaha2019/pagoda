@@ -331,7 +331,7 @@ tags:
   Colony Sim: ignore
   Real-Time: reject
   Unforgiving: ignore
-  4X: ignore
+  4X: reject
   Soccer: reject
   Real-Time with Pause: ignore
   Mod: ignore

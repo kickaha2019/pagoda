@@ -399,7 +399,6 @@ ASPECT_ELEMENT
     end
 
     def set_official_checked( game_id)
-      p ['set_official_checked', game_id]
       $pagoda.get( 'bind', :id, game_id).each do |bind_rec|
         link = $pagoda.link( bind_rec[:url])
         if link.site == 'Website'

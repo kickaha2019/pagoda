@@ -10,6 +10,13 @@ class Steam < DefaultSite
 		true
 	end
 
+	def correlate_url( url)  # https://store.steampowered.com/app/1092660/Blair_Witch/
+		if m = /^(https:\/\/store\.steampowered\.com\/app\/[0-9]*)($|\/)/.match( url)
+			return "Steam", "Store", m[1]
+		end
+		return nil, nil, nil
+	end
+
 	def find( scanner)
 		path = scanner.cache + '/steam.json'
 
