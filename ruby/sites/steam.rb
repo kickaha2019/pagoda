@@ -54,7 +54,7 @@ class Steam < DefaultSite
 					if tag_info[tag] == 'accept'
 						rec[:ignore] = false
 					elsif tag_info[tag].nil?
-						tags[tag[0]] = 'ignore'
+						tag_info[tag] = 'ignore'
 						@info_changed += 1
 					end
 				end

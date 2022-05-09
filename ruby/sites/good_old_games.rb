@@ -127,25 +127,50 @@ class GoodOldGames < DefaultSite
 		# path   = scanner.cache + "/gog.json"
 		# cached = JSON.parse( IO.read( path))
 
-		scanner.twitter_feed_links( 'gogcom') do |text, link|
-			if /^https:\/\/www\.gog\.com\/game\// =~ link
-				link = link.split('?')[0]
-				scanner.add_link( '', link)
-			# 	if cached[link]
-			# 		0
-			# 	else
-			# 		cached[link] = ''
-			# 		1
-			# 	end
-			else
-				0
-			end
-		end
+		# scanner.twitter_feed_links( 'gogcom') do |text, link|
+		# 	if /^https:\/\/www\.gog\.com\/game\// =~ link
+		# 		link = link.split('?')[0]
+		# 		scanner.add_link( '', link)
+		# 	# 	if cached[link]
+		# 	# 		0
+		# 	# 	else
+		# 	# 		cached[link] = ''
+		# 	# 		1
+		# 	# 	end
+		# 	else
+		# 		0
+		# 	end
+		# end
 
 		# if added > 0
 		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
 		# end
 		# added
+    raw   = scanner.browser_get "https://www.gog.com/games?order=desc:releaseDate"
+		# File.open( '/tmp/gog.html', 'w') {|io| io.print raw}
+    url   = nil
+    added = 0
+		found = false
+
+    raw.split( '<').each do |line|
+      if m = /href="(https:\/\/www\.gog\.com\/en\/game\/[^"]*)"/.match( line)
+        url = m[1].gsub( '/en/', '/')
+      end
+      if m = /title="([^"]*)"/.match( line)
+        if url
+          text = m[1]
+          text.force_encoding( 'UTF-8')
+          text.encode!( 'US-ASCII',
+                        :invalid => :replace, :undef => :replace, :universal_newline => true)
+					found = true
+          added += scanner.add_link( text, url)
+          url = nil
+        end
+      end
+    end
+
+		scanner.error( 'Unable to find recent GOG game') unless found
+    added
 	end
 
 	def name
