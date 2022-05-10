@@ -21,6 +21,9 @@ class DefaultSite
     'Website'
   end
 
+  def tag_aspects( pagoda, page)
+  end
+
   def terminate( pagoda)
   end
 end

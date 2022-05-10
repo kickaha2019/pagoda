@@ -401,8 +401,9 @@ ASPECT_ELEMENT
     def set_official_checked( game_id)
       $pagoda.get( 'bind', :id, game_id).each do |bind_rec|
         link = $pagoda.link( bind_rec[:url])
-        if link.site == 'Website'
+        if link && (link.site == 'Website')
           link.set_checked
+          break
         end
       end
     end

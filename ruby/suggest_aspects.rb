@@ -4,11 +4,13 @@ require_relative 'pagoda'
 
 class SuggestAspects
   include Common
-
+  attr_reader :tagged
+  
   def initialize( dir, cache)
     @pagoda  = Pagoda.new( dir)
     @cache   = cache
     @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
+    @tagged  = 0
   end
 
   def games( name)
@@ -114,11 +116,19 @@ class SuggestAspects
       possible_aspects = @aspects.keys.select {|k| @aspects[k]['match']}.shuffle
     end
 
+    @pagoda.get( 'bind', :id, game.id).each do |bind|
+      @pagoda.get( 'link', :url, bind[:url]).each do |link|
+        next if link[:timestamp].nil?
+        next if site_arg && (link[:site] != site_arg)
+        tag_aspects( link[:site], link[:timestamp], game)
+      end
+    end
+
     @pagoda.get( 'bind', :id, game.id).shuffle.each do |bind|
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
         next if link[:timestamp].nil?
-        next if /\)$/ =~ link[:site]
         next if site_arg && (link[:site] != site_arg)
+
         page = get_page( link[:site], link[:timestamp])
 
         possible_aspects.each do |aspect_name|
@@ -130,6 +140,21 @@ class SuggestAspects
     end
 
     return '', '', 0, ''
+  end
+
+  def tag_aspects( site_name, timestamp, game)
+    aspects = game.aspects
+    page = IO.read( "#{@cache}/verified/#{timestamp}.html")
+    site = @pagoda.get_site_handler( site_name)
+
+    site.tag_aspects( @pagoda, page) do |aspect|
+      unless aspects[aspect]
+        @tagged += 1
+        @pagoda.start_transaction
+        @pagoda.insert( 'aspect', {:id => game.id, :aspect => aspect, :flag => 'Y'})
+        @pagoda.end_transaction
+      end
+    end
   end
 end
 
@@ -154,4 +179,6 @@ sa.games( ARGV[3] ? ARGV[2] : nil) do |game|
   scanned += 1
   break if scanned >= to_scan
 end
+
 puts "... Suggested #{suggested} aspects"
+puts "... Tagged #{sa.tagged} aspects"

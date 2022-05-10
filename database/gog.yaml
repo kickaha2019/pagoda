@@ -1,20 +1,28 @@
 ---
 tags:
-  2D: ignore
+  2D:
+  - ignore
+  - 2D
   4X: reject
   Action: ignore
-  Adventure: accept
+  Adventure:
+  - accept
+  - Adventure
   Arcade: reject
   Atmospheric: ignore
   Building: ignore
-  Card Game: ignore
+  Card Game:
+  - ignore
+  - Cards
   Casual: ignore
   Chess: reject
   Choices Matter: ignore
   Classic: ignore
   Combat: reject
   Comedy: ignore
-  CRPG: accept
+  CRPG:
+  - accept
+  - RPG
   Dark: ignore
   Detective-mystery: ignore
   Dystopian: ignore
@@ -22,7 +30,9 @@ tags:
   Educational: ignore
   Espionage: ignore
   Exploration: ignore
-  First-Person: ignore
+  First-Person:
+  - ignore
+  - 1st person
   FPP: ignore
   FPS: reject
   Fantasy: ignore
@@ -197,3 +207,5 @@ tags:
   Hentai: ignore
   Demo: ignore
   Farming: ignore
+  Looter Shooter: ignore
+  Auto Battler: ignore

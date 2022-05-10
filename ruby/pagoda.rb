@@ -463,7 +463,11 @@ class Pagoda
   end
 
   def link( url)
-    PagodaLink.new( self, get( 'link', :url, url)[0])
+    if rec = get( 'link', :url, url)[0]
+      PagodaLink.new( self, rec)
+    else
+      nil
+    end
   end
 
   def links

@@ -69,34 +69,31 @@ class GoodOldGames < DefaultSite
 
 		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
 		tags  = @info['tags']
-		found = ''
+		found = get_tags( page)
 
-		if m = /"tags":\[([^\]]*)\]/mi.match( page)
-			found += m[1]
-		end
-
-		if m = /"gameTags":\[([^\]]*)\]/mi.match( page)
-			found += m[1]
-		end
-
-		if found == ''
+		if found.empty?
 			rec[:valid]   = false
 			rec[:comment] = 'No tags'
 			return false
 		end
 
 		rec[:ignore] = true
-		found.scan( /"name":"([^"]*)"/) do |tag|
-			if tags[tag[0]] == 'accept'
+		found.each do |tag|
+			action = tags[tag]
+			action = action[0] if action.is_a?( Array)
+
+			if action == 'accept'
 				rec[:ignore] = false
-      elsif tags[tag[0]].nil?
+      elsif action.nil?
         tags[tag[0]] = 'ignore'
         @info_changed += 1
 			end
 		end
 
-		found.scan( /"name":"([^"]*)"/) do |tag|
-			if tags[tag[0]] == 'reject'
+		found.each do |tag|
+			action = tags[tag]
+			action = action[0] if action.is_a?( Array)
+			if action == 'reject'
 				rec[:ignore] = true
 			end
 		end
@@ -106,7 +103,7 @@ class GoodOldGames < DefaultSite
 
 	def get_game_description( page)
 		if info = extract_card_product( page)
-			info['description'] + ' ' + info['tags'].collect {|tag| tag['slug']}.join( ' ')
+			info['description']
 		else
 			''
 		end
@@ -121,31 +118,27 @@ class GoodOldGames < DefaultSite
 		end
 	end
 
+	def get_tags( page)
+		found = ''
+
+		if m = /"tags":\[([^\]]*)\]/mi.match( page)
+			found += m[1]
+		end
+
+		if m = /"gameTags":\[([^\]]*)\]/mi.match( page)
+			found += m[1]
+		end
+
+		return [] if found == ''
+		tags = []
+		found.scan( /"name":"([^"]*)"/) do |tag|
+			tags << tag[0]
+		end
+
+		tags
+	end
+
 	def incremental( scanner)
-		# puts "*** Awaiting full scan to be done"
-		# return
-		# path   = scanner.cache + "/gog.json"
-		# cached = JSON.parse( IO.read( path))
-
-		# scanner.twitter_feed_links( 'gogcom') do |text, link|
-		# 	if /^https:\/\/www\.gog\.com\/game\// =~ link
-		# 		link = link.split('?')[0]
-		# 		scanner.add_link( '', link)
-		# 	# 	if cached[link]
-		# 	# 		0
-		# 	# 	else
-		# 	# 		cached[link] = ''
-		# 	# 		1
-		# 	# 	end
-		# 	else
-		# 		0
-		# 	end
-		# end
-
-		# if added > 0
-		# 	File.open( path, 'w') {|io| io.print JSON.generate( cached)}
-		# end
-		# added
     raw   = scanner.browser_get "https://www.gog.com/games?order=desc:releaseDate"
 		# File.open( '/tmp/gog.html', 'w') {|io| io.print raw}
     url   = nil
@@ -176,6 +169,18 @@ class GoodOldGames < DefaultSite
 	def name
 		'GOG'
   end
+
+	def tag_aspects( pagoda, page)
+		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
+		tags  = @info['tags']
+
+		get_tags( page).each do |tag|
+			action = tags[tag]
+			if action.is_a?( Array)
+				action[1..-1].each {|aspect| yield aspect}
+			end
+		end
+	end
 
   def terminate( pagoda)
     if @info_changed > 0
