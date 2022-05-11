@@ -529,6 +529,15 @@ class Pagoda
     @names.add(name, id)
   end
 
+  def clean
+    count = @database.clean_missing( 'alias', :id, 'game', :id).size
+    puts "*** Deleted #{count} alias records" if count > 0
+    count = @database.clean_missing( 'aspect_suggest', :game, 'game', :id).size
+    puts "*** Deleted #{count} aspect suggest records" if count > 0
+    count = @database.clean_missing( 'bind', :url, 'link', :url).size
+    puts "*** Deleted #{count} bind records" if count > 0
+  end
+
   def count( table_name)
     @database.count( table_name)
   end

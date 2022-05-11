@@ -65,6 +65,15 @@ class DatabaseTest < Minitest::Test
   #   assert_equal 2, combs['bill'].keys[0]
   # end
 
+  def test_clean_missing
+    write 'data1.tsv', "id\tkey\n1\tApple\n2\tBanana"
+    write 'data2.tsv', "key\tname\nGreen\tApple\nBlack\tBlackberry"
+    db = load_database
+    db.clean_missing( 'data2', :name, 'data1', :key)
+    missed = db.missing( 'data2', :name, 'data1', :key)
+    assert_equal 0, missed.size
+  end
+
   def test_count
     write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred\nEND"
@@ -168,25 +177,6 @@ class DatabaseTest < Minitest::Test
     assert ok
   end
 
-  # def test_join
-  #   write 'data1.tsv', "id\tkey"
-  #   write 'data2.tsv', "key\tname"
-  #   db = load_database
-  #   db.join( 'data1', :name, :key, 'data2', :key)
-  #   db.start_transaction
-  #   db.insert( 'data1', {id:1, key:'F1'})
-  #   db.insert( 'data2', {key:'F1', name:'fred'})
-  #   db.end_transaction
-  #
-  #   found = false
-  #   db.select( 'data1') do |rec|
-  #     assert_equal 1, rec[:name].size
-  #     assert_equal 'fred', rec[:name][0][:name]
-  #     found = true
-  #   end
-  #   assert found
-  # end
-
   def test_max_value
     write 'data.tsv', "id\theight"
     db = load_database
@@ -196,6 +186,17 @@ class DatabaseTest < Minitest::Test
     db.insert( 'data', {id:5, height:7})
     db.end_transaction
     assert_equal 7, db.max_value( 'data', :height)
+  end
+
+  def test_missing
+    write 'data1.tsv', "id\tkey\n1\tApple\n2\tBanana"
+    write 'data2.tsv', "key\tname\nGreen\tApple\nBlack\tBlackberry"
+    db = load_database
+    missed = db.missing( 'data2', :name, 'data1', :key)
+    assert_equal 1, missed.size
+    assert_equal 'Blackberry', missed[0]
+    missed = db.missing( 'data1', :id, 'data2', :key)
+    assert_equal 2, missed.size
   end
 
   def test_next_value

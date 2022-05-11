@@ -39,6 +39,16 @@ class Database
   #   @tables[table_name].combinations( * columns)
   # end
 
+  def clean_missing( table1, column1, table2, column2)
+    start_transaction
+    missed = missing( table1, column1, table2, column2)
+    missed.each do |key|
+      delete( table1, column1, key)
+    end
+    end_transaction
+    missed
+  end
+
   def count( table_name)
     @tables[table_name].size
   end
@@ -106,6 +116,17 @@ class Database
       got = value if value && value.is_a?( Integer) && (value > got)
     end
     got
+  end
+
+  def missing( table1, column1, table2, column2)
+    missed = []
+    @tables[table1].select do |rec|
+      value = rec[column1]
+      unless has?( table2, column2, value)
+        missed << value
+      end
+    end
+    missed
   end
 
   def next_value( table_name, column_name)

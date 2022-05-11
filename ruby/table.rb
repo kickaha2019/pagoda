@@ -16,7 +16,7 @@ class Table
   def add_index( column_name)
     index  = @indexes[column_name] = Hash.new {|h1,k1| h1[k1] = []}
     colind = column_index( column_name)
-    raise "Unknown column #{column_name}" if colind.nil?
+    raise "Unknown column #{column_name} for #{@name}" if colind.nil?
 
     @indexes[@columns[0]].each_value do |rows|
       rows.each do |row|
