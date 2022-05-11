@@ -3,9 +3,15 @@ tags:
   Exploration: ignore
   Walking Simulator: ignore
   Female Protagonist: ignore
-  3D: ignore
-  Third Person: ignore
-  VR: ignore
+  3D:
+  - ignore
+  - 3D
+  Third Person:
+  - ignore
+  - 3rd person
+  VR:
+  - ignore
+  - VR
   LGBTQ+: ignore
   Story Rich: ignore
   Cute: ignore
@@ -14,18 +20,22 @@ tags:
   Family Friendly: ignore
   Atmospheric: ignore
   Emotional: ignore
-  Adventure: accept
+  Adventure:
+  - accept
+  - Adventure
   Nature: ignore
   Singleplayer: ignore
   Indie: ignore
   Narrative: ignore
   Short: ignore
   Dinosaurs: ignore
-  Quick-Time Events: ignore
+  Quick-Time Events:
+  - ignore
+  - Choices
   Point &amp; Click: ignore
   Action: ignore
   Episodic: ignore
-  Movie: ignore
+  Movie: reject
   Sci-fi: ignore
   Horror: ignore
   Survival: ignore
@@ -36,7 +46,9 @@ tags:
   Puzzle Platformer: reject
   Platformer: reject
   Visual Novel: ignore
-  2D: ignore
+  2D:
+  - ignore
+  - 2D
   Pixel Graphics: ignore
   Anime: ignore
   Colorful: ignore
@@ -47,7 +59,9 @@ tags:
   Violent: ignore
   Surreal: ignore
   Minimalist: ignore
-  First-Person: ignore
+  First-Person:
+  - ignore
+  - 1st person
   Beautiful: ignore
   Music: ignore
   Dark: ignore
@@ -69,7 +83,9 @@ tags:
   Multiple Endings: ignore
   Crime: ignore
   Drama: ignore
-  RPG: accept
+  RPG:
+  - accept
+  - RPG
   Modern: ignore
   Philosophical: ignore
   Historical: ignore
@@ -106,15 +122,19 @@ tags:
   Hidden Object: reject
   Lovecraftian: ignore
   Survival Horror: ignore
-  Investigation: ignore
-  Detective: ignore
+  Investigation:
+  - ignore
+  - Investigation
+  Detective:
+  - ignore
+  - Investigation
   Escape Room: ignore
   Underwater: ignore
   Education: ignore
   Science: ignore
   Kickstarter: ignore
   Funny: ignore
-  2D Platformer: ignore
+  2D Platformer: reject
   Dark Comedy: ignore
   Post-apocalyptic: ignore
   Cinematic: ignore
@@ -127,17 +147,19 @@ tags:
   Building: ignore
   Shooter: reject
   Bullet Hell: reject
-  Shoot 'Em Up: ignore
+  Shoot 'Em Up: reject
   Time Management: ignore
   Futuristic: ignore
   Space: ignore
-  Bullet Time: ignore
+  Bullet Time: reject
   Controller: ignore
   Time Manipulation: ignore
   Tutorial: ignore
   Turn-Based: ignore
   Online Co-Op: ignore
-  Party-Based RPG: accept
+  Party-Based RPG:
+  - accept
+  - RPG
   Tabletop: ignore
   Software: ignore
   Hacking: ignore
@@ -201,7 +223,9 @@ tags:
   6DOF: ignore
   Dynamic Narration: ignore
   Character Action Game: ignore
-  Choose Your Own Adventure: ignore
+  Choose Your Own Adventure:
+  - ignore
+  - Choices
   Collectathon: ignore
   Benchmark: ignore
   Dystopian: ignore
@@ -221,8 +245,12 @@ tags:
   PvP: ignore
   3D Vision: ignore
   Steam Machine: ignore
-  Tactical RPG: accept
-  Strategy RPG: accept
+  Tactical RPG:
+  - accept
+  - RPG
+  Strategy RPG:
+  - accept
+  - RPG
   Wargame: ignore
   Hex Grid: ignore
   Character Customization: ignore
@@ -263,12 +291,16 @@ tags:
   Assassin: ignore
   Space Sim: ignore
   Top-Down Shooter: reject
-  Asymmetric VR: ignore
+  Asymmetric VR:
+  - ignore
+  - VR
   Asynchronous Multiplayer: ignore
   RTS: reject
   Action RTS: reject
   Dating Sim: ignore
-  JRPG: accept
+  JRPG:
+  - accept
+  - RPG
   Dungeon Crawler: ignore
   Flight: reject
   3D Fighter: reject
@@ -289,7 +321,9 @@ tags:
   Massively Multiplayer: reject
   MMORPG: reject
   Spectacle fighter: ignore
-  CRPG: accept
+  CRPG:
+  - accept
+  - RPG
   Transportation: ignore
   Resource Management: ignore
   Military: ignore
@@ -400,4 +434,6 @@ tags:
   Audio Production: ignore
   Submarine: ignore
   8-bit Music: ignore
-  Wrestling: ignore
+  Wrestling: reject
+  Spelling: ignore
+  Hockey: reject

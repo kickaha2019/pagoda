@@ -24,7 +24,9 @@ tags:
   - accept
   - RPG
   Dark: ignore
-  Detective-mystery: ignore
+  Detective-mystery:
+  - ignore
+  - Investigation
   Dystopian: ignore
   Economic: ignore
   Educational: ignore
@@ -33,13 +35,17 @@ tags:
   First-Person:
   - ignore
   - 1st person
-  FPP: ignore
+  FPP:
+  - ignore
+  - 1st person
   FPS: reject
   Fantasy: ignore
   Female Protagonist: ignore
   Fighting: reject
   Flight: ignore
-  FMV: ignore
+  FMV:
+  - ignore
+  - FMV
   Funny: ignore
   Good Old Game: ignore
   Great Soundtrack: ignore
@@ -47,9 +53,13 @@ tags:
   Historical: ignore
   Horror: ignore
   Indie: ignore
-  Investigation: ignore
+  Investigation:
+  - ignore
+  - Investigation
   Isometric: ignore
-  JRPG: accept
+  JRPG:
+  - accept
+  - RPG
   Logic: accept
   Management: ignore
   Managerial: ignore
@@ -73,7 +83,9 @@ tags:
   Rally: reject
   Real-time: ignore
   Roguelike: ignore
-  Role-playing: accept
+  Role-playing:
+  - accept
+  - RPG
   RTS: reject
   Sandbox: ignore
   Science: ignore
@@ -88,8 +100,12 @@ tags:
   Story Rich: ignore
   Strategy: ignore
   Survival: ignore
-  Third Person: ignore
-  TPP: ignore
+  Third Person:
+  - ignore
+  - 3rd person
+  TPP:
+  - ignore
+  - 3rd person
   Tactical: ignore
   Team sport: reject
   Touring: ignore
@@ -97,7 +113,9 @@ tags:
   Turn-Based: ignore
   Violent: ignore
   Virtual life: reject
-  Visual Novel: accept
+  Visual Novel:
+  - accept
+  - Visual novel
   Local Multiplayer: ignore
   Physics: ignore
   Noir: ignore
@@ -144,13 +162,17 @@ tags:
   Supernatural: ignore
   Petting Dogs: ignore
   Werewolves: ignore
-  Tactical RPG: accept
+  Tactical RPG:
+  - accept
+  - RPG
   Ninja: ignore
   Pirates: ignore
   Underwater: ignore
   World War I: ignore
   Football: ignore
-  Choose Your Own Adventure: accept
+  Choose Your Own Adventure:
+  - accept
+  - Choices
   Procedural Generation: ignore
   Perma Death: ignore
   Board Game: ignore
@@ -179,7 +201,9 @@ tags:
   Politics: ignore
   Trains: ignore
   Multiple Endings: ignore
-  VR: ignore
+  VR:
+  - ignore
+  - VR
   Short: ignore
   Romance: ignore
   Transportation: ignore
@@ -207,5 +231,5 @@ tags:
   Hentai: ignore
   Demo: ignore
   Farming: ignore
-  Looter Shooter: ignore
-  Auto Battler: ignore
+  Looter Shooter: reject
+  Auto Battler: reject

@@ -85,15 +85,13 @@ class GoodOldGames < DefaultSite
 			if action == 'accept'
 				rec[:ignore] = false
       elsif action.nil?
-        tags[tag[0]] = 'ignore'
+        tags[tag] = 'ignore'
         @info_changed += 1
 			end
 		end
 
 		found.each do |tag|
-			action = tags[tag]
-			action = action[0] if action.is_a?( Array)
-			if action == 'reject'
+			if tags[tag] == 'reject'
 				rec[:ignore] = true
 			end
 		end

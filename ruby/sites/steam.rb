@@ -51,9 +51,12 @@ class Steam < DefaultSite
 				rec[:ignore] = true
 
 				tags.each do |tag|
-					if tag_info[tag] == 'accept'
+					action = tag_info[tag]
+					action = action[0] if action.is_a?( Array)
+
+					if action == 'accept'
 						rec[:ignore] = false
-					elsif tag_info[tag].nil?
+					elsif action.nil?
 						tag_info[tag] = 'ignore'
 						@info_changed += 1
 					end
@@ -76,7 +79,7 @@ class Steam < DefaultSite
 	end
 
 	def get_game_description( page)
-		get_tags( page).join( ' ')
+		''
 	end
 
 	def get_game_details( url, page, game)
@@ -138,6 +141,18 @@ class Steam < DefaultSite
 
 	def name
 		'Steam'
+	end
+
+	def tag_aspects( pagoda, page)
+		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+		tags  = @info['tags']
+
+		get_tags( page).each do |tag|
+			action = tags[tag]
+			if action.is_a?( Array)
+				action[1..-1].each {|aspect| yield aspect}
+			end
+		end
 	end
 
 	def terminate( pagoda)
