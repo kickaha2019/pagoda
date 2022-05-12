@@ -5,9 +5,17 @@ class Apple < DefaultSite
   @@sections = {'adventure' => 7002, 'puzzle' => 7012, 'role-playing' => 7014}
   @@letters  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ*'
 
+  def coerce_url( url)
+    if m = /\/apps\.apple\.com\/[a-z]*\/app\/.*\/([^\?]*)($|\?)/.match( url)
+      return "https://apps.apple.com/app/#{m[1]}"
+    end
+    url
+  end
+
   def correlate_url( url)
-    if m = /\/apps\.apple\.com\/[a-z]*\/app\/.*\/(.*)$/.match( url)
-      return "Apple", "Store", "https://apps.apple.com/app/#{m[1]}"
+    url = coerce_url url
+    if /^https:\/\/apps\.apple\.com\/app\/[^\/\?]*$/ =~ url
+      return "Apple", "Store", url
     end
     return nil, nil, nil
   end
@@ -30,8 +38,9 @@ class Apple < DefaultSite
   end
 
   def filter( pagoda, link, page, rec)
-    if m = /^(.*) on the App Store$/.match( rec[:title].strip)
+    if m = /^(.*) on the (Mac |)App Store$/.match( rec[:title].strip)
       rec[:title] = m[1]
+      rec[:url]   = coerce_url( link.url)
       true
     else
       rec[:valid] = false

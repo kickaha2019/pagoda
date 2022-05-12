@@ -17,5 +17,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # http://www.gameboomers.com/reviews/Gg/AGoldenWake/AGoldenWake.htm
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 
-#ruby ruby/verify_links.rb database 'https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en' ~/Caches/Pagoda/verified
-caffeinate -i ruby ruby/verify_links.rb database 250 ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://apps.apple.com/us/app/agent-a-a-puzzle-in-disguise/id1446601134?mt=12' ~/Caches/Pagoda/verified
+# caffeinate -i ruby ruby/verify_links.rb database 250 ~/Caches/Pagoda/verified

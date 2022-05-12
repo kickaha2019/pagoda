@@ -304,15 +304,19 @@ class Pagoda
     def verified( rec)
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
-      @record[:title]      = rec[:title]
-      ot = @record[:orig_title]
-      ot = rec[:title] if ot.nil? || (ot.strip == '')
-      @record[:orig_title] = ot
-      @record[:timestamp]  = rec[:timestamp]
-      @record[:valid]      = rec[:valid] ? 'Y' : 'N'
-      @record[:comment]    = rec[:comment]
-      @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
-      @owner.insert( 'link', @record)
+      @record[:url] = rec[:url] if rec[:url]
+
+      unless @owner.has?( 'link', :url, @record[:url])
+        @record[:title]      = rec[:title]
+        ot = @record[:orig_title]
+        ot = rec[:title] if ot.nil? || (ot.strip == '')
+        @record[:orig_title] = ot
+        @record[:timestamp]  = rec[:timestamp]
+        @record[:valid]      = rec[:valid] ? 'Y' : 'N'
+        @record[:comment]    = rec[:comment]
+        @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
+        @owner.insert( 'link', @record)
+      end
       @owner.end_transaction
     end
   end

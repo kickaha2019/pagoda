@@ -25,6 +25,7 @@ class GooglePlay < DefaultSite
 
 	def filter( pagoda, link, page, rec)
 		return true if /itemprop="genre" href="\/store\/apps\/category\/GAME_(ADVENTURE|CASUAL|PUZZLE|ROLE_PLAYING)"/m =~ page
+		return true if /itemprop="genre" href="\/store\/apps\/category\/EDUCATION"/m =~ page
 		rec[:valid] = false
 		return true if /itemprop="genre" href="\/store\/apps\/category\/.*"/m =~ page
 		false

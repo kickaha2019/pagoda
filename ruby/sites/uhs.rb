@@ -2,8 +2,13 @@ require_relative 'default_site'
 
 class Uhs < DefaultSite
 	def filter( pagoda, link, page, rec)
-		if m = /^(.*)Hints from UHS/.match( rec[:title].strip)
+		title = rec[:title].strip
+
+		if m = /^(.*)Hints from UHS/.match( title)
 			rec[:title] = m[1].strip
+			true
+		elsif m1 = /^UHS:\s+(.*)\s+Review$/.match( title)
+			rec[:title] = m1[1].strip
 			true
 		else
 			rec[:valid] = false
