@@ -46,10 +46,6 @@ HOG:
   index:  12
 Investigation:
   index:  13
-"Match 3":
-  index: 7
-  match:
-  - Match 3
 Maze:
   index: 5
   match:  \WMaze\W

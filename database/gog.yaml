@@ -233,3 +233,5 @@ tags:
   Farming: ignore
   Looter Shooter: reject
   Auto Battler: reject
+  building: ignore
+  crossplay: ignore

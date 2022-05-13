@@ -159,7 +159,9 @@ ASPECT_ELEMENT
     def games_by_aspect_records
       map = Hash.new {|h,k| h[k] = 0}
       $pagoda.games do |game|
-        game.aspects.each_key {|a| map[a] += 1}
+        game.aspects.each_pair do |a,f|
+          map[a] += 1 if f
+        end
       end
       $pagoda.aspect_info.keys.sort.collect do |aspect|
         [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
