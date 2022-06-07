@@ -80,7 +80,8 @@ class Pagoda
 
     def generate?
       flagged = aspects
-      known = @owner.aspect_names
+      known = []
+      @owner.aspect_names.each {|name| known << name}
       return false unless flagged['Adventure']
       ['Action','HOG','Physics','Roguelike','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
@@ -253,6 +254,14 @@ class Pagoda
       (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
     end
 
+    def patch_orig_title( title)
+      @owner.start_transaction
+      @owner.delete( 'link', :url, @record[:url])
+      @record[:orig_title] = title
+      @owner.insert( 'link', @record)
+      @owner.end_transaction
+    end
+
     def reduced_name
       @owner.reduce_name( @record[:site], @record[:type], @record[:orig_title])
     end
@@ -310,7 +319,7 @@ class Pagoda
         @record[:title]      = rec[:title]
         ot = @record[:orig_title]
         ot = rec[:title] if ot.nil? || (ot.strip == '')
-        @record[:orig_title] = ot
+        @record[:orig_title] = rec[:orig_title] ? rec[:orig_title] : ot
         @record[:timestamp]  = rec[:timestamp]
         @record[:valid]      = rec[:valid] ? 'Y' : 'N'
         @record[:comment]    = rec[:comment]
@@ -377,8 +386,8 @@ class Pagoda
   end
 
   def aspect_names
-    aspect_info.each_key do |name|
-      yield name
+    aspect_info.each_pair do |name, info|
+      yield name if info['derive'].nil?
     end
   end
 
@@ -521,11 +530,12 @@ class Pagoda
   def add_link( site, type, title, url)
     start_transaction
     insert( 'link',
-                    {:site => site,
-                     :type      => type,
-                     :title     => title,
-                     :url       => url,
-                     :timestamp => 1})
+                    {:site       => site,
+                             :type       => type,
+                             :title      => title,
+                             :orig_title => title,
+                             :url        => url,
+                             :timestamp  => 1})
     end_transaction
   end
 

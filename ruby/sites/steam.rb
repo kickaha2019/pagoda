@@ -124,6 +124,16 @@ class Steam < DefaultSite
 		raw   = JSON.parse( IO.read( path))['applist']['apps']
 		count = 0
 
+		# raw.each do |record|
+		# 	text = record['name']
+		# 	text.force_encoding( 'UTF-8')
+		# 	text.encode!( 'US-ASCII',
+		# 								:invalid => :replace, :undef => :replace, :universal_newline => true)
+		# 	url = "https://store.steampowered.com/app/#{record['appid']}"
+		# 	scanner.patch_orig_title( url, text)
+		# end
+		# raise 'Dev'
+
 		raw.each do |record|
 			text = record['name']
 			text.force_encoding( 'UTF-8')

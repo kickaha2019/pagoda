@@ -141,7 +141,9 @@ tags:
   Metroidvania: ignore
   Difficult: ignore
   Side Scroller: ignore
-  Tower Defense: ignore
+  Tower Defense:
+  - ignore
+  - Tower Defense
   Replay Value: ignore
   Addictive: ignore
   Building: ignore
@@ -203,7 +205,7 @@ tags:
   Destruction: ignore
   War: ignore
   World War II: ignore
-  Rhythm: ignore
+  Rhythm: reject
   Classic: ignore
   Sandbox: ignore
   Utilities: ignore
@@ -440,3 +442,12 @@ tags:
   Boxing: reject
   Electronic: ignore
   Sniper: reject
+  Pool: ignore
+  Outbreak Sim: ignore
+  Farming: reject
+  Roguevania: ignore
+  Bowling: ignore
+  360 Video: ignore
+  Snowboarding: reject
+  Motocross: reject
+  Cycling: reject

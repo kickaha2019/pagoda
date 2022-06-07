@@ -193,7 +193,9 @@ tags:
   Walking Simulator: ignore
   LGBTQ+: ignore
   Beat 'em up: reject
-  Tower Defense: ignore
+  Tower Defense:
+  - ignore
+  - Tower Defense
   Underground: ignore
   Martial Arts: ignore
   Vampire: ignore
@@ -228,10 +230,11 @@ tags:
   NSFW: ignore
   Twin Stick Shooter: reject
   Movie: ignore
-  Hentai: ignore
+  Hentai: reject
   Demo: ignore
   Farming: ignore
   Looter Shooter: reject
   Auto Battler: reject
   building: ignore
   crossplay: ignore
+  Artbook: ignore

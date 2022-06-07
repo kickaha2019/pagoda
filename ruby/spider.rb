@@ -155,6 +155,12 @@ class Spider
 		false
 	end
 
+	def patch_orig_title( url, title)
+		if link = @pagoda.link( url)
+			link.patch_orig_title( title)
+		end
+	end
+
 	def phrase_words( phrase)
 		phrase.to_s.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
 	end

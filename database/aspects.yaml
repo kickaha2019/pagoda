@@ -69,6 +69,9 @@ Stealth:
   index: 23
 Strategy:
   index: 24
+Steam:
+  index:  7
+  derive: on_steam?
 Timer:
   index: 9
   match:
