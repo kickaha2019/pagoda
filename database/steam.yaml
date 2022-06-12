@@ -95,8 +95,8 @@ tags:
   Farming Sim: ignore
   Mars: ignore
   Management: ignore
-  Sexual Content: ignore
-  Nudity: ignore
+  Sexual Content: reject
+  Nudity: reject
   Romance: ignore
   Comedy: ignore
   Time Travel: ignore
@@ -451,3 +451,4 @@ tags:
   Snowboarding: reject
   Motocross: reject
   Cycling: reject
+  Baseball: reject

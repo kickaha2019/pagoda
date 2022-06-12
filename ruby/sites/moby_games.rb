@@ -43,6 +43,10 @@ class MobyGames < DefaultSite
 	end
 
 	def get_game_description( page)
+		desc, in_desc = [], false
+		page.split( "<h2>").each do |line|
+			return line if /^Description/ =~ line
+		end
 		page
 	end
 

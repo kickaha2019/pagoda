@@ -7,9 +7,22 @@ class WebsiteFiltersPage
 
     seen = {}
     @aspects.each_pair do |name, info|
-      raise "No index for aspect #{name}" unless info['index']
+      next unless info['index']
       raise "Duplicate index for aspect #{name}" if seen[info['index'].to_i]
       seen[info['index'].to_i] = true
+    end
+
+    @aspects.each_pair do |name, info|
+      unless info['index']
+        free = -1
+        (0..100).each do |i|
+          unless seen[i]
+            free = i
+            break
+          end
+        end
+        raise "No index for aspect #{name} suggest #{free}"
+      end
     end
   end
 

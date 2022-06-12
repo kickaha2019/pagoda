@@ -24,6 +24,11 @@ Action:
   match:
   - \WAction\WRPG
   - \WAction\WAdventure
+  - button\Wmash
+  - arcade
+  - dexterity
+  - platformer
+  - platforming
 Adventure:
   index: 10
 Building:
@@ -49,6 +54,8 @@ Investigation:
 Maze:
   index: 5
   match:  \WMaze\W
+Minigame:
+  match:  \Wmini(\W*)game
 MMORPG:
   index: 27
 Physics:
@@ -65,6 +72,20 @@ Simulation:
   index: 21
 Slider:
   index: 22
+Sound:
+  match:
+  - sound
+  ignore:
+  - sound of
+  - Sound:
+  - sounds
+  - "(Sound"
+  - sound at
+  - soundtrack
+  - sound effect
+  - sound engineer
+  - sound designer
+  - sound dep
 Stealth:
   index: 23
 Strategy:
@@ -75,6 +96,7 @@ Steam:
 Timer:
   index: 9
   match:
+  - timer
   - Timed sequence
   - Timed puzzle
   - puzzles limited by time

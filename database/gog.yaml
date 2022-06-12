@@ -69,7 +69,7 @@ tags:
   Mystery: ignore
   Narrative: ignore
   Naval: ignore
-  Nudity: ignore
+  Nudity: reject
   Off-road: ignore
   Open World: ignore
   Pinball: reject
@@ -90,7 +90,7 @@ tags:
   Sandbox: ignore
   Science: ignore
   Sci-fi: ignore
-  Sexual Content: ignore
+  Sexual Content: reject
   Shoot 'em Up: reject
   Shooter: reject
   Simulation: ignore
@@ -229,12 +229,13 @@ tags:
   Match3: reject
   NSFW: ignore
   Twin Stick Shooter: reject
-  Movie: ignore
+  Movie: reject
   Hentai: reject
-  Demo: ignore
+  Demo: reject
   Farming: ignore
   Looter Shooter: reject
   Auto Battler: reject
   building: ignore
   crossplay: ignore
   Artbook: ignore
+  Free Game: ignore

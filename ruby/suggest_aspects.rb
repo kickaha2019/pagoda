@@ -14,7 +14,7 @@ class SuggestAspects
   end
 
   def games( name)
-    if name
+    if name && (name != '')
       yield @pagoda.game( name)
       return
     end
@@ -167,15 +167,16 @@ sa = SuggestAspects.new( ARGV[0], ARGV[1])
 #puts sa.get_page( 'Adventure Gamers', 1647813039)
 #puts sa.get_page( 'Website', 1647727550)
 #puts sa.get_page( 'TouchArcade', 1646962827)
-#raise 'Testing'
+# puts sa.get_page( 'MobyGames', 1651009354)
+# raise 'Testing'
 
 suggested = scanned = 0
-to_scan = ARGV[3] ? 1 : ARGV[2].to_i
+to_scan = ARGV[2].to_i
 
 puts "... Suggesting aspects"
-sa.games( ARGV[3] ? ARGV[2] : nil) do |game|
+sa.games( ARGV[3]) do |game|
   #p ['games1', game.name, game.id, last_rule]
-  suggested += 1 if sa.record( game, * sa.suggest( game, ARGV[3], ARGV[4]))
+  suggested += 1 if sa.record( game, * sa.suggest( game, ARGV[4], ARGV[5]))
   scanned += 1
   break if scanned >= to_scan
 end
