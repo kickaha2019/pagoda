@@ -51,6 +51,7 @@ HOG:
   index:  12
 Inventory:
   match:  inventory
+  index:  15
 Investigation:
   index:  13
 Maze:
@@ -58,6 +59,7 @@ Maze:
   match:  \WMaze\W
 Minigame:
   match:  \Wmini(\W*)game
+  index:  20
 MMORPG:
   index: 27
 Physics:
@@ -88,6 +90,7 @@ Sound:
   - sound engineer
   - sound designer
   - sound dep
+  index:  31
 Stealth:
   index: 23
 Strategy:
