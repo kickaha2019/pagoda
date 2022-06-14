@@ -27,3 +27,4 @@ grabber.command
 *.csv
 *.html
 *.tsv
+*.command

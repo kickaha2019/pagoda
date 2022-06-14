@@ -11,6 +11,7 @@ class SuggestAspects
     @cache   = cache
     @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
     @tagged  = 0
+    @errors  = []
   end
 
   def games( name)
@@ -48,11 +49,18 @@ class SuggestAspects
 
     matches = @aspects[aspect_name]['match']
     matches = [matches] if matches.is_a?( String)
-    ignores = @aspects[aspect_name]['ignore']
-    ignores = [ignores] if ignores.is_a?( String)
-    ignores = [] if ignores.nil?
+    ignores1 = @aspects[aspect_name]['ignore']
+    ignores1 = [ignores1] if ignores.is_a?( String)
+    ignores1 = [] if ignores1.nil?
 
-    ignores = ignores.collect {|e| Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)}
+    ignores = []
+    ignores1.each do |e|
+      begin
+        ignores << Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)
+      rescue Exception => bang
+        @errors << "Bad ignore: #{e}"
+      end
+    end
 
     text = nil
     matches.each do |m|
@@ -78,6 +86,12 @@ class SuggestAspects
                              :timestamp => Time.now.to_i})
     @pagoda.end_transaction
     cache > 0
+  end
+
+  def report_errors
+    @errors.uniq.each do |error|
+      puts "*** #{error}"
+    end
   end
 
   def scan( page, regex, ignores)
@@ -183,3 +197,5 @@ end
 
 puts "... Suggested #{suggested} aspects"
 puts "... Tagged #{sa.tagged} aspects"
+
+sa.report_errors

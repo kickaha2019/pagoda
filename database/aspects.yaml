@@ -49,6 +49,8 @@ FMV:
   - full motion video
 HOG:
   index:  12
+Inventory:
+  match:  inventory
 Investigation:
   index:  13
 Maze:
@@ -77,9 +79,9 @@ Sound:
   - sound
   ignore:
   - sound of
-  - Sound:
+  - "Sound:"
   - sounds
-  - "(Sound"
+  - "\\(Sound"
   - sound at
   - soundtrack
   - sound effect
