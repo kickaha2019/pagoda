@@ -26,7 +26,9 @@ class WebsiteFiltersPage
       end
     end
 
+    @aspects_template = ERB.new( IO.read( templates + '/aspects.erb'))
     @filters_template = ERB.new( IO.read( templates + '/filters.erb'))
+    @index_template   = ERB.new( IO.read( templates + '/index.erb'))
   end
 
   def aspect_name_indexes
@@ -35,12 +37,24 @@ class WebsiteFiltersPage
     end
   end
 
-  def generate( output_file)
-    File.open( output_file, 'w') do |io|
-      aspects    = @aspects
-      containers = ['include', 'unused', 'exclude']
-      io.print @filters_template.result( binding)
+  def generate( output_dir)
+    aspects    = @aspects
+    containers = ['include', 'unused', 'exclude']
+
+    File.open( output_dir + '/index.html', 'w') do |io|
+      io.print @index_template.result( binding)
     end
+
+    # File.open( output_dir + '/aspects.html', 'w') do |io|
+    #   aspects    = @aspects
+    #   io.print @aspects_template.result( binding)
+    # end
+    #
+    # File.open( output_dir + '/filters.html', 'w') do |io|
+    #   aspects    = @aspects
+    #   containers = ['include', 'unused', 'exclude']
+    #   io.print @filters_template.result( binding)
+    # end
   end
 end
 

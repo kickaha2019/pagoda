@@ -1,0 +1,42 @@
+<html>
+<head>
+  <style>
+    body {background: black}
+    .page {margin-left: auto; margin-right: auto; width: 890px}
+    .container {background: grey; width: 800px; min-height: 200px}
+    .frame1 {padding: 20px; border: 5px solid cyan}
+    .frame2 {padding: 20px; margin-top: 10px; position: relative}
+    .title {position: absolute; top: 15px; left: 45px; display: flex; width: 800px}
+    .title div {background: cyan; border-top: 5px solid black; border-bottom: 5px solid black;
+      flex-grow: 1; height: 5px}
+    .title span {font-size: 20px; color: cyan; background: black; position: relative; top: -5px; left: 0px;
+      padding-left: 10px; padding-right: 10px}
+    .button {display: inline-block; border: 1px solid black; border-radius: 5px; background: cyan; font-size: 24px;
+      margin: 5px; padding: 2px}
+    .menu {margin-left: auto; margin-right: auto; color: white; font-size: 30px; margin-bottom: 10px}
+    .menu a {color: cyan}
+    .menu td {padding: 10px}
+    .aspects {margin-left: auto; margin-right: auto; color: white; font-size: 30px; margin-bottom: 10px}
+    .aspects td, .aspects th {padding: 10px; border: 1px solid cyan; color: cyan}
+    .aspects {border-collapse: collapse}
+  </style>
+</head>
+<body>
+<div class="page">
+  <table class="menu">
+    <tr>
+      <td><a href="games.html">Games</a></td>
+      <td><a href="filters.html">Filters</a></td>
+      <td>Aspects</td>
+    </tr>
+  </table>
+
+  <table class="aspects">
+    <tr><th>Aspect</th><th>Description</th></tr>
+    <% aspects.each_pair do |name, info| %>
+      <tr><td><%= name %></td><td><%= info['description'] %></td></tr>
+    <% end %>
+  </table>
+</div>
+</body>
+</html>

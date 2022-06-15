@@ -50,7 +50,7 @@ class SuggestAspects
     matches = @aspects[aspect_name]['match']
     matches = [matches] if matches.is_a?( String)
     ignores1 = @aspects[aspect_name]['ignore']
-    ignores1 = [ignores1] if ignores.is_a?( String)
+    ignores1 = [ignores1] if ignores1.is_a?( String)
     ignores1 = [] if ignores1.nil?
 
     ignores = []

@@ -1,0 +1,136 @@
+<html>
+<head>
+  <style>
+    body {background: black}
+    .page {margin-left: auto; margin-right: auto; width: 890px}
+    .container {background: grey; width: 800px; min-height: 200px}
+    .frame1 {padding: 20px; border: 5px solid cyan}
+    .frame2 {padding: 20px; margin-top: 10px; position: relative}
+    .title {position: absolute; top: 15px; left: 45px; display: flex; width: 800px}
+    .title div {background: cyan; border-top: 5px solid black; border-bottom: 5px solid black;
+      flex-grow: 1; height: 5px}
+    .title span {font-size: 20px; color: cyan; background: black; position: relative; top: -5px; left: 0px;
+      padding-left: 10px; padding-right: 10px}
+    .button {display: inline-block; border: 1px solid black; border-radius: 5px; background: cyan; font-size: 24px;
+      margin: 5px; padding: 2px}
+    .menu {margin-left: auto; margin-right: auto; font-size: 30px; margin-bottom: 10px}
+    .menu_on {color: white}
+    .menu_off {color: cyan; text-decoration: underline; cursor: pointer;}
+    .menu td {padding: 10px}
+    .blurb {margin-left: auto; margin-right: auto; color: cyan; font-size: 20px; max-width: 750px}
+  </style>
+  <script>
+      function drag(ev,index) {
+          ev.dataTransfer.setData("index", index);
+      }
+      function drop(ev) {
+          ev.preventDefault();
+          var index = ev.dataTransfer.getData("index");
+          var flag = '';
+          var className = ev.target.className;
+          if ( className.includes( "include") ) {
+              flag = "Y";
+          }
+          if ( className.includes( "exclude") ) {
+              flag = "N";
+          }
+          window.localStorage.setItem( "pagoda.aspect." + index, flag);
+          refresh();
+      }
+      function make_button( name, index, status) {
+          return '<div class="button ' + status + '"' +
+              ' draggable="true"' +
+              ' ondragstart="drag( event, ' + index + ')"' +
+              ' ondragover="event.preventDefault()"' +
+              ' ondrop="drop(event)">' +name + '</div>';
+      }
+
+      function add_button( name, index, contents) {
+          var flag = window.localStorage.getItem( "pagoda.aspect." + index);
+          var status = 'ignore';
+          if (flag == 'Y') {status = 'include';}
+          if (flag == 'N') {status = 'exclude';}
+          button = make_button( name, index, status);
+          if (flag == 'Y') {
+              contents.included = contents.included + button;
+          }
+          else if (flag == 'N') {
+              contents.excluded = contents.excluded + button;
+          }
+          else {
+              contents.unused = contents.unused + button;
+          }
+      }
+
+      function refresh() {
+          const contents = {excluded:'', included:'', unused: ''};
+          <% aspects.each_pair do |n,info| %>
+            add_button( '<%= n %>', <%= info['index'] %>, contents);
+          <% end %>
+          var excluded_box = document.getElementById( "exclude");
+          excluded_box.innerHTML = contents.excluded;
+          var included_box = document.getElementById( "include");
+          included_box.innerHTML = contents.included;
+          var unused_box = document.getElementById( "unused");
+          unused_box.innerHTML = contents.unused;
+      }
+
+      function hide_menu( name) {
+          document.getElementById( name).style.display = 'none';
+      }
+
+      function show_menu( name) {
+          document.getElementById( name).style.display = 'inline';
+      }
+
+      function click_welcome() {
+          hide_menu( 'm_w_1');
+          hide_menu( 'm_f_0');
+          hide_menu( 'm_a_0');
+          show_menu( 'm_w_0');
+          show_menu( 'm_f_1');
+          show_menu( 'm_a_1');
+      }
+
+      function click_filters() {
+          hide_menu( 'm_w_0');
+          hide_menu( 'm_f_1');
+          hide_menu( 'm_a_0');
+          show_menu( 'm_w_1');
+          show_menu( 'm_f_0');
+          show_menu( 'm_a_1');
+      }
+
+      function click_aspects() {
+          hide_menu( 'm_w_0');
+          hide_menu( 'm_f_0');
+          hide_menu( 'm_a_1');
+          show_menu( 'm_w_1');
+          show_menu( 'm_f_1');
+          show_menu( 'm_a_0');
+      }
+  </script>
+</head>
+<body>
+<div class="page">
+  <table class="menu">
+    <tr>
+      <td>
+        <span id="m_w_0" class="menu_on">Welcome</span>
+        <span id="m_w_1" style="display: none" class="menu_off" onclick="click_welcome()">Welcome</span>
+      </td>
+      <td>
+        <span id="m_f_0" style="display: none" class="menu_on">Filters</span>
+        <span id="m_f_1" class="menu_off" onclick="click_filters()">Filters</span>
+      </td>
+      <td>
+        <span id="m_a_0" style="display: none" class="menu_on">Aspects</span>
+        <span id="m_a_1" class="menu_off" onclick="click_aspects()">Aspects</span>
+      </td>
+    </tr>
+  </table>
+  <div id="d_w">
+  </div>
+</div>
+</body>
+</html>
