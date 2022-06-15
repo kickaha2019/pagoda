@@ -23,7 +23,7 @@
 </div>
 
 <div id="list"><table class="scan list">
-  <tr><th>Site</th><th>Type</th><th>Title</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Comment</th><th>Actions</th></tr>
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Year</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Comment</th><th>Actions</th></tr>
   <%=
       html = []
 
@@ -42,6 +42,7 @@
         html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
         html << "<td>#{rec.type}</td>"
         html << "<td><a target=\"_blank\" title=\"#{t(rec.orig_title)}\" href=\"#{rec.url}\">#{h(rec.orig_title,40)}<a/></td>"
+        html << "<td>#{rec.year}</td>"
         info = collation( rec.url)
         html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
         html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"

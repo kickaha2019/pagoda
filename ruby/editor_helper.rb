@@ -159,13 +159,18 @@ ASPECT_ELEMENT
     def games_by_aspect_records
       map = Hash.new {|h,k| h[k] = 0}
       $pagoda.games do |game|
+        found = false
         game.aspects.each_pair do |a,f|
+          found = true
           map[a] += 1 if f
+        end
+        unless found
+          map['None'] += 1
         end
       end
       $pagoda.aspect_info.keys.sort.collect do |aspect|
         [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
-      end
+      end + [['None', '', map['None']]]
     end
 
     def games_records( aspect, search)
@@ -176,7 +181,11 @@ ASPECT_ELEMENT
         end
 
         if selected && (aspect != '')
-          selected = game.aspects[aspect]
+          if aspect == 'None'
+            selected = (game.aspects.size == 0)
+          else
+            selected = game.aspects[aspect]
+          end
         end
 
         selected

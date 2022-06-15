@@ -324,6 +324,7 @@ class Pagoda
         @record[:valid]      = rec[:valid] ? 'Y' : 'N'
         @record[:comment]    = rec[:comment]
         @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
+        @record[:year]       = rec[:year] if rec[:year]
         @owner.insert( 'link', @record)
       end
       @owner.end_transaction
@@ -346,6 +347,7 @@ class Pagoda
     @database.declare_integer( 'game',           :group_id)
     @database.declare_integer( 'game',           :year)
     @database.declare_integer( 'link',           :timestamp)
+    @database.declare_integer( 'link',           :year)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|

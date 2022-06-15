@@ -17,6 +17,14 @@ class DefaultSite
   def get_game_details( url, page, game)
   end
 
+  def get_game_year( url, page, rec)
+    game = {}
+    get_game_details( url, page, game)
+    if game[:year]
+      rec[:year] = game[:year]
+    end
+  end
+
   def name
     'Website'
   end

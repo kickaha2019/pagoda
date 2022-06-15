@@ -202,6 +202,9 @@ class VerifyLinks
     File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
 
+    # Get year if possible for link
+    @pagoda.get_site_handler( link.site).get_game_year( link.url, body, rec)
+
     # Warn if ignoring link bound to a game
     if rec[:ignore] && link.collation
       rec[:comment] = "Was bound to #{link.collation.name}"
