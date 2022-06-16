@@ -1,25 +1,30 @@
 ---
 "1st person":
   index:  1
+  desc:   1st person perspective gameplay
   match:
   - first\Wperson
   - "1st\\Wperson"
   - \WFPP\W
 "2D":
+  desc:   2D graphics
   index:  30
   match:
   - \W2D\W
 "3D":
+  desc:   3D graphics
   index:  6
   match:
   - \W3D\W
 "3rd person":
+  desc:   3rd person perspective gameplay
   index: 2
   match:
   - third\Wperson
   - "3rd\\Wperson"
   - \WTPP\W
 Action:
+  desc:   Game requires quick reactions or dexterity
   index: 3
   match:
   - \WAction\WRPG
@@ -30,12 +35,13 @@ Action:
   - platformer
   - platforming
 Adventure:
+  desc:   Graphic adventure game
   index: 10
-Building:
-  index: 28
 Cards:
+  desc:   Card based gameplay like Slay the Spire
   index: 11
 Choices:
+  desc:   At points in the game choose from two or more options as to what happens
   index: 4
   match:
   - Choose Your Own Adventure
@@ -43,40 +49,52 @@ Choices:
   - QT\WEvents
   - QTE
 FMV:
+  desc:   Game contains full motion video
   index:  0
   match:
   - FMV
   - full motion video
 HOG:
+  desc:   Game has hidden object scenes
   index:  12
 Inventory:
+  desc:   Inventory based gameplay
   match:  inventory
   index:  15
 Investigation:
+  desc:   Investigative gameplay
   index:  13
 Maze:
+  desc:   Game has (the horror) mazes in it
   index: 5
-  match:  \WMaze\W
+  match:  \WMaze(|s)\W
 Minigame:
+  desc:   Game has minigames in it
   match:  \Wmini(\W*)game
   index:  20
-MMORPG:
-  index: 27
 Physics:
+  desc:   Physics based gameplay
   index: 14
 Puzzle:
+  desc:   Puzzle focussed gameplay often variations on a theme
   index: 16
 "Resource management":
+  desc:   Some management style gameplay
   index: 18
 Roguelike:
+  desc:   Roguelike
   index: 17
 RPG:
+  desc:   Role playing game where your character levels up as you play
   index: 19
 Simulation:
+  desc:   Simulation in some way
   index: 21
 Slider:
+  desc:   Game contains sliders
   index: 22
 Sound:
+  desc:   Game contains sound based puzzles
   match:
   - sound
   ignore:
@@ -92,13 +110,17 @@ Sound:
   - sound dep
   index:  31
 Stealth:
+  desc:   Gameplay involves stealth at points
   index: 23
 Strategy:
+  desc:   Game has strategy elements
   index: 24
 Steam:
+  desc:   Game available on Steam
   index:  7
   derive: on_steam?
 Timer:
+  desc:   Game has timed sequences
   index: 9
   match:
   - timer
@@ -106,12 +128,16 @@ Timer:
   - Timed puzzle
   - puzzles limited by time
 "Tower Defense":
+  desc:   Tower Defense gameplay
   index: 8
   match:
   - Tower Defense
 "Visual novel":
+  desc:   Visual Novel
   index: 25
 VR:
+  desc:   Virtual Reality game
   index: 26
 "Word puzzle":
+  desc:   Word puzzle gameplay
   index: 29

@@ -40,6 +40,7 @@ class WebsiteFiltersPage
 
     aspects_section = template( 'aspects').result( binding)
     filters_section = template( 'filters').result( binding)
+    welcome_section = template( 'welcome').result( binding)
 
     File.open( output_dir + '/index.html', 'w') do |io|
       io.print template('index').result( binding)

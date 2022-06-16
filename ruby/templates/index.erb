@@ -15,12 +15,15 @@
       margin: 5px; padding: 2px}
     .menu {margin-left: auto; margin-right: auto; font-size: 30px; margin-bottom: 10px}
     .menu_on {color: white}
-    .menu_off {color: cyan; text-decoration: underline; cursor: pointer;}
+    .menu_off {color: yellow; text-decoration: underline; cursor: pointer;}
     .menu td {padding: 10px}
     .aspects {margin-left: auto; margin-right: auto; color: white; font-size: 30px; margin-bottom: 10px}
     .aspects td, .aspects th {padding: 10px; border: 1px solid cyan; color: cyan}
     .aspects {border-collapse: collapse}
     .blurb {margin-left: auto; margin-right: auto; color: cyan; font-size: 20px; max-width: 750px}
+    #welcome_div {margin-left: auto; margin-right: auto; color: cyan; font-size: 30px; max-width: 750px}
+    #welcome_div a {color: yellow}
+    #welcome_div span {color: yellow; text-decoration: underline; cursor: pointer}
   </style>
   <script>
     var sections = ['Welcome', 'Filters', 'Aspects'];
@@ -120,7 +123,7 @@
 <body>
 <div class="page">
   <nav id="menu"></nav>
-  <div id="Welcome_div"></div>
+  <div id="Welcome_div"><%= welcome_section %></div>
   <div id="Filters_div"><%= filters_section %></div>
   <div id="Aspects_div"><%= aspects_section %></div>
 </div>
