@@ -17,9 +17,46 @@
     .menu_on {color: white}
     .menu_off {color: cyan; text-decoration: underline; cursor: pointer;}
     .menu td {padding: 10px}
+    .aspects {margin-left: auto; margin-right: auto; color: white; font-size: 30px; margin-bottom: 10px}
+    .aspects td, .aspects th {padding: 10px; border: 1px solid cyan; color: cyan}
+    .aspects {border-collapse: collapse}
     .blurb {margin-left: auto; margin-right: auto; color: cyan; font-size: 20px; max-width: 750px}
   </style>
   <script>
+    var sections = ['Welcome', 'Filters', 'Aspects'];
+
+    function set_display( name, mode) {
+        document.getElementById( name).style.display = mode;
+    }
+
+    function set_section( name) {
+        set_display( name + '_menu_on',  'inline');
+        set_display( name + '_menu_off', 'none');
+        set_display( name + '_div',      'block');
+
+        for (var i = 0; i < sections.length; i++) {
+            var s = sections[i];
+            if (s != name) {
+                set_display(s + '_menu_on', 'none');
+                set_display(s + '_menu_off', 'inline');
+                set_display(s + '_div', 'none');
+            }
+        }
+
+        eval( 'refresh_' + name + '();');
+    }
+
+    function get_menu() {
+        var menu = '<table class="menu"><tr>';
+        for (var i = 0; i < sections.length; i++) {
+            var s = sections[i];
+            menu = menu + '<td>' +
+  '<span id="' + s + '_menu_on" class="menu_on">' + s + '</span>' +
+  '<span id="' + s + '_menu_off" class="menu_off" onclick="set_section(' + "'" + s + "'" + ')">' + s + '</span>' +
+            '</td>';
+        }
+        return menu + '</tr></table>';
+    }
       function drag(ev,index) {
           ev.dataTransfer.setData("index", index);
       }
@@ -35,7 +72,7 @@
               flag = "N";
           }
           window.localStorage.setItem( "pagoda.aspect." + index, flag);
-          refresh();
+          refresh_Filters();
       }
       function make_button( name, index, status) {
           return '<div class="button ' + status + '"' +
@@ -62,7 +99,9 @@
           }
       }
 
-      function refresh() {
+      function refresh_Welcome() {}
+
+      function refresh_Filters() {
           const contents = {excluded:'', included:'', unused: ''};
           <% aspects.each_pair do |n,info| %>
             add_button( '<%= n %>', <%= info['index'] %>, contents);
@@ -75,62 +114,20 @@
           unused_box.innerHTML = contents.unused;
       }
 
-      function hide_menu( name) {
-          document.getElementById( name).style.display = 'none';
-      }
-
-      function show_menu( name) {
-          document.getElementById( name).style.display = 'inline';
-      }
-
-      function click_welcome() {
-          hide_menu( 'm_w_1');
-          hide_menu( 'm_f_0');
-          hide_menu( 'm_a_0');
-          show_menu( 'm_w_0');
-          show_menu( 'm_f_1');
-          show_menu( 'm_a_1');
-      }
-
-      function click_filters() {
-          hide_menu( 'm_w_0');
-          hide_menu( 'm_f_1');
-          hide_menu( 'm_a_0');
-          show_menu( 'm_w_1');
-          show_menu( 'm_f_0');
-          show_menu( 'm_a_1');
-      }
-
-      function click_aspects() {
-          hide_menu( 'm_w_0');
-          hide_menu( 'm_f_0');
-          hide_menu( 'm_a_1');
-          show_menu( 'm_w_1');
-          show_menu( 'm_f_1');
-          show_menu( 'm_a_0');
-      }
+    function refresh_Aspects() {}
   </script>
 </head>
 <body>
 <div class="page">
-  <table class="menu">
-    <tr>
-      <td>
-        <span id="m_w_0" class="menu_on">Welcome</span>
-        <span id="m_w_1" style="display: none" class="menu_off" onclick="click_welcome()">Welcome</span>
-      </td>
-      <td>
-        <span id="m_f_0" style="display: none" class="menu_on">Filters</span>
-        <span id="m_f_1" class="menu_off" onclick="click_filters()">Filters</span>
-      </td>
-      <td>
-        <span id="m_a_0" style="display: none" class="menu_on">Aspects</span>
-        <span id="m_a_1" class="menu_off" onclick="click_aspects()">Aspects</span>
-      </td>
-    </tr>
-  </table>
-  <div id="d_w">
-  </div>
+  <nav id="menu"></nav>
+  <div id="Welcome_div"></div>
+  <div id="Filters_div"><%= filters_section %></div>
+  <div id="Aspects_div"><%= aspects_section %></div>
 </div>
+</body>
+<script>
+    document.getElementById( "menu").innerHTML = get_menu();
+    set_section( 'Welcome');
+</script>
 </body>
 </html>

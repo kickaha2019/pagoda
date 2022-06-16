@@ -3,8 +3,9 @@ require_relative 'pagoda'
 
 class WebsiteFiltersPage
   def initialize( dir, templates)
-    @pagoda  = Pagoda.new( dir)
-    @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
+    @pagoda    = Pagoda.new( dir)
+    @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
+    @templates = templates
 
     seen = {}
     @aspects.each_pair do |name, info|
@@ -25,10 +26,6 @@ class WebsiteFiltersPage
         raise "No index for aspect #{name} suggest #{free}"
       end
     end
-
-    @aspects_template = ERB.new( IO.read( templates + '/aspects.erb'))
-    @filters_template = ERB.new( IO.read( templates + '/filters.erb'))
-    @index_template   = ERB.new( IO.read( templates + '/index.erb'))
   end
 
   def aspect_name_indexes
@@ -41,8 +38,11 @@ class WebsiteFiltersPage
     aspects    = @aspects
     containers = ['include', 'unused', 'exclude']
 
+    aspects_section = template( 'aspects').result( binding)
+    filters_section = template( 'filters').result( binding)
+
     File.open( output_dir + '/index.html', 'w') do |io|
-      io.print @index_template.result( binding)
+      io.print template('index').result( binding)
     end
 
     # File.open( output_dir + '/aspects.html', 'w') do |io|
@@ -55,6 +55,10 @@ class WebsiteFiltersPage
     #   containers = ['include', 'unused', 'exclude']
     #   io.print @filters_template.result( binding)
     # end
+  end
+
+  def template( name)
+    ERB.new( IO.read( @templates + '/' + name + '.erb'))
   end
 end
 
