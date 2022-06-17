@@ -102,6 +102,14 @@ class Pagoda
       end
     end
 
+    def links
+      @owner.get( 'bind', :id, id).each do |rec|
+        if link = @owner.link( rec[:url])
+          yield link
+        end
+      end
+    end
+
     def mac
       'N'
     end

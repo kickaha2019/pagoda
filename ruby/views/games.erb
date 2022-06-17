@@ -4,7 +4,7 @@
   <button onclick="search_input( '<%= "/games?page=1&aspect=#{aspect}" %>')">Search</button>
   <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
-      url = "/games?search=#{e(search)}"
+      url = "/games?search=#{e(search)}&aspect=#{e(aspect)}"
       erb :page_control, :locals => {:view => 'games',
                                      :page => page,
                                      :url  => url,

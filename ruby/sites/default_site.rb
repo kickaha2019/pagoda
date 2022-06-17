@@ -10,6 +10,9 @@ class DefaultSite
     true
   end
 
+  def get_derived_aspects( page)
+  end
+
   def get_game_description( page)
     ''
   end

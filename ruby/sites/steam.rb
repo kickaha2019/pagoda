@@ -78,6 +78,10 @@ class Steam < DefaultSite
 		false
 	end
 
+	def get_derived_aspects( page)
+		yield 'Steam'
+	end
+
 	def get_game_description( page)
 		''
 	end
