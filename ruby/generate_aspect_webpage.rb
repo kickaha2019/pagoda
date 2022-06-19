@@ -127,22 +127,29 @@ class WebsiteFiltersPage
 
     aspects_section = template( 'aspects').result( binding)
     filters_section = template( 'filters').result( binding)
+    games_section   = template( 'games').result( binding)
     welcome_section = template( 'welcome').result( binding)
 
     File.open( output_dir + '/index.html', 'w') do |io|
       io.print template('index').result( binding)
     end
 
-    File.open( output_dir + '/games.js', 'w') do |io|
+    File.open( output_dir + '/index.js', 'w') do |io|
+      io.print template('code').result( binding)
+    end
+
+    File.open( output_dir + '/data.js', 'w') do |io|
+      separ = ''
       io.puts "var games = ["
       games.each do |game|
-        io.print "['#{game.name.gsub( "'", "\\'")}'"
-        io.print ",'#{game.url}'"
-        io.print ",#{game.year}"
+        io.print "#{separ}['#{game.name.split("'").join("\\'")}'"
+        io.print ",'#{game.url ? game.url.split("'").join("\\'") : ''}'"
+        io.print ",#{game.year ? game.year : 0}"
         io.print ",#{game.flags(0,31)}"
         io.print ",#{game.flags(32,63)}"
         io.print ",'#{game.steam}'"
         io.puts  ",'#{game.gog}']"
+        separ = ','
       end
       io.puts "];"
     end

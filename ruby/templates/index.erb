@@ -25,105 +25,14 @@
     #welcome_div a {color: yellow}
     #welcome_div span {color: yellow; text-decoration: underline; cursor: pointer}
   </style>
-  <script>
-    var sections = ['Welcome', 'Filters', 'Aspects'];
-
-    function set_display( name, mode) {
-        document.getElementById( name).style.display = mode;
-    }
-
-    function set_section( name) {
-        set_display( name + '_menu_on',  'inline');
-        set_display( name + '_menu_off', 'none');
-        set_display( name + '_div',      'block');
-
-        for (var i = 0; i < sections.length; i++) {
-            var s = sections[i];
-            if (s != name) {
-                set_display(s + '_menu_on', 'none');
-                set_display(s + '_menu_off', 'inline');
-                set_display(s + '_div', 'none');
-            }
-        }
-
-        eval( 'refresh_' + name + '();');
-    }
-
-    function get_menu() {
-        var menu = '<table class="menu"><tr>';
-        for (var i = 0; i < sections.length; i++) {
-            var s = sections[i];
-            menu = menu + '<td>' +
-  '<span id="' + s + '_menu_on" class="menu_on">' + s + '</span>' +
-  '<span id="' + s + '_menu_off" class="menu_off" onclick="set_section(' + "'" + s + "'" + ')">' + s + '</span>' +
-            '</td>';
-        }
-        return menu + '</tr></table>';
-    }
-      function drag(ev,index) {
-          ev.dataTransfer.setData("index", index);
-      }
-      function drop(ev) {
-          ev.preventDefault();
-          var index = ev.dataTransfer.getData("index");
-          var flag = '';
-          var className = ev.target.className;
-          if ( className.includes( "include") ) {
-              flag = "Y";
-          }
-          if ( className.includes( "exclude") ) {
-              flag = "N";
-          }
-          window.localStorage.setItem( "pagoda.aspect." + index, flag);
-          refresh_Filters();
-      }
-      function make_button( name, index, status) {
-          return '<div class="button ' + status + '"' +
-              ' draggable="true"' +
-              ' ondragstart="drag( event, ' + index + ')"' +
-              ' ondragover="event.preventDefault()"' +
-              ' ondrop="drop(event)">' +name + '</div>';
-      }
-
-      function add_button( name, index, contents) {
-          var flag = window.localStorage.getItem( "pagoda.aspect." + index);
-          var status = 'ignore';
-          if (flag == 'Y') {status = 'include';}
-          if (flag == 'N') {status = 'exclude';}
-          button = make_button( name, index, status);
-          if (flag == 'Y') {
-              contents.included = contents.included + button;
-          }
-          else if (flag == 'N') {
-              contents.excluded = contents.excluded + button;
-          }
-          else {
-              contents.unused = contents.unused + button;
-          }
-      }
-
-      function refresh_Welcome() {}
-
-      function refresh_Filters() {
-          const contents = {excluded:'', included:'', unused: ''};
-          <% aspects.each_pair do |n,info| %>
-            add_button( '<%= n %>', <%= info['index'] %>, contents);
-          <% end %>
-          var excluded_box = document.getElementById( "exclude");
-          excluded_box.innerHTML = contents.excluded;
-          var included_box = document.getElementById( "include");
-          included_box.innerHTML = contents.included;
-          var unused_box = document.getElementById( "unused");
-          unused_box.innerHTML = contents.unused;
-      }
-
-    function refresh_Aspects() {}
-  </script>
+  <script src="index.js"></script>
+  <script src="data.js"></script>
 </head>
 <body>
 <div class="page">
   <nav id="menu"></nav>
   <div id="Welcome_div"><%= welcome_section %></div>
+  <div id="Games_div"  ><%= games_section   %></div>
   <div id="Filters_div"><%= filters_section %></div>
   <div id="Aspects_div"><%= aspects_section %></div>
 </div>
