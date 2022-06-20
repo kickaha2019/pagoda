@@ -35,6 +35,7 @@ Cards:
   index: 11
 Cartoon:
   desc:   Cartoon style graphics
+  index: 6
   match:
   - cartoon
 Choices:
@@ -62,6 +63,7 @@ HOG:
   index:  12
 Horror:
   desc:   Horror
+  index: 27
   match:
   - horror
 Inventory:
@@ -81,6 +83,7 @@ Minigame:
   index:  20
 Pixels:
   desc:   Pixel graphics
+  index: 28
   match:
   - pixel
 Physics:

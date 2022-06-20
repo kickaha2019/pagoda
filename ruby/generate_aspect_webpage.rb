@@ -82,21 +82,6 @@ class WebsiteFiltersPage
     end
   end
 
-  def games
-    list = []
-    @pagoda.game( 0)   # Force index to be created
-    @pagoda.games do |game|
-      next if game.is_group == 'Y'
-      playable = Playable.new( self, game.name, game.year)
-      seen = {}
-      get_game_info( game, playable, seen)
-      list << playable
-    end
-
-    p [list.size]
-    list.sort_by! {|g| g.name}
-  end
-
   def get_game_info( game, playable, seen)
     return if seen[ game.id]
 
@@ -124,6 +109,7 @@ class WebsiteFiltersPage
   def generate( output_dir)
     aspects    = @aspects
     containers = ['include', 'unused', 'exclude']
+    games      = list_games
 
     aspects_section = template( 'aspects').result( binding)
     filters_section = template( 'filters').result( binding)
@@ -159,6 +145,20 @@ class WebsiteFiltersPage
     #   containers = ['include', 'unused', 'exclude']
     #   io.print @filters_template.result( binding)
     # end
+  end
+
+  def list_games
+    list = []
+    @pagoda.game( 0)   # Force index to be created
+    @pagoda.games do |game|
+      next if game.is_group == 'Y'
+      playable = Playable.new( self, game.name, game.year)
+      seen = {}
+      get_game_info( game, playable, seen)
+      list << playable
+    end
+
+    list.sort_by! {|g| g.name}
   end
 
   def template( name)

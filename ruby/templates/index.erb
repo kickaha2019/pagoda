@@ -25,8 +25,8 @@
     #welcome_div a {color: yellow}
     #welcome_div span {color: yellow; text-decoration: underline; cursor: pointer}
   </style>
-  <script src="index.js"></script>
   <script src="data.js"></script>
+  <script src="index.js"></script>
 </head>
 <body>
 <div class="page">
@@ -40,6 +40,7 @@
 <script>
     document.getElementById( "menu").innerHTML = get_menu();
     set_section( 'Welcome');
+    refresh_counts();
 </script>
 </body>
 </html>

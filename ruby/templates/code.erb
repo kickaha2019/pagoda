@@ -92,8 +92,14 @@ function refresh_Filters() {
   included_box.innerHTML = contents.included;
   var unused_box = document.getElementById( "unused");
   unused_box.innerHTML = contents.unused;
+  refresh_counts();
+}
 
+function refresh_counts() {
   refresh_masks();
+  let count = "Games (" + count_selected() + ")";
+  document.getElementById( "Games_menu_on").innerHTML = count;
+  document.getElementById( "Games_menu_off").innerHTML = count;
 }
 
 function refresh_Aspects() {}
@@ -132,4 +138,21 @@ function refresh_masks() {
             exclude_mask_1 |= (1 << (index - 32));
         }
     }
+}
+
+function is_selected( index) {
+    let g = games[index];
+    if ((g[3] & include_mask_0) != include_mask_0) {return false;}
+    if ((g[4] & include_mask_1) != include_mask_1) {return false;}
+    if ((g[3] & exclude_mask_0) != 0) {return false;}
+    if ((g[4] & exclude_mask_1) != 0) {return false;}
+    return true;
+}
+
+function count_selected() {
+    let count = 0;
+    for (var i = 0; i < games.length; i++) {
+        if ( is_selected( i) ) {count ++;}
+    }
+    return count;
 }
