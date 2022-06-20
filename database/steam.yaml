@@ -37,7 +37,9 @@ tags:
   Episodic: ignore
   Movie: reject
   Sci-fi: ignore
-  Horror: ignore
+  Horror:
+  - ignore
+  - Horror
   Survival: ignore
   Open World: ignore
   Casual: ignore
@@ -49,7 +51,9 @@ tags:
   2D:
   - ignore
   - 2D
-  Pixel Graphics: ignore
+  Pixel Graphics:
+  - ignore
+  - Pixels
   Anime: ignore
   Colorful: ignore
   Thriller: ignore
@@ -68,7 +72,9 @@ tags:
   3D Platformer: reject
   Physics: ignore
   Experience: ignore
-  Psychological Horror: ignore
+  Psychological Horror:
+  - ignore
+  - Horror
   Gore: ignore
   Demons: ignore
   Psychological: ignore
@@ -100,7 +106,9 @@ tags:
   Romance: ignore
   Comedy: ignore
   Time Travel: ignore
-  Cartoony: ignore
+  Cartoony:
+  - ignore
+  - Cartoon
   Hand-drawn: ignore
   1990's: ignore
   Conversation: ignore
@@ -115,13 +123,17 @@ tags:
   Loot: ignore
   Abstract: ignore
   Local Co-Op: ignore
-  Cartoon: ignore
+  Cartoon:
+  - ignore
+  - Cartoon
   Top-Down: ignore
   Multiplayer: ignore
   Level Editor: ignore
   Hidden Object: reject
   Lovecraftian: ignore
-  Survival Horror: ignore
+  Survival Horror:
+  - ignore
+  - Horror
   Investigation:
   - ignore
   - Investigation
@@ -303,7 +315,9 @@ tags:
   JRPG:
   - accept
   - RPG
-  Dungeon Crawler: ignore
+  Dungeon Crawler:
+  - ignore
+  - Dungeon crawl
   Flight: reject
   3D Fighter: reject
   Arena Shooter: reject
@@ -335,9 +349,13 @@ tags:
   Economy: ignore
   Jet: ignore
   MOBA: ignore
-  Roguelike: ignore
+  Roguelike:
+  - ignore
+  - Dungeon crawl
   Mystery Dungeon: ignore
-  Traditional Roguelike: ignore
+  Traditional Roguelike:
+  - ignore
+  - Dungeon crawl
   God Game: ignore
   Hentai: reject
   NSFW: ignore
@@ -360,7 +378,10 @@ tags:
   Western: ignore
   Snow: ignore
   Hunting: ignore
-  Roguelike Deckbuilder: ignore
+  Roguelike Deckbuilder:
+  - ignore
+  - Dungeon crawl
+  - Cards
   Automobile Sim: ignore
   Moddable: ignore
   Base Building: ignore

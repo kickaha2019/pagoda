@@ -28,6 +28,10 @@ get '/aspects' do
   erb :aspects
 end
 
+post '/aspect_delete/:aspect' do
+  aspect_delete( d(params[:aspect]))
+end
+
 post '/bind/:url' do
   bind_link( d(params[:url]))
 end

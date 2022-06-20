@@ -51,7 +51,9 @@ tags:
   Great Soundtrack: ignore
   Hidden Object: reject
   Historical: ignore
-  Horror: ignore
+  Horror:
+  - ignore
+  - Horror
   Indie: ignore
   Investigation:
   - ignore
@@ -144,9 +146,13 @@ tags:
   War: ignore
   Magic: ignore
   Top-Down: ignore
-  Psychological Horror: ignore
+  Psychological Horror:
+  - ignore
+  - Horror
   Real-Time: ignore
-  Cartoony: ignore
+  Cartoony:
+  - ignore
+  - Cartoon
   Cyberpunk: ignore
   Grand Strategy: ignore
   Crime: ignore
@@ -157,7 +163,9 @@ tags:
   Trading: ignore
   Crafting: ignore
   Robots: ignore
-  Pixel Graphics: ignore
+  Pixel Graphics:
+  - ignore
+  - Pixels
   Thriller: ignore
   Supernatural: ignore
   Petting Dogs: ignore
@@ -177,7 +185,9 @@ tags:
   Perma Death: ignore
   Board Game: ignore
   Emotional: ignore
-  Dungeon Crawler: ignore
+  Dungeon Crawler:
+  - accept
+  - Dungeon crawl
   Local Co-Op: ignore
   Puzzle Platformer: reject
   LevelEditor: ignore
@@ -209,11 +219,15 @@ tags:
   Short: ignore
   Romance: ignore
   Transportation: ignore
-  Roguelite: ignore
+  Roguelite:
+  - ignore
+  - Dungeon crawl
   Fishing: ignore
   Dog: ignore
   Sniper: reject
-  Survival Horror: ignore
+  Survival Horror:
+  - ignore
+  - Horror
   Dating Sim: reject
   Rhythm: ignore
   Souls-like: ignore

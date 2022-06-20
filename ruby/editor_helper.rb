@@ -61,6 +61,16 @@ ASPECT_ELEMENT
       html.gsub( />\s+</m, '><')
     end
 
+    def aspect_action( aspect, action)
+      "<button onclick=\"aspect_action( '#{e(aspect)}', '#{action}');\">#{action.capitalize}</button>"
+    end
+
+    def aspect_delete( aspect)
+      $pagoda.start_transaction
+      $pagoda.delete( 'aspect', :aspect, aspect)
+      $pagoda.end_transaction
+    end
+
     def bind_id( link_rec)
       return nil if ! link_rec.bound?
       game_rec = link_rec.collation
@@ -168,7 +178,10 @@ ASPECT_ELEMENT
           map['None'] += 1
         end
       end
-      $pagoda.aspect_info.keys.sort.collect do |aspect|
+
+      aspects = []
+      $pagoda.aspect_names {|aspect| aspects << aspect}
+      aspects.sort.collect do |aspect|
         [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
       end + [['None', '', map['None']]]
     end

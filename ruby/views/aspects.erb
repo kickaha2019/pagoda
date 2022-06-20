@@ -1,19 +1,28 @@
 <%= erb :header, :locals => {:page => 'games_by_aspect'} %>
 
 <div id="list"><table class="scan list">
-  <tr><th>Aspect</th><th>Index</th><th>Count</th></tr>
+  <tr><th>Aspect</th><th>Index</th><th>Count</th><th>Actions</th></tr>
   <%=
       html = []
 
       games_by_aspect_records.each do |rec|
         html << "<tr><td>#{rec[0]}</td>"
         html << "<td>#{rec[1]}</td>"
-        html << "<td><a href=\"/games?aspect=#{rec[0]}\">#{rec[2]}</a></td></tr>"
+        html << "<td><a href=\"/games?aspect=#{rec[0]}\">#{rec[2]}</a></td>"
+        html << "<td>#{aspect_action( rec[0], 'delete')}</td></tr>"
       end
 
       html.join( "\n")
   %>
 </table></div>
-
+<script>
+    function aspect_action( aspect, action) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/aspect_" + action + "/" + aspect, false);
+        xhttp.send();
+        if (xhttp.responseText == '') {return;}
+        window.location.reload();
+    }
+</script>
 </body>
 </html>

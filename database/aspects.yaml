@@ -6,16 +6,6 @@
   - first\Wperson
   - "1st\\Wperson"
   - \WFPP\W
-"2D":
-  desc:   2D graphics
-  index:  30
-  match:
-  - \W2D\W
-"3D":
-  desc:   3D graphics
-  index:  6
-  match:
-  - \W3D\W
 "3rd person":
   desc:   3rd person perspective gameplay
   index: 2
@@ -34,6 +24,7 @@ Action:
   - dexterity
   - platformer
   - platforming
+  - rhythm
   ignore:
   - reaction
 Adventure:
@@ -42,6 +33,10 @@ Adventure:
 Cards:
   desc:   Card based gameplay like Slay the Spire
   index: 11
+Cartoon:
+  desc:   Cartoon style graphics
+  match:
+  - cartoon
 Choices:
   desc:   At points in the game choose from two or more options as to what happens
   index: 4
@@ -50,6 +45,12 @@ Choices:
   - Quick\WTime\WEvents
   - QT\WEvents
   - QTE
+Dungeon crawl:
+  desc:   Dungeon crawling
+  index: 17
+  match:
+  - Roguelike
+  - Dungeon crawl
 FMV:
   desc:   Game contains full motion video
   index:  0
@@ -59,6 +60,10 @@ FMV:
 HOG:
   desc:   Game has hidden object scenes
   index:  12
+Horror:
+  desc:   Horror
+  match:
+  - horror
 Inventory:
   desc:   Inventory based gameplay
   match:  inventory
@@ -74,6 +79,10 @@ Minigame:
   desc:   Game has minigames in it
   match:  \Wmini(\W*)game
   index:  20
+Pixels:
+  desc:   Pixel graphics
+  match:
+  - pixel
 Physics:
   desc:   Physics based gameplay
   index: 14
@@ -83,9 +92,6 @@ Puzzle:
 "Resource management":
   desc:   Some management style gameplay
   index: 18
-Roguelike:
-  desc:   Roguelike
-  index: 17
 RPG:
   desc:   Role playing game where your character levels up as you play
   index: 19
@@ -99,7 +105,6 @@ Sound:
   desc:   Game contains sound based puzzles
   match:
   - sound puzzle
-  - rhythm
   - music puzzle
   - musical puzzle
   index:  31
