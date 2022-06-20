@@ -40,8 +40,10 @@ get '/cache/:timestamp' do
   get_cache( params[:timestamp].to_i)
 end
 
-get '/check_name/:id/:name' do
-  check_name( params[:name], params[:id])
+post '/check_name' do
+  data = JSON.parse( request.body.read)
+  #p [data['name'], data['id']]
+  check_name( data['name'], data['id'])
 end
 
 get '/collation/:url' do

@@ -81,7 +81,7 @@ class Pagoda
     def generate?
       flagged = aspects
       known = []
-      @owner.aspect_names.each {|name| known << name}
+      @owner.aspect_names {|name| known << name}
       return false unless flagged['Adventure']
       ['Action','HOG','Physics','Roguelike','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)

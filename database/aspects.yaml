@@ -34,6 +34,8 @@ Action:
   - dexterity
   - platformer
   - platforming
+  ignore:
+  - reaction
 Adventure:
   desc:   Graphic adventure game
   index: 10
@@ -96,18 +98,10 @@ Slider:
 Sound:
   desc:   Game contains sound based puzzles
   match:
-  - sound
-  ignore:
-  - sound of
-  - "Sound:"
-  - sounds
-  - "\\(Sound"
-  - sound at
-  - soundtrack
-  - sound effect
-  - sound engineer
-  - sound designer
-  - sound dep
+  - sound puzzle
+  - rhythm
+  - music puzzle
+  - musical puzzle
   index:  31
 Stealth:
   desc:   Gameplay involves stealth at points
