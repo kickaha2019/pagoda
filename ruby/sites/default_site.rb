@@ -6,6 +6,14 @@ class DefaultSite
     return nil, nil, nil
   end
 
+  def decode_month( name)
+    if i = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"].index( name[0..2].downcase[0..2])
+       i+1
+    else
+      0
+    end
+  end
+
   def filter( pagoda, link, page, rec)
     true
   end

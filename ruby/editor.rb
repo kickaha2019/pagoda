@@ -90,6 +90,10 @@ post '/ignore/:url' do
   ignore_link( d(params[:url]))
 end
 
+get '/ignored_to_reprieve' do
+  erb :ignored_to_reprieve, get_locals( params, :page => 1)
+end
+
 delete '/link/:url' do
   delete_link( d(params[:url]))
 end

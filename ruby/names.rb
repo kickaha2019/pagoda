@@ -2,8 +2,9 @@ class Names
   def initialize
     @cache     = {}
     @combo2ids = Hash.new {|h,k| h[k] = []}
-    @id2names   = Hash.new {|h,k| h[k] = []}
-    @names2ids  = {}
+    @id2names  = Hash.new {|h,k| h[k] = []}
+    @names2ids = {}
+    @start2ids = Hash.new {|h,k| h[k] = {}}
 
     # HTML entity codes
     @entities = {
@@ -129,8 +130,12 @@ class Names
     @names2ids[name] =  id
     @id2names[id]    << name
 
-    string_combos( reduce( name)) do |combo|
+    string_combos( name) do |combo|
       @combo2ids[combo] << id
+    end
+
+    start_combos( name) do |combo|
+      @start2ids[combo][id] = true
     end
   end
 
@@ -221,6 +226,25 @@ class Names
 
     # Replace punctuation by blanks
     reduced.gsub( /[^a-z0-9]/, ' ').strip
+  end
+
+  def start_combos( name)
+    words = reduce( name).split( ' ')
+    (0..(words.size-1)).each do |i|
+      yield words[0..i].join( ' ')
+    end
+  end
+
+  def start_frequency( name)
+    best = 1000000000
+    start_combos( name) do |combo|
+      if @start2ids.has_key?( combo)
+        if best > @start2ids[combo].size
+          best = @start2ids[combo].size
+        end
+      end
+    end
+    best
   end
 
   def string_combos( name)

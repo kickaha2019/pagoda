@@ -64,11 +64,13 @@ class Steam < DefaultSite
 
 				tags.each do |tag|
 					if tag_info[tag] == 'reject'
+						#p tag
 						rec[:ignore] = true
 					end
 				end
 			end
 
+			rec[:ignore] = true unless rec[:year]
 			return true
 		end
 		return true if /\/agecheck\/app\//  =~ link.url
@@ -106,8 +108,11 @@ class Steam < DefaultSite
 				elsif developer
 					game[:developer] = text
 				elsif release
-					if m2 = /(\d\d\d\d)$/m.match( text)
-						game[:year] = m2[1]
+					if m2 = /(\d\d) (\w\w\w), (\d\d\d\d)$/m.match( text)
+						if (month = decode_month( m2[2])) > 0
+							d = Time.new( m2[3].to_i, month, m2[1].to_i)
+							game[:year] = d.year if d <= Time.now
+						end
 					end
 				end
 				publisher, developer, release = false, false, false

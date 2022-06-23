@@ -201,7 +201,9 @@ tags:
   Vikings: ignore
   City builder: ignore
   Walking Simulator: ignore
-  LGBTQ+: ignore
+  LGBTQ+:
+  - ignore
+  - LGBTQ+
   Beat 'em up: reject
   Tower Defense:
   - ignore

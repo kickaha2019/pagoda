@@ -271,7 +271,7 @@ class Pagoda
     end
 
     def reduced_name
-      @owner.reduce_name( @record[:site], @record[:type], @record[:orig_title])
+      @owner.reduce_name_for_site(@record[:site], @record[:type], @record[:orig_title])
     end
 
     def set_checked
@@ -332,7 +332,7 @@ class Pagoda
         @record[:valid]      = rec[:valid] ? 'Y' : 'N'
         @record[:comment]    = rec[:comment]
         @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
-        @record[:year]       = rec[:year] if rec[:year]
+        @record[:year]       = rec[:year] ? rec[:year] : nil
         @owner.insert( 'link', @record)
       end
       @owner.end_transaction
@@ -527,6 +527,10 @@ class Pagoda
   #   @database.end_transaction
   # end
 
+  def start_frequency( name)
+    @names.start_frequency( name)
+  end
+
   def string_combos( name)
     @names.string_combos( name) {|combo| yield combo}
   end
@@ -606,7 +610,11 @@ class Pagoda
     @database.rebuild
   end
 
-  def reduce_name( site, type, name)
+  def reduce_name( name)
+    @names.reduce(name)
+  end
+
+  def reduce_name_for_site(site, type, name)
     if reductions = @reductions[site]
       if reductions = reductions[type]
         reductions.each do |reduction|

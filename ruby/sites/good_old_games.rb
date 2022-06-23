@@ -96,7 +96,12 @@ class GoodOldGames < DefaultSite
 			end
 		end
 
+		rec[:ignore] = true unless rec[:year]
 		true
+	end
+
+	def get_derived_aspects( page)
+		yield 'GOG'
 	end
 
 	def get_game_description( page)

@@ -53,7 +53,7 @@
         html << link_action( rec, 'bind', row)
         html << link_action( rec, 'unbind', row)
         html << link_action( rec, 'forget', row)
-        if link_status(rec) == 'Free'
+        if /dated/i =~ link_status(rec)
           html << link_add_action( rec)
         end
         html << '</td></tr>'

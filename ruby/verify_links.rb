@@ -41,8 +41,10 @@ class VerifyLinks
       return false
     end
 
-    # Apply site specific filter
-    @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
+    # Apply site specific filter if link not bound
+    unless link.bound?
+      @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
+    end
   end
 
   def get_title( page, defval)
@@ -117,7 +119,7 @@ class VerifyLinks
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
         dubious << link
-      elsif link.status == 'Free'
+      elsif /dated/i =~ link.status
         free << link
       else
         bound << link if link.timestamp < valid_from
@@ -178,10 +180,16 @@ class VerifyLinks
                   :universal_newline => true)
 
     rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:false}
+
+    # Get year if possible for link
+    @pagoda.get_site_handler( link.site).get_game_year( link.url, body, rec)
+
+    #
     if status
       #status, valid, ignore, comment, title = get_details( link, body, rec)
-      status = get_details( link, body, rec)
       p ['verify_page2', status, rec] if debug
+      status = get_details( link, body, rec)
+      p ['verify_page3', status, rec] if debug
     else
       rec[:valid] = false
       rec[:title] = link.title
@@ -201,9 +209,6 @@ class VerifyLinks
     # If OK save page to cache else to temp area
     File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
-
-    # Get year if possible for link
-    @pagoda.get_site_handler( link.site).get_game_year( link.url, body, rec)
 
     # Warn if ignoring link bound to a game
     if rec[:ignore] && link.collation

@@ -259,6 +259,17 @@ ASPECT_ELEMENT
       'Ignored'
     end
 
+    def ignored_to_reprieve_records
+      recs = []
+
+      $pagoda.links do |link|
+        next unless link.status == 'Ignored'
+        recs << [link, $pagoda.start_frequency( link.title)]
+      end
+
+      recs.sort_by {|rec| rec[1]}.collect {|rec| rec[0]}
+    end
+
     def input_element( name, len, value, extras='')
       "<input type=\"text\" name=\"#{name}\" maxlength=\"200\" size=\"#{len}\" value=\"#{h(value)}\" #{extras}>"
     end
@@ -478,7 +489,7 @@ ASPECT_ELEMENT
 
       ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged'].each do |status|
         c = counts[status]
-        colour = (status == 'Free') ? 'lime' : 'white'
+        colour = (/dated/i =~ status) ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0
         colour = 'red' if c[1] > 0
 

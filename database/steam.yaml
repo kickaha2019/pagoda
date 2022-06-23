@@ -12,7 +12,9 @@ tags:
   VR:
   - ignore
   - VR
-  LGBTQ+: ignore
+  LGBTQ+:
+  - ignore
+  - LGBTQ+
   Story Rich: ignore
   Cute: ignore
   Relaxing: ignore
@@ -130,7 +132,9 @@ tags:
   Multiplayer: ignore
   Level Editor: ignore
   Hidden Object: reject
-  Lovecraftian: ignore
+  Lovecraftian:
+  - ignore
+  - Horror
   Survival Horror:
   - ignore
   - Horror
