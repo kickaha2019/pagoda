@@ -19,40 +19,38 @@ class GoodOldGames < DefaultSite
 		path = scanner.cache + "/gog.json"
 
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			urls, page, added = {}, 0, 1
+			urls, page, seen, old_seen = {}, 0, {}, -1
 
-			while (added > 0) && (page < 1000)
-				added = 0
+			while (seen.size > old_seen) && (page < 1000)
+				old_seen = seen.size
 				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=asc:releaseDate"
 				#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
 				#raw = IO.read( '/Users/peter/temp/gog.html')
 
-				url = nil
-				raw.split( '<').each do |line|
-					if m = /href="(https:\/\/www\.gog\.com\/game\/[^"]*)"/.match( line)
-						url = m[1]
-					end
-					if m = /title="([^"]*)"/.match( line)
-						if url
-							text = m[1]
-							text.force_encoding( 'UTF-8')
-							text.encode!( 'US-ASCII',
-														:invalid => :replace, :undef => :replace, :universal_newline => true)
-							added += scanner.add_link( text, url)
-              url = nil
-            end
-          end
-				end
-
+				find_on_page( scanner, raw, seen)
 				page += 1
 			end
 		end
+	end
 
-		# JSON.parse( IO.read( path)).each_pair do |url, name|
-		# 	scanner.suggest_link( name, url)
-		# end
-		#
-		# scanner.purge_lost_urls( /^https:\/\/www\.gog\.com\//)
+	def find_on_page( scanner, raw, seen)
+		url = nil
+		raw.split( '<').each do |line|
+			if m = /href="(https:\/\/www\.gog\.com\/en\/game\/[^"]*)"/.match( line)
+				url = m[1].gsub( '/en/', '/')
+			end
+			if m = /title="([^"]*)"/.match( line)
+				if url
+					text = m[1]
+					text.force_encoding( 'UTF-8')
+					text.encode!( 'US-ASCII',
+												:invalid => :replace, :undef => :replace, :universal_newline => true)
+					scanner.add_link( text, url)
+					seen[url] = true
+					url = nil
+				end
+			end
+		end
 	end
 
 	def filter( pagoda, link, page, rec)
@@ -144,29 +142,10 @@ class GoodOldGames < DefaultSite
 	def incremental( scanner)
     raw   = scanner.browser_get "https://www.gog.com/games?order=desc:releaseDate"
 		# File.open( '/tmp/gog.html', 'w') {|io| io.print raw}
-    url   = nil
-    added = 0
-		found = false
-
-    raw.split( '<').each do |line|
-      if m = /href="(https:\/\/www\.gog\.com\/en\/game\/[^"]*)"/.match( line)
-        url = m[1].gsub( '/en/', '/')
-      end
-      if m = /title="([^"]*)"/.match( line)
-        if url
-          text = m[1]
-          text.force_encoding( 'UTF-8')
-          text.encode!( 'US-ASCII',
-                        :invalid => :replace, :undef => :replace, :universal_newline => true)
-					found = true
-          added += scanner.add_link( text, url)
-          url = nil
-        end
-      end
-    end
-
-		scanner.error( 'Unable to find recent GOG game') unless found
-    added
+    seen  = {}
+		find_on_page( scanner, raw, seen)
+		scanner.error( 'Unable to find recent GOG game') unless seen.size > 0
+    seen.size
 	end
 
 	def name

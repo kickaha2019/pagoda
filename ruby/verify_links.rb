@@ -119,7 +119,7 @@ class VerifyLinks
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
         dubious << link
-      elsif /dated/i =~ link.status
+      elsif /free/i =~ link.status
         free << link
       else
         bound << link if link.timestamp < valid_from

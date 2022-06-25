@@ -4,7 +4,6 @@ class Names
     @combo2ids = Hash.new {|h,k| h[k] = []}
     @id2names  = Hash.new {|h,k| h[k] = []}
     @names2ids = {}
-    @start2ids = Hash.new {|h,k| h[k] = {}}
 
     # HTML entity codes
     @entities = {
@@ -133,10 +132,6 @@ class Names
     string_combos( name) do |combo|
       @combo2ids[combo] << id
     end
-
-    start_combos( name) do |combo|
-      @start2ids[combo][id] = true
-    end
   end
 
   def check_unique_name( name, id)
@@ -228,25 +223,6 @@ class Names
     reduced.gsub( /[^a-z0-9]/, ' ').strip
   end
 
-  def start_combos( name)
-    words = reduce( name).split( ' ')
-    (0..(words.size-1)).each do |i|
-      yield words[0..i].join( ' ')
-    end
-  end
-
-  def start_frequency( name)
-    best = 1000000000
-    start_combos( name) do |combo|
-      if @start2ids.has_key?( combo)
-        if best > @start2ids[combo].size
-          best = @start2ids[combo].size
-        end
-      end
-    end
-    best
-  end
-
   def string_combos( name)
     words = reduce( name).split( ' ')
     words.each {|word| yield word}
@@ -265,19 +241,16 @@ class Names
   end
 
   def suggest( name, limit)
-    found = Hash.new {|h,k| h[k] = 1000}
+    found = nil
+
     string_combos( name) do |combo|
       ids = @combo2ids[combo]
-      ids.each do |id|
-        found[id] = ids.size if ids.size < found[id]
-      end
+      found = ids if found.nil? || (ids.size < found.size)
     end
 
-    list = found.keys.collect {|id| [id, found[id]]}.sort_by {|e| e[1]}
-    list = list[0...limit] if limit < list.size
-    list = list.select {|rec| rec[1] < 30}
-    list.each do |e|
-      yield e[0]
+    if found
+      found = found[0..limit]
+      found.each {|id| yield id}
     end
   end
 end

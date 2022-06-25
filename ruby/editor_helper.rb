@@ -264,10 +264,12 @@ ASPECT_ELEMENT
 
       $pagoda.links do |link|
         next unless link.status == 'Ignored'
-        recs << [link, $pagoda.start_frequency( link.title)]
+        suggested = []
+        $pagoda.suggest( link.title) {|g| suggested << g.id}
+        recs << [link, suggested] if suggested.size > 0
       end
 
-      recs.sort_by {|rec| rec[1]}.collect {|rec| rec[0]}
+      recs.sort_by {|rec| rec[1].size}
     end
 
     def input_element( name, len, value, extras='')
@@ -489,7 +491,7 @@ ASPECT_ELEMENT
 
       ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged'].each do |status|
         c = counts[status]
-        colour = (/dated/i =~ status) ? 'lime' : 'white'
+        colour = (status == 'Free') ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0
         colour = 'red' if c[1] > 0
 

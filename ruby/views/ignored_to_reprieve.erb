@@ -11,7 +11,7 @@
 </div>
 
 <div id="list"><table class="scan list" style="table-layout: fixed">
-  <tr><th>Site</th><th>Type</th><th>Link</th></tr>
+  <tr><th>Site</th><th>Type</th><th>Link</th><th>Suggested</th></tr>
   <%=
       html = []
 
@@ -23,10 +23,13 @@
       row = 0
       records[(100*(current_page-1))...(100*current_page)].each do |rec|
         row += 1
-        html << "<tr><td>#{h(rec.site)}</td>"
-        html << "<td>#{rec.type}</td>"
-        html << "<td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.title)}</a></td>"
-        html << '</tr>'
+        html << "<tr><td>#{h(rec[0].site)}</td>"
+        html << "<td>#{rec[0].type}</td>"
+        html << "<td><a target=\"_blank\" href=\"/link/#{e(e(rec[0].url))}\">#{h(rec[0].title)}</a></td><td>"
+        rec[1].each do |id|
+            html << "<a href=\"/game/#{id}\">#{id}</a>"
+        end
+        html << '</td></tr>'
       end
 
       html.join( "\n")

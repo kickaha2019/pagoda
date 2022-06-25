@@ -527,10 +527,6 @@ class Pagoda
   #   @database.end_transaction
   # end
 
-  def start_frequency( name)
-    @names.start_frequency( name)
-  end
-
   def string_combos( name)
     @names.string_combos( name) {|combo| yield combo}
   end

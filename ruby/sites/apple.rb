@@ -52,7 +52,7 @@ class Apple < DefaultSite
     scanner.link_page_anchors( 'TouchArcade') do |game, url, text|
       if text.downcase == 'buy now'
         if m = /\/link\/.*apple\.com.*\/app\/(.*)\?/.match( url)
-          scanner.add_link( game, "https://apps.apple.com/app/#{m[1]}")
+          scanner.suggest_link( game, "https://apps.apple.com/app/#{m[1]}")
         end
       end
     end
@@ -65,7 +65,7 @@ class Apple < DefaultSite
       end
     end
 
-    scanner.purge_lost_urls( /^https:\/\/apps\.apple\.com\//)
+    #scanner.purge_lost_urls( /^https:\/\/apps\.apple\.com\//)
   end
 
   def get_cache_info( searcher)
