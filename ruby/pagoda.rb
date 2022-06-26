@@ -297,7 +297,7 @@ class Pagoda
     end
 
     def suggest
-      @owner.suggest( orig_title) {|game| yield game}
+      @owner.suggest( title) {|game| yield game}
     end
 
     def timestamp

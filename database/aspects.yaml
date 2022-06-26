@@ -20,16 +20,13 @@ Action:
   - \WAction\WRPG
   - \WAction\WAdventure
   - button\Wmash
-  - arcade
+  - \Warcade
   - dexterity
   - platformer
   - platforming
   - rhythm
-  - action scene
-  - action sequence
-  ignore:
-  - reaction
-  - TouchArcade
+  - \Waction scene
+  - \Waction sequence
 Adventure:
   desc:   Graphic adventure game
   index: 10

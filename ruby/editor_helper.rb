@@ -269,7 +269,7 @@ ASPECT_ELEMENT
         recs << [link, suggested] if suggested.size > 0
       end
 
-      recs.sort_by {|rec| rec[1].size}
+      recs.sort_by {|rec| [rec[1].size, rec[0].title]}
     end
 
     def input_element( name, len, value, extras='')

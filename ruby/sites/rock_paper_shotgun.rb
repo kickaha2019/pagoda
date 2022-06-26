@@ -7,7 +7,7 @@ class RockPaperShotgun < DefaultSite
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
 			page, urls, old_count = 1, {}, -1
 
-			while (old_count < urls.size)
+			while (old_count < urls.size) || (page < 84)
 				old_count = urls.size
 
 				raw_url = 'https://www.rockpapershotgun.com/reviews'
