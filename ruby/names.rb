@@ -245,12 +245,20 @@ class Names
 
     string_combos( name) do |combo|
       ids = @combo2ids[combo]
+      next if ids.size < 1
       found = ids if found.nil? || (ids.size < found.size)
     end
 
     if found
       found = found[0..limit]
       found.each {|id| yield id}
+    end
+  end
+
+  def suggest_analysis( name)
+    string_combos( name) do |combo|
+      ids = @combo2ids[combo]
+      yield combo, ids.size if ids.size > 0
     end
   end
 end

@@ -253,6 +253,8 @@ tags:
   Auto Battler: reject
   building: ignore
   crossplay: ignore
-  Artbook: ignore
+  Artbook: reject
   Free Game: ignore
-  OST: ignore
+  OST: reject
+  Coming of age: ignore
+  Non Violent: ignore

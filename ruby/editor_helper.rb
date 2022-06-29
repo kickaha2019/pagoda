@@ -497,7 +497,7 @@ ASPECT_ELEMENT
 
         if c[0] > 0
           url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=&page=1"
-          html << "<td style=\"background: #{colour}\"><a href=\"#{url}\">#{c[0]}</a></td>"
+          html << "<td style=\"background: #{colour}\"><a target=\"_blank\" href=\"#{url}\">#{c[0]}</a></td>"
           totals[status] = [0,0,0] if ! totals.has_key?( status)
           c.each_index {|i| totals[status][i] += c[i]}
         else

@@ -138,6 +138,13 @@ class Pagoda
       @owner.sort_name( name)
     end
 
+    def suggest_analysis
+      @owner.suggest_analysis( name) {|combo, hits| yield combo, hits}
+      aliases.each do |a|
+        @owner.suggest_analysis( a.name) {|combo, hits| yield combo, hits}
+      end
+    end
+
     def tablet
       'N'
     end
@@ -298,6 +305,10 @@ class Pagoda
 
     def suggest
       @owner.suggest( title) {|game| yield game}
+    end
+
+    def suggest_analysis
+      @owner.suggest_analysis( title) {|combo, hits| yield combo, hits}
     end
 
     def timestamp
@@ -533,6 +544,10 @@ class Pagoda
 
   def suggest( name)
     @names.suggest( name, 20) {|game_id| yield game(game_id)}
+  end
+
+  def suggest_analysis( name)
+    @names.suggest_analysis( name) {|combo, hits| yield combo, hits}
   end
 
   # Wrapper methods for calls to database and names logic

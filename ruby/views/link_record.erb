@@ -63,5 +63,16 @@
       html.join( "\n")
     %>
   </table>
+
+  <table class="list" <%= $debug ? '' : 'style="display: none"' %> >
+    <tr><th>Combo</th><th>Hits</th></tr>
+    <%=
+      html = []
+      @rec.suggest_analysis do |combo, hits|
+        html << "<tr><td>#{combo}</td><td>#{hits}</td></tr>"
+      end
+      html.join( "\n")
+    %>
+  </table>
 </body>
 </html>

@@ -236,7 +236,7 @@ tags:
   RPGMaker: ignore
   Comic Book: ignore
   Dog: ignore
-  Soundtrack: ignore
+  Soundtrack: reject
   Noir: ignore
   6DOF: ignore
   Dynamic Narration: ignore
@@ -480,3 +480,6 @@ tags:
   Jump Scare: ignore
   Rock Music: ignore
   BMX: ignore
+  Skiing: ignore
+  Hardware: ignore
+  Lemmings: ignore

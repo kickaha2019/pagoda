@@ -1,6 +1,13 @@
 require_relative 'default_site'
 
 class TouchArcade < DefaultSite
+	def filter( pagoda, link, page, rec)
+		if m = /^&#8216;(.*)$/.match( rec[:title].strip)
+			rec[:title] = m[1].split( '&#8217;')[0]
+		end
+		true
+	end
+
 	def find( scanner)
 		path = scanner.cache + "/touch_arcade.json"
 
