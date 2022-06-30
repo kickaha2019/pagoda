@@ -103,6 +103,20 @@ class Spider
 		add_suggested
 	end
 
+	def http_get_wrapped( url)
+		response = http_get_response( url)
+		if response.code == '404'
+			return false, nil
+		else
+			begin
+				return true, response.body
+			rescue
+				puts "*** #{url}"
+				raise
+			end
+		end
+	end
+
 	def incremental( site, type)
 		found = false
     load_old_redirects( @cache + '/redirects.yaml')

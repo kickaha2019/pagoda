@@ -19,7 +19,7 @@ class GoodOldGames < DefaultSite
 		path = scanner.cache + "/gog.json"
 
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			urls, page, seen, old_seen = {}, 0, {}, -1
+			page, seen, old_seen = 0, {}, -1
 
 			while (seen.size > old_seen) && (page < 1000)
 				old_seen = seen.size
@@ -30,6 +30,10 @@ class GoodOldGames < DefaultSite
 				find_on_page( scanner, raw, seen)
 				page += 1
 			end
+		end
+
+		if seen.size < 6000
+			scanner.error( 'Not enough URLs found for ' + name)
 		end
 	end
 

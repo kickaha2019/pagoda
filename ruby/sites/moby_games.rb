@@ -24,6 +24,10 @@ class MobyGames < DefaultSite
 				offset += 25
 			end
 
+			if urls.size < 1000
+				scanner.error( 'Not enough URLs found for ' + name)
+			end
+
 			File.open( path, 'w') {|io| io.print JSON.generate( urls)}
 		end
 

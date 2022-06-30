@@ -7,9 +7,9 @@
        total_pages  = (records.size + 99) /  100
        current_page = 1 if total_pages < current_page
 
-       html << "<button #{(current_page <= 1) ? 'disabled' : ''} onclick=\"window.location='#{url}&page=#{current_page-1})';\">&lt;&lt;</button>"
+       html << "<button #{(current_page <= 1) ? 'disabled' : ''} onclick=\"window.location='#{url}&page=#{current_page-1}';\">&lt;&lt;</button>"
        html << "&nbsp;Page #{current_page} of #{total_pages}&nbsp;"
-       html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"window.location='#{url}&page=#{current_page+1})';\">&gt;&gt;</button>"
+       html << "<button #{(current_page >= total_pages) ? 'disabled' : ''} onclick=\"window.location='#{url}&page=#{current_page+1}';\">&gt;&gt;</button>"
 
        html.join( "\n")
 %>

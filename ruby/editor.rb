@@ -91,7 +91,7 @@ post '/ignore/:url' do
 end
 
 get '/ignored_to_reprieve' do
-  erb :ignored_to_reprieve, get_locals( params, :page => 1)
+  erb :ignored_to_reprieve, :locals => get_locals( params, :page => 1)
 end
 
 delete '/link/:url' do
@@ -135,7 +135,7 @@ put '/set_variable/:name/:value' do
 end
 
 get '/suggest_aspects' do
-  erb :suggest_aspects, get_locals( params, :page => 1)
+  erb :suggest_aspects, :locals => get_locals( params, :page => 1)
 end
 
 get '/summary' do
@@ -152,7 +152,7 @@ post '/unbind/:url' do
 end
 
 get '/unchecked_bound_official_websites' do
-  erb :unchecked_bound_official_websites, get_locals( params, :page => 1)
+  erb :unchecked_bound_official_websites, :locals => get_locals( params, :page => 1)
 end
 
 get '/verified' do

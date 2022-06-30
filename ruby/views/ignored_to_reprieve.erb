@@ -2,9 +2,9 @@
 
 <div class="search control">
   <%=
-      url = "/ignored_to_reprieve"
+      url = "/ignored_to_reprieve?x=x"
       erb :page_control, :locals => {:view => 'ignored_to_reprieve',
-                                     :page => 1, #page,
+                                     :page => page,
                                      :url  => url,
                                      :args => []}
   %>&nbsp;&nbsp;
@@ -16,7 +16,7 @@
       html = []
 
       records = ignored_to_reprieve_records
-      current_page = 1 #page.to_i
+      current_page = page.to_i
       total_pages  = (records.size + 99) /  100
       current_page = 1 if total_pages < current_page
 
