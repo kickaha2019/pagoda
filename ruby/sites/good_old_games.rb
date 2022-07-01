@@ -147,9 +147,9 @@ class GoodOldGames < DefaultSite
     raw   = scanner.browser_get "https://www.gog.com/games?order=desc:releaseDate"
 		# File.open( '/tmp/gog.html', 'w') {|io| io.print raw}
     seen  = {}
-		find_on_page( scanner, raw, seen)
+		added = find_on_page( scanner, raw, seen)
 		scanner.error( 'Unable to find recent GOG game') unless seen.size > 0
-    seen.size
+    added
 	end
 
 	def name

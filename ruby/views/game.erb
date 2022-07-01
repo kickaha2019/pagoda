@@ -181,8 +181,10 @@
     <tr><th>Combo</th><th>Hits</th></tr>
     <%=
       html = []
-      @game.suggest_analysis do |combo, hits|
-        html << "<tr><td>#{combo}</td><td>#{hits}</td></tr>"
+      if @game
+        @game.suggest_analysis do |combo, hits|
+          html << "<tr><td>#{combo}</td><td>#{hits}</td></tr>"
+        end
       end
       html.join( "\n")
     %>
