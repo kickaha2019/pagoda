@@ -39,9 +39,10 @@
       row = 0
       records[(100*(current_page-1))...(100*current_page)].each do |rec|
         row += 1
+        title = (/\?\?\?/ =~ rec.orig_title) ? rec.title : rec.orig_title
         html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
         html << "<td>#{rec.type}</td>"
-        html << "<td><a target=\"_blank\" title=\"#{t(rec.orig_title)}\" href=\"#{rec.url}\">#{h(rec.orig_title,40)}<a/></td>"
+        html << "<td><a target=\"_blank\" title=\"#{t(title)}\" href=\"#{rec.url}\">#{h(title,40)}<a/></td>"
         html << "<td>#{rec.year}</td>"
         info = collation( rec.url)
         html << "<td id=\"collation#{row}\">#{info[:link]}</td>"

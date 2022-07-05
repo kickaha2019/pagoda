@@ -184,7 +184,7 @@ class VerifyLinks
     rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:false}
 
     # Get year if possible for link
-    @pagoda.get_site_handler( link.site).get_game_year( link.url, body, rec)
+    @pagoda.get_site_handler( link.site).get_game_year( @pagoda, link, body, rec)
 
     #
     if status

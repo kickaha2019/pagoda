@@ -559,7 +559,7 @@ class Pagoda
 
   # Wrapper methods for calls to database and names logic
 
-  def add_link( site, type, title, url)
+  def add_link( site, type, title, url, static='N')
     start_transaction
     insert( 'link',
                     {:site       => site,
@@ -567,6 +567,7 @@ class Pagoda
                              :title      => title,
                              :orig_title => title,
                              :url        => url,
+                             :static     => static,
                              :timestamp  => 1})
     end_transaction
   end

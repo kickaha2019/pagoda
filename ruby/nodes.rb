@@ -28,20 +28,37 @@ class Nodes
     Nodes.new( [[Nokogiri::HTML( page).root.at_xpath( '//body')]])
   end
 
-  def parent
-    results = []
-    @set.each do |node|
-      parent = node[0].parent
-      #p parent.name
-      if block_given?
-        got = yield parent, * node[1..-1]
-        if got
-          results << [parent, * got]
+  def parent( up = 1)
+    results = @set
+    (1..up).each do
+      results, results1 = [], results
+      results1.each do |node|
+        parent = node[0].parent
+        #p parent.name
+        if block_given?
+          got = yield parent, * node[1..-1]
+          if got
+            results << [parent, * got]
+          end
+        else
+          results << [parent, * node[1..-1]]
         end
-      else
-        results << [parent, * node[1..-1]]
       end
     end
+
+    # results = []
+    # @set.each do |node|
+    #   parent = node[0].parent
+    #   #p parent.name
+    #   if block_given?
+    #     got = yield parent, * node[1..-1]
+    #     if got
+    #       results << [parent, * got]
+    #     end
+    #   else
+    #     results << [parent, * node[1..-1]]
+    #   end
+    # end
     #p ['parent', results.size]
     Nodes.new( results)
   end
