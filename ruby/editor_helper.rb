@@ -366,7 +366,9 @@ ASPECT_ELEMENT
     def links_by_site_and_type
       cache = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = []}}
       $pagoda.links do |rec|
-        cache[rec.site][rec.type] << rec
+        unless rec.static
+          cache[rec.site][rec.type] << rec
+        end
       end
       cache.keys.sort.each do |site|
         cache[site].keys.sort.each do |type|

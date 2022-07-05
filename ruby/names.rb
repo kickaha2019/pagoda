@@ -1,7 +1,7 @@
 class Names
   def initialize
     @cache     = {}
-    @combo2ids = Hash.new {|h,k| h[k] = []}
+    @combo2ids = Hash.new {|h,k| h[k] = {}}
     @id2names  = Hash.new {|h,k| h[k] = []}
     @names2ids = {}
 
@@ -126,11 +126,13 @@ class Names
   def add( name, id)
     name = name.to_s.downcase
     id   = id.to_i
-    @names2ids[name] =  id
-    @id2names[id]    << name
+    unless @names2ids[name]
+      @names2ids[name] =  id
+      @id2names[id]    << name
 
-    string_combos( name) do |combo|
-      @combo2ids[combo] << id
+      string_combos( name) do |combo|
+        @combo2ids[combo][id] = true
+      end
     end
   end
 
@@ -148,7 +150,7 @@ class Names
     freq = 1000000
 
     string_combos( name) do |combo|
-      ids = @combo2ids[combo]
+      ids  = @combo2ids[combo].keys
       freq = ids.size if ids.size < freq
     end
 
@@ -241,18 +243,21 @@ class Names
   end
 
   def suggest( name, limit)
-    found = nil
+    found = []
 
     string_combos( name) do |combo|
       ids = @combo2ids[combo]
       next if ids.size < 1
-      found = ids if found.nil? || (ids.size < found.size)
+      if found.empty?
+        found << ids.keys
+      elsif found[0].size > ids.size
+        found = [ids.keys]
+      elsif found[0].size == ids.size
+        found << ids.keys
+      end
     end
 
-    if found
-      found = found[0..limit]
-      found.each {|id| yield id}
-    end
+    found.flatten.uniq.each {|id| yield id}
   end
 
   def suggest_analysis( name)

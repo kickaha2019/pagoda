@@ -65,6 +65,9 @@ class Pagoda
       aliases.each do |a|
         @owner.delete_name( a.name, id)
       end
+      links do |l|
+        @owner.delete_name( l.title, id)
+      end
       @owner.start_transaction
       @owner.delete( 'game',           :id,   id)
       @owner.delete( 'alias',          :id,   id)
@@ -250,7 +253,7 @@ class Pagoda
     end
 
     def generate?
-      valid? && collation
+        valid? && collation && (! static)
     end
 
     def id
@@ -375,6 +378,10 @@ class Pagoda
 
       g.aliases.each do |arec|
         @names.add( arec.name, g.id)
+      end
+
+      g.links do |l|
+        @names.add( l.title, g.id)
       end
     end
 

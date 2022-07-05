@@ -13,7 +13,7 @@
 </div>
 
 <div id="list"><table class="games list">
-  <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Select</th></tr>
+  <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Select</th><th>Reviews</th></tr>
   <%=
     html = []
 
@@ -39,6 +39,11 @@
       html << "<td><a href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
       html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"
+      reviews = 0
+      rec.links do |link|
+        reviews += 1 if link.type == 'Review'
+      end
+      html << "<td>#{(reviews > 0) ? reviews.to_s : ''}</td>"
       html << '</tr>'
     end
 

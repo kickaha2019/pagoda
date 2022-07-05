@@ -1,3 +1,5 @@
+require 'nokogiri'
+
 class Nodes
   def initialize( set)
     @set = set
@@ -20,6 +22,10 @@ class Nodes
     end
     #p ['css', results.size]
     Nodes.new( results)
+  end
+
+  def self.parse( page)
+    Nodes.new( [[Nokogiri::HTML( page).root.at_xpath( '//body')]])
   end
 
   def parent
