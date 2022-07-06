@@ -16,13 +16,18 @@ class Spider
 	attr_reader :cache
 
 	def initialize( dir, cache)
-		@dir       = dir
-		@cache     = cache
-		@errors    = 0
-		@pagoda    = Pagoda.new( dir)
-		@settings  = YAML.load( IO.read( dir + '/settings.yaml'))
-		@suggested = []
+		@dir             = dir
+		@cache           = cache
+		@errors          = 0
+		@pagoda          = Pagoda.new( dir)
+		@settings        = YAML.load( IO.read( dir + '/settings.yaml'))
+		@suggested       = []
 		@suggested_links = {}
+		if File.exist?( dir + '/scan_stats.yaml')
+			@scan_stats = YAML.load( IO.read( @dir + '/scan_stats.yaml'))
+		else
+			@scan_stats = {}
+		end
 		set_not_game_words
 	end
 
@@ -101,6 +106,11 @@ class Spider
 		end
 
 		add_suggested
+	end
+
+	def get_scan_stats( site, section)
+		return {} unless @scan_stats[site] && @scan_stats[site][section]
+		@scan_stats[site][section]
 	end
 
 	def http_get_wrapped( url)
@@ -187,6 +197,20 @@ class Spider
 					link.delete
 				end
 			end
+		end
+	end
+
+	def put_scan_stats( site, section, stats)
+		if stats['count']
+			if stats['max_count'].nil? || (stats['count'] > stats['max_count'])
+				stats['max_count'] = stats['count']
+				stats['max_date']  = Time.now.to_i
+			end
+		end
+		@scan_stats[site] = {} unless @scan_stats[site]
+		@scan_stats[site][section] = stats
+		File.open( @dir + '/scan_stats.yaml', 'w') do |io|
+			io.print @scan_stats.to_yaml
 		end
 	end
 

@@ -495,8 +495,11 @@ class Pagoda
   end
 
   def get_site_handler( site)
-    raise "No handler for #{site}" unless @site_handlers[site]
-    @site_handlers[site]
+    if @site_handlers[site]
+      @site_handlers[site]
+    else
+      @site_handlers['Website']
+    end
   end
 
   def get_yaml( f)

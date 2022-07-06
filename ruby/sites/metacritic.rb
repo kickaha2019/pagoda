@@ -37,31 +37,24 @@ class Metacritic < DefaultSite
 		path  = scanner.cache + "/metacritic.json"
 		found = File.exist?( path) ? JSON.parse( IO.read( path)) : {}
 
-		path_md  = scanner.cache + "/metacritic_metadata.json"
-		metadata = Hash.new {|h,k| h[k] = -1}
-		if File.exist?( path_md)
-			JSON.parse( IO.read( path_md)).each_pair do |k,v|
-				metadata[k] = v
-			end
-		end
-
-		incremental_section( scanner, 'adventure/pc',     metadata, found)
-		incremental_section( scanner, 'adventure/ios',    metadata, found)
-		incremental_section( scanner, 'puzzle/pc',        metadata, found)
-		incremental_section( scanner, 'puzzle/ios',       metadata, found)
-		incremental_section( scanner, 'role-playing/pc',  metadata, found)
-		incremental_section( scanner, 'role-playing/ios', metadata, found)
-		incremental_section( scanner, 'turn-based/pc',    metadata, found)
-		incremental_section( scanner, 'turn-based/ios',   metadata, found)
+		incremental_section( scanner, 'adventure/pc',     found)
+		incremental_section( scanner, 'adventure/ios',    found)
+		incremental_section( scanner, 'puzzle/pc',        found)
+		incremental_section( scanner, 'puzzle/ios',       found)
+		incremental_section( scanner, 'role-playing/pc',  found)
+		incremental_section( scanner, 'role-playing/ios', found)
+		incremental_section( scanner, 'turn-based/pc',    found)
+		incremental_section( scanner, 'turn-based/ios',   found)
 
 		File.open( path,    'w') {|io| io.print JSON.generate( found)}
-		File.open( path_md, 'w') {|io| io.print JSON.generate( metadata)}
 		0
 	end
 
-	def incremental_section( scanner, section, metadata, found)
-		page  = metadata[section] + 1
-		count = 0
+	def incremental_section( scanner, section, found)
+		stats = scanner.get_scan_stats( name, section)
+		page  = stats.has_key?('page') ? stats['page'].to_i : -1
+		page += 1
+		count = stats.has_key?('count') ? stats['count'].to_i : 0
 
 		raw_url = "https://www.metacritic.com/browse/games/genre/date/#{section}"
 		raw_url = raw_url + "?page=#{page}" if page > 0
@@ -70,6 +63,7 @@ class Metacritic < DefaultSite
 		#File.open( '/Users/peter/temp/metacritic.html', 'w') {|io| io.print raw}
 		#raw = IO.read( '/Users/peter/temp/rock_paper_shotgun.html')
 
+		old_count = count
 		Nodes.parse( raw).css( 'a') do |anchor|
 			if %r{^/game/} =~ anchor['href']
 				[anchor['href']]
@@ -79,7 +73,9 @@ class Metacritic < DefaultSite
 			count += 1
 		end
 
-		metadata[section] = (count > 0) ? page : -1
+		stats['count'] = count
+		stats['page']  = (count > old_count) ? page : -1
+		scanner.put_scan_stats( name, section, stats)
 	end
 
 	def name

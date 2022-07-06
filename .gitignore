@@ -28,3 +28,4 @@ grabber.command
 *.html
 *.tsv
 *.command
+scan_stats.yaml
