@@ -548,6 +548,19 @@ class Pagoda
   #   @database.end_transaction
   # end
 
+  def scan_stats_records
+    path = @dir + "/scan_stats.yaml"
+    if File.exist?( path)
+      info = YAML.load( IO.read( path))
+      info.keys.sort.each do |site|
+        info[site].keys.sort.each do |section|
+          ss = info[site][section]
+          yield site, section, ss['max_count'], Time.at( ss['max_date'])
+        end
+      end
+    end
+  end
+
   def string_combos( name)
     @names.string_combos( name) {|combo| yield combo}
   end

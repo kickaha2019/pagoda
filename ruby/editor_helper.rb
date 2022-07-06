@@ -410,6 +410,10 @@ ASPECT_ELEMENT
       $pagoda.reverify( url)
     end
 
+    def scan_stats_records
+      $pagoda.scan_stats_records {|site, section, count, date| yield site, section, count, date}
+    end
+
     def selected_game
       return '' if @@selected_game < 0
       $pagoda.get( 'game', :id, @@selected_game.to_i)[0][:name]

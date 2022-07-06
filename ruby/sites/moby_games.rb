@@ -24,9 +24,9 @@ class MobyGames < DefaultSite
 				offset += 25
 			end
 
-			if urls.size < 1000
-				scanner.error( 'Not enough URLs found for ' + name)
-			end
+			stats = scanner.get_scan_stats( name, 'Reference')
+			stats['count'] = urls.size
+			scanner.put_scan_stats( name, 'Reference', stats)
 
 			File.open( path, 'w') {|io| io.print JSON.generate( urls)}
 		end

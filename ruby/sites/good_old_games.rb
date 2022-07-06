@@ -32,9 +32,9 @@ class GoodOldGames < DefaultSite
 			end
 		end
 
-		if seen.size < 6000
-			scanner.error( 'Not enough URLs found for ' + name)
-		end
+		stats = scanner.get_scan_stats( name, 'Store')
+		stats['count'] = seen.size
+		scanner.put_scan_stats( name, 'Store', stats)
 	end
 
 	def find_on_page( scanner, raw, seen)

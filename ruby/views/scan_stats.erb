@@ -1,0 +1,16 @@
+<%= erb :header, :locals => {:page => 'scan_stats'} %>
+
+  <table class="list">
+    <tr><th>Site</th><th>Section</th><th>Count</th><th>Reached</th></tr>
+    <% scan_stats_records do |site, section, count, date| %>
+      <tr>
+        <td><%= site %></td>
+        <td><%= section %></td>
+        <td><%= count %></td>
+        <td><%= date.strftime( '%Y-%m-%d') %></td>
+      </tr>
+    <% end  %>
+  </table>
+
+</body>
+</html>

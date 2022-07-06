@@ -118,6 +118,10 @@ put '/reverify/:url' do
   reverify( d(params[:url]))
 end
 
+get '/scan_stats' do
+  erb :scan_stats
+end
+
 get '/selected_game' do
   selected_game
 end
