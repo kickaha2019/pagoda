@@ -576,6 +576,9 @@ class Pagoda
   # Wrapper methods for calls to database and names logic
 
   def add_link( site, type, title, url, static='N')
+    url = get_site_handler( site).coerce_url( url)
+    return if link(url) != nil
+
     start_transaction
     insert( 'link',
                     {:site       => site,
@@ -605,16 +608,16 @@ class Pagoda
     @database.count( table_name)
   end
 
+  def delete( table_name, column_name, column_value)
+    @database.delete( table_name, column_name, column_value)
+  end
+
   def delete_name( name, id)
     @names.remove( name, id)
   end
 
   def end_transaction
     @database.end_transaction
-  end
-
-  def delete( table_name, column_name, column_value)
-    @database.delete( table_name, column_name, column_value)
   end
 
   def get( table_name, column_name, column_value)

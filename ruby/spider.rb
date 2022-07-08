@@ -32,6 +32,7 @@ class Spider
 	end
 
 	def add_link( title, url)
+		url = @pagoda.get_site_handler( @site).coerce_url( url)
 		if @pagoda.has?( 'link', :url, url)
 			0
 		else
@@ -59,14 +60,7 @@ class Spider
 			next if (limit <= 0) || not_a_game( link[:title])
 			debug_hook( 'match_games3', link[:title], link[:url])
 			limit -= 1
-			@pagoda.start_transaction
-			@pagoda.insert( 'link',
-											{:site => link[:site],
-											 :type      => link[:type],
-											 :title     => link[:title],
-											 :url       => link[:url],
-											 :timestamp => 1})
-			@pagoda.end_transaction
+			@pagoda.add_link( link[:site], link[:type], link[:title], link[:url])
 		end
 	end
 
@@ -302,6 +296,7 @@ class Spider
 	end
 
 	def suggest_link( title, url)
+		url = @pagoda.get_site_handler( @site).coerce_url( url)
 		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
 		@suggested_links[url] = true
 	end

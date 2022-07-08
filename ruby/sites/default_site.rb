@@ -2,6 +2,10 @@ class DefaultSite
   def check_child_link( url, text, anchor)
   end
 
+  def coerce_url( url)
+    url
+  end
+
   def correlate_url( url)
     return nil, nil, nil
   end

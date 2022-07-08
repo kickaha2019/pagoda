@@ -6,6 +6,13 @@ class Steam < DefaultSite
 		@info_changed = 0
 	end
 
+	def coerce_url( url)
+		if m = /^(https:\/\/store\.steampowered\.com\/app\/[0-9]*)($|\/)/.match( url)
+			return m[1]
+		end
+		url
+	end
+
 	def complete?( scanner)
 		true
 	end

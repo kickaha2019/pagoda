@@ -1,5 +1,12 @@
 var sections = ['Welcome', 'Games', 'Filters', 'Aspects'];
 
+var game_offset    = 0;
+var game_count     = 1;
+var include_mask_0 = 0;
+var include_mask_1 = 0;
+var exclude_mask_0 = 0;
+var exclude_mask_1 = 0;
+
 function set_display( name, mode) {
     document.getElementById( name).style.display = mode;
 }
@@ -79,7 +86,9 @@ function add_button( name, index, contents) {
 
 function refresh_Welcome() {}
 
-function refresh_Games() {}
+function refresh_Games() {
+ list_games();
+}
 
 function refresh_Filters() {
   const contents = {excluded:'', included:'', unused: ''};
@@ -97,17 +106,14 @@ function refresh_Filters() {
 
 function refresh_counts() {
   refresh_masks();
-  let count = "Games (" + count_selected() + ")";
+  game_offset = 0;
+  game_count  = count_selected();
+  let count = "Games (" + game_count + ")";
   document.getElementById( "Games_menu_on").innerHTML = count;
   document.getElementById( "Games_menu_off").innerHTML = count;
 }
 
 function refresh_Aspects() {}
-
-var include_mask_0 = 0;
-var include_mask_1 = 0;
-var exclude_mask_0 = 0;
-var exclude_mask_1 = 0;
 
 function refresh_masks() {
     include_mask_0 = 0;
@@ -155,4 +161,83 @@ function count_selected() {
         if ( is_selected( i) ) {count ++;}
     }
     return count;
+}
+
+function list_selected( html) {
+    var listed = 0;
+    var skipped = 0;
+    for (var i = 0; i < games.length; i++) {
+        if ( is_selected( i) ) {
+            if (skipped < game_offset) {
+                skipped += 1;
+            } else if (listed > 50) {
+                break;
+            } else {
+                listed += 1;
+                html.push( '<tr><td>' + (listed + game_offset) + '</td><td>');
+
+                let g = games[i];
+                if (g[1] != '') {
+                    html.push( '<a target="_blank" href="' + g[1] + '">' + g[0] + '</a>');
+                } else {
+                    html.push( g[0]);
+                }
+
+                html.push( '</td><td>' + g[2] + '</td><td>');
+
+                if (g[6] != '') {
+                    html.push( ' <a target="_blank" href="https://www.gog.com/game/' + g[6] + '">GOG</a>');
+                }
+
+                if (g[5] != '') {
+                    html.push( ' <a target="_blank" href="https://store.steampowered.com/app/' + g[5] + '">Steam</a>');
+                }
+            }
+        }
+    }
+}
+
+function list_games() {
+     var html = ['<table class="games_title"><tr><td><span class="'];
+
+     if (game_offset > 0) {
+         html.push( 'active" onclick="previous_games()');
+     } else {
+         html.push( 'inactive');
+     }
+
+     var limit = game_count;
+     if ((game_offset + 50) < game_count) {
+         limit = game_offset + 50;
+     }
+
+     html.push( '">&lt;&lt;</span></td><td>Games ' + (game_offset + 1) + ' to ' + limit);
+     html.push( '</td><td><span class="');
+
+     if ((game_offset + 50) < game_count) {
+         html.push( 'active" onclick="next_games()');
+     } else {
+         html.push( 'inactive');
+     }
+
+     html.push( '">&gt;&gt;</span></td></tr></table>');
+     html.push( '<table class="games"><tr><th>No</th><th>Game</th><th>Year</th><th>Buy</th></tr>');
+     list_selected( html);
+     html.push( '</table>');
+     var games_div = document.getElementById( "Games_div");
+     games_div.innerHTML = html.join( '');
+}
+
+function previous_games() {
+     if (game_offset > 0) {
+         game_offset -= 50;
+         list_games();
+     }
+}
+
+function next_games() {
+     if ((game_offset + 50) < game_count) {
+         game_offset += 50;
+         list_games();
+     }
 }

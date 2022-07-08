@@ -19,8 +19,17 @@
     .menu td {padding: 10px}
     .aspects {margin-left: auto; margin-right: auto; color: white; font-size: 30px; margin-bottom: 10px}
     .aspects td, .aspects th {padding: 10px; border: 1px solid cyan; color: cyan}
-    .aspects {border-collapse: collapse}
+    .aspects, .games {border-collapse: collapse}
     .blurb {margin-left: auto; margin-right: auto; color: cyan; font-size: 20px; max-width: 750px}
+    .games {margin-left: auto; margin-right: auto; font-size: 25px; margin-bottom: 10px;
+            color: yellow}
+    .games td, .games th {padding: 5px; border: 1px solid cyan; color: white}
+    .games a {color: yellow}
+    .games_title {margin-left: auto; margin-right: auto; font-size: 30px; margin-bottom: 10px;
+                  color: yellow}
+    .games_title td {padding: 20px}
+    .games_title span.active {cursor: pointer; color: yellow}
+    .games_title span.inactive {color: grey;}
     #welcome_div {margin-left: auto; margin-right: auto; color: cyan; font-size: 30px; max-width: 750px}
     #welcome_div a {color: yellow}
     #welcome_div span {color: yellow; text-decoration: underline; cursor: pointer}
@@ -36,7 +45,6 @@
   <div id="Filters_div"><%= filters_section %></div>
   <div id="Aspects_div"><%= aspects_section %></div>
 </div>
-</body>
 <script>
     document.getElementById( "menu").innerHTML = get_menu();
     set_section( 'Welcome');

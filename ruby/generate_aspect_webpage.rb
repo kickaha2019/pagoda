@@ -86,6 +86,7 @@ class WebsiteFiltersPage
     return if seen[ game.id]
 
     game.aspects.each_pair do |aspect, flag|
+      next unless @aspects[aspect]
       playable.record_aspect( aspect) if flag
     end
 

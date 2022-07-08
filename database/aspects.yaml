@@ -61,6 +61,7 @@ FMV:
 GOG:
   desc:   Game available on GOG
   derive: true
+  index:  30
 HOG:
   desc:   Game has hidden object scenes
   index:  12
@@ -75,6 +76,7 @@ Investigation:
   index:  13
 "LGBTQ+":
   desc:   ""
+  index:  32
 Maze:
   desc:   Game has (the horror) mazes in it
   index: 5
