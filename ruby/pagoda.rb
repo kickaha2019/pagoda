@@ -598,10 +598,25 @@ class Pagoda
   def clean
     count = @database.clean_missing( 'alias', :id, 'game', :id).size
     puts "*** Deleted #{count} alias records" if count > 0
+    count = @database.clean_missing( 'aspect', :id, 'game', :id).size
+    puts "*** Deleted #{count} aspect records" if count > 0
     count = @database.clean_missing( 'aspect_suggest', :game, 'game', :id).size
     puts "*** Deleted #{count} aspect suggest records" if count > 0
     count = @database.clean_missing( 'bind', :url, 'link', :url).size
     puts "*** Deleted #{count} bind records" if count > 0
+
+    aspects_lost = []
+    @database.select( 'aspect') do |rec|
+      unless aspect_info[rec[:aspect]]
+        aspects_lost << rec[:aspect]
+      end
+    end
+    start_transaction
+    aspects_lost.uniq.each do |aspect|
+      @database.delete( 'aspect', :aspect, aspect)
+    end
+    end_transaction
+    puts "*** Deleted #{aspects_lost.size} aspect records" if aspects_lost.size > 0
   end
 
   def count( table_name)

@@ -93,7 +93,7 @@ function refresh_Games() {
 function refresh_Filters() {
   const contents = {excluded:'', included:'', unused: ''};
   <% aspects.each_pair do |n,info| %>
-    add_button( '<%= n %>', <%= info['index'] %>, contents);
+    add_button( '<%= info['title'] ? info['title'] : n %>', <%= info['index'] %>, contents);
   <% end %>
   var excluded_box = document.getElementById( "exclude");
   excluded_box.innerHTML = contents.excluded;

@@ -85,7 +85,7 @@ Minigame:
   match:  \Wmini(\W*)game
   index:  20
 Pixels:
-  desc:   Pixel graphics
+  title:   Pixel graphics
   index: 28
   match:
   - pixel
@@ -109,6 +109,7 @@ Simulation:
 Slider:
   index: 22
 Sound:
+  title:  Sound puzzles
   desc:   Game contains sound based puzzles
   match:
   - sound puzzle
@@ -125,6 +126,7 @@ Steam:
   index:  7
   derive: true
 Timer:
+  title:  Timed sequences
   desc:   Game has timed sequences
   index: 9
   match:
