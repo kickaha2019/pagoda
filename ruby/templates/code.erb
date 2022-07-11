@@ -57,6 +57,7 @@ function drop(ev) {
   }
   window.localStorage.setItem( "pagoda.aspect." + index, flag);
   refresh_Filters();
+  game_offset = 0;
 }
 
 function make_button( name, index, status) {
@@ -106,9 +107,8 @@ function refresh_Filters() {
 
 function refresh_counts() {
   refresh_masks();
-  game_offset = 0;
-  game_count  = count_selected();
-  let count = "Games (" + game_count + ")";
+  game_count = count_selected();
+  let count  = "Games (" + game_count + ")";
   document.getElementById( "Games_menu_on").innerHTML = count;
   document.getElementById( "Games_menu_off").innerHTML = count;
 }

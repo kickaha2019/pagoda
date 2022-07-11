@@ -379,10 +379,10 @@ class Pagoda
       g.aliases.each do |arec|
         @names.add( arec.name, g.id)
       end
-
-      g.links do |l|
-        @names.add( l.title, g.id)
-      end
+      #
+      # g.links do |l|
+      #   @names.add( l.title, g.id)
+      # end
     end
 
     @reduction_file        = dir + '/collation.yaml'

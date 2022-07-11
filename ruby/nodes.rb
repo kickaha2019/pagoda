@@ -25,7 +25,9 @@ class Nodes
   end
 
   def self.parse( page)
-    Nodes.new( [[Nokogiri::HTML( page).root.at_xpath( '//body')]])
+    doc = Nokogiri::HTML( page).root
+    return Nodes.new( []) unless doc
+    Nodes.new( [[doc.at_xpath( '//body')]])
   end
 
   def parent( up = 1)

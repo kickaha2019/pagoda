@@ -134,10 +134,15 @@ class Spider
 
 			puts "*** Incremental scan for site: #{@site} type: #{@type}"
 			start = Time.now.to_i
-			added = @pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
-			puts "... #{added} links added" if added > 0
-			puts "... Time taken #{Time.now.to_i - start} seconds"
-			STDOUT.flush
+			begin
+				added = @pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
+				puts "... #{added} links added" if added > 0
+				puts "... Time taken #{Time.now.to_i - start} seconds"
+				STDOUT.flush
+			rescue Exception => bang
+				error( "Site: " + @site + ": " + bang.message)
+				raise unless site == 'All'
+			end
 		end
 
 		unless found

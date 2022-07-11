@@ -249,23 +249,29 @@ class Names
 
     string_combos( name) do |combo|
       ids = @combo2ids[combo]
-      next if ids.size < 1
-      if found.empty?
-        found << ids.keys
-      elsif found[0].size > ids.size
-        found = [ids.keys]
-      elsif found[0].size == ids.size
-        found << ids.keys
+      found << ids.keys unless ids.empty?
+    end
+
+    found.sort_by! {|ids| ids.size}
+    found.flatten!
+
+    seen = {}
+    found.select! do |id|
+      if seen[id]
+        false
+      else
+        seen[id] = true
+        true
       end
     end
 
-    found.flatten.uniq.each {|id| yield id}
+    found[0...limit].each {|id| yield id}
   end
 
   def suggest_analysis( name)
     string_combos( name) do |combo|
       ids = @combo2ids[combo]
-      yield combo, ids.size if ids.size > 0
+      yield combo, ids.keys if ids.size > 0
     end
   end
 end
