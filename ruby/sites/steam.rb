@@ -37,18 +37,18 @@ class Steam < DefaultSite
 			scanner.put_scan_stats( name, 'Store', stats)
 		end
 
-		# raw = JSON.parse( IO.read( path))['applist']['apps']
-		# raw.each do |record|
-		# 	text = record['name']
-		# 	text.force_encoding( 'UTF-8')
-		# 	text.encode!( 'US-ASCII',
-		# 								:invalid => :replace, :undef => :replace, :universal_newline => true)
-		# 	url = "https://store.steampowered.com/app/#{record['appid']}"
-		# 	scanner.suggest_link( text, url)
-		# 	scanner.debug_hook( 'Steam:urls', text, url)
-		# end
-		#
-		# scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
+		raw = JSON.parse( IO.read( path))['applist']['apps']
+		raw.each do |record|
+			text = record['name']
+			text.force_encoding( 'UTF-8')
+			text.encode!( 'US-ASCII',
+										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			url = "https://store.steampowered.com/app/#{record['appid']}"
+			scanner.suggest_link( text, url)
+			scanner.debug_hook( 'Steam:urls', text, url)
+		end
+
+		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
 	end
 
 	def filter( pagoda, link, page, rec)
@@ -84,6 +84,8 @@ class Steam < DefaultSite
 			rec[:ignore] = true unless rec[:year]
 			return true
 		end
+
+		rec[:ignore] = true
 		return true if /\/agecheck\/app\//  =~ link.url
 		return true if /^Site Error$/       =~ rec[:title]
 		return true if /^Welcome to Steam$/ =~ rec[:title]

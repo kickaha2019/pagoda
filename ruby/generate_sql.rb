@@ -148,6 +148,16 @@ class GenerateSQL
     io.puts "rename table `#{from}` to `#{to}`;"
   end
 
+  def report
+    types = Hash.new {|h,k| h[k] = 0}
+    @pagoda.games do |g|
+      types[g.game_type] += 1
+    end
+    types.each_pair do |k,v|
+      puts "... Game type #{k} count #{v}"
+    end
+  end
+
   def scan_fields
     {id:    'integer not null',
      site:  'varchar(100) not null',
@@ -160,3 +170,4 @@ end
 
 gs = GenerateSQL.new( ARGV[0])
 gs.generate( ARGV[1])
+gs.report

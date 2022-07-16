@@ -43,6 +43,7 @@ class Database
     start_transaction
     missed = missing( table1, column1, table2, column2)
     missed.each do |key|
+      puts "... Cleaning #{table1} #{column1} #{key}"
       delete( table1, column1, key)
     end
     end_transaction

@@ -55,6 +55,7 @@ class Metacritic < DefaultSite
 		page  = stats.has_key?('page') ? stats['page'].to_i : -1
 		page += 1
 		count = stats.has_key?('count') ? stats['count'].to_i : 0
+		count = 0 if page == 0
 
 		raw_url = "https://www.metacritic.com/browse/games/genre/date/#{section}"
 		raw_url = raw_url + "?page=#{page}" if page > 0
@@ -73,8 +74,15 @@ class Metacritic < DefaultSite
 			count += 1
 		end
 
+		last_page = -1
+		Nodes.parse( raw).css( 'li.last_page').css( 'a') do |anchor|
+			if m = /page=(\d+)$/.match( anchor['href'])
+				last_page = m[1].to_i
+			end
+		end
+
 		stats['count'] = count
-		stats['page']  = (count > old_count) ? page : -1
+		stats['page']  = (page < last_page) ? page : -1
 		scanner.put_scan_stats( name, section, stats)
 
 		if old_count == count

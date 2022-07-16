@@ -3,9 +3,10 @@ require_relative 'pagoda'
 
 class WebsiteFiltersPage
   class Playable
-    attr_reader :name, :year, :url, :steam, :gog
-    def initialize( owner, name, year)
+    attr_reader :id, :name, :year, :url, :steam, :gog
+    def initialize( owner, id, name, year)
       @owner  = owner
+      @id     = id
       @name   = name
       @year   = year
       @url    = nil
@@ -130,7 +131,7 @@ class WebsiteFiltersPage
       io.puts "var games = ["
       games.each do |game|
         io.print "#{separ}['#{game.name.split("'").join("\\'")}'"
-        io.print ",'#{game.url ? game.url.split("'").join("\\'") : ''}'"
+        io.print ",#{game.id}"
         io.print ",#{game.year ? game.year : 0}"
         io.print ",#{game.flags(0,31)}"
         io.print ",#{game.flags(32,63)}"
@@ -153,7 +154,7 @@ class WebsiteFiltersPage
     @pagoda.game( 0)   # Force index to be created
     @pagoda.games do |game|
       next if game.is_group == 'Y'
-      playable = Playable.new( self, game.name, game.year)
+      playable = Playable.new( self, game.id, game.name, game.year)
       seen = {}
       get_game_info( game, playable, seen)
       list << playable

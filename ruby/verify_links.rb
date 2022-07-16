@@ -116,7 +116,7 @@ class VerifyLinks
 
     @pagoda.links do |link|
       next if link.status == 'Ignore'
-      next if link.static && link.valid? && (link.timestamp > 100)
+      next if link.static? && link.valid? && (link.timestamp > 100)
 
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"

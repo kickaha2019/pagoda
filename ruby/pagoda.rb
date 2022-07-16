@@ -78,19 +78,15 @@ class Pagoda
     end
 
     def game_type
-      'A'
-    end
-
-    def generate?
       flagged = aspects
       known = []
       @owner.aspect_names {|name| known << name}
-      return false unless flagged['Adventure']
-      ['Action','HOG','Physics','Roguelike','RPG','Stealth','Visual novel','VR'].each do |unwanted|
+      return '?' unless flagged['Adventure']
+      ['Action','HOG','Physics','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
-        return false if flagged[unwanted]
+        return '?' if flagged[unwanted]
       end
-      true
+      'A'
     end
 
     def group_name
@@ -253,7 +249,7 @@ class Pagoda
     end
 
     def generate?
-        valid? && collation && (! static)
+        valid? && collation && (! static?)
     end
 
     def id
@@ -290,6 +286,10 @@ class Pagoda
       @record[:changed] = 'N'
       @owner.insert( 'link', @record)
       @owner.end_transaction
+    end
+
+    def static?
+      @record[:static] && (@record[:static] == 'Y')
     end
 
     def status
@@ -613,10 +613,11 @@ class Pagoda
     end
     start_transaction
     aspects_lost.uniq.each do |aspect|
+      puts"... Deleting lost aspect #{aspect}"
       @database.delete( 'aspect', :aspect, aspect)
     end
     end_transaction
-    puts "*** Deleted #{aspects_lost.size} aspect records" if aspects_lost.size > 0
+    puts "*** Deleted #{aspects_lost.size} lost aspect records" if aspects_lost.size > 0
   end
 
   def count( table_name)

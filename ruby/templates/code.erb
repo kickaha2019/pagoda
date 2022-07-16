@@ -177,11 +177,7 @@ function list_selected( html) {
                 html.push( '<tr><td>' + (listed + game_offset) + '</td><td>');
 
                 let g = games[i];
-                if (g[1] != '') {
-                    html.push( '<a target="_blank" href="' + g[1] + '">' + g[0] + '</a>');
-                } else {
-                    html.push( g[0]);
-                }
+                html.push( '<a target="_blank" href="https://alofmethbin.com/pagoda/game.php?id=' + g[1] + '">' + g[0] + '</a>');
 
                 html.push( '</td><td>' + g[2] + '</td><td>');
 
