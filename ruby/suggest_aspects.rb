@@ -49,18 +49,9 @@ class SuggestAspects
 
     matches = @aspects[aspect_name]['match']
     matches = [matches] if matches.is_a?( String)
-    ignores1 = @aspects[aspect_name]['ignore']
-    ignores1 = [ignores1] if ignores1.is_a?( String)
-    ignores1 = [] if ignores1.nil?
-
-    ignores = []
-    ignores1.each do |e|
-      begin
-        ignores << Regexp.new( e, Regexp::IGNORECASE | Regexp::MULTILINE)
-      rescue Exception => bang
-        @errors << "Bad ignore: #{e}"
-      end
-    end
+    ignores = @aspects[aspect_name]['ignore']
+    ignores = [ignores] if ignores.is_a?( String)
+    ignores = [] if ignores.nil?
 
     text = nil
     matches.each do |m|
@@ -95,32 +86,24 @@ class SuggestAspects
   end
 
   def scan( page, regex, ignores)
-    scanner = StringScanner.new( page)
-    while scanner.skip_until( regex) do
+    ignored_page = page
+    ignores.each do |ignore|
+      ignored_page = ignored_page.gsub( ignore, "                                        "[0...(ignore.size)])
+    end
+
+    scanner = StringScanner.new( ignored_page)
+    if scanner.skip_until( regex)
       pos = scanner.pointer
-
-      ignore = false
-      ignores.each do |re|
-        start = pos - scanner.matched_size
-        #p [re, page[start..(start+49)]]
-        if re.match( page[start..(start+49)])
-          ignore = true
-          break
-        end
-      end
-
-      unless ignore
-        from = pos - 200  - scanner.matched_size
-        from = 0 if from < 0
-        to = from + 400
-        to = page.size - 1 if to >= page.size
-        text = h(page[from...(pos - scanner.matched_size)]) +
-               '<font color="red"><b>' +
-               h(page[(pos - scanner.matched_size)...pos]) +
-               '</b></font>' +
-               h(page[pos..to])
-        return text
-      end
+      from = pos - 200  - scanner.matched_size
+      from = 0 if from < 0
+      to = from + 400
+      to = page.size - 1 if to >= page.size
+      text = h(page[from...(pos - scanner.matched_size)]) +
+             '<font color="red"><b>' +
+             h(page[(pos - scanner.matched_size)...pos]) +
+             '</b></font>' +
+             h(page[pos..to])
+      return text
     end
 
     nil

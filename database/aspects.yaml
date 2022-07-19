@@ -28,6 +28,9 @@ Action:
   - \Waction scene
   - \Waction sequence
   - physical puzzle
+  ignore:
+  - Apple Arcade
+  - Touch Arcade
 Adventure:
   desc:   Graphic adventure game
   index: 10
