@@ -1,6 +1,7 @@
 require 'json'
 require 'net/http'
 require 'net/https'
+require 'rack/utils'
 require 'uri'
 require "selenium-webdriver"
 
@@ -17,6 +18,11 @@ module Common
 		@driver.navigate.to url
 		sleep 15
 		@driver.execute_script('return document.documentElement.outerHTML;')
+	end
+
+	def h(text)
+		return '' if text.nil?
+		Rack::Utils.escape_html(text)
 	end
 
 	def html_links( url)

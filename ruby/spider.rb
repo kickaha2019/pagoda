@@ -42,25 +42,46 @@ class Spider
 	end
 
 	def add_suggested
-		limit        = @settings['suggested_limit']
-		list         = []
+		site_suggests = Hash.new {|h,k| h[k] = 0}
+		site_adds     = Hash.new {|h,k| h[k] = 0}
+		site_dups     = Hash.new {|h,k| h[k] = 0}
+		site_nones    = Hash.new {|h,k| h[k] = 0}
+		limit         = @settings['suggested_limit']
+		list          = []
 
 		@suggested.each do |link|
 			debug_hook( 'reduce_suggested', link[:title], link[:url])
-			unless @pagoda.has?( 'link', :url, link[:url])
+			site_suggests[ link[:site]] += 1
+			if @pagoda.has?( 'link', :url, link[:url])
+				site_dups[ link[:site]] += 1
+			else
 				freq = lowest_frequency( link[:title])
 				list << [freq, link]
 			end
 		end
 
-		list.sort_by! {|entry| entry[0]}
+		list = list.shuffle.sort_by {|entry| entry[0]}
 
 		list.each do |entry|
 			link = entry[1]
-			next if (limit <= 0) || not_a_game( link[:title])
+			if not_a_game( link[:title])
+				site_nones[ link[:site]] += 1
+				next
+			end
 			debug_hook( 'match_games3', link[:title], link[:url])
 			limit -= 1
 			@pagoda.add_link( link[:site], link[:type], link[:title], link[:url])
+			site_adds[ link[:site]] += 1
+			break if limit <= 0
+		end
+
+		{'Suggested'     => site_suggests,
+		 'Added'         => site_adds,
+		 'Already added' => site_dups,
+		 'Not a game'    => site_nones}.each_pair do |k,stats|
+			stats.each do |site, count|
+				puts "... #{site}: #{count} #{k}"
+			end
 		end
 	end
 

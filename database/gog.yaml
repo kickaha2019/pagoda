@@ -200,7 +200,9 @@ tags:
   Mythology: ignore
   Vikings: ignore
   City builder: ignore
-  Walking Simulator: ignore
+  Walking Simulator:
+  - ignore
+  - Walking simulator
   LGBTQ+:
   - ignore
   - LGBTQ+

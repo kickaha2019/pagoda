@@ -153,7 +153,7 @@ class Names
 
     string_combos( name) do |combo|
       ids  = @combo2ids[combo].keys
-      freq = ids.size if ids.size < freq
+      freq = ids.size if (ids.size < freq) && (ids.size > 0)
     end
 
     freq

@@ -1,7 +1,9 @@
 ---
 tags:
   Exploration: ignore
-  Walking Simulator: ignore
+  Walking Simulator:
+  - ignore
+  - Walking simulator
   Female Protagonist: ignore
   3D:
   - ignore
@@ -480,7 +482,7 @@ tags:
   Jump Scare: ignore
   Rock Music: ignore
   BMX: ignore
-  Skiing: ignore
+  Skiing: reject
   Hardware: ignore
   Lemmings: ignore
   ATV: ignore

@@ -30,11 +30,12 @@ class GoodOldGames < DefaultSite
 				find_on_page( scanner, raw, seen)
 				page += 1
 			end
-		end
 
-		stats = scanner.get_scan_stats( name, 'Store')
-		stats['count'] = seen.size
-		scanner.put_scan_stats( name, 'Store', stats)
+			File.open( path, 'w') {|io| io.print JSON.generate( seen)}
+			stats = scanner.get_scan_stats( name, 'Store')
+			stats['count'] = seen.size
+			scanner.put_scan_stats( name, 'Store', stats)
+		end
 	end
 
 	def find_on_page( scanner, raw, seen)
@@ -50,7 +51,7 @@ class GoodOldGames < DefaultSite
 					text.encode!( 'US-ASCII',
 												:invalid => :replace, :undef => :replace, :universal_newline => true)
 					scanner.add_link( text, url)
-					seen[url] = true
+					seen[url] = text
 					url = nil
 				end
 			end

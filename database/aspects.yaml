@@ -27,6 +27,7 @@ Action:
   - rhythm
   - \Waction scene
   - \Waction sequence
+  - physical puzzle
 Adventure:
   desc:   Graphic adventure game
   index: 10
@@ -108,6 +109,8 @@ Simulation:
   index: 21
 Slider:
   index: 22
+  match:
+  - slider
 Sound:
   title:  Sound puzzles
   desc:   Game contains sound based puzzles
@@ -115,6 +118,7 @@ Sound:
   - sound puzzle
   - music puzzle
   - musical puzzle
+  - tone puzzle
   index:  31
 Stealth:
   desc:   Gameplay involves stealth at points
@@ -144,5 +148,8 @@ Timer:
 VR:
   desc:   Virtual Reality game
   index: 26
+"Walking simulator":
+  match:
+  - Walking simulator
 "Word puzzle":
   index: 29

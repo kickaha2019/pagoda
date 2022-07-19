@@ -114,7 +114,11 @@ class SuggestAspects
         from = 0 if from < 0
         to = from + 400
         to = page.size - 1 if to >= page.size
-        text = page[from..to]
+        text = h(page[from...(pos - scanner.matched_size)]) +
+               '<font color="red"><b>' +
+               h(page[(pos - scanner.matched_size)...pos]) +
+               '</b></font>' +
+               h(page[pos..to])
         return text
       end
     end
