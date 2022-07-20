@@ -240,7 +240,9 @@ tags:
   Philosophical: ignore
   Deckbuilding: ignore
   Party Game: ignore
-  Escape Room: ignore
+  Escape Room:
+  - accept
+  - Escape
   Bullet Hell: reject
   Cats: ignore
   Nature: ignore

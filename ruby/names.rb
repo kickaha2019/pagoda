@@ -148,6 +148,16 @@ class Names
     end
   end
 
+  def poison( name)
+    name = name.to_s.downcase
+    id   = - (1 + @combo2ids.size)
+
+    string_combos( name) do |combo|
+      @combo2ids[combo][id] = true
+#        p ['poison', name, combo, id]
+    end
+  end
+
   def rarity( name)
     freq = 1000000
 
@@ -245,33 +255,23 @@ class Names
   end
 
   def suggest( name, limit)
-    found = []
-
+    id2size = Hash.new {|h,k| h[k] = 1000000}
     string_combos( name) do |combo|
-      ids = @combo2ids[combo]
-      found << ids.keys unless ids.empty?
-    end
-
-    found.sort_by! {|ids| ids.size}
-    found.flatten!
-
-    seen = {}
-    found.select! do |id|
-      if seen[id]
-        false
-      else
-        seen[id] = true
-        true
+      ids = @combo2ids[combo].keys
+      ids.each do |id|
+        next if id < 0
+        id2size[id] = ids.size if id2size[id] > ids.size
       end
     end
 
-    found[0...limit].each {|id| yield id}
+    found = id2size.keys.sort_by {|id| id2size[id]}
+    found[0...limit].each {|id| yield id, id2size[id]}
   end
 
   def suggest_analysis( name)
     string_combos( name) do |combo|
-      ids = @combo2ids[combo]
-      yield combo, ids.keys if ids.size > 0
+      ids = @combo2ids[combo].keys.select {|id| id >= 0}
+      yield combo, ids if ids.size > 0
     end
   end
 end

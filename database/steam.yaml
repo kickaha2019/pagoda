@@ -146,7 +146,9 @@ tags:
   Detective:
   - ignore
   - Investigation
-  Escape Room: ignore
+  Escape Room:
+  - accept
+  - Escape
   Underwater: ignore
   Education: ignore
   Science: ignore

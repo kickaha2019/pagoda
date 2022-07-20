@@ -54,7 +54,7 @@
     <tr><th>Game</th><th>Developer</th><th>Publisher</th><th>Year</th><th>Actions</th></tr>
     <%=
       html = []
-      @rec.suggest do |game|
+      @rec.suggest do |game, freq|
         html << "<tr><td><a href=\"/game/#{game.id}\">#{h(game.name)}</a></td>"
         html << "<td>#{game.developer}</td>"
         html << "<td>#{game.publisher}</td>"

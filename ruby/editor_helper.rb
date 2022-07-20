@@ -265,11 +265,11 @@ ASPECT_ELEMENT
       $pagoda.links do |link|
         next unless link.status == 'Ignored'
         suggested = []
-        $pagoda.suggest( link.title) {|g| suggested << g.id}
+        $pagoda.suggest( link.title) {|game, freq| suggested << [game.id, freq]}
         recs << [link, suggested] if suggested.size > 0
       end
 
-      recs.sort_by {|rec| [rec[1].size, rec[0].title]}
+      recs.sort_by {|rec| [rec[1].inject(0) {|r,e| r + e[1]}, rec[0].title]}
     end
 
     def input_element( name, len, value, extras='')

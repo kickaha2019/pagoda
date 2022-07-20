@@ -51,12 +51,10 @@ Choices:
   - QT\WEvents
   - QTE
   - your choice
-Dungeon crawl:
-  desc:   Dungeon crawling or roguelike
-  index: 17
+Escape:
+  title:   Escape room game
   match:
-  - Roguelike
-  - Dungeon crawl
+  - Escape room
 FMV:
   index:  0
   match:
@@ -94,7 +92,8 @@ Pixels:
   match:
   - pixel
   ignore:
-  - pixel hunting
+  - pixel hunt
+  - PixelShader
 Physics:
   desc:   Physics based gameplay
   index: 14
@@ -104,6 +103,12 @@ Puzzle:
 "Resource management":
   desc:   Some management style gameplay
   index: 18
+Roguelike:
+  desc:   Dungeon crawling or roguelike
+  index: 17
+  match:
+  - Roguelike
+  - Dungeon crawl
 RPG:
   desc:   Role playing game where your character levels up as you play
   index: 19
@@ -141,6 +146,7 @@ Timer:
   - Timed sequence
   - Timed puzzle
   - puzzles limited by time
+  - timing
 "Tower Defense":
   desc:   Tower Defense gameplay
   index: 8

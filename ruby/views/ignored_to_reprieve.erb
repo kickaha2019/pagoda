@@ -26,8 +26,8 @@
         html << "<tr><td>#{h(rec[0].site)}</td>"
         html << "<td>#{rec[0].type}</td>"
         html << "<td><a target=\"_blank\" href=\"/link/#{e(e(rec[0].url))}\">#{h(rec[0].title)}</a></td><td>"
-        rec[1].each do |id|
-            html << "<a href=\"/game/#{id}\">#{id}</a>"
+        rec[1].each do |inst|
+            html << "<a href=\"/game/#{inst[0]}\">#{inst[0]}</a> (#{inst[1]})"
         end
         html << '</td></tr>'
       end

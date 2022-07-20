@@ -307,7 +307,7 @@ class Pagoda
     end
 
     def suggest
-      @owner.suggest( title) {|game| yield game}
+      @owner.suggest( title) {|game, freq| yield game, freq}
     end
 
     def suggest_analysis
@@ -383,6 +383,13 @@ class Pagoda
       # g.links do |l|
       #   @names.add( l.title, g.id)
       # end
+    end
+
+    # Poison names repository with titles of ignored links
+    links do |link|
+      if link.status == 'Ignored'
+        @names.poison( link.orig_title)
+      end
     end
 
     @reduction_file        = dir + '/collation.yaml'
@@ -566,7 +573,7 @@ class Pagoda
   end
 
   def suggest( name)
-    @names.suggest( name, 20) {|game_id| yield game(game_id)}
+    @names.suggest( name, 20) {|game_id, freq| yield game(game_id), freq}
   end
 
   def suggest_analysis( name)
