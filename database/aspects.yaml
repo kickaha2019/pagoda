@@ -53,6 +53,7 @@ Choices:
   - your choice
 Escape:
   title:   Escape room game
+  index:  33
   match:
   - Escape room
 FMV:
@@ -79,6 +80,10 @@ Investigation:
 "LGBTQ+":
   desc:   ""
   index:  32
+Mac:
+  desc:   Game available on Mac
+  index:  34
+  derive: true
 Maze:
   desc:   Game has (the horror) mazes in it
   index: 5
@@ -158,7 +163,12 @@ VR:
   desc:   Virtual Reality game
   index: 26
 "Walking simulator":
+  index:  36
   match:
   - Walking simulator
+Windows:
+  desc:   Game available on Windows
+  index:  35
+  derive: true
 "Word puzzle":
   index: 29

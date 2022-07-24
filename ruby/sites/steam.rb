@@ -95,6 +95,12 @@ class Steam < DefaultSite
 
 	def get_derived_aspects( page)
 		yield 'Steam'
+		if /data-os="win"/m =~ page
+			yield 'Windows'
+		end
+		if /data-os="mac"/m =~ page
+			yield 'Mac'
+		end
 	end
 
 	def get_game_description( page)
@@ -165,7 +171,7 @@ class Steam < DefaultSite
 			scanner.debug_hook( 'Steam:urls', text, url)
 			count += scanner.add_link( text, url)
 
-			break if count >= 100
+			break if count >= 200
 		end
 
 		count

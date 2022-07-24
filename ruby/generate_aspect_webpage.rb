@@ -47,6 +47,7 @@ class WebsiteFiltersPage
   end
 
   def initialize( dir, cache, templates)
+    @dir       = dir
     @pagoda    = Pagoda.new( dir)
     @cache     = cache
     @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
@@ -87,8 +88,11 @@ class WebsiteFiltersPage
     return if seen[ game.id]
 
     game.aspects.each_pair do |aspect, flag|
-      next unless @aspects[aspect]
-      playable.record_aspect( aspect) if flag
+      if @aspects[aspect]
+        playable.record_aspect( aspect) if flag
+      else
+        raise "Unknown aspect #{aspect} for #{game.name}"
+      end
     end
 
     game.links do |link|
@@ -166,7 +170,22 @@ class WebsiteFiltersPage
   def template( name)
     ERB.new( IO.read( @templates + '/' + name + '.erb'))
   end
+
+  def validate( path)
+    info = YAML.load( IO.read( @dir + '/' + path))
+    info['tags'].each_value do |value|
+      if value.is_a?( Array)
+        value[1..-1].each do |aspect|
+          unless @aspects[aspect]
+            raise "Unknown aspect #{aspect} in #{path}"
+          end
+        end
+      end
+    end
+  end
 end
 
 wfp = WebsiteFiltersPage.new( ARGV[0], ARGV[1], ARGV[2])
+wfp.validate( 'gog.yaml')
+wfp.validate( 'steam.yaml')
 wfp.generate( ARGV[3])

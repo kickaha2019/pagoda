@@ -105,6 +105,13 @@ class GoodOldGames < DefaultSite
 
 	def get_derived_aspects( page)
 		yield 'GOG'
+		if info = extract_card_product( page)
+			info['supportedOperatingSystems'].each do |opsys|
+				name = opsys['operatingSystem']['name']
+				yield 'Windows' if name == 'windows'
+				yield 'Mac'     if name == 'osx'
+			end
+		end
 	end
 
 	def get_game_description( page)

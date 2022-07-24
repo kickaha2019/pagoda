@@ -8,6 +8,17 @@
         window.location.reload();
     }
 
+    function link_add_action( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/add_game_from_link/" + id, false);
+        xhttp.send();
+        if (xhttp.responseText == '') {
+            window.location.reload();
+            return;
+        }
+        window.open(xhttp.responseText);
+    }
+
     function link_bind_action( id, game) {
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/bind/" + id + "/" + game, false);
@@ -37,7 +48,8 @@
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
     <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
                                 link_action( @rec, 'bind') +
-                                link_action( @rec, 'unbind')
+                                link_action( @rec, 'unbind') +
+                                ((/(free|ignored)/i =~ link_status(@rec)) ? link_add_action( @rec) : '')
     %></td></tr>
 
     <%=

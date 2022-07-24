@@ -5,9 +5,6 @@ tags:
   - ignore
   - Walking simulator
   Female Protagonist: ignore
-  3D:
-  - ignore
-  - 3D
   Third Person:
   - ignore
   - 3rd person
@@ -52,9 +49,6 @@ tags:
   Puzzle Platformer: reject
   Platformer: reject
   Visual Novel: ignore
-  2D:
-  - ignore
-  - 2D
   Pixel Graphics:
   - ignore
   - Pixels
@@ -325,7 +319,7 @@ tags:
   - RPG
   Dungeon Crawler:
   - ignore
-  - Dungeon crawl
+  - Roguelike
   Flight: reject
   3D Fighter: reject
   Arena Shooter: reject
@@ -359,11 +353,11 @@ tags:
   MOBA: ignore
   Roguelike:
   - ignore
-  - Dungeon crawl
+  - Roguelike
   Mystery Dungeon: ignore
   Traditional Roguelike:
   - ignore
-  - Dungeon crawl
+  - Roguelike
   God Game: ignore
   Hentai: reject
   NSFW: ignore
@@ -388,7 +382,7 @@ tags:
   Hunting: ignore
   Roguelike Deckbuilder:
   - ignore
-  - Dungeon crawl
+  - Roguelike
   - Cards
   Automobile Sim: ignore
   Moddable: ignore
@@ -489,3 +483,6 @@ tags:
   Lemmings: ignore
   ATV: ignore
   Photo Editing: ignore
+  2D: ignore
+  3D: ignore
+  Wholesome: ignore

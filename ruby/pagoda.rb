@@ -725,4 +725,11 @@ class Pagoda
   def terminate
     @site_handlers.each_value {|handler| handler.terminate( self)}
   end
+
+  def visited_key( key)
+    start_transaction
+    @database.delete( 'visited', :key, key)
+    @database.insert( 'visited', {:key => key, :timestamp => Time.now.to_i})
+    end_transaction
+  end
 end

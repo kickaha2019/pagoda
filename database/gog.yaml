@@ -1,8 +1,5 @@
 ---
 tags:
-  2D:
-  - ignore
-  - 2D
   4X: reject
   Action: ignore
   Adventure:
@@ -187,7 +184,7 @@ tags:
   Emotional: ignore
   Dungeon Crawler:
   - accept
-  - Dungeon crawl
+  - Roguelike
   Local Co-Op: ignore
   Puzzle Platformer: reject
   LevelEditor: ignore
@@ -225,7 +222,7 @@ tags:
   Transportation: ignore
   Roguelite:
   - ignore
-  - Dungeon crawl
+  - Roguelike
   Fishing: ignore
   Dog: ignore
   Sniper: reject

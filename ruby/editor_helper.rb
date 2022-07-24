@@ -264,6 +264,7 @@ ASPECT_ELEMENT
 
       $pagoda.links do |link|
         next unless link.status == 'Ignored'
+        next if $pagoda.has?( 'visited', :key, "ignore_reprieve:#{link.url}")
         suggested = []
         $pagoda.suggest( link.title) {|game, freq| suggested << [game.id, freq]}
         recs << [link, suggested] if suggested.size > 0
@@ -538,6 +539,10 @@ ASPECT_ELEMENT
       else
         $pagoda.create_game( params)
       end
+    end
+
+    def visited_key( key)
+      $pagoda.visited_key( key)
     end
   end
 

@@ -162,3 +162,7 @@ end
 get '/verified' do
   erb :verified, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All', :status => 'All')
 end
+
+post '/visited/:key' do
+  visited_key( d(params[:key]))
+end

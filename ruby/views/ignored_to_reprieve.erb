@@ -11,7 +11,7 @@
 </div>
 
 <div id="list"><table class="scan list" style="table-layout: fixed">
-  <tr><th>Site</th><th>Type</th><th>Link</th><th>Suggested</th></tr>
+  <tr><th>Site</th><th>Type</th><th>Link</th><th>Suggested</th><th>Actions</th></tr>
   <%=
       html = []
 
@@ -29,12 +29,22 @@
         rec[1].each do |inst|
             html << "<a href=\"/game/#{inst[0]}\">#{inst[0]}</a> (#{inst[1]})"
         end
-        html << '</td></tr>'
+        html << "</td><td><button onclick=\"visited_action( 'ignore_reprieve:#{e(e(rec[0].url))}');\">Visited</button></td></tr>"
       end
 
       html.join( "\n")
   %>
 </table></div>
+
+<script>
+      function visited_action( key) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open( "POST", "/visited/" + key, false);
+            xhttp.send();
+            if (xhttp.responseText == '') {return;}
+            alert( xhttp.responseText);
+      }
+</script>
 
 </body>
 </html>
