@@ -1,4 +1,4 @@
-<%= erb :header, :locals => {:page => 'summary'} %>
+<%= erb :header, :locals => {:page => static ? 'static_summary' : 'summary'} %>
 
   <div class="checkboxes control">
       <%=
@@ -51,7 +51,7 @@ CHECKBOX
       html   = []
       totals = Hash.new {|h,k| h[k] = [0,0,0]}
 
-      links_by_site_and_type do |site, type, links|
+      links_by_site_and_type(static) do |site, type, links|
         next unless @types_to_list.include?( type)
         counts = Hash.new {|h,k| h[k] = [0,0,0]}
 

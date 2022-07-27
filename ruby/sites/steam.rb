@@ -171,7 +171,7 @@ class Steam < DefaultSite
 			scanner.debug_hook( 'Steam:urls', text, url)
 			count += scanner.add_link( text, url)
 
-			break if count >= 200
+			break if count >= 250
 		end
 
 		count

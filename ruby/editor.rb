@@ -138,6 +138,16 @@ put '/set_variable/:name/:value' do
   set_variable( params[:name], params[:value])
 end
 
+get '/static_summary' do
+  erb :summary, :locals => get_locals( params,
+                                       :official    => true,
+                                       :reference   => true,
+                                       :review      => true,
+                                       :store       => true,
+                                       :walkthrough => true,
+                                       :static      => true)
+end
+
 get '/suggest_aspects' do
   erb :suggest_aspects, :locals => get_locals( params, :page => 1)
 end
@@ -148,7 +158,8 @@ get '/summary' do
                                        :reference   => true,
                                        :review      => true,
                                        :store       => true,
-                                       :walkthrough => true)
+                                       :walkthrough => true,
+                                       :static      => false)
 end
 
 post '/unbind/:url' do

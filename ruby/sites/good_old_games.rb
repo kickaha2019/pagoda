@@ -127,7 +127,10 @@ class GoodOldGames < DefaultSite
 			game[:name]      = info['title']
 			game[:publisher] = info['publisher']
 			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ') if info['developers']
-			game[:year]      = info['globalReleaseDate'][0..3] if info['globalReleaseDate']
+			if m = /^(\d+)-(\d+)-(\d+)T/.match( info['globalReleaseDate'])
+				t = Time.new( m[1].to_i, m[2].to_i, m[3].to_i)
+				game[:year] = t.year if t <= Time.now
+			end
 		end
 	end
 

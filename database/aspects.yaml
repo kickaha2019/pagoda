@@ -77,6 +77,8 @@ Inventory:
   index:  15
 Investigation:
   index:  13
+iOS:
+  desc:   "iOS"
 "LGBTQ+":
   desc:   ""
   index:  32
@@ -132,6 +134,7 @@ Sound:
   - music puzzle
   - musical puzzle
   - tone puzzle
+  - tone matching
   index:  31
 Stealth:
   desc:   Gameplay involves stealth at points

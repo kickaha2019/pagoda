@@ -91,6 +91,11 @@ ASPECT_ELEMENT
       return '' if bind_game < 0
       return '' if bind_id( link_rec) == bind_game
       link_rec.bind( bind_game)
+
+      page = get_cache( link_rec.timestamp)
+      site = $pagoda.get_site_handler( link_rec.site)
+      site.notify_bind( $pagoda, link_rec, page, bind_game)
+
       'Bound'
     end
 
@@ -312,6 +317,7 @@ ASPECT_ELEMENT
 
     def link_lost?( rec)
       return false if link_status(rec) == 'Ignored'
+      return false if rec.static?
       (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
     end
 
@@ -364,10 +370,10 @@ ASPECT_ELEMENT
       current_type
     end
 
-    def links_by_site_and_type
+    def links_by_site_and_type( static = false)
       cache = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = []}}
       $pagoda.links do |rec|
-        unless rec.static?
+        if rec.static? == static
           cache[rec.site][rec.type] << rec
         end
       end

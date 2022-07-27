@@ -128,10 +128,8 @@ class VerifyLinks
       end
     end
 
-    free.sort_by! {|link| link.timestamp ? link.timestamp : 0}
-    bound.sort_by! {|link| link.timestamp ? link.timestamp : 0}
-
     {'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
+      v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
       File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
         io.puts 'site,title,url,timestamp,valid'
         v.each do |link|
@@ -141,8 +139,9 @@ class VerifyLinks
     end
     #raise 'Dev'
 
-    links = dubious
+    links = []
     bound.each_index do |i|
+      links << dubious[i] if i < dubious.size
       links << free[i] if i < free.size
       links << bound[i]
     end

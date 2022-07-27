@@ -88,6 +88,21 @@ class Apple < DefaultSite
     searcher.cache + "/ios/#{section}#{index+1}.json"
   end
 
+  def get_derived_aspects( page)
+    if json = extract_ember_json( page)
+      os = json['operatingSystem']
+      if /requires iOS/i =~ os
+        yield 'iOS'
+      end
+      if /macOS 1/ =~ os
+        yield 'Mac'
+      end
+      if /^\d+\.\d+\.\d+$/ =~ os
+        yield 'Mac'
+      end
+    end
+  end
+
   def get_game_description( page)
     if json = extract_ember_json( page)
       json['description']

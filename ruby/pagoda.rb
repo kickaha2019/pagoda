@@ -289,7 +289,8 @@ class Pagoda
     end
 
     def static?
-      @record[:static] && (@record[:static] == 'Y')
+      return false unless @record[:static]
+      @record[:static] == 'Y'
     end
 
     def status
