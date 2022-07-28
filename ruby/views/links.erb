@@ -22,80 +22,12 @@
   %>&nbsp;&nbsp;
 </div>
 
-<div id="list"><table class="scan list">
-  <tr><th>Site</th><th>Type</th><th>Title</th><th>Year</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Comment</th><th>Actions</th></tr>
-  <%=
-      html = []
+<%=
+  records = link_records( site, type, status, search)
+  erb :links_table, :locals => {:records => records, :current_page => page.to_i}
+%>
 
-      records = link_records( site, type, status, search)
-      current_page = page.to_i
-      total_pages  = (records.size + 99) /  100
-      current_page = 1 if total_pages < current_page
-
-      records.sort_by! do |rec|
-        [rec.site, rec.type, rec.label.to_s]
-      end
-
-      row = 0
-      records[(100*(current_page-1))...(100*current_page)].each do |rec|
-        row += 1
-        title = (/\?\?\?/ =~ rec.orig_title) ? rec.title : rec.orig_title
-        html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
-        html << "<td>#{rec.type}</td>"
-        html << "<td><a target=\"_blank\" title=\"#{t(title)}\" href=\"#{rec.url}\">#{h(title,40)}<a/></td>"
-        html << "<td>#{rec.year}</td>"
-        info = collation( rec.url)
-        html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
-        html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"
-        colour = link_lost?(rec) ? 'red' : (rec.comment ? 'cyan' : 'white')
-        html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"
-        html << "#{rec.comment}</td><td>"
-        html << link_action( rec, 'ignore', row)
-        html << link_action( rec, 'bind', row)
-        html << link_action( rec, 'unbind', row)
-        html << link_action( rec, 'forget', row)
-        if /free/i =~ link_status(rec)
-          html << link_add_action( rec)
-        end
-        html << '</td></tr>'
-      end
-
-      html.join( "\n")
-  %>
-</table></div>
-
-<script>
-    function link_action( id, action, row) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/" + action + "/" + id, false);
-        xhttp.send();
-        if (xhttp.responseText == '') {return;}
-        document.getElementById("status" + row).innerHTML = '<span class="changed">' +
-                                                           xhttp.responseText +
-                                                           '</span>';
-        set_collation( id, row);
-    }
-
-    function link_add_action( id) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/add_game_from_link/" + id, false);
-        xhttp.send();
-        if (xhttp.responseText == '') {
-            return;
-        }
-        window.open(xhttp.responseText);
-    }
-
-    function set_collation( url, row) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open( "GET", "/collation/" + url, false);
-        xhttp.send();
-        var info = JSON.parse( xhttp.responseText);
-
-        document.getElementById("collation" + row).innerHTML = info['link'];
-        document.getElementById("collation_year" + row).innerHTML = info['year'];
-    }
-</script>
+<%= erb :links_actions %>
 
 </body>
 </html>

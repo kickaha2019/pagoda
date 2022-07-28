@@ -110,6 +110,14 @@ get '/new_game' do
   erb :game, :locals => {:id => -1}
 end
 
+post '/pardon/:url' do
+  pardon_link( d(params[:url]))
+end
+
+get '/problem_links' do
+  erb :problem_links, :locals => get_locals( params, :search => '', :page => 1)
+end
+
 get '/reports' do
   erb :reports
 end

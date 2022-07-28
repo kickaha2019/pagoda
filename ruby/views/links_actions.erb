@@ -1,0 +1,32 @@
+<script>
+    function link_action( id, action, row) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/" + action + "/" + id, false);
+        xhttp.send();
+        if (xhttp.responseText == '') {return;}
+        document.getElementById("status" + row).innerHTML = '<span class="changed">' +
+                                                           xhttp.responseText +
+                                                           '</span>';
+        set_collation( id, row);
+    }
+
+    function link_add_action( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/add_game_from_link/" + id, false);
+        xhttp.send();
+        if (xhttp.responseText == '') {
+            return;
+        }
+        window.open(xhttp.responseText);
+    }
+
+    function set_collation( url, row) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "GET", "/collation/" + url, false);
+        xhttp.send();
+        var info = JSON.parse( xhttp.responseText);
+
+        document.getElementById("collation" + row).innerHTML = info['link'];
+        document.getElementById("collation_year" + row).innerHTML = info['year'];
+    }
+</script>

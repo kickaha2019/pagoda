@@ -409,6 +409,27 @@ ASPECT_ELEMENT
       summary
     end
 
+    def pardon_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      if link_rec
+        link_rec.verified(
+            {'title'     => link_rec.title,
+                 'timestamp' => link_rec.timestamp,
+                 'valid'     => 'Y',
+                 'year'      => link_rec.year}
+        )
+        link_rec.status
+      else
+        ''
+      end
+    end
+
+    def problem_link_records( search)
+      $pagoda.links do |rec|
+        link_flagged?(rec)
+      end
+    end
+
     def refresh_metadata
       $pagoda.refresh_reduction_cache
     end

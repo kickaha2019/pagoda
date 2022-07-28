@@ -1,0 +1,23 @@
+<%= erb :header, :locals => {:page => 'problem_links'} %>
+
+<div class="search control">
+  <button onclick="search_input( '<%= "/problem_links?page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+    url = "/problem_links?search=#{e(search)}"
+    erb :page_control, :locals => {:view => 'problem_link',
+                                   :page => page,
+                                   :url  => url,
+                                   :args => [search]}
+  %>&nbsp;&nbsp;
+</div>
+
+<%=
+  records = problem_link_records( search)
+  erb :links_table, :locals => {:records => records, :current_page => page.to_i}
+%>
+
+<%= erb :links_actions %>
+
+</body>
+</html>

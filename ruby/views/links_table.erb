@@ -1,0 +1,40 @@
+<div id="list"><table class="scan list">
+  <tr><th>Site</th><th>Type</th><th>Title</th><th>Year</th><th>Collation</th><th>Year</th></th><th>Status</th><th>Comment</th><th>Actions</th></tr>
+  <%=
+      html = []
+
+      total_pages  = (records.size + 99) /  100
+      current_page = 1 if total_pages < current_page
+
+      records.sort_by! do |rec|
+        [rec.site, rec.type, rec.label.to_s]
+      end
+
+      row = 0
+      records[(100*(current_page-1))...(100*current_page)].each do |rec|
+        row += 1
+        title = (/\?\?\?/ =~ rec.orig_title) ? rec.title : rec.orig_title
+        html << "<tr><td><a target=\"_blank\" href=\"/link/#{e(e(rec.url))}\">#{h(rec.site)}</a></td>"
+        html << "<td>#{rec.type}</td>"
+        html << "<td><a target=\"_blank\" title=\"#{t(title)}\" href=\"#{rec.url}\">#{h(title,40)}<a/></td>"
+        html << "<td>#{rec.year}</td>"
+        info = collation( rec.url)
+        html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
+        html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"
+        colour = link_lost?(rec) ? 'red' : (rec.comment ? 'cyan' : 'white')
+        html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"
+        html << "#{rec.comment}</td><td>"
+        html << link_action( rec, 'ignore', row)
+        html << link_action( rec, 'bind', row)
+        html << link_action( rec, 'unbind', row)
+        html << link_action( rec, 'forget', row)
+        if /free/i =~ link_status(rec)
+          html << link_add_action( rec)
+        end
+        html << link_action( rec, 'pardon', row)
+        html << '</td></tr>'
+      end
+
+      html.join( "\n")
+  %>
+</table></div>
