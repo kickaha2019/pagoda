@@ -49,6 +49,7 @@
     <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
                                 link_action( @rec, 'bind') +
                                 link_action( @rec, 'unbind') +
+                                link_action( @rec, 'pardon') +
                                 ((/(free|ignored)/i =~ link_status(@rec)) ? link_add_action( @rec) : '')
     %></td></tr>
 

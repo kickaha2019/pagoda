@@ -70,7 +70,9 @@ tags:
   Naval: ignore
   Nudity: reject
   Off-road: ignore
-  Open World: ignore
+  Open World:
+  - ignore
+  - Open world
   Pinball: reject
   Platformer: reject
   Point-and-click: ignore

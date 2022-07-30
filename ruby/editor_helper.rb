@@ -413,10 +413,10 @@ ASPECT_ELEMENT
       link_rec = $pagoda.link( link_url)
       if link_rec
         link_rec.verified(
-            {'title'     => link_rec.title,
-                 'timestamp' => link_rec.timestamp,
-                 'valid'     => 'Y',
-                 'year'      => link_rec.year}
+            {:title     => link_rec.title,
+                 :timestamp => link_rec.timestamp,
+                 :valid     => true,
+                 :year      => link_rec.year}
         )
         link_rec.status
       else

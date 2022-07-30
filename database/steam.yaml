@@ -42,7 +42,9 @@ tags:
   - ignore
   - Horror
   Survival: ignore
-  Open World: ignore
+  Open World:
+  - ignore
+  - Open world
   Casual: ignore
   Simulation: ignore
   Puzzle: accept
@@ -231,7 +233,9 @@ tags:
   Inventory Management: ignore
   Realistic: ignore
   World War I: ignore
-  RPGMaker: ignore
+  RPGMaker:
+  - ignore
+  - Top-down
   Comic Book: ignore
   Dog: ignore
   Soundtrack: reject
@@ -346,7 +350,9 @@ tags:
   Resource Management: ignore
   Military: ignore
   Music-Based Procedural Generation: ignore
-  GameMaker: ignore
+  GameMaker:
+  - ignore
+  - Top-down
   Real Time Tactics: reject
   Economy: ignore
   Jet: ignore

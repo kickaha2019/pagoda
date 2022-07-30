@@ -28,6 +28,9 @@ Action:
   - \Waction scene
   - \Waction sequence
   - physical puzzle
+  - Quick\WTime\WEvent
+  - QT\WEvent
+  - QTE
   ignore:
   - Apple Arcade
   - Touch Arcade
@@ -47,10 +50,10 @@ Choices:
   index: 4
   match:
   - Choose Your Own Adventure
-  - Quick\WTime\WEvents
-  - QT\WEvents
-  - QTE
-  - your choice
+  - choice structure
+  - one of two options
+  - dialogue choice
+  - dialogue option
 Escape:
   title:   Escape room game
   index:  33
@@ -79,6 +82,7 @@ Investigation:
   index:  13
 iOS:
   desc:   "iOS"
+  derive: true
 "LGBTQ+":
   desc:   ""
   index:  32
@@ -93,6 +97,9 @@ Maze:
 Minigame:
   match:  \Wmini(\W*)game
   index:  20
+Open world:
+  match:
+  - Open world
 Pixels:
   title:   Pixel graphics
   index: 28
@@ -136,6 +143,8 @@ Sound:
   - tone puzzle
   - tone matching
   - musical pattern matching
+  - sound-based minigame
+  - music-based puzzle
   index:  31
 Stealth:
   desc:   Gameplay involves stealth at points
@@ -161,6 +170,10 @@ Timer:
   index: 8
   match:
   - Tower Defense
+"Top-down":
+  desc: Top down view of game world
+  match:
+  - 2D pixel graphics
 "Visual novel":
   index: 25
 VR:
