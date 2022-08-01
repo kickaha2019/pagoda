@@ -44,7 +44,7 @@ class DefaultSite
     'Website'
   end
 
-  def notify_bind( link, page, game)
+  def notify_bind( pagoda, link, page, game_id)
   end
 
   def tag_aspects( pagoda, page)

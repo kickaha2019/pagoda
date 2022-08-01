@@ -106,8 +106,9 @@ Pixels:
   match:
   - pixel
   ignore:
-  - pixel hunt
+  - pixel\Whunt
   - PixelShader
+  - Pixel/
 Physics:
   desc:   Physics based gameplay
   index: 14
@@ -133,6 +134,9 @@ Slider:
   index: 22
   match:
   - slider
+  - sliding puzzle
+  ignore:
+  - slider bar
 Sound:
   title:  Sound puzzles
   desc:   Game contains sound based puzzles
@@ -140,7 +144,7 @@ Sound:
   - sound puzzle
   - music puzzle
   - musical puzzle
-  - tone puzzle
+  - \wtone puzzle
   - tone matching
   - musical pattern matching
   - sound-based minigame

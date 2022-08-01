@@ -88,7 +88,10 @@ class SuggestAspects
   def scan( page, regex, ignores)
     ignored_page = page
     ignores.each do |ignore|
-      ignored_page = ignored_page.gsub( ignore, "                                        "[0...(ignore.size)])
+      re = Regexp.new( ignore, Regexp::IGNORECASE)
+      ignored_page = ignored_page.gsub( re) do |match|
+        "                                        "[0...(match.size)]
+      end
     end
 
     scanner = StringScanner.new( ignored_page)
