@@ -96,7 +96,7 @@
       @aspects       = {}
     end
 
-    while @aliases.size < 10
+    while @aliases.size < 5
       @aliases << nil
     end
 %>
@@ -158,7 +158,7 @@
           $pagoda.links do |s|
             c = s.collation
             if c && @game && (c.id == @game.id)
-              html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a href=\"/link/#{e(e(s.url))}\">#{s.name}</a></td></tr>"
+              html << "<tr><td>#{s.site}</td><td>#{s.type}</td><td><a target=\"_blank\" href=\"/link/#{e(e(s.url))}\">#{s.name}</a></td></tr>"
             end
           end
           html.join( "\n")

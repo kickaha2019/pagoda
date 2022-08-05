@@ -74,9 +74,9 @@ class Metacritic < DefaultSite
 		stats['page']  = (page < last_page) ? page : -1
 		scanner.put_scan_stats( name, section, stats)
 
-		if old_count == count
-			puts "*** Empty page: #{raw_url}"
-		end
+		# if old_count == count
+		# 	puts "*** Empty page: #{raw_url}"
+		# end
 	end
 
 	def name

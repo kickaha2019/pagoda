@@ -1,9 +1,9 @@
 class Names
   def initialize
-    @cache     = {}
-    @combo2ids = Hash.new {|h,k| h[k] = {}}
-    @id2names  = Hash.new {|h,k| h[k] = []}
-    @names2ids = {}
+    @cache       = {}
+    @combo2ids   = Hash.new {|h,k| h[k] = {}}
+    @id2names    = Hash.new {|h,k| h[k] = []}
+    @names2ids   = {}
 
     # HTML entity codes
     @entities = {
@@ -132,8 +132,8 @@ class Names
       @names2ids[name] =  id
       @id2names[id]    << name
 
-      string_combos( name) do |combo|
-        @combo2ids[combo][id] = true
+      string_combos( name) do |combo, weight|
+        @combo2ids[combo][id] = weight
       end
     end
   end
@@ -152,8 +152,8 @@ class Names
     name = name.to_s.downcase
     id   = - (1 + @combo2ids.size)
 
-    string_combos( name) do |combo|
-      @combo2ids[combo][id] = true
+    string_combos( name) do |combo, weight|
+      @combo2ids[combo][id] = weight
 #        p ['poison', name, combo, id]
     end
   end
@@ -161,9 +161,9 @@ class Names
   def rarity( name)
     freq = 1000000
 
-    string_combos( name) do |combo|
+    string_combos( name) do |combo, weight|
       ids  = @combo2ids[combo].keys
-      freq = ids.size if (ids.size < freq) && (ids.size > 0)
+      freq = (ids.size * weight) if ((ids.size * weight) < freq) && (ids.size > 0)
     end
 
     freq
@@ -203,7 +203,8 @@ class Names
 
   def remove( name, id)
     id = id.to_i
-    string_combos( reduce( name)) do |combo|
+
+    string_combos( name) do |combo, weight|
       @combo2ids[combo].delete( id)
     end
 
@@ -239,28 +240,30 @@ class Names
 
   def string_combos( name)
     words = reduce( name).split( ' ')
-    words.each {|word| yield word}
+    yield words.join( ' '), 1
+
+    words.each {|word| yield word, 100}
 
     (0..(words.size-2)).each do |i|
-      yield words[i..(i+1)].join(' ')
+      yield words[i..(i+1)].join(' '), 100
     end
 
     (0..(words.size-3)).each do |i|
-      yield words[i..(i+2)].join(' ')
+      yield words[i..(i+2)].join(' '), 100
     end
 
     (0..(words.size-4)).each do |i|
-      yield words[i..(i+3)].join(' ')
+      yield words[i..(i+3)].join(' '), 100
     end
   end
 
   def suggest( name, limit)
     id2size = Hash.new {|h,k| h[k] = 1000000}
-    string_combos( name) do |combo|
+    string_combos( name) do |combo, weight|
       ids = @combo2ids[combo].keys
       ids.each do |id|
         next if id < 0
-        id2size[id] = ids.size if id2size[id] > ids.size
+        id2size[id] = (ids.size * weight) if id2size[id] > (ids.size * weight)
       end
     end
 
@@ -269,9 +272,9 @@ class Names
   end
 
   def suggest_analysis( name)
-    string_combos( name) do |combo|
+    string_combos( name) do |combo, weight|
       ids = @combo2ids[combo].keys.select {|id| id >= 0}
-      yield combo, ids if ids.size > 0
+      yield combo, ids, weight if ids.size > 0
     end
   end
 end

@@ -31,6 +31,7 @@ Action:
   - Quick\WTime\WEvent
   - QT\WEvent
   - QTE
+  - reflex-based
   ignore:
   - Apple Arcade
   - Touch Arcade
@@ -43,17 +44,6 @@ Cards:
 Cartoon:
   desc:   Cartoon style graphics
   index: 6
-  match:
-  - cartoon
-Choices:
-  desc:   At points in the game choose from two or more options as to what happens
-  index: 4
-  match:
-  - Choose Your Own Adventure
-  - choice structure
-  - one of two options
-  - dialogue choice
-  - dialogue option
 Escape:
   title:   Escape room game
   index:  33
@@ -83,6 +73,7 @@ Investigation:
 iOS:
   desc:   "iOS"
   derive: true
+  index:  37
 "LGBTQ+":
   desc:   ""
   index:  32
@@ -97,18 +88,21 @@ Maze:
 Minigame:
   match:  \Wmini(\W*)game
   index:  20
+Movie:
+  title:   Interactive movie
+  index: 4
 Open world:
+  index:  38
   match:
   - Open world
+Photo:
+  desc: Photo realistic
+  index:  39
+  match:
+  - photorealistic
 Pixels:
   title:   Pixel graphics
   index: 28
-  match:
-  - pixel
-  ignore:
-  - pixel\Whunt
-  - PixelShader
-  - Pixel/
 Physics:
   desc:   Physics based gameplay
   index: 14
@@ -176,6 +170,7 @@ Timer:
   - Tower Defense
 "Top-down":
   desc: Top down view of game world
+  index:  40
   match:
   - 2D pixel graphics
 "Visual novel":

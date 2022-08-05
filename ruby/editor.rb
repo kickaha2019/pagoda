@@ -82,6 +82,10 @@ get '/games_added' do
       :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
 end
 
+get '/games_to_check_display' do
+  erb :games_to_check_display
+end
+
 post '/gather/:game/:url' do
   gather( params[:game], d(params[:url]))
 end

@@ -82,7 +82,7 @@ class Pagoda
       known = []
       @owner.aspect_names {|name| known << name}
       return '?' unless flagged['Adventure']
-      ['Action','HOG','Physics','RPG','Stealth','Visual novel','VR'].each do |unwanted|
+      ['HOG','Physics','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
         return '?' if flagged[unwanted]
       end
@@ -570,7 +570,7 @@ class Pagoda
   end
 
   def string_combos( name)
-    @names.string_combos( name) {|combo| yield combo}
+    @names.string_combos( name) {|combo, weight| yield combo}
   end
 
   def suggest( name)
@@ -578,7 +578,7 @@ class Pagoda
   end
 
   def suggest_analysis( name)
-    @names.suggest_analysis( name) {|combo, hits| yield combo, hits}
+    @names.suggest_analysis( name) {|combo, hits, weight| yield combo, hits}
   end
 
   # Wrapper methods for calls to database and names logic
