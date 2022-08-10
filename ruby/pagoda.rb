@@ -371,6 +371,7 @@ class Pagoda
     @database.declare_integer( 'game',           :year)
     @database.declare_integer( 'link',           :timestamp)
     @database.declare_integer( 'link',           :year)
+    @database.declare_integer( 'visited',        :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
@@ -626,6 +627,19 @@ class Pagoda
     end
     end_transaction
     puts "*** Deleted #{aspects_lost.size} lost aspect records" if aspects_lost.size > 0
+
+    visited_lost, now3y = [], Time.new( Time.now.year - 3).to_i
+    @database.select( 'visited') do |rec|
+      unless rec[:timestamp] >= now3y
+        visited_lost << rec[:key]
+      end
+    end
+    start_transaction
+    visited_lost.each do |key|
+      @database.delete( 'visited', :key, key)
+    end
+    end_transaction
+    puts "*** Deleted #{visited_lost.size} old visited records" if visited_lost.size > 0
   end
 
   def count( table_name)

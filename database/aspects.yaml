@@ -32,6 +32,8 @@ Action:
   - QT\WEvent
   - QTE
   - reflex-based
+  - quicker reflexes
+  - quick reflexes
   ignore:
   - Apple Arcade
   - Touch Arcade
@@ -41,9 +43,6 @@ Adventure:
 Cards:
   desc:   Card based gameplay like Slay the Spire
   index: 11
-Cartoon:
-  desc:   Cartoon style graphics
-  index: 6
 Escape:
   title:   Escape room game
   index:  33
@@ -77,6 +76,9 @@ iOS:
 "LGBTQ+":
   desc:   ""
   index:  32
+Keyboard:
+  desc:   Not totally mouse controlled
+  index: 6
 Mac:
   desc:   Game available on Mac
   index:  34
@@ -100,8 +102,8 @@ Photo:
   index:  39
   match:
   - photorealistic
-Pixels:
-  title:   Pixel graphics
+Retro:
+  title:   Old or retro style game
   index: 28
 Physics:
   desc:   Physics based gameplay
@@ -109,9 +111,9 @@ Physics:
 Puzzle:
   desc:   Puzzle focussed gameplay often variations on a theme
   index: 16
-"Resource management":
-  desc:   Some management style gameplay
-  index: 18
+Recent:
+  desc: Game released within last year or so
+  derive:  true
 Roguelike:
   desc:   Dungeon crawling or roguelike
   index: 17
@@ -121,9 +123,6 @@ Roguelike:
 RPG:
   desc:   Role playing game where your character levels up as you play
   index: 19
-Simulation:
-  desc:   Simulation in some way
-  index: 21
 Slider:
   index: 22
   match:
@@ -163,11 +162,6 @@ Timer:
   - Timed puzzle
   - puzzles limited by time
   - timing
-"Tower Defense":
-  desc:   Tower Defense gameplay
-  index: 8
-  match:
-  - Tower Defense
 "Top-down":
   desc: Top down view of game world
   index:  40

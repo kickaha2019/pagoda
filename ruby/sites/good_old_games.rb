@@ -172,9 +172,10 @@ class GoodOldGames < DefaultSite
 		tags  = @info['tags']
 
 		get_tags( page).each do |tag|
-			action = tags[tag]
-			if action.is_a?( Array)
-				action[1..-1].each {|aspect| yield aspect}
+			actions = tags[tag]
+			actions = [actions] if actions.is_a?( String)
+			actions.each do |aspect|
+				yield aspect unless ['accept','ignore','reject'].include?( aspect)
 			end
 		end
 	end

@@ -19,7 +19,7 @@ if ($status != 0) exit 1
 
 # Suggest some aspects
 date
-ruby ruby/suggest_aspects.rb database ~/Caches/Pagoda 200
+ruby ruby/suggest_aspects.rb database ~/Caches/Pagoda 500
 if ($status != 0) exit 1
 
 # Backup current database files

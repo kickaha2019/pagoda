@@ -216,7 +216,7 @@ ASPECT_ELEMENT
       $pagoda.games do |game|
         aspects = game.aspects
         next if aspects['Cartoon'] || aspects['Movie'] || aspects['Photo'] || aspects['Pixels']
-        next if $pagoda.has?( 'visited', :key, "games_to_check_display:#{game.id}")
+        next if $pagoda.has?( 'visited', :key, "games_to_check_display1:#{game.id}")
         recs << game
       end
 
@@ -282,7 +282,7 @@ ASPECT_ELEMENT
 
       $pagoda.links do |link|
         next unless link.status == 'Ignored'
-        next if rec.static?
+        next if link.static?
         next if $pagoda.has?( 'visited', :key, "ignore_reprieve:#{link.url}")
         suggested = []
         $pagoda.suggest( link.title) {|game, freq| suggested << [game.id, freq]}
@@ -457,8 +457,8 @@ ASPECT_ELEMENT
     end
 
     def selected_game
-      return '' if @@selected_game < 0
-      $pagoda.get( 'game', :id, @@selected_game.to_i)[0][:name]
+      games = $pagoda.get( 'game', :id, @@selected_game.to_i)
+      games.empty? ? ' ' : games[0][:name]
     end
 
     def selected_game_id( new_id)

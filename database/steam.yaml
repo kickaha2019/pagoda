@@ -53,7 +53,7 @@ tags:
   Visual Novel: ignore
   Pixel Graphics:
   - ignore
-  - Pixels
+  - Retro
   Anime: ignore
   Colorful: ignore
   Thriller: ignore
@@ -82,7 +82,7 @@ tags:
   Narration: ignore
   Fantasy: ignore
   Touch-Friendly: ignore
-  Retro: ignore
+  Retro: Retro
   Interactive Fiction: reject
   Text-Based: reject
   Choices Matter: ignore
@@ -157,9 +157,7 @@ tags:
   Metroidvania: ignore
   Difficult: ignore
   Side Scroller: ignore
-  Tower Defense:
-  - ignore
-  - Tower Defense
+  Tower Defense: ignore
   Replay Value: ignore
   Addictive: ignore
   Building: ignore

@@ -133,7 +133,7 @@ tags:
   Relaxing: ignore
   Surreal: ignore
   Military: ignore
-  Resource Management: ignore
+  Resource Management: reject
   Base Building: ignore
   Gore: ignore
   Split Screen: ignore
@@ -164,7 +164,7 @@ tags:
   Robots: ignore
   Pixel Graphics:
   - ignore
-  - Pixels
+  - Retro
   Thriller: ignore
   Supernatural: ignore
   Petting Dogs: ignore
@@ -206,9 +206,7 @@ tags:
   - ignore
   - LGBTQ+
   Beat 'em up: reject
-  Tower Defense:
-  - ignore
-  - Tower Defense
+  Tower Defense:  reject
   Underground: ignore
   Martial Arts: ignore
   Vampire: ignore
@@ -261,5 +259,5 @@ tags:
   OST: reject
   Coming of age: ignore
   Non Violent: ignore
-  Retro: ignore
+  Retro: Retro
   2D: ignore

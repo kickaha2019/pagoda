@@ -9,12 +9,7 @@
 
     records[0..99].each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
-      if selected_game == rec.id
-        style   = 'style="background: lime"'
-        checked = 'checked'
-      else
-        style = checked = ''
-      end
+      style = checked = ''
       html << "<tr #{style}>"
       html << "<td>#{rec.id}</td>"
       html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
@@ -25,7 +20,7 @@
         reviews += 1 if link.type == 'Review'
       end
       html << "<td>#{(reviews > 0) ? reviews.to_s : ''}</td>"
-      html << "<td><button onclick=\"visited_action( 'games_to_check_display:#{rec.id}');\">Visited</button></td>"
+      html << "<td><button onclick=\"visited_action( 'games_to_check_display1:#{rec.id}');\">Visited</button></td>"
       html << '</tr>'
     end
 
