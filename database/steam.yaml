@@ -32,7 +32,7 @@ tags:
   Dinosaurs: ignore
   Quick-Time Events:
   - ignore
-  - Choices
+  - Action
   Point &amp; Click: ignore
   Action: ignore
   Episodic: ignore
@@ -108,7 +108,6 @@ tags:
   Time Travel: ignore
   Cartoony:
   - ignore
-  - Cartoon
   Hand-drawn: ignore
   1990's: ignore
   Conversation: ignore
@@ -125,7 +124,6 @@ tags:
   Local Co-Op: ignore
   Cartoon:
   - ignore
-  - Cartoon
   Top-Down: ignore
   Multiplayer: ignore
   Level Editor: ignore
@@ -243,7 +241,6 @@ tags:
   Character Action Game: ignore
   Choose Your Own Adventure:
   - ignore
-  - Choices
   Collectathon: ignore
   Benchmark: ignore
   Dystopian: ignore

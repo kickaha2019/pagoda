@@ -151,7 +151,6 @@ tags:
   Real-Time: ignore
   Cartoony:
   - ignore
-  - Cartoon
   Cyberpunk: ignore
   Grand Strategy: ignore
   Crime: ignore
@@ -179,7 +178,6 @@ tags:
   Football: ignore
   Choose Your Own Adventure:
   - accept
-  - Choices
   Procedural Generation: ignore
   Perma Death: ignore
   Board Game: ignore

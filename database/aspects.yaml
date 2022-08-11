@@ -114,6 +114,7 @@ Puzzle:
 Recent:
   desc: Game released within last year or so
   derive:  true
+  index: 8
 Roguelike:
   desc:   Dungeon crawling or roguelike
   index: 17

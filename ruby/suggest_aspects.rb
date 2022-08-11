@@ -25,7 +25,10 @@ class SuggestAspects
       map[suggest[:game]] = suggest[:timestamp] unless suggest[:timestamp].nil?
     end
     list = map.keys.collect {|k| [k, map[k]]}
-    list.sort_by {|e| e[1]}.each {|e| yield @pagoda.game(e[0])}
+    list.sort_by {|e| e[1]}.each do |e|
+      g = @pagoda.game(e[0])
+      yield g unless g.group_name
+    end
   end
 
   def get_page( site_name, timestamp)

@@ -3,13 +3,12 @@ require_relative 'pagoda'
 
 class WebsiteFiltersPage
   class Playable
-    attr_reader :id, :name, :year, :url, :steam, :gog
+    attr_reader :id, :name, :year, :steam, :gog
     def initialize( owner, id, name, year)
       @owner  = owner
       @id     = id
       @name   = name
       @year   = year
-      @url    = nil
       @flags  = [0] * 64
       @steam  = nil
       @gog    = nil
@@ -39,10 +38,6 @@ class WebsiteFiltersPage
 
     def record_aspect( aspect)
       @flags[ @owner.aspect_index( aspect)] = 1
-    end
-
-    def record_url( url)
-      @url = url unless @url
     end
   end
 
@@ -87,6 +82,10 @@ class WebsiteFiltersPage
   def get_game_info( game, playable, seen)
     return if seen[ game.id]
 
+    if (game.year.to_i + 1) >= Time.now.year
+      playable.record_aspect( 'Recent')
+    end
+
     game.aspects.each_pair do |aspect, flag|
       if @aspects[aspect]
         playable.record_aspect( aspect) if flag
@@ -97,9 +96,7 @@ class WebsiteFiltersPage
 
     game.links do |link|
       next unless link.valid?
-      if (link.site == 'Website') && (link.type == 'Official')
-        playable.record_url( link.url)
-      elsif link.type == 'Store'
+      if link.type == 'Store'
         site = @pagoda.get_site_handler( link.site)
         page = IO.read( "#{@cache}/#{link.timestamp}.html")
         playable.record( site, link.url, page)
