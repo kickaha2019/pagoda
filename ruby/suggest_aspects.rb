@@ -38,7 +38,7 @@ class SuggestAspects
     #p ['get_page1', site_name, timestamp]
     page = site.get_game_description( page)
 
-    page = page.gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( '&amp;', '&').gsub( /\s+/, ' ')
+    page = page.gsub( "\n", ' ').gsub( '&nbsp;', ' ').gsub( '&amp;', '&').gsub( /\s+/, ' ').gsub( '&#x2F;', ' ')
     page = page.gsub( /(^|<)[^>]*>/m, ' ')
     page = page.gsub( /<[^>]*(>|$)/m, ' ')
 

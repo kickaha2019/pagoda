@@ -76,9 +76,6 @@ iOS:
 "LGBTQ+":
   desc:   ""
   index:  32
-Keyboard:
-  desc:   Not totally mouse controlled
-  index: 6
 Mac:
   desc:   Game available on Mac
   index:  34
@@ -90,9 +87,23 @@ Maze:
 Minigame:
   match:  \Wmini(\W*)game
   index:  20
+Mouse:
+  desc:   Game can be controlled just with the mouse
+  derive: true
+  index:  18
 Movie:
   title:   Interactive movie
   index: 4
+Non-mouse:
+  desc:   Not totally mouse controlled
+  index: 6
+  match:
+  - a controller
+  - game controller
+  - mouse keyboard
+  - with the keyboard
+  - WASD
+  - arrow keys
 Open world:
   index:  38
   match:
@@ -102,6 +113,9 @@ Photo:
   index:  39
   match:
   - photorealistic
+Played:
+  desc: Game I've played
+  index:  21
 Retro:
   title:   Old or retro style game
   index: 28

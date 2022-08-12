@@ -215,7 +215,7 @@ ASPECT_ELEMENT
 
       $pagoda.games do |game|
         aspects = game.aspects
-        next if aspects['Cartoon'] || aspects['Movie'] || aspects['Photo'] || aspects['Pixels']
+        next if aspects['Retro'] || aspects['Movie'] || aspects['Photo']
         next if $pagoda.has?( 'visited', :key, "games_to_check_display1:#{game.id}")
         recs << game
       end
@@ -513,7 +513,10 @@ ASPECT_ELEMENT
     end
 
     def suggest_aspects_records
+      now1d = Time.now.to_i - 24 * 60 * 60
+
       recs = $pagoda.select( 'aspect_suggest') do |rec|
+        next if rec[:timestamp] < now1d
         game    = $pagoda.game( rec[:game])
         aspects = game.aspects
         check   = false

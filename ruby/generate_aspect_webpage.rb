@@ -4,14 +4,15 @@ require_relative 'pagoda'
 class WebsiteFiltersPage
   class Playable
     attr_reader :id, :name, :year, :steam, :gog
-    def initialize( owner, id, name, year)
-      @owner  = owner
-      @id     = id
-      @name   = name
-      @year   = year
-      @flags  = [0] * 64
-      @steam  = nil
-      @gog    = nil
+    def initialize( owner, id, name, year, exclude)
+      @owner   = owner
+      @id      = id
+      @name    = name
+      @year    = year
+      @flags   = [0] * 64
+      @steam   = nil
+      @gog     = nil
+      @exclude = exclude
     end
 
     def flags( from, to)
@@ -37,7 +38,7 @@ class WebsiteFiltersPage
     end
 
     def record_aspect( aspect)
-      @flags[ @owner.aspect_index( aspect)] = 1
+      @flags[ @owner.aspect_index( aspect)] = 1 unless @exclude.include?( aspect)
     end
   end
 
@@ -79,40 +80,17 @@ class WebsiteFiltersPage
     end
   end
 
-  def get_game_info( game, playable, seen)
-    return if seen[ game.id]
-
-    if (game.year.to_i + 1) >= Time.now.year
-      playable.record_aspect( 'Recent')
-    end
-
-    game.aspects.each_pair do |aspect, flag|
-      if @aspects[aspect]
-        playable.record_aspect( aspect) if flag
-      else
-        raise "Unknown aspect #{aspect} for #{game.name}"
+  def generate( output_dir, exclude)
+    exclude.each do |aspect|
+      unless @aspects[aspect]
+        raise "Unknown exclude aspect #{aspect}"
       end
     end
 
-    game.links do |link|
-      next unless link.valid?
-      if link.type == 'Store'
-        site = @pagoda.get_site_handler( link.site)
-        page = IO.read( "#{@cache}/#{link.timestamp}.html")
-        playable.record( site, link.url, page)
-      end
-    end
-
-    seen[game.id] = true
-    if game.group_id && (parent = @pagoda.game( game.group_id))
-      get_game_info( parent, playable, seen)
-    end
-  end
-
-  def generate( output_dir)
-    aspects    = @aspects
+    aspects    = {}
+    @aspects.each_pair {|k,v| aspects[k] = v unless exclude.include?( k)}
     containers = ['include', 'unused', 'exclude']
-    games      = list_games
+    games      = list_games( exclude)
 
     aspects_section = template( 'aspects').result( binding)
     filters_section = template( 'filters').result( binding)
@@ -150,12 +128,46 @@ class WebsiteFiltersPage
     # end
   end
 
-  def list_games
+  def get_game_info( game, playable, seen)
+    return if seen[ game.id]
+
+    if (game.year.to_i + 1) >= Time.now.year
+      playable.record_aspect( 'Recent')
+    end
+
+    unless game.aspects['Non-mouse']
+      playable.record_aspect( 'Mouse')
+    end
+
+    game.aspects.each_pair do |aspect, flag|
+      if @aspects[aspect]
+        playable.record_aspect( aspect) if flag
+      else
+        raise "Unknown aspect #{aspect} for #{game.name}"
+      end
+    end
+
+    game.links do |link|
+      next unless link.valid?
+      if link.type == 'Store'
+        site = @pagoda.get_site_handler( link.site)
+        page = IO.read( "#{@cache}/#{link.timestamp}.html")
+        playable.record( site, link.url, page)
+      end
+    end
+
+    seen[game.id] = true
+    if game.group_id && (parent = @pagoda.game( game.group_id))
+      get_game_info( parent, playable, seen)
+    end
+  end
+
+  def list_games( exclude)
     list = []
     @pagoda.game( 0)   # Force index to be created
     @pagoda.games do |game|
       next if game.is_group == 'Y'
-      playable = Playable.new( self, game.id, game.name, game.year)
+      playable = Playable.new( self, game.id, game.name, game.year, exclude)
       seen = {}
       get_game_info( game, playable, seen)
       list << playable
@@ -185,4 +197,4 @@ end
 wfp = WebsiteFiltersPage.new( ARGV[0], ARGV[1], ARGV[2])
 wfp.validate( 'gog.yaml')
 wfp.validate( 'steam.yaml')
-wfp.generate( ARGV[3])
+wfp.generate( ARGV[3], ARGV[4..-1])
