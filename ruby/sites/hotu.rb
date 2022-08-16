@@ -55,6 +55,10 @@ class Hotu < DefaultSite
 		page
 	end
 
+	def link_title( * titles)
+		('Home of the Underdogs' == titles[0]) ? titles[1] : titles[0]
+	end
+
 	def name
 		'HOTU'
   end

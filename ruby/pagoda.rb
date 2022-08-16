@@ -308,11 +308,13 @@ class Pagoda
     end
 
     def suggest
-      @owner.suggest( title) {|game, freq| yield game, freq}
+      sh = @owner.get_site_handler( site)
+      @owner.suggest( sh.link_title( title, orig_title)) {|game, freq| yield game, freq}
     end
 
     def suggest_analysis
-      @owner.suggest_analysis( title) {|combo, hits| yield combo, hits}
+      sh = @owner.get_site_handler( site)
+      @owner.suggest_analysis( sh.link_title( title, orig_title)) {|combo, hits| yield combo, hits}
     end
 
     def timestamp

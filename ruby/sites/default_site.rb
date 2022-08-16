@@ -40,6 +40,10 @@ class DefaultSite
     end
   end
 
+  def link_title( * titles)
+    titles[0]
+  end
+
   def name
     'Website'
   end

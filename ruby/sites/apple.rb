@@ -144,6 +144,10 @@ class Apple < DefaultSite
     # end
 	end
 
+  def link_title( * titles)
+    ('Store' == titles[0]) ? titles[1] : titles[0]
+  end
+
   def match_link( link)
     m = /^https:\/\/apps\.apple\.com\/\w\w\/app\/[^\/]*\/(id[0-9]*)\?/.match( link)
     unless m
