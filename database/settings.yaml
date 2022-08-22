@@ -1,0 +1,60 @@
+---
+"Twitter":
+  "BEARER_TOKEN": AAAAAAAAAAAAAAAAAAAAACpiOQEAAAAAMyuk84Cm5NCY53yG5k7YC5vw72A%3DNRC3ZxenARnC3hW6JR5eoBYWTk3IFNOdrAZkZ4jaRO7ibmDmo8
+suggested_limit:  500
+not_game_words:
+- demo
+- OST
+- soundtrack
+- trailer
+incremental:
+- site:   Adventure Gamers
+  type:   Review
+  method: find
+- site:   Apple
+  type:   Store
+  method: incremental
+- site:   Google Play
+  type:   Store
+  method: search
+- site:   Metacritic
+  type:   Reference
+  method: incremental
+- site:   Mystery Manor
+  type:   Review
+  method: find
+- site:   Steam
+  type:   Store
+  method: incremental
+- site:   TouchArcade
+  type:   Review
+  method: incremental
+full:
+- site:   Apple
+  type:   Store
+  method: full
+- site:   GameBoomers
+  type:   Review
+  method: findReviews
+- site:   GameBoomers
+  type:   Walkthrough
+  method: findWalkthroughs
+- site:   GOG
+  type:   Store
+  method: find
+- site:   HOTU
+  type:   Reference
+  method: find
+- site:   Metacritic
+  type:   Reference
+  method: find
+- site:   MobyGames
+  type:   Reference
+  method: find
+- site:   Steam
+  type:   Store
+  method: find
+rebase:
+- site:   TouchArcade
+  type:   Review
+  method: find

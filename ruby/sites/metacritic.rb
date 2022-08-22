@@ -87,6 +87,7 @@ class Metacritic < DefaultSite
 		Nodes.parse( page).css( 'li.full_review a') do |anchor|
 			[anchor['href']]
 		end.parent(5).css( 'div.source a') do |anchor, href|
+			href = href.strip
 			review = pagoda.link( href)
 			unless review
 				pagoda.add_link( anchor.text, 'Review', link.orig_title, href, 'Y')

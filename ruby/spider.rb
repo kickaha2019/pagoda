@@ -32,7 +32,7 @@ class Spider
 	end
 
 	def add_link( title, url)
-		url = @pagoda.get_site_handler( @site).coerce_url( url)
+		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		if @pagoda.has?( 'link', :url, url)
 			0
 		else
@@ -322,7 +322,7 @@ class Spider
 	end
 
 	def suggest_link( title, url)
-		url = @pagoda.get_site_handler( @site).coerce_url( url)
+		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
 		@suggested_links[url] = true
 	end

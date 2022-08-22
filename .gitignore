@@ -17,7 +17,6 @@ restructure.rb
 nbproject
 *.sql
 *.old
-settings.yaml
 .tool-versions
 Rintrah
 synch.rb
