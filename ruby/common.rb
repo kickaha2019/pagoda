@@ -33,9 +33,12 @@ module Common
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
 		added = 0
 
-		page.gsub( /"http(s|):\/\/[^"]*"/mi) do |found|
-			added += (yield found[1..-2])
+		page.scan( /href\s*=\s*"([^"]*)"/mi) do |found|
+			added += (yield found[0].strip)
 		end
+		# page.gsub( /"http(s|):\/\/[^"]*"/mi) do |found|
+		# 	added += (yield found[1..-2])
+		# end
 		added
 	end
 

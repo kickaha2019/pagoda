@@ -51,6 +51,12 @@ full:
 - site:   MobyGames
   type:   Reference
   method: find
+- site:   Nice Game Hints
+  type:   Walkthrough
+  method: find
+- site:   PC Games Walkthroughs
+  type:   Walkthrough
+  method: find
 - site:   Steam
   type:   Store
   method: find

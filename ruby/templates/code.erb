@@ -166,6 +166,12 @@ function count_selected() {
 function list_selected( html) {
     var listed = 0;
     var skipped = 0;
+    <% if is_local %>
+    let base_url = 'http://localhost:4567/game/';
+    <% else %>
+    let base_url = 'https://alofmethbin.com/pagoda/game.php?id=';
+    <% end %>
+
     for (var i = 0; i < games.length; i++) {
         if ( is_selected( i) ) {
             if (skipped < game_offset) {
@@ -177,7 +183,7 @@ function list_selected( html) {
                 html.push( '<tr><td>' + (listed + game_offset) + '</td><td>');
 
                 let g = games[i];
-                html.push( '<a target="_blank" href="https://alofmethbin.com/pagoda/game.php?id=' + g[1] + '">' + g[0] + '</a>');
+                html.push( '<a target="_blank" href="' + base_url + g[1] + '">' + g[0] + '</a>');
 
                 html.push( '</td><td>' + g[2] + '</td><td>');
 

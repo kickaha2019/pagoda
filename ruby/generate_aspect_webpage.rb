@@ -4,7 +4,7 @@ require_relative 'pagoda'
 class WebsiteFiltersPage
   class Playable
     attr_reader :id, :name, :year, :steam, :gog
-    def initialize( owner, id, name, year, exclude)
+    def initialize( owner, id, name, year)
       @owner   = owner
       @id      = id
       @name    = name
@@ -12,7 +12,6 @@ class WebsiteFiltersPage
       @flags   = [0] * 64
       @steam   = nil
       @gog     = nil
-      @exclude = exclude
     end
 
     def flags( from, to)
@@ -38,16 +37,18 @@ class WebsiteFiltersPage
     end
 
     def record_aspect( aspect)
-      @flags[ @owner.aspect_index( aspect)] = 1 unless @exclude.include?( aspect)
+      return if @owner.exclude?( aspect)
+      @flags[ @owner.aspect_index( aspect)] = 1
     end
   end
 
-  def initialize( dir, cache, templates)
+  def initialize( dir, cache, templates, local)
     @dir       = dir
     @pagoda    = Pagoda.new( dir)
     @cache     = cache
     @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
     @templates = templates
+    @local     = local
 
     seen = {}
     @aspects.each_pair do |name, info|
@@ -80,17 +81,16 @@ class WebsiteFiltersPage
     end
   end
 
-  def generate( output_dir, exclude)
-    exclude.each do |aspect|
-      unless @aspects[aspect]
-        raise "Unknown exclude aspect #{aspect}"
-      end
-    end
+  def exclude?( aspect)
+    (@local ? ['Non-mouse'] : ['Non-mouse', 'Played']).include?( aspect)
+  end
 
+  def generate( output_dir)
     aspects    = {}
-    @aspects.each_pair {|k,v| aspects[k] = v unless exclude.include?( k)}
+    @aspects.each_pair {|k,v| aspects[k] = v unless exclude?( k)}
     containers = ['include', 'unused', 'exclude']
-    games      = list_games( exclude)
+    games      = list_games
+    is_local   = @local
 
     aspects_section = template( 'aspects').result( binding)
     filters_section = template( 'filters').result( binding)
@@ -162,12 +162,12 @@ class WebsiteFiltersPage
     end
   end
 
-  def list_games( exclude)
+  def list_games
     list = []
     @pagoda.game( 0)   # Force index to be created
     @pagoda.games do |game|
       next if game.is_group == 'Y'
-      playable = Playable.new( self, game.id, game.name, game.year, exclude)
+      playable = Playable.new( self, game.id, game.name, game.year)
       seen = {}
       get_game_info( game, playable, seen)
       list << playable
@@ -194,7 +194,7 @@ class WebsiteFiltersPage
   end
 end
 
-wfp = WebsiteFiltersPage.new( ARGV[0], ARGV[1], ARGV[2])
+wfp = WebsiteFiltersPage.new( ARGV[0], ARGV[1], ARGV[2], ARGV[4] == 'local')
 wfp.validate( 'gog.yaml')
 wfp.validate( 'steam.yaml')
-wfp.generate( ARGV[3], ARGV[4..-1])
+wfp.generate( ARGV[3])

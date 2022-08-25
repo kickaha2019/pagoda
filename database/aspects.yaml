@@ -43,6 +43,11 @@ Adventure:
 Cards:
   desc:   Card based gameplay like Slay the Spire
   index: 11
+Dialogue:
+  title:   Dialogue puzzles
+  index:  40
+  match:
+  - Dialogue
 Escape:
   title:   Escape room game
   index:  33
@@ -140,6 +145,12 @@ Roguelike:
 RPG:
   desc:   Role playing game where your character levels up as you play
   index: 19
+RPGMaker:
+  title:   RPGMaker style games
+  index:  41
+  match:
+  - RPGMaker
+  - RPG Maker
 Slider:
   index: 22
   match:
@@ -179,11 +190,6 @@ Timer:
   - Timed puzzle
   - puzzles limited by time
   - timing
-"Top-down":
-  desc: Top down view of game world
-  index:  40
-  match:
-  - 2D pixel graphics
 "Visual novel":
   index: 25
 VR:

@@ -24,6 +24,24 @@ class Nodes
     Nodes.new( results)
   end
 
+  def next_element
+    results = []
+    @set.each do |node|
+      if sibling = node[0].next_element
+        if block_given?
+          got = yield sibling, * node[1..-1]
+          if got
+            results << [sibling, * got]
+          end
+        else
+          results << [sibling, * node[1..-1]]
+        end
+      end
+    end
+
+    Nodes.new( results)
+  end
+
   def self.parse( page)
     doc = Nokogiri::HTML( page).root
     return Nodes.new( []) unless doc
