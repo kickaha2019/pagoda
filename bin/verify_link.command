@@ -18,7 +18,7 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://www.uhs-hints.com/uhsweb/vampyre.php
 # http://www.gameboomers.com/reviews/Gg/AGoldenWake/AGoldenWake.htm
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
-ruby ruby/verify_links.rb database 'https://www.heypoorplayer.com/2020/11/10/chicken-police-review-pc/' ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://sekaiproject.com/game/the-falconers-moonlight/' ~/Caches/Pagoda/verified
 
 #ruby ruby/verify_links.rb database 'https://adventuregamers.com/articles/view/39674' ~/Caches/Pagoda/verified
 # caffeinate -i ruby ruby/verify_links.rb database 250 ~/Caches/Pagoda/verified

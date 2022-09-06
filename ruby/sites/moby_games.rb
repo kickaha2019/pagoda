@@ -86,4 +86,14 @@ class MobyGames < DefaultSite
 	def name
 		'MobyGames'
 	end
+
+	def tag_aspects( pagoda, page)
+		if page.include? 'https://www.mobygames.com/genre/sheet/1st-person/'
+			yield '1st person'
+		end
+
+		if page.include? 'https://www.mobygames.com/genre/sheet/3rd-person/'
+			yield '3rd person'
+		end
+	end
 end

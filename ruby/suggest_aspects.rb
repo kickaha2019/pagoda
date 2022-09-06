@@ -14,19 +14,28 @@ class SuggestAspects
     @errors  = []
   end
 
-  def games( name)
+  def games( name, aspect)
     if name && (name != '')
-      yield @pagoda.game( name)
+      g = @pagoda.game( name)
+      raise "*** Unknown id: #{name}" unless g
+      yield g
       return
     end
     map = {}
     @pagoda.games {|g| map[g.id] = 0}
+
     @pagoda.select( 'aspect_suggest') do |suggest|
-      map[suggest[:game]] = suggest[:timestamp] unless suggest[:timestamp].nil?
+      map[suggest[:game]] = suggest[:timestamp] if suggest[:timestamp] && (suggest[:timestamp] > 100)
     end
+
     list = map.keys.collect {|k| [k, map[k]]}
     list.sort_by {|e| e[1]}.each do |e|
       g = @pagoda.game(e[0])
+
+      if aspect && (aspect != '')
+        next if g.aspects.has_key?( aspect)
+      end
+
       yield g unless g.group_name
     end
   end
@@ -125,7 +134,7 @@ class SuggestAspects
 
     @pagoda.get( 'bind', :id, game.id).each do |bind|
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
-        next if link[:timestamp].nil?
+        next unless link[:timestamp] && (link[:timestamp] > 100)
         next if site_arg && (link[:site] != site_arg)
         tag_aspects( link[:site], link[:timestamp], game)
       end
@@ -133,7 +142,7 @@ class SuggestAspects
 
     @pagoda.get( 'bind', :id, game.id).shuffle.each do |bind|
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
-        next if link[:timestamp].nil?
+        next unless link[:timestamp] && (link[:timestamp] > 100)
         next if site_arg && (link[:site] != site_arg)
 
         page = get_page( link[:site], link[:timestamp])
@@ -155,7 +164,7 @@ class SuggestAspects
     site = @pagoda.get_site_handler( site_name)
 
     site.tag_aspects( @pagoda, page) do |aspect|
-      unless aspects[aspect]
+      unless aspects.has_key?(aspect)
         @tagged += 1
         @pagoda.start_transaction
         @pagoda.insert( 'aspect', {:id => game.id, :aspect => aspect, :flag => 'Y'})
@@ -181,8 +190,8 @@ suggested = scanned = 0
 to_scan = ARGV[2].to_i
 
 puts "... Suggesting aspects"
-sa.games( ARGV[3]) do |game|
-  #p ['games1', game.name, game.id, last_rule]
+sa.games( ARGV[3], ARGV[4]) do |game|
+  #p ['games1', game.name, game.id]
   suggested += 1 if sa.record( game, * sa.suggest( game, ARGV[4], ARGV[5]))
   scanned += 1
   break if scanned >= to_scan
