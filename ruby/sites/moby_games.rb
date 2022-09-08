@@ -95,5 +95,9 @@ class MobyGames < DefaultSite
 		if page.include? 'https://www.mobygames.com/genre/sheet/3rd-person/'
 			yield '3rd person'
 		end
+
+		if page.include? 'https://www.mobygames.com/genre/sheet/side-view/'
+			yield '3rd person'
+		end
 	end
 end

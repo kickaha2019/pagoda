@@ -1,11 +1,11 @@
-<%= erb :header, :locals => {:page => 'games_to_check_display'} %>
+<%= erb :header, :locals => {:page => 'games_to_check_aspects'} %>
 
 <div id="list"><table class="games list">
   <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Select</th><th>Reviews</th><th>Actions</th></tr>
   <%=
     html = []
 
-    records = games_to_check_display_records
+    records = games_to_check_aspects_records
 
     records[0..99].each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
@@ -20,7 +20,7 @@
         reviews += 1 if link.type == 'Review'
       end
       html << "<td>#{(reviews > 0) ? reviews.to_s : ''}</td>"
-      html << "<td><button onclick=\"visited_action( 'games_to_check_display1:#{rec.id}');\">Visited</button></td>"
+      html << "<td><button onclick=\"visited_action( 'games_to_check_aspects:#{rec.id}');\">Visited</button></td>"
       html << '</tr>'
     end
 

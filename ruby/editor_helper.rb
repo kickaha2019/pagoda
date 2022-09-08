@@ -210,13 +210,14 @@ ASPECT_ELEMENT
       end
     end
 
-    def games_to_check_display_records
+    def games_to_check_aspects_records
       recs = []
 
       $pagoda.games do |game|
         aspects = game.aspects
-        next if aspects['Retro'] || aspects['Movie'] || aspects['Photo'] || aspects['VR']
-        next if $pagoda.has?( 'visited', :key, "games_to_check_display1:#{game.id}")
+        next if aspects['1st person'] || aspects['3rd person']
+        next if aspects.has_key?('1st person') && aspects.has_key?('3rd person')
+        next if $pagoda.has?( 'visited', :key, "games_to_aspects:#{game.id}")
         recs << game
       end
 
