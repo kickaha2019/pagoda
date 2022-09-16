@@ -183,7 +183,14 @@ class VerifyLinks
     rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:false}
 
     # Get year if possible for link
-    @pagoda.get_site_handler( link.site).get_game_year( @pagoda, link, body, rec)
+    if status
+      begin
+        @pagoda.get_site_handler( link.site).get_game_year( @pagoda, link, body, rec)
+      rescue Exception => bang
+        status = false
+        rec[:comment] = bang.message
+      end
+    end
 
     #
     if status

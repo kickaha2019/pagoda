@@ -47,7 +47,12 @@ Dialogue:
   title:   Dialogue puzzles
   index:  40
   match:
-  - Dialogue
+  - Dialogue option
+  - Dialogue choice
+  - Dialogue tree
+  - Conversation choice
+  - conversation path
+  - branching dialogue
 Escape:
   title:   Escape room game
   index:  33

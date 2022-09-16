@@ -126,7 +126,7 @@ class SuggestAspects
 
   def suggest( game, aspect_arg, site_arg)
     possible_aspects = []
-    if aspect_arg
+    if aspect_arg && (aspect_arg != '')
       possible_aspects << aspect_arg
     else
       possible_aspects = @aspects.keys.select {|k| @aspects[k]['match']}.shuffle
