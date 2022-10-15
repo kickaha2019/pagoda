@@ -28,3 +28,4 @@ grabber.command
 *.tsv
 *.command
 scan_stats.yaml
+load_raw.csh

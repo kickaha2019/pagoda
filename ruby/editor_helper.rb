@@ -217,7 +217,7 @@ ASPECT_ELEMENT
         aspects = game.aspects
         next if aspects['1st person'] || aspects['3rd person']
         next if aspects.has_key?('1st person') && aspects.has_key?('3rd person')
-        next if $pagoda.has?( 'visited', :key, "games_to_aspects:#{game.id}")
+        next if $pagoda.has?( 'visited', :key, "games_to_check_aspects:#{game.id}")
         recs << game
       end
 
@@ -514,21 +514,26 @@ ASPECT_ELEMENT
     end
 
     def suggest_aspects_records
-      now1d = Time.now.to_i - 24 * 60 * 60
+      now1d = Time.now.to_i - 3 * 24 * 60 * 60
 
       recs = $pagoda.select( 'aspect_suggest') do |rec|
-        next if rec[:timestamp] < now1d
-        game    = $pagoda.game( rec[:game])
-        aspects = game.aspects
-        check   = false
+        if rec[:timestamp] < now1d
+          false
+        elsif $pagoda.has?( 'visited', :key, rec[:visit])
+          false
+        else
+          game    = $pagoda.game( rec[:game])
+          aspects = game.aspects
+          check   = false
 
-        if rec[:aspect]
-          rec[:aspect].split(',').each do |aspect|
-            check = true if aspects[aspect].nil?
+          if rec[:aspect]
+            rec[:aspect].split(',').each do |aspect|
+              check = true if aspects[aspect].nil?
+            end
           end
-        end
 
-        check
+          check
+        end
       end
 
       recs.each do |rec|

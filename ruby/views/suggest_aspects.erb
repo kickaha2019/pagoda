@@ -39,9 +39,9 @@
         rec[:aspect].split(',').each do |a|
             html << "set_aspect( #{rec[:game]}, '#{a}', 'N');"
         end
-        html << "\")>Deny</button></td></tr>"
-        html << "<tr><td colspan=\"4\">#{rec[:text]}"
-        html << '</td></tr>'
+        html << "\")>Deny</button><button onclick=\"visited_action( '#{rec[:visit]}');\">Visited</button></td></tr>"
+        html << "<tr><td colspan=\"4\">#{rec[:text]}</td>"
+        html << '</tr>'
       end
 
       html.join( "\n")

@@ -52,7 +52,10 @@ class Hotu < DefaultSite
 	end
 
 	def get_game_description( page)
-		page
+		Nodes.parse( page).css( 'td.bodycopy') do |cell|
+			return cell.text
+		end
+		''
 	end
 
 	def link_title( * titles)

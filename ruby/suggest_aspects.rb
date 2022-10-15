@@ -54,7 +54,7 @@ class SuggestAspects
     page
   end
 
-  def match( game, aspect_name, page)
+  def match( game, aspect_name, timestamp, page)
     #p ['match1', game.name]
     aspects = game.aspects
     return unless aspects[aspect_name].nil?
@@ -65,19 +65,19 @@ class SuggestAspects
     ignores = [ignores] if ignores.is_a?( String)
     ignores = [] if ignores.nil?
 
-    text = nil
+    ref, text = nil, nil
     matches.each do |m|
       re = Regexp.new( m, Regexp::IGNORECASE | Regexp::MULTILINE)
-      text = scan( page, re, ignores) unless text
+      ref, text = scan( aspect_name, page, re, ignores, timestamp) unless text
     end
 
     if text
-      yield text
+      yield ref, text
     end
   end
 
-  def record( game, aspects, text, cache, site)
-    #p ['record', game.name, aspects, text, cache, site]
+  def record( game, aspects, text, cache, ref, site)
+    #p ['record', game.name, aspects, link[:timestamp]text, cache, site]
     @pagoda.start_transaction
     @pagoda.delete( 'aspect_suggest', :game, game.id)
     @pagoda.insert( 'aspect_suggest',
@@ -86,6 +86,7 @@ class SuggestAspects
                              :cache     => cache,
                              :text      => text,
                              :site      => site,
+                             :visit     => ref,
                              :timestamp => Time.now.to_i})
     @pagoda.end_transaction
     cache > 0
@@ -97,7 +98,7 @@ class SuggestAspects
     end
   end
 
-  def scan( page, regex, ignores)
+  def scan( aspect_name, page, regex, ignores, timestamp)
     ignored_page = page
     ignores.each do |ignore|
       re = Regexp.new( ignore, Regexp::IGNORECASE)
@@ -107,18 +108,21 @@ class SuggestAspects
     end
 
     scanner = StringScanner.new( ignored_page)
-    if scanner.skip_until( regex)
+    while scanner.skip_until( regex)
       pos = scanner.pointer
-      from = pos - 200  - scanner.matched_size
-      from = 0 if from < 0
-      to = from + 400
-      to = page.size - 1 if to >= page.size
-      text = h(page[from...(pos - scanner.matched_size)]) +
-             '<font color="red"><b>' +
-             h(page[(pos - scanner.matched_size)...pos]) +
-             '</b></font>' +
-             h(page[pos..to])
-      return text
+      ref = "suggest_aspects:#{aspect_name}-#{timestamp}-#{pos}"
+      unless @pagoda.has?( 'visited', :key, ref)
+        from = pos - 200  - scanner.matched_size
+        from = 0 if from < 0
+        to = from + 400
+        to = page.size - 1 if to >= page.size
+        text = h(page[from...(pos - scanner.matched_size)]) +
+               '<font color="red"><b>' +
+               h(page[(pos - scanner.matched_size)...pos]) +
+               '</b></font>' +
+               h(page[pos..to])
+        return ref, text
+      end
     end
 
     nil
@@ -148,14 +152,14 @@ class SuggestAspects
         page = get_page( link[:site], link[:timestamp])
 
         possible_aspects.each do |aspect_name|
-          match( game, aspect_name, page) do |text|
-            return aspect_name, text, link[:timestamp], link[:site]
+          match( game, aspect_name, link[:timestamp], page) do |ref, text|
+            return aspect_name, text, link[:timestamp], ref, link[:site]
           end
         end
       end
     end
 
-    return '', '', 0, ''
+    return '', '', 0, '', ''
   end
 
   def tag_aspects( site_name, timestamp, game)

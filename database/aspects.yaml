@@ -163,6 +163,9 @@ Slider:
   - sliding puzzle
   ignore:
   - slider bar
+  - via a slider
+  - two slider
+  - three slider
 Sound:
   title:  Sound puzzles
   desc:   Game contains sound based puzzles
@@ -195,6 +198,8 @@ Timer:
   - Timed puzzle
   - puzzles limited by time
   - timing
+  ignore:
+  - comic timing
 "Visual novel":
   index: 25
 VR:

@@ -12,10 +12,6 @@ class Metacritic < DefaultSite
 		end
 	end
 
-	def get_game_description( page)
-		page
-	end
-
 	def get_game_year( pagoda, link, page, rec)
 		if g = link.collation
 			notify_bind( pagoda, link, page, g.id)

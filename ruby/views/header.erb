@@ -37,6 +37,14 @@
       function click_checkbox( cname, base_url) {
           window.location = base_url + (document.getElementById( cname).checked ? 'Y' : 'N');
       }
+
+      function visited_action( key) {
+          var xhttp = new XMLHttpRequest();
+          xhttp.open( "POST", "/visited/" + key, false);
+          xhttp.send();
+          if (xhttp.responseText == '') {return;}
+          alert( xhttp.responseText);
+      }
   </script>
 </head>
 <body>

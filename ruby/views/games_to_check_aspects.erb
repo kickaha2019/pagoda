@@ -28,15 +28,5 @@
   %>
 </table></div>
 
-<script>
-    function visited_action( key) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.open( "POST", "/visited/" + key, false);
-        xhttp.send();
-        if (xhttp.responseText == '') {return;}
-        alert( xhttp.responseText);
-    }
-</script>
-
 </body>
 </html>
