@@ -204,7 +204,7 @@ tags:
   - ignore
   - LGBTQ+
   Beat 'em up: reject
-  Tower Defense:  reject
+  Tower Defense: reject
   Underground: ignore
   Martial Arts: ignore
   Vampire: ignore
@@ -258,3 +258,5 @@ tags:
   Non Violent: ignore
   Retro: Retro
   2D: ignore
+  Crossplay: ignore
+  Online-only: ignore

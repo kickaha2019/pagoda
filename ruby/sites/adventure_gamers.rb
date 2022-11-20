@@ -41,7 +41,7 @@ class AdventureGamers < DefaultSite
 				text << line.chomp
 			end
 		end
-		page
+		text.join( ' ')
 	end
 
 	def get_game_details( url, page, game)
