@@ -2,6 +2,9 @@
 "Adventure Classic Gaming":
   Review:
     - "(.*) -"
+"Adventure Game Hotspot":
+  Review:
+    - "(.*) - Adventure Game Hotspot"
 "Adventure Lantern":
   Review:
     - "(.*) - Adventure Lantern"

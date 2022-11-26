@@ -18,6 +18,10 @@ class DefaultSite
     end
   end
 
+  def elide_script_blocks(page)
+    page.gsub( /<script.*?<\/script>/mi, '')
+  end
+
   def filter( pagoda, link, page, rec)
     true
   end

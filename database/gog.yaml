@@ -114,9 +114,7 @@ tags:
   Turn-Based: ignore
   Violent: ignore
   Virtual life: reject
-  Visual Novel:
-  - accept
-  - Visual novel
+  Visual Novel: ignore
   Local Multiplayer: ignore
   Physics: ignore
   Noir: ignore

@@ -16,7 +16,7 @@ class NiceGameHints < DefaultSite
 	end
 
 	def get_game_description( page)
-		page
+		elide_script_blocks page
 	end
 
 	def name
