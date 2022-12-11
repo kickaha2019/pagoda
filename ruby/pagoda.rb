@@ -276,10 +276,6 @@ class Pagoda
       @owner.end_transaction
     end
 
-    def reduced_name
-      @owner.reduce_name_for_site(@record[:site], @record[:type], @record[:orig_title])
-    end
-
     def set_checked
       @owner.start_transaction
       @owner.delete( 'link', :url, @record[:url])
@@ -396,12 +392,7 @@ class Pagoda
       end
     end
 
-    @reduction_file        = dir + '/collation.yaml'
-    @reduction_timestamp   = 0
-    @reductions            = {}
     @aspect_info_timestamp = 0
-    refresh_reduction_cache
-
     @cached_yaml = {}
     load_site_handlers
   end
@@ -686,33 +677,6 @@ class Pagoda
 
   def rebuild
     @database.rebuild
-  end
-
-  def reduce_name( name)
-    @names.reduce(name)
-  end
-
-  def reduce_name_for_site(site, type, name)
-    if reductions = @reductions[site]
-      if reductions = reductions[type]
-        reductions.each do |reduction|
-          re = Regexp.new( reduction)
-          if m = re.match( name)
-            name = m[1]
-          end
-        end
-      end
-    end
-
-    @names.reduce(name)
-  end
-
-  def refresh_reduction_cache
-    t = File.mtime( @reduction_file)
-    if @reduction_timestamp != t
-      @reductions          = YAML.load( IO.read( @reduction_file))
-      @reduction_timestamp = t
-    end
   end
 
   def select( table_name)

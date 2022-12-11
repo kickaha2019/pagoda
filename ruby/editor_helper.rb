@@ -446,7 +446,6 @@ ASPECT_ELEMENT
     end
 
     def refresh_metadata
-      $pagoda.refresh_reduction_cache
     end
 
     def reverify( url)

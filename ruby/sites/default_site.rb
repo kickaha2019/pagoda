@@ -18,6 +18,10 @@ class DefaultSite
     end
   end
 
+  def elide_nav_blocks(page)
+    page.gsub( /<nav.*?<\/nav>/mi, '')
+  end
+
   def elide_script_blocks(page)
     page.gsub( /<script.*?<\/script>/mi, '')
   end

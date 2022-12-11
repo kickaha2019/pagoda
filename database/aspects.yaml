@@ -202,6 +202,8 @@ Timer:
   - comic timing
 "Visual novel":
   index: 25
+  match:
+  - Visual novel
 VR:
   desc:   Virtual Reality game
   index: 26

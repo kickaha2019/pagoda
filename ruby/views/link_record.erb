@@ -52,15 +52,6 @@
                                 link_action( @rec, 'pardon') +
                                 ((/(free|ignored)/i =~ link_status(@rec)) ? link_add_action( @rec) : '')
     %></td></tr>
-
-    <%=
-      html = []
-      if $debug
-        html << "<tr><th>Reduced name</th><td>#{ @rec.reduced_name}</td></tr>"
-        html << '</td></tr>'
-      end
-      html.join( "\n")
-    %>
   </table>
 
   <table class="list">
