@@ -20,5 +20,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 # ruby ruby/verify_links.rb database 'https://adventuregamers.com/articles/view/30430' ~/Caches/Pagoda/verified
 
-#ruby ruby/verify_links.rb database 'https://adventuregamers.com/articles/view/39674' ~/Caches/Pagoda/verified
-caffeinate -i ruby ruby/verify_links.rb database 5 ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://www.hofstudios.com/games/doe' ~/Caches/Pagoda/verified
+#caffeinate -i ruby ruby/verify_links.rb database 5 ~/Caches/Pagoda/verified

@@ -6,6 +6,8 @@
   - first\Wperson
   - "1st\\Wperson"
   - \WFPP\W
+"3D":
+  desc:   3D graphics engine
 "3rd person":
   desc:   3rd person perspective gameplay
   index: 2
@@ -53,6 +55,8 @@ Dialogue:
   - Conversation choice
   - conversation path
   - branching dialogue
+"Drawn":
+  desc:   Cartoon or hand drawn graphics
 Escape:
   title:   Escape room game
   index:  33
@@ -128,12 +132,16 @@ Photo:
 Played:
   desc: Game I've played
   index:  21
+Rendered:
+  desc: Pre-rendered graphics
 Retro:
   title:   Old or retro style game
   index: 28
 Physics:
   desc:   Physics based gameplay
   index: 14
+"Pixels":
+  desc:   Pixel graphics
 Puzzle:
   desc:   Puzzle focussed gameplay often variations on a theme
   index: 16
@@ -182,12 +190,14 @@ Sound:
 Stealth:
   desc:   Gameplay involves stealth at points
   index: 23
-Strategy:
-  index: 24
 Steam:
   desc:   Game available on Steam
   index:  7
   derive: true
+Strategy:
+  index: 24
+"Stylised":
+  desc:   Stylised graphics
 Timer:
   title:  Timed sequences
   desc:   Game has timed sequences

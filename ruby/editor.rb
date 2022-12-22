@@ -82,6 +82,10 @@ get '/games_added' do
       :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
 end
 
+get '/games_check_display_aspects' do
+  erb :games_check_display_aspects
+end
+
 get '/games_to_check_aspects' do
   erb :games_to_check_aspects
 end
