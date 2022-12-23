@@ -191,30 +191,39 @@ ASPECT_ELEMENT
       end + [['None', '', map['None']]]
     end
 
-    def games_check_display_aspects_records
-      unvisited, today, now = [], [], Time.now.to_i
+    def games_check_aspects_records( group, aspects)
+      unvisited, today, unset, now = [], [], [], Time.now.to_i
 
       $pagoda.games do |game|
-        visited = $pagoda.get( 'visited', :key, "games_check_display_aspects:#{game.id}")
+        set_aspects = game.aspects
+        visited = $pagoda.get( 'visited', :key, "#{group}:#{game.id}")
         unless visited.empty?
-          if (now - visited[0][:timestamp]) < 12 * 60 * 60
-            today << game
+          if aspects.inject(false) {|r,a| r | set_aspects[a]}
+            if (now - visited[0][:timestamp]) < 12 * 60 * 60
+              today << game
+            end
+          else
+            unset << game
           end
         else
           unvisited << game
         end
       end
 
-      if today.empty?
-        recs = unvisited[0...15]
-        $pagoda.start_transaction
-        recs.each do |game|
-          $pagoda.insert( 'visited', {key: "games_check_display_aspects:#{game.id}",
-                                                       timestamp: now})
+      if unset.empty?
+        if today.empty?
+          recs = unvisited[0...15]
+          $pagoda.start_transaction
+          recs.each do |game|
+            $pagoda.insert( 'visited', {key: "games_check_display_aspects:#{game.id}",
+                                                         timestamp: now})
+          end
+          $pagoda.end_transaction
+        else
+          recs = today
         end
-        $pagoda.end_transaction
       else
-        recs = today
+        recs = unset
       end
 
       recs.sort_by {|rec| rec.id}
