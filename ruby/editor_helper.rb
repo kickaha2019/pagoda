@@ -191,14 +191,17 @@ ASPECT_ELEMENT
       end + [['None', '', map['None']]]
     end
 
-    def games_check_aspects_records( group, aspects)
+    def games_check_aspects_records( group, aspects, skip_if_set=false, limit=15)
       unvisited, today, unset, now = [], [], [], Time.now.to_i
 
       $pagoda.games do |game|
         set_aspects = game.aspects
+        some_set    = aspects.inject(false) {|r,a| r | set_aspects[a]}
+        next if some_set && skip_if_set
+
         visited = $pagoda.get( 'visited', :key, "#{group}:#{game.id}")
         unless visited.empty?
-          if aspects.inject(false) {|r,a| r | set_aspects[a]}
+          if some_set
             if (now - visited[0][:timestamp]) < 12 * 60 * 60
               today << game
             end
@@ -212,7 +215,7 @@ ASPECT_ELEMENT
 
       if unset.empty?
         if today.empty?
-          recs = unvisited[0...15]
+          recs = unvisited[0...limit]
           $pagoda.start_transaction
           recs.each do |game|
             $pagoda.insert( 'visited', {key: "games_check_display_aspects:#{game.id}",

@@ -86,6 +86,10 @@ get '/games_check_display_aspects' do
   erb :games_check_display_aspects
 end
 
+get '/games_check_person_aspects' do
+  erb :games_check_person_aspects
+end
+
 get '/games_to_check_aspects' do
   erb :games_to_check_aspects
 end

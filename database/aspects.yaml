@@ -6,8 +6,6 @@
   - first\Wperson
   - "1st\\Wperson"
   - \WFPP\W
-"3D":
-  desc:   3D graphics engine
 "3rd person":
   desc:   3rd person perspective gameplay
   index: 2
@@ -125,15 +123,13 @@ Open world:
   match:
   - Open world
 Photo:
-  desc: Photo realistic
+  desc: Photographic images used
   index:  39
-  match:
-  - photorealistic
 Played:
   desc: Game I've played
   index:  21
 Rendered:
-  desc: Pre-rendered graphics
+  desc: Rendered graphics
 Retro:
   title:   Old or retro style game
   index: 28

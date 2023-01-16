@@ -7,9 +7,9 @@ class Hotu < DefaultSite
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
 			offset, urls, old_count = 0, {}, -1
 
-			find_from( scanner, 'http://www.homeoftheunderdogs.net/genre.php?id=3', urls)
-			find_from( scanner, 'http://www.homeoftheunderdogs.net/genre.php?id=6', urls)
-			find_from( scanner, 'http://www.homeoftheunderdogs.net/genre.php?id=7', urls)
+			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=3', urls)
+			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=6', urls)
+			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=7', urls)
 
 			# if urls.size < 1000
 			# 	scanner.error( 'Not enough URLs found for ' + name)
@@ -44,7 +44,7 @@ class Hotu < DefaultSite
 				text.encode!( 'US-ASCII',
 											:invalid => :replace, :undef => :replace, :universal_newline => true)
 				text = text.sub( /\?$/, '')
-				urls['http://www.homeoftheunderdogs.net/game.php?id=' + m[0]] = text
+				urls['https://www.homeoftheunderdogs.net/game.php?id=' + m[0]] = text
 			end
 
 			offset += 40
