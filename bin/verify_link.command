@@ -11,8 +11,8 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://apps.apple.com/app/id1468317913
 #ruby ruby/verify_links.rb database 'https://toucharcade.com/2016/11/04/1-bit-rogue-review/' ~/Caches/Pagoda/verified
 # ruby ruby/verify_links.rb database 'https://www.metacritic.com/game/pc/the-stanley-parable-ultra-deluxe' ~/Caches/Pagoda/verified
-#ruby ruby/verify_links.rb database 'https://store.steampowered.com/app/1827570' ~/Caches/Pagoda/verified
-# ruby ruby/verify_links.rb database 'https://store.steampowered.com/app/303720' ~/Caches/Pagoda/verified
+ruby ruby/verify_links.rb database 'https://store.steampowered.com/app/1809560' ~/Caches/Pagoda/verified
+#ruby ruby/verify_links.rb database 'https://store.steampowered.com/app/303720' ~/Caches/Pagoda/verified
 # https://www.gog.com/game/elite_warriors_vietnam
 # https://www.gog.com/game/atom_rpg_trudograd
 # https://www.uhs-hints.com/uhsweb/vampyre.php
@@ -20,5 +20,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 # ruby ruby/verify_links.rb database 'https://adventuregamers.com/articles/view/30430' ~/Caches/Pagoda/verified
 
-ruby ruby/verify_links.rb database 'https://www.hofstudios.com/games/doe' ~/Caches/Pagoda/verified
+#ruby ruby/verify_links.rb database 'https://www.hofstudios.com/games/doe' ~/Caches/Pagoda/verified
 #caffeinate -i ruby ruby/verify_links.rb database 5 ~/Caches/Pagoda/verified

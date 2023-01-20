@@ -14,13 +14,13 @@ if ($status != 0) exit 1
 
 # Verify the links starting with the oldest verified
 date
-ruby ruby/verify_links.rb database 1000 ~/Caches/Pagoda/verified 30
+ruby ruby/verify_links.rb database 500 ~/Caches/Pagoda/verified 300
 if ($status != 0) exit 1
 
 # Suggest some aspects
 date
-ruby ruby/suggest_aspects.rb database ~/Caches/Pagoda 5000 "" ""
-if ($status != 0) exit 1
+#ruby ruby/suggest_aspects.rb database ~/Caches/Pagoda 5000 "" ""
+#if ($status != 0) exit 1
 
 # Backup current database files
 rsync -rvt --delete database ~/temp/Pagoda

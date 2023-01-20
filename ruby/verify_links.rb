@@ -89,7 +89,12 @@ class VerifyLinks
     return false, "Timeout"
   end
 
-  def http_get_with_redirect( url, depth = 0)
+  def http_get_with_redirect( site, url, depth = 0)
+    overriden, status, comment, response = @pagoda.get_site_handler( site).override_verify_url( url)
+    if overriden
+      return status, comment, response
+    end
+
     #p ['http_get_with_redirect1', url]
     comment = nil
     status, response = http_get_threaded( url)
@@ -102,7 +107,7 @@ class VerifyLinks
       comment = 'Redirected to ' + response['Location'] if response.code != '302'
       #p ['http_get_with_redirect2', url, redirected, response.code]
 
-      status, comment1, response = http_get_with_redirect( response['Location'], depth+1)
+      status, comment1, response = http_get_with_redirect( site, response['Location'], depth+1)
       comment = comment1 if comment1
       return status, comment, response
     end
@@ -155,7 +160,7 @@ class VerifyLinks
   end
 
   def verify_page( link, cache, debug=false)
-    status, comment, response = http_get_with_redirect( link.url)
+    status, comment, response = http_get_with_redirect( link.site, link.url)
     p ['verify_page1', status, comment, response] if debug
     body = response.is_a?( String) ? response : response.body
 
@@ -218,17 +223,16 @@ class VerifyLinks
     File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
 
-    # Warn if ignoring link bound to a game
-    if rec[:ignore] && link.collation
-      rec[:comment] = "Was bound to #{link.collation.name}"
-    end
-    link.verified( rec)
-    #link.verified( title ? title.strip : '', t, valid ? 'Y': 'N', comment, changed)
-
+    # Ignore link if so flagged unless bound to a game
     if rec[:ignore]
-      link.bind( -1)
+      if link.collation
+        rec[:comment] = "Was bound to #{link.collation.name}"
+      else
+        link.bind( -1)
+      end
     end
 
+    link.verified( rec)
     if File.exist?( cache + "/#{old_t}.html")
       File.delete( cache + "/#{old_t}.html")
     end

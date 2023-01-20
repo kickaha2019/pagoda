@@ -59,6 +59,10 @@ class DefaultSite
   def notify_bind( pagoda, link, page, game_id)
   end
 
+  def override_verify_url( url)
+    return false, false, '', ''
+  end
+
   def tag_aspects( pagoda, page)
   end
 

@@ -181,6 +181,13 @@ class Steam < DefaultSite
 		'Steam'
 	end
 
+	def override_verify_url( url)
+		if /\/agecheck\// =~ url
+			return true, true, nil, 'Age check'
+		end
+		return false, false, nil, ''
+	end
+
 	def tag_aspects( pagoda, page)
 		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
 		tags  = @info['tags']

@@ -197,7 +197,6 @@ ASPECT_ELEMENT
       $pagoda.games do |game|
         set_aspects = game.aspects
         some_set    = aspects.inject(false) {|r,a| r | set_aspects[a]}
-        next if some_set && skip_if_set
 
         visited = $pagoda.get( 'visited', :key, "#{group}:#{game.id}")
         unless visited.empty?
@@ -209,7 +208,7 @@ ASPECT_ELEMENT
             unset << game
           end
         else
-          unvisited << game
+          unvisited << game unless some_set && skip_if_set
         end
       end
 
