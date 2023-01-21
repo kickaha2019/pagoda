@@ -116,11 +116,10 @@ class VerifyLinks
   end
 
   def oldest( n, valid_for)
-    links, free, bound, dubious = [], [], [], []
+    free, bound, dubious, ignored = [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
-      next if link.status == 'Ignore'
       next if link.static? && link.valid? && (link.timestamp > 100)
 
       if (link.status == 'Invalid') || link.comment
@@ -128,10 +127,17 @@ class VerifyLinks
         dubious << link
       elsif /free/i =~ link.status
         free << link
+      elsif link.status == 'Ignored'
+        ignored << link
       else
         bound << link if link.timestamp < valid_from
       end
     end
+
+    puts "... Bound:   #{bound.size}"
+    puts "... Dubious: #{dubious.size}"
+    puts "... Free:    #{free.size}"
+    puts "... Ignored: #{ignored.size}"
 
     {'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
       v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
@@ -145,12 +151,13 @@ class VerifyLinks
     #raise 'Dev'
 
     links = []
-    bound.each_index do |i|
+    (0...n).each do |i|
       links << dubious[i] if i < dubious.size
-      links << free[i] if i < free.size
-      links << bound[i]
+      links << free[i]    if i < free.size
+      links << bound[i]   if i < bound.size
     end
 
+    links = links + ignored
     links = links[0...n] if links.size > n
     links.shuffle.each {|rec| yield rec}
   end
