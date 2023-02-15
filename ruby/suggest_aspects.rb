@@ -7,8 +7,7 @@ class SuggestAspects
   attr_reader :tagged
   
   def initialize( dir, cache)
-    @pagoda  = Pagoda.new( dir)
-    @cache   = cache
+    @pagoda  = Pagoda.new( dir, cache)
     @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
     @tagged  = 0
     @errors  = []
@@ -41,7 +40,7 @@ class SuggestAspects
   end
 
   def get_page( site_name, timestamp)
-    page = IO.read( "#{@cache}/verified/#{timestamp}.html")
+    page = IO.read( @pagoda.cache_path( timestamp))
 
     site = @pagoda.get_site_handler( site_name)
     #p ['get_page1', site_name, timestamp]
@@ -165,7 +164,7 @@ class SuggestAspects
 
   def tag_aspects( site_name, timestamp, game)
     aspects = game.aspects
-    page = IO.read( "#{@cache}/verified/#{timestamp}.html")
+    page = IO.read( @pagoda.cache_path( timestamp))
     site = @pagoda.get_site_handler( site_name)
 
     site.tag_aspects( @pagoda, page) do |aspect|

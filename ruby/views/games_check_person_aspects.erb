@@ -5,7 +5,7 @@
   <%=
     html = []
 
-    games_check_aspects_records( 'games_check_person_aspects', ['1st person', '3rd person'], true, 5).each do |rec|
+    games_check_aspects_records( 'games_check_person_aspects', ['1st person', '3rd person'], true, 8).each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
       html << "<tr>"
       html << "<td>#{rec.id}</td>"

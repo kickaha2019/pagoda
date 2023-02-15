@@ -217,7 +217,7 @@ ASPECT_ELEMENT
           recs = unvisited[0...limit]
           $pagoda.start_transaction
           recs.each do |game|
-            $pagoda.insert( 'visited', {key: "games_check_display_aspects:#{game.id}",
+            $pagoda.insert( 'visited', {key: "#{group}:#{game.id}",
                                                          timestamp: now})
           end
           $pagoda.end_transaction
@@ -283,7 +283,7 @@ ASPECT_ELEMENT
     end
 
     def get_cache( timestamp)
-      path = $cache + "/verified/#{timestamp}.html"
+      path = $pagoda.cache_path( timestamp)
       return '' unless File.exist?( path)
       IO.read( path)
     end
@@ -373,7 +373,7 @@ ASPECT_ELEMENT
     def link_lost?( rec)
       return false if link_status(rec) == 'Ignored'
       return false if rec.static?
-      (rec.timestamp + (90 * 24 * 60 * 60) < @@today)
+      (rec.timestamp + (500 * 24 * 60 * 60) < @@today)
     end
 
     def link_site_combo( view, combo_name, current_site, current_type, current_status, html)
@@ -534,8 +534,7 @@ ASPECT_ELEMENT
     end
 
     def self.setup
-      $pagoda = Pagoda.new( ARGV[0])
-      $cache  = ARGV[1]
+      $pagoda = Pagoda.new( ARGV[0], ARGV[1])
 
       $debug = false
       ARGV[2..-1].each do |arg|

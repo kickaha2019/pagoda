@@ -352,11 +352,12 @@ class Pagoda
     end
   end
 
-  def initialize( dir)
+  def initialize( dir, cache=nil)
     @dir       = dir
     @database  = Database.new( dir)
     @names     = Names.new
     @possibles = nil
+    @cache     = cache
 
     @database.declare_integer( 'alias',          :id)
     @database.declare_integer( 'aspect',         :id)
@@ -419,6 +420,11 @@ class Pagoda
     aspect_info.each_pair do |name, info|
       yield name if info['derive'].nil?
     end
+  end
+
+  def cache_path( timestamp)
+    slice = timestamp % 10
+    @cache + "/verified/#{slice}/#{timestamp}.html"
   end
 
   def check_unique_name( name, id)

@@ -43,6 +43,8 @@ Adventure:
 Cards:
   desc:   Card based gameplay like Slay the Spire
   index: 11
+Cartoon:
+  desc:   Simple cartoon like visuals
 Dialogue:
   title:   Dialogue puzzles
   index:  40
@@ -53,8 +55,11 @@ Dialogue:
   - Conversation choice
   - conversation path
   - branching dialogue
+"Drawing":
+  desc:   Painting or drawing quality visuals
 "Drawn":
   desc:   Cartoon or hand drawn graphics
+  index:  42
 Escape:
   title:   Escape room game
   index:  33
@@ -128,16 +133,12 @@ Photo:
 Played:
   desc: Game I've played
   index:  21
-Rendered:
-  desc: Rendered graphics
-Retro:
-  title:   Old or retro style game
-  index: 28
 Physics:
   desc:   Physics based gameplay
   index: 14
 "Pixels":
   desc:   Pixel graphics
+  index:  44
 Puzzle:
   desc:   Puzzle focussed gameplay often variations on a theme
   index: 16
@@ -145,6 +146,9 @@ Recent:
   desc: Game released within last year or so
   derive:  true
   index: 8
+Retro:
+  title:   Old or retro style game
+  index: 28
 Roguelike:
   desc:   Dungeon crawling or roguelike
   index: 17
@@ -192,8 +196,6 @@ Steam:
   derive: true
 Strategy:
   index: 24
-"Stylised":
-  desc:   Stylised graphics
 Timer:
   title:  Timed sequences
   desc:   Game has timed sequences

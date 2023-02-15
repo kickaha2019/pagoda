@@ -19,8 +19,8 @@ require_relative 'common'
 class VerifyLinks
   include Common
 
-  def initialize( dir)
-    @pagoda   = Pagoda.new( dir)
+  def initialize( dir, cache)
+    @pagoda   = Pagoda.new( dir, cache)
   end
 
   def get_details( link, body, rec)
@@ -128,7 +128,7 @@ class VerifyLinks
       elsif /free/i =~ link.status
         free << link
       elsif link.status == 'Ignored'
-        ignored << link
+        ignored << link if link.timestamp < valid_from
       else
         bound << link if link.timestamp < valid_from
       end
@@ -166,7 +166,7 @@ class VerifyLinks
     @pagoda.terminate
   end
 
-  def verify_page( link, cache, debug=false)
+  def verify_page( link, debug=false)
     status, comment, response = http_get_with_redirect( link.site, link.url)
     p ['verify_page1', status, comment, response] if debug
     body = response.is_a?( String) ? response : response.body
@@ -217,17 +217,19 @@ class VerifyLinks
 
     # Save old timestamp and page, get new unused timestamp
     old_t, old_page, changed = link.timestamp, '', false
-    if File.exist?( cache + "/#{old_t}.html")
-      old_page = IO.read( cache + "/#{old_t}.html")
+    old_path = @pagoda.cache_path( old_t)
+    if File.exist?( old_path)
+      old_page = IO.read( old_path)
     end
 
-    while File.exist?( cache + "/#{rec[:timestamp]}.html")
+    new_path = @pagoda.cache_path( rec[:timestamp])
+    while File.exist?( new_path)
       sleep 1
       rec[:timestamp] = Time.now.to_i
     end
 
     # If OK save page to cache else to temp area
-    File.open( cache + "/#{rec[:timestamp]}.html", 'w') {|io| io.print body}
+    File.open( new_path, 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
 
     # Ignore link if so flagged unless bound to a game
@@ -240,24 +242,24 @@ class VerifyLinks
     end
 
     link.verified( rec)
-    if File.exist?( cache + "/#{old_t}.html")
-      File.delete( cache + "/#{old_t}.html")
+    if File.exist?( old_path)
+      File.delete( old_path)
     end
   end
 
-  def verify_url( url, cache)
+  def verify_url( url)
     link = @pagoda.link( url)
     if link
-      verify_page( link, cache, true)
+      verify_page( link,true)
     else
       raise "No such link: #{url}"
     end
   end
 end
 
-vl = VerifyLinks.new( ARGV[0])
+vl = VerifyLinks.new( ARGV[0], ARGV[2])
 if /^http/ =~ ARGV[1]
-  vl.verify_url( ARGV[1], ARGV[2])
+  vl.verify_url( ARGV[1])
   puts "... Verified #{ARGV[1]}"
 else
   puts "... Verifying links"
@@ -267,7 +269,7 @@ else
     count += 1
     vl.throttle( link.url)
     begin
-      vl.verify_page( link, ARGV[2])
+      vl.verify_page( link)
     rescue
       puts "*** Problem with #{link.url}"
       raise
