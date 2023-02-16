@@ -423,7 +423,7 @@ class Pagoda
   end
 
   def cache_path( timestamp)
-    slice = timestamp % 10
+    slice = (timestamp / 24 * 60 * 60) % 10
     @cache + "/verified/#{slice}/#{timestamp}.html"
   end
 
