@@ -1,11 +1,11 @@
-<%= erb :header, :locals => {:page => 'games_check_display1_aspects'} %>
+<%= erb :header, :locals => {:page => 'games_check_resolution_aspects'} %>
 
 <div id="list"><table class="games list">
   <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Reviews</th></tr>
   <%=
     html = []
 
-    games_check_aspects_records( 'games_check_display1_aspects', ['Pixels', 'Drawing', 'Cartoon', 'Photo'], true, 8).each do |rec|
+    games_check_aspects_records( 'games_check_resolution_aspects', ['Low-res', 'Mid-res>', 'Hi-res'], true, 8).each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
       html << "<tr>"
       html << "<td>#{rec.id}</td>"

@@ -155,9 +155,9 @@ class VerifyLinks
       links << dubious[i] if i < dubious.size
       links << free[i]    if i < free.size
       links << bound[i]   if i < bound.size
+      links << ignored[i] if i < ignored.size
     end
 
-    links = links + ignored
     links = links[0...n] if links.size > n
     links.shuffle.each {|rec| yield rec}
   end

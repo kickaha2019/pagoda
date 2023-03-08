@@ -33,9 +33,6 @@ full:
 - site:   Adventure Game Hotspot
   type:   Review
   method: findReviews
-- site:   Adventure Game Hotspot
-  type:   Walkthrough
-  method: findWalkthroughs
 - site:   Apple
   type:   Store
   method: full

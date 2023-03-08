@@ -373,6 +373,8 @@ ASPECT_ELEMENT
     def link_lost?( rec)
       return false if link_status(rec) == 'Ignored'
       return false if rec.static?
+      return false if rec.timestamp < 101
+      return true unless File.exist?( $pagoda.cache_path( rec.timestamp))
       (rec.timestamp + (500 * 24 * 60 * 60) < @@today)
     end
 

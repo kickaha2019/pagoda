@@ -19,7 +19,7 @@ class Spider
 		@dir             = dir
 		@cache           = cache
 		@errors          = 0
-		@pagoda          = Pagoda.new( dir)
+		@pagoda          = Pagoda.new( dir, cache)
 		@settings        = YAML.load( IO.read( dir + '/settings.yaml'))
 		@suggested       = []
 		@suggested_links = {}
@@ -178,12 +178,17 @@ class Spider
 		@pagoda.links do |link|
 			next unless link.site == site
 			next unless link.valid? && link.bound? && link.collation
-			page = IO.read( @cache + "/verified/#{link.timestamp}.html")
-			page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
-				if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
-					next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
-					yield link.collation.name, m[1], anchor[1]
+			path = @pagoda.cache_path( link.timestamp)
+			if File.exist?( path)
+				page = IO.read( path)
+				page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
+					if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
+						next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
+						yield link.collation.name, m[1], anchor[1]
+					end
 				end
+			else
+				puts "*** Link file missing: #{link.url}"
 			end
 		end
 	end

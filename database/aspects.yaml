@@ -57,9 +57,6 @@ Dialogue:
   - branching dialogue
 "Drawing":
   desc:   Painting or drawing quality visuals
-"Drawn":
-  desc:   Cartoon or hand drawn graphics
-  index:  42
 Escape:
   title:   Escape room game
   index:  33
@@ -74,6 +71,8 @@ GOG:
   desc:   Game available on GOG
   derive: true
   index:  30
+Hi-res:
+  desc:   "High resolution graphics"
 HOG:
   desc:   Game has hidden object scenes
   index:  12
@@ -93,6 +92,8 @@ iOS:
 "LGBTQ+":
   desc:   ""
   index:  32
+Low-res:
+  desc:   "Low resolution graphics"
 Mac:
   desc:   Game available on Mac
   index:  34
@@ -101,6 +102,8 @@ Maze:
   desc:   Game has (the horror) mazes in it
   index: 5
   match:  \WMaze(|s)\W
+Mid-res:
+  desc:   "Mid resolution graphics"
 Minigame:
   match:  \Wmini(\W*)game
   index:  20

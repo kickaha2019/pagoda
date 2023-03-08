@@ -44,7 +44,12 @@ module Common
 
 	def http_get( url, delay = 10, headers = {})
 		response = http_get_response( url, delay, headers)
-  	response.value
+		begin
+	  	response.value
+		rescue
+			puts "*** Problem URL: #{url}"
+			raise
+		end
 		response.body
 	end
 
