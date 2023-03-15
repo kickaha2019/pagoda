@@ -466,7 +466,7 @@ tags:
   Electronic: ignore
   Sniper: reject
   Pool: ignore
-  Outbreak Sim: ignore
+  Outbreak Sim: reject
   Farming: reject
   Roguevania: ignore
   Bowling: ignore
@@ -502,3 +502,4 @@ tags:
   Football (American): ignore
   Football (Soccer): ignore
   Fox: ignore
+  Hobby Sim: reject
