@@ -5,7 +5,7 @@ class AdventureGamers < DefaultSite
 	include Common
 
 	def find( scanner)
-		scanner.twitter_feed_links( 'adventuregamers') do |text, link|
+		scanner.html_links( 'https://adventuregamers.com/newreleases') do |link|
 			if /^https:\/\/adventuregamers\.com\/articles\/view\/.*$/ =~ link
 				scanner.add_link( '', link.split('?')[0])
 			else

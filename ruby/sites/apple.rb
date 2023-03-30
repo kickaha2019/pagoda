@@ -124,25 +124,15 @@ class Apple < DefaultSite
     end
   end
 
-	def incremental( scanner)
-		scanner.twitter_feed_links( 'applearcade') do |text, link|
-      if m = match_link( link)
-				scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
-			else
-				0
-			end
-    end
-
-    # scanner.twitter_feed_links( 'appstoregames', 1000) do |text, link|
-    #   if m = match_link( link)
-    #     #io.puts "... #{link}"
-    #     scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
-    #   else
-    #     #io.puts "??? #{link}"
-    #     0
-    #   end
-    # end
-	end
+	# def incremental( scanner)
+	# 	scanner.twitter_feed_links( 'applearcade') do |text, link|
+  #     if m = match_link( link)
+	# 			scanner.add_link( '', "https://apps.apple.com/app/#{m[1]}")
+	# 		else
+	# 			0
+	# 		end
+  #   end
+	# end
 
   def link_title( * titles)
     ('Store' == titles[0]) ? titles[1] : titles[0]
