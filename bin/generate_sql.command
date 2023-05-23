@@ -10,4 +10,4 @@ if ($status != 0) exit 1
 # As a bonus generate aspect search webpage
 cd ..
 set PAGODA=`pwd`
-ruby ruby/generate_aspect_webpage.rb database ~/Caches/Pagoda/verified ruby/templates ~/Sites/Games/aspects_database
+ruby ruby/generate_aspect_webpage.rb database ~/Caches/Pagoda ruby/templates ~/Sites/Games/aspects_database

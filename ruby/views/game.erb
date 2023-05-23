@@ -136,7 +136,7 @@
 
     </table>
 
-  <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between">
+  <div style="display: flex; flex-wrap: wrap; flex-direction: row; align-items: flex-start; justify-content: space-between">
       <table class="small list">
         <tr><th>Alias</th><th>Hidden?</th></tr>
         <%=
@@ -164,6 +164,19 @@
           html.join( "\n")
         %>
       </table>
+
+      <% if @group %>
+        <table class="small list" style="padding-left: 10px">
+          <tr><th>Game in group</th></tr>
+          <%=
+            html = []
+            $pagoda.games_in_group( @id) do |g|
+              html << "<tr><td><a target=\"_blank\" href=\"/game/#{g.id}\">#{h(g.name)}</a></td></tr>"
+            end
+            html.join( "\n")
+          %>
+        </table>
+      <% end %>
     </div>
 
     <table class="buttons">

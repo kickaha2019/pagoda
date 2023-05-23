@@ -498,6 +498,17 @@ class Pagoda
     selected
   end
 
+  def games_in_group( gid)
+    games do |g|
+      if g.group_id == gid
+        yield g if block_given?
+        true
+      else
+        false
+      end
+    end
+  end
+
   def generate_links
     links {|link| link.generate?}
   end

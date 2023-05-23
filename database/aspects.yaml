@@ -45,6 +45,7 @@ Cards:
   index: 11
 Cartoon:
   desc:   Simple cartoon like visuals
+  index:  42
 Dialogue:
   title:   Dialogue puzzles
   index:  40
@@ -57,6 +58,7 @@ Dialogue:
   - branching dialogue
 "Drawing":
   desc:   Painting or drawing quality visuals
+  index:  43
 Escape:
   title:   Escape room game
   index:  33
@@ -73,6 +75,7 @@ GOG:
   index:  30
 Hi-res:
   desc:   "High resolution graphics"
+  index:  45
 HOG:
   desc:   Game has hidden object scenes
   index:  12
@@ -94,6 +97,7 @@ iOS:
   index:  32
 Low-res:
   desc:   "Low resolution graphics"
+  index:  44
 Mac:
   desc:   Game available on Mac
   index:  34
@@ -104,6 +108,7 @@ Maze:
   match:  \WMaze(|s)\W
 Mid-res:
   desc:   "Mid resolution graphics"
+  index:  46
 Minigame:
   match:  \Wmini(\W*)game
   index:  20
@@ -141,7 +146,7 @@ Physics:
   index: 14
 "Pixels":
   desc:   Pixel graphics
-  index:  44
+  index:  47
 Puzzle:
   desc:   Puzzle focussed gameplay often variations on a theme
   index: 16

@@ -5,7 +5,7 @@
   <%=
     html = []
 
-    games_check_aspects_records( 'games_check_resolution_aspects', ['Low-res', 'Mid-res', 'Hi-res'], true, 8).each do |rec|
+    games_check_aspects_records( 'games_check_resolution_aspects', ['Pixels', 'Low-res', 'Mid-res', 'Hi-res'], true, 8).each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
       html << "<tr>"
       html << "<td>#{rec.id}</td>"

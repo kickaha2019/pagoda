@@ -5,9 +5,11 @@ class AdventureGamers < DefaultSite
 	include Common
 
 	def find( scanner)
-		scanner.html_links( 'https://adventuregamers.com/newreleases') do |link|
+		scanner.html_links( 'https://adventuregamers.com/articles/reviews') do |link|
 			if /^https:\/\/adventuregamers\.com\/articles\/view\/.*$/ =~ link
 				scanner.add_link( '', link.split('?')[0])
+			elsif /^\/articles\/view\/.*$/ =~ link
+				scanner.add_link( '', 'https://adventuregamers.com' + link.split('?')[0])
 			else
 				0
 			end

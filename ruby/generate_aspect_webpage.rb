@@ -44,7 +44,7 @@ class WebsiteFiltersPage
 
   def initialize( dir, cache, templates, local)
     @dir       = dir
-    @pagoda    = Pagoda.new( dir)
+    @pagoda    = Pagoda.new( dir, cache)
     @cache     = cache
     @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
     @templates = templates
@@ -151,7 +151,8 @@ class WebsiteFiltersPage
       next unless link.valid?
       if link.type == 'Store'
         site = @pagoda.get_site_handler( link.site)
-        page = IO.read( "#{@cache}/#{link.timestamp}.html")
+        path = @pagoda.cache_path( link.timestamp)
+        page = IO.read( path)
         playable.record( site, link.url, page)
       end
     end
