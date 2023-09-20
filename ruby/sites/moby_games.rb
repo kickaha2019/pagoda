@@ -3,42 +3,10 @@ require_relative 'default_site'
 class MobyGames < DefaultSite
 	def find( scanner)
 		path = scanner.cache + "/mobygames.json"
-
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			urls = {}
-			find1( scanner, urls,'adventure')
-			find1( scanner, urls,'role-playing-rpg')
-
-			stats = scanner.get_scan_stats( name, 'Reference')
-			stats['count'] = urls.size
-			scanner.put_scan_stats( name, 'Reference', stats)
-
-			File.open( path, 'w') {|io| io.print JSON.generate( urls)}
-		end
-
-		JSON.parse( IO.read( path)).each_pair do |url, name|
-			scanner.suggest_link( name, url)
-		end
-	end
-
-	def find1( scanner, urls, genre)
-		offset, old_count = 1, -1
-
-		while (old_count < urls.size)
-			old_count = urls.size
-
-			raw = scanner.http_get "https://www.mobygames.com/game/genre:#{genre}/sort:title/page:#{offset}/"
-			raw.split( 'href="').each do |line|
-				if m = /^(https:\/\/www.mobygames.com\/game\/[^"]*)">([^<]*)</.match( line)
-					text = m[2]
-					text.force_encoding( 'UTF-8')
-					text.encode!( 'US-ASCII',
-												:invalid => :replace, :undef => :replace, :universal_newline => true)
-					urls[m[1]] = text
-				end
+		if File.exist?( path)
+			JSON.parse( IO.read( path)).each_pair do |url, name|
+				scanner.suggest_link( name, url)
 			end
-
-			offset += 1
 		end
 	end
 
@@ -87,6 +55,59 @@ class MobyGames < DefaultSite
 				publisher, developer, release = false, false, false
 			end
 		end
+	end
+
+	def incremental( scanner)
+		path = scanner.cache + "/mobygames.json"
+		urls = {}
+
+		if File.exist?( path)
+			urls = JSON.parse( IO.read( path))
+		end
+
+		incremental1( scanner, 'adventure', urls)
+		incremental1( scanner, 'role-playing-rpg', urls)
+
+		File.open( path, 'w') do |io|
+			io.print JSON.generate( urls)
+		end
+
+		0
+	end
+
+	def incremental1( scanner, genre, urls)
+		incremental2( scanner, genre, 'added', 1, urls)
+
+		stats = scanner.get_scan_stats( name, genre)
+		page  = stats['page'] ? stats['page'].to_i : 1
+		(0..9).each do
+		  page = incremental2( scanner, genre, 'title', page, urls)
+		end
+
+		stats['page'] = page
+		scanner.put_scan_stats( name, genre, stats)
+	end
+
+	def incremental2( scanner, genre, sort, page, urls)
+		raw   = scanner.http_get "https://www.mobygames.com/game/genre:#{genre}/sort:#{sort}/page:#{page}/"
+
+		if m = /initial-values='([^']*)'/m.match( raw)
+			json = JSON.parse( m[1])
+			json['games'].each do |game|
+				title, url = game['title'], game['internal_url']
+				urls[url] = title
+			end
+
+			if page * json['perPage'] > json['total']
+				page = 1
+			else
+				page += 1
+			end
+		else
+			raise 'Data not found'
+		end
+
+		page
 	end
 
 	def name

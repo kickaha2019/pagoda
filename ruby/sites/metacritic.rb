@@ -21,58 +21,35 @@ class Metacritic < DefaultSite
 	def incremental( scanner)
 		path  = scanner.cache + "/metacritic.json"
 		found = File.exist?( path) ? JSON.parse( IO.read( path)) : {}
+		base_url = 'https://www.metacritic.com/browse/game/all/all/all-time/new/?' +
+				       'platform=pc&platform=mobile&' +
+		           'genre=adventure&genre=rpg&genre=edutainment&' +
+				       'genre=turn---based-strategy&genre=puzzle&' +
+				       '&releaseYearMin=1910&releaseYearMax=' +
+				       Time.now.year.to_s + '&page='
 
-		incremental_section( scanner, 'adventure/pc',     found)
-		incremental_section( scanner, 'adventure/ios',    found)
-		incremental_section( scanner, 'puzzle/pc',        found)
-		incremental_section( scanner, 'puzzle/ios',       found)
-		incremental_section( scanner, 'role-playing/pc',  found)
-		incremental_section( scanner, 'role-playing/ios', found)
-		incremental_section( scanner, 'turn-based/pc',    found)
-		incremental_section( scanner, 'turn-based/ios',   found)
+		(1..100).each do |page|
+			found_new = false
+			raw     = scanner.http_get( base_url + page.to_s)
+			File.open( '/Users/peter/temp/metacritic.html', 'w') {|io| io.print raw}
+			#raw = IO.read( '/Users/peter/temp/rock_paper_shotgun.html')
+
+			Nodes.parse( raw).css( 'a') do |anchor|
+				if %r{^/game/} =~ anchor['href']
+					[anchor['href']]
+				end
+			end.css('div.c-finderProductCard_title') do |element, href|
+				unless found['https://www.metacritic.com' + href]
+					found['https://www.metacritic.com' + href] = element['data-title']
+					found_new = true
+				end
+			end
+
+			break unless found_new
+		end
 
 		File.open( path,    'w') {|io| io.print JSON.generate( found)}
 		0
-	end
-
-	def incremental_section( scanner, section, found)
-		stats = scanner.get_scan_stats( name, section)
-		page  = stats.has_key?('page') ? stats['page'].to_i : -1
-		page += 1
-		count = stats.has_key?('count') ? stats['count'].to_i : 0
-		count = 0 if page == 0
-
-		raw_url = "https://www.metacritic.com/browse/games/genre/date/#{section}"
-		raw_url = raw_url + "?page=#{page}" if page > 0
-		raw     = scanner.http_get raw_url
-
-		#File.open( '/Users/peter/temp/metacritic.html', 'w') {|io| io.print raw}
-		#raw = IO.read( '/Users/peter/temp/rock_paper_shotgun.html')
-
-		old_count = count
-		Nodes.parse( raw).css( 'a') do |anchor|
-			if %r{^/game/} =~ anchor['href']
-				[anchor['href']]
-			end
-		end.css('img') do |element, href|
-			found['https://www.metacritic.com' + href] = element['alt']
-			count += 1
-		end
-
-		last_page = -1
-		Nodes.parse( raw).css( 'li.last_page').css( 'a') do |anchor|
-			if m = /page=(\d+)$/.match( anchor['href'])
-				last_page = m[1].to_i
-			end
-		end
-
-		stats['count'] = count
-		stats['page']  = (page < last_page) ? page : -1
-		scanner.put_scan_stats( name, section, stats)
-
-		# if old_count == count
-		# 	puts "*** Empty page: #{raw_url}"
-		# end
 	end
 
 	def name

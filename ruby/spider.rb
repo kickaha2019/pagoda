@@ -142,11 +142,11 @@ class Spider
 		end
 	end
 
-	def incremental( site, type)
+	def incremental( site, type, section='incremental')
 		found = false
     load_old_redirects( @cache + '/redirects.yaml')
 
-		@settings['incremental'].each do |scan|
+		@settings[section].each do |scan|
 			@site = scan['site']
 			@type = scan['type']
 			next unless (site == @site) || (site == 'All')
@@ -330,6 +330,10 @@ class Spider
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
 		@suggested_links[url] = true
+	end
+
+	def test_incremental( site, type)
+		incremental( site, type, 'test_incremental')
 	end
 
 	def verified_links

@@ -196,7 +196,9 @@ ASPECT_ELEMENT
 
       $pagoda.games do |game|
         set_aspects = game.aspects
-        some_set    = aspects.inject(false) {|r,a| r | set_aspects[a]}
+        next if set_aspects['Lost']
+        some_set    = (aspects.size == 1) ? set_aspects.has_key?( aspects[0])
+                                          : aspects.inject(false) {|r,a| r | set_aspects[a]}
 
         visited = $pagoda.get( 'visited', :key, "#{group}:#{game.id}")
         unless visited.empty?
@@ -525,6 +527,13 @@ ASPECT_ELEMENT
       $pagoda.end_transaction
     end
 
+    def set_genre_checked( game_id)
+      $pagoda.start_transaction
+      $pagoda.insert( 'visited', {key: "unchecked_genres:#{game_id}",
+                                                   timestamp: Time.now.to_i})
+      $pagoda.end_transaction
+    end
+
     def set_official_checked( game_id)
       $pagoda.get( 'bind', :id, game_id).each do |bind_rec|
         link = $pagoda.link( bind_rec[:url])
@@ -620,6 +629,19 @@ ASPECT_ELEMENT
       $pagoda.links do |link|
         link.bound? && link.collation && link.valid? && (link.site == 'Website') && (link.changed != 'N')
       end
+    end
+
+    def unchecked_genre_records
+      unvisited = []
+
+      $pagoda.games do |game|
+        visited = $pagoda.get( 'visited', :key, "unchecked_genres:#{game.id}")
+        if visited.empty?
+          unvisited << game
+        end
+      end
+
+      unvisited.sort_by {|rec| rec.id}
     end
 
     def update_game( params)

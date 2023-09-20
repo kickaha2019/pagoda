@@ -5,12 +5,35 @@ require_relative 'pagoda'
 class SuggestAspects
   include Common
   attr_reader :tagged
-  
+  NC = '[^0-9A-Z]'
+
   def initialize( dir, cache)
     @pagoda  = Pagoda.new( dir, cache)
     @aspects = YAML.load( IO.read( dir + '/aspects.yaml'))
     @tagged  = 0
     @errors  = []
+  end
+
+  def find_matches( page, matches)
+    page  = ' ' + page + ' '
+    found = false
+
+    matches.each do |match|
+      re = Regexp.new( NC + match.gsub( ' ', NC + '+') + NC, Regexp::IGNORECASE)
+      page.sub!( re) do |m|
+        found = true
+        "&&&#{m}&&&"
+      end
+
+      if found
+        els = page.split( '&&&') # '<font color="red"><b>')
+        els[0] = els[0][-100..-1] if els[0].size > 100
+        els[2] = els[2][0..99] if els[2].size > 100
+        return els[0] + '<font color="red"><b>' + els[1] + '</b></font>' + els[2]
+      end
+    end
+
+    nil
   end
 
   def games( name, aspect)
@@ -59,20 +82,18 @@ class SuggestAspects
     aspects = game.aspects
     return unless aspects[aspect_name].nil?
 
+    ref = "suggest_aspects:#{aspect_name}-#{timestamp}"
+    return if @pagoda.has?( 'visited', :key, ref)
+
     matches = @aspects[aspect_name]['match']
     matches = [matches] if matches.is_a?( String)
     ignores = @aspects[aspect_name]['ignore']
     ignores = [ignores] if ignores.is_a?( String)
     ignores = [] if ignores.nil?
 
-    ref, text = nil, nil
-    matches.each do |m|
-      re = Regexp.new( m, Regexp::IGNORECASE | Regexp::MULTILINE)
-      ref, text = scan( aspect_name, page, re, ignores, timestamp) unless text
-    end
-
-    if text
-      yield ref, text
+    page = remove_ignores( page, ignores)
+    if found = find_matches( page, matches)
+      yield ref, found
     end
   end
 
@@ -92,41 +113,37 @@ class SuggestAspects
     cache > 0
   end
 
+  def remove_ignores( page, ignores)
+    page     = ' ' + page + ' '
+    ignores.each do |ignore|
+      re = Regexp.new( NC + ignore.gsub( ' ', NC + '+') + NC, Regexp::IGNORECASE)
+      page = page.gsub( re, ' ')
+    end
+    page
+  end
+
   def report_errors
     @errors.uniq.each do |error|
       puts "*** #{error}"
     end
   end
 
-  def scan( aspect_name, page, regex, ignores, timestamp)
-    ignored_page = page
-    ignores.each do |ignore|
-      re = Regexp.new( ignore, Regexp::IGNORECASE)
-      ignored_page = ignored_page.gsub( re) do |match|
-        "                                        "[0...(match.size)]
-      end
-    end
-
-    scanner = StringScanner.new( ignored_page)
-    while scanner.skip_until( regex)
-      pos = scanner.pointer
-      ref = "suggest_aspects:#{aspect_name}-#{timestamp}-#{pos}"
-      unless @pagoda.has?( 'visited', :key, ref)
-        from = pos - 200  - scanner.matched_size
-        from = 0 if from < 0
-        to = from + 400
-        to = page.size - 1 if to >= page.size
-        text = h(page[from...(pos - scanner.matched_size)]) +
-               '<font color="red"><b>' +
-               h(page[(pos - scanner.matched_size)...pos]) +
-               '</b></font>' +
-               h(page[pos..to])
-        return ref, text
-      end
-    end
-
-    nil
-  end
+  # def scan( text, matches, ignores)
+  #   reduced = text.gsub( /[^A-Z0-9]/i, ' ').gsub( '  ', ' ').gsub( '  ', ' ').downcase
+  #
+  #   ignores.each do |ignore|
+  #     reduced = reduced.gsub( ' ' + ignore.downcase + ' ', ' ')
+  #   end
+  #
+  #   matches.each do |match|
+  #     re = Regexp.new( ' ' + match + ' ', Regexp::IGNORECASE | Regexp::MULTILINE)
+  #     if re =~ reduced
+  #       return match
+  #     end
+  #   end
+  #
+  #   false
+  # end
 
   def suggest( game, aspect_arg, site_arg)
     possible_aspects = []

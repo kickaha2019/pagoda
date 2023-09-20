@@ -17,6 +17,9 @@ incremental:
 - site:   Metacritic
   type:   Reference
   method: incremental
+- site:   MobyGames
+  type:   Reference
+  method: incremental
 - site:   Mystery Manor
   type:   Review
   method: find
@@ -27,6 +30,9 @@ incremental:
   type:   Review
   method: incremental
 full:
+- site:   GOG
+  type:   Store
+  method: find
 - site:   Adventure Game Hotspot
   type:   Review
   method: findReviews
@@ -39,9 +45,6 @@ full:
 - site:   GameBoomers
   type:   Walkthrough
   method: findWalkthroughs
-- site:   GOG
-  type:   Store
-  method: find
 - site:   HOTU
   type:   Reference
   method: find
@@ -64,3 +67,7 @@ rebase:
 - site:   TouchArcade
   type:   Review
   method: find
+test_incremental:
+- site:   MobyGames
+  type:   Reference
+  method: incremental

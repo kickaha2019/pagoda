@@ -20,5 +20,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 #ruby ruby/verify_links.rb database 'https://adventuregamehotspot.com/2023/01/25/the-whispering-valley/' ~/Caches/Pagoda
 
-#ruby ruby/verify_links.rb database 'https://www.hofstudios.com/games/doe' ~/Caches/Pagoda
-caffeinate -i ruby ruby/verify_links.rb database 4 ~/Caches/Pagoda 1
+ruby ruby/verify_links.rb database 'https://web.archive.org/web/20010220065413/http://www.mrbillsadventureland.com/reviews/indyjonesR/indyfateR.htm' ~/Caches/Pagoda
+#caffeinate -i ruby ruby/verify_links.rb database 4 ~/Caches/Pagoda 1

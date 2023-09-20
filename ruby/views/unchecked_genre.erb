@@ -1,0 +1,52 @@
+<%= erb :header, :locals => {:page => 'unchecked_genre'} %>
+
+<div class="search control">
+  <%=
+      url = "/unchecked_genre"
+      erb :page_control, :locals => {:view => 'unchecked_genre',
+                                     :page => 1, #page,
+                                     :url  => url,
+                                     :args => []}
+  %>&nbsp;&nbsp;
+</div>
+
+<div id="list"><table class="games list">
+  <tr><th>ID</th><th>Name</th><th>Year</th><th>In group</th><th>Reviews</th><th>Actions</th></tr>
+  <%=
+    html = []
+
+    records = unchecked_genre_records
+    current_page = 1 #page.to_i
+    total_pages  = (records.size + 99) /  100
+    current_page = 1 if total_pages < current_page
+
+    row = 0
+    records[(100*(current_page-1))...(100*current_page)].each do |rec|
+      year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
+      html << "<tr>"
+      html << "<td>#{rec.id}</td>"
+      html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
+      html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
+      reviews = 0
+      rec.links do |link|
+        reviews += 1 if link.type == 'Review'
+      end
+      html << "<td>#{(reviews > 0) ? reviews.to_s : ''}</td>"
+      html << "<td><button onclick=\"checked( #{rec.id})\">Checked</button>"
+      html << '</tr>'
+    end
+
+    html.join( "\n")
+  %>
+</table></div>
+
+<script>
+    function checked( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/set_genre_checked/" + id, false);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>

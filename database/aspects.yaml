@@ -3,35 +3,35 @@
   index:  1
   desc:   1st person perspective gameplay
   match:
-  - first\Wperson
-  - "1st\\Wperson"
-  - \WFPP\W
+  - first person
+  - "1st person"
+  - FPP
 "3rd person":
   desc:   3rd person perspective gameplay
   index: 2
   match:
-  - third\Wperson
-  - "3rd\\Wperson"
-  - \WTPP\W
+  - third person
+  - "3rd person"
+  - TPP
 Action:
   desc:   Game requires quick reactions or dexterity
   index: 3
   match:
-  - \WAction\WRPG
-  - \WAction\WAdventure
-  - button\Wmash
-  - \Warcade
+  - Action RPG
+  - Action Adventure
+  - button mash
+  - arcade
   - dexterity
   - platformer
   - platforming
   - rhythm
-  - \Waction scene
-  - \Waction sequence
+  - action scene
+  - action sequence
   - physical puzzle
-  - Quick\WTime\WEvent
-  - QT\WEvent
+  - Quick Time Event
+  - QT Event
   - QTE
-  - reflex-based
+  - reflex based
   - quicker reflexes
   - quick reflexes
   ignore:
@@ -46,6 +46,9 @@ Cards:
 Cartoon:
   desc:   Simple cartoon like visuals
   index:  42
+Comic:
+  desc:   Comic cartoon like DOTT
+  index:  49
 Dialogue:
   title:   Dialogue puzzles
   index:  40
@@ -59,6 +62,9 @@ Dialogue:
 "Drawing":
   desc:   Painting or drawing quality visuals
   index:  43
+"Edutainment":
+  desc:   Learning in the form of a game
+  index:  50
 Escape:
   title:   Escape room game
   index:  33
@@ -73,6 +79,8 @@ GOG:
   desc:   Game available on GOG
   derive: true
   index:  30
+Guiding:
+  desc:   Lemmings like
 Hi-res:
   desc:   "High resolution graphics"
   index:  45
@@ -83,6 +91,8 @@ Horror:
   index: 27
   match:
   - horror
+"Interactive Movie":
+  desc:   FMV
 Inventory:
   match:  inventory
   index:  15
@@ -92,9 +102,14 @@ iOS:
   desc:   "iOS"
   derive: true
   index:  37
+JRPG:
+  desc:   Random battles
 "LGBTQ+":
   desc:   ""
   index:  32
+Lost:
+  desc:   "Game lost in time"
+  index:  48
 Low-res:
   desc:   "Low resolution graphics"
   index:  44
@@ -105,12 +120,18 @@ Mac:
 Maze:
   desc:   Game has (the horror) mazes in it
   index: 5
-  match:  \WMaze(|s)\W
+  match:
+  - Maze
+  - Mazes
+  ignore:
+  - not a maze
 Mid-res:
   desc:   "Mid resolution graphics"
   index:  46
 Minigame:
-  match:  \Wmini(\W*)game
+  match:
+  - mini game
+  - minigame
   index:  20
 Mouse:
   desc:   Game can be controlled just with the mouse
@@ -119,6 +140,8 @@ Mouse:
 Movie:
   title:   Interactive movie
   index: 4
+Myst:
+  desc:   Like Myst
 Non-mouse:
   desc:   Not totally mouse controlled
   index: 6
@@ -135,6 +158,8 @@ Open world:
   index:  38
   match:
   - Open world
+Other:
+  desc: Unclassified
 Photo:
   desc: Photographic images used
   index:  39
@@ -148,8 +173,10 @@ Physics:
   desc:   Pixel graphics
   index:  47
 Puzzle:
-  desc:   Puzzle focussed gameplay often variations on a theme
+  desc:   Puzzles little connected to story
   index: 16
+Quest:
+  desc: Syberia or JP like
 Recent:
   desc: Game released within last year or so
   derive:  true
@@ -182,6 +209,10 @@ Slider:
   - via a slider
   - two slider
   - three slider
+  - volume slider
+  - slider in the menu
+  - brightness slider
+  - Duration slider
 Sound:
   title:  Sound puzzles
   desc:   Game contains sound based puzzles
@@ -189,11 +220,11 @@ Sound:
   - sound puzzle
   - music puzzle
   - musical puzzle
-  - \wtone puzzle
+  - tone puzzle
   - tone matching
   - musical pattern matching
-  - sound-based minigame
-  - music-based puzzle
+  - sound based minigame
+  - music based puzzle
   index:  31
 Stealth:
   desc:   Gameplay involves stealth at points
@@ -209,7 +240,7 @@ Timer:
   desc:   Game has timed sequences
   index: 9
   match:
-  - \Wtimer
+  - timer
   - Timed sequence
   - Timed puzzle
   - puzzles limited by time
@@ -231,5 +262,7 @@ Windows:
   desc:   Game available on Windows
   index:  35
   derive: true
+Wishlist:
+  desc:   Wishlist
 "Word puzzle":
   index: 29

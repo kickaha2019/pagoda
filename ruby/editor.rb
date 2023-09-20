@@ -82,16 +82,16 @@ get '/games_added' do
       :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
 end
 
+get '/games_check_inventory_aspect' do
+  erb :games_check_inventory_aspect
+end
+
 get '/games_check_person_aspects' do
   erb :games_check_person_aspects
 end
 
 get '/games_check_resolution_aspects' do
   erb :games_check_resolution_aspects
-end
-
-get '/games_to_check_aspects' do
-  erb :games_to_check_aspects
 end
 
 post '/gather/:game/:url' do
@@ -154,6 +154,10 @@ post '/set_official_checked/:game' do
   set_official_checked( params[:game].to_i)
 end
 
+post '/set_genre_checked/:game' do
+  set_genre_checked( params[:game].to_i)
+end
+
 put '/set_variable/:name/:value' do
   set_variable( params[:name], params[:value])
 end
@@ -166,10 +170,6 @@ get '/static_summary' do
                                        :store       => true,
                                        :walkthrough => true,
                                        :static      => true)
-end
-
-get '/suggest_aspects' do
-  erb :suggest_aspects, :locals => get_locals( params, :page => 1)
 end
 
 get '/summary' do
@@ -188,6 +188,10 @@ end
 
 get '/unchecked_bound_official_websites' do
   erb :unchecked_bound_official_websites, :locals => get_locals( params, :page => 1)
+end
+
+get '/unchecked_genre' do
+  erb :unchecked_genre, :locals => get_locals( params, :page => 1)
 end
 
 get '/verified' do
