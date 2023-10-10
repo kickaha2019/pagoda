@@ -23,6 +23,15 @@ class VerifyLinks
     @pagoda   = Pagoda.new( dir, cache)
   end
 
+  def complete_url( base, url)
+    return url if /^http(s|):/ =~ url
+    raise "Unable to complete #{url} for #{base}" unless /^\// =~ url
+    if m = /^([^:]*:\/\/[^\/]*)\//.match( base)
+      return m[1] + url
+    end
+    raise "Unable to complete #{url} for #{base}"
+  end
+
   def get_details( link, body, rec)
     status = true
     rec[:title] = get_title( body, link.type)
@@ -169,6 +178,23 @@ class VerifyLinks
   def verify_page( link, debug=false)
     status, comment, response = http_get_with_redirect( link.site, link.url)
     p ['verify_page1', status, comment, response] if debug
+
+    if response.is_a?( Net::HTTPMovedPermanently)
+      new_url = complete_url( link.url, response['Location'])
+      p ['verify_page2', new_url] if debug
+      title = (/Moved Permanently/ =~ link.title) ? link.orig_title : link.title
+      @pagoda.add_link( link.site, link.type, title, new_url, link.static)
+      new_link = @pagoda.link( new_url)
+      binds = @pagoda.get( 'bind', :url, link.url)
+      if binds.size > 0
+        new_link.bind( binds[0][:id])
+      end
+
+      link.delete
+      verify_page( new_link, debug)
+      return
+    end
+
     body = response.is_a?( String) ? response : response.body
 
     unless status
@@ -207,9 +233,9 @@ class VerifyLinks
     #
     if status
       #status, valid, ignore, comment, title = get_details( link, body, rec)
-      p ['verify_page2', status, rec] if debug
-      status = get_details( link, body, rec)
       p ['verify_page3', status, rec] if debug
+      status = get_details( link, body, rec)
+      p ['verify_page4', status, rec] if debug
     else
       rec[:valid] = false
       rec[:title] = link.title
