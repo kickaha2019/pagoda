@@ -596,7 +596,7 @@ class Pagoda
 
   def add_link( site, type, title, url, static='N')
     url = get_site_handler( site).coerce_url( url)
-    return if link(url) != nil
+    return false if link(url) != nil
 
     start_transaction
     insert( 'link',
@@ -608,6 +608,7 @@ class Pagoda
                              :static     => static,
                              :timestamp  => 1})
     end_transaction
+    true
   end
 
   def add_name( name, id)

@@ -29,3 +29,4 @@ grabber.command
 *.command
 scan_stats.yaml
 load_raw.csh
+pagoda.sql*

@@ -10,7 +10,8 @@ class Steam < DefaultSite
 		if m = /^(https:\/\/store\.steampowered\.com\/app\/[0-9]*)($|\/)/.match( url)
 			return m[1]
 		end
-		url
+
+		url.sub( '/agecheck/', '/')
 	end
 
 	def complete?( scanner)

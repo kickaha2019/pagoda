@@ -20,5 +20,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 #ruby ruby/verify_links.rb database 'https://adventuregamehotspot.com/2023/01/25/the-whispering-valley/' ~/Caches/Pagoda
 
-ruby ruby/verify_links.rb database 'https://www.mobygames.com/game/red-comrades-3-return-of-alaska-reloaded' ~/Caches/Pagoda
-#caffeinate -i ruby ruby/verify_links.rb database 4 ~/Caches/Pagoda 1
+#ruby ruby/verify_links.rb database 'https://store.steampowered.com/app/2075190' ~/Caches/Pagoda
+caffeinate -i ruby ruby/verify_links.rb database 20 ~/Caches/Pagoda 320

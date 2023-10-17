@@ -130,6 +130,10 @@ get '/problem_links' do
   erb :problem_links, :locals => get_locals( params, :search => '', :page => 1)
 end
 
+post '/redirect/:url' do
+  redirect_link( d(params[:url]))
+end
+
 get '/reports' do
   erb :reports
 end

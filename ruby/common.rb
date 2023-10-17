@@ -20,6 +20,15 @@ module Common
 		@driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
+	def complete_url( base, url)
+		return url if /^http(s|):/ =~ url
+		raise "Unable to complete #{url} for #{base}" unless /^\// =~ url
+		if m = /^([^:]*:\/\/[^\/]*)\//.match( base)
+			return m[1] + url
+		end
+		raise "Unable to complete #{url} for #{base}"
+	end
+
 	def h(text)
 		return '' if text.nil?
 		Rack::Utils.escape_html(text)

@@ -23,15 +23,6 @@ class VerifyLinks
     @pagoda   = Pagoda.new( dir, cache)
   end
 
-  def complete_url( base, url)
-    return url if /^http(s|):/ =~ url
-    raise "Unable to complete #{url} for #{base}" unless /^\// =~ url
-    if m = /^([^:]*:\/\/[^\/]*)\//.match( base)
-      return m[1] + url
-    end
-    raise "Unable to complete #{url} for #{base}"
-  end
-
   def get_details( link, body, rec)
     status = true
     rec[:title] = get_title( body, link.type)
@@ -98,25 +89,25 @@ class VerifyLinks
     return false, "Timeout"
   end
 
-  def http_get_with_redirect( site, url, depth = 0)
+  def http_get_with_redirect( site, url, depth = 0, debug = false)
     overriden, status, comment, response = @pagoda.get_site_handler( site).override_verify_url( url)
     if overriden
       return status, comment, response
     end
 
-    #p ['http_get_with_redirect1', url]
+    p ['http_get_with_redirect1', url] if debug
     comment = nil
     status, response = http_get_threaded( url)
 
+    # Record redirections
     if status && (depth < 4) &&
-        response.is_a?( Net::HTTPRedirection) &&
-        (/^http(s|):/ =~ response['Location'])
+        response.is_a?( Net::HTTPRedirection)
 
-      # Regard as redirected unless temporary redirect
-      comment = 'Redirected to ' + response['Location'] if response.code != '302'
-      #p ['http_get_with_redirect2', url, redirected, response.code]
+      location = complete_url( url, response['Location'])
+      comment = 'Redirected to ' + location
+      p ['http_get_with_redirect2', url, response, response.code] if debug
 
-      status, comment1, response = http_get_with_redirect( site, response['Location'], depth+1)
+      status, comment1, response = http_get_with_redirect( site, location, depth+1, debug)
       comment = comment1 if comment1
       return status, comment, response
     end
@@ -125,10 +116,14 @@ class VerifyLinks
   end
 
   def oldest( n, valid_for)
-    free, bound, dubious, ignored = [], [], [], []
+    free, bound, dubious, ignored, flagged = [], [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
+      if link.comment
+        flagged << link
+        next
+      end
       next if link.static? && link.valid? && (link.timestamp > 100)
 
       if (link.status == 'Invalid') || link.comment
@@ -143,12 +138,13 @@ class VerifyLinks
       end
     end
 
+    puts "... Flagged: #{flagged.size}"
     puts "... Bound:   #{bound.size}"
     puts "... Dubious: #{dubious.size}"
     puts "... Free:    #{free.size}"
     puts "... Ignored: #{ignored.size}"
 
-    {'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
+    {'flagged' => flagged, 'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
       v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
       File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
         io.puts 'site,title,url,timestamp,valid'
@@ -161,6 +157,7 @@ class VerifyLinks
 
     links = []
     (0...n).each do |i|
+      links << flagged[i] if i < flagged.size
       links << dubious[i] if i < dubious.size
       links << free[i]    if i < free.size
       links << bound[i]   if i < bound.size
@@ -176,24 +173,33 @@ class VerifyLinks
   end
 
   def verify_page( link, debug=false)
-    status, comment, response = http_get_with_redirect( link.site, link.url)
+    status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
     p ['verify_page1', status, comment, response] if debug
 
-    if response.is_a?( Net::HTTPMovedPermanently)
-      new_url = complete_url( link.url, response['Location'])
-      p ['verify_page2', new_url] if debug
-      title = (/Moved Permanently/ =~ link.title) ? link.orig_title : link.title
-      @pagoda.add_link( link.site, link.type, title, new_url, link.static)
-      new_link = @pagoda.link( new_url)
-      binds = @pagoda.get( 'bind', :url, link.url)
-      if binds.size > 0
-        new_link.bind( binds[0][:id])
+    # Ignore redirects if site coerces redirect URL to original URL
+    if m = /^Redirected to (.*)$/.match( comment)
+      redirect = m[1]
+      p ['verify_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
+      if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
+        comment = nil
       end
-
-      link.delete
-      verify_page( new_link, debug)
-      return
     end
+
+    # if response.is_a?( Net::HTTPMovedPermanently)
+    #   new_url = complete_url( link.url, response['Location'])
+    #   p ['verify_page2', new_url] if debug
+    #   title = (/Moved Permanently/ =~ link.title) ? link.orig_title : link.title
+    #   @pagoda.add_link( link.site, link.type, title, new_url, link.static)
+    #   new_link = @pagoda.link( new_url)
+    #   binds = @pagoda.get( 'bind', :url, link.url)
+    #   if binds.size > 0
+    #     new_link.bind( binds[0][:id])
+    #   end
+    #
+    #   link.delete
+    #   verify_page( new_link, debug)
+    #   return
+    # end
 
     body = response.is_a?( String) ? response : response.body
 

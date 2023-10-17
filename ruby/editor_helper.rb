@@ -489,6 +489,29 @@ ASPECT_ELEMENT
       end
     end
 
+    def redirect_link( link_url)
+      link_rec = $pagoda.link( link_url)
+      if link_rec
+        if m = /^Redirected to (.*)$/.match( link_rec.comment)
+          new_url = m[1]
+          title = (/Moved Permanently/ =~ link_rec.title) ? link_rec.orig_title : link_rec.title
+          p ['redirect_link1', title, new_url]
+          if $pagoda.add_link( link_rec.site, link_rec.type, title, new_url, link_rec.static)
+            p ['redirect_link2', title, new_url]
+            new_link = $pagoda.link( new_url)
+            binds = $pagoda.get( 'bind', :url, link_rec.url)
+            if binds.size > 0
+              new_link.bind( binds[0][:id])
+            end
+
+            link_rec.delete
+            return 'Redirected'
+          end
+        end
+      end
+      ''
+    end
+
     def refresh_metadata
     end
 
