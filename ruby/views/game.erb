@@ -119,7 +119,13 @@
 
       <tr><th>Website:</th><td><%= input_element( 'website', 80, @website) %></td></tr>
 
-      <tr><th>Search:</th><td><%= google_search( [@name, @developer, @publisher]) %></td></tr>
+      <tr><th>Search:</th><td>
+        <%= google_search( 'Game details', [@name, @developer, @publisher]) %>
+        <%= google_search( 'MobyGames', [@name, 'MobyGames']) %>
+        <%= google_search( 'Metacritic', [@name, 'Metacritic']) %>
+        <%= google_search( 'Steam', [@name, 'Steam']) %>
+        <%= google_search( 'Apple', [@name, 'Apple', 'App', 'Store']) %>
+      </td></tr>
 
       <tr><th>Aspects:</th><td>
         <div class="aspects">

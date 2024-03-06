@@ -2,6 +2,14 @@ require_relative '../nodes'
 require_relative 'default_site'
 
 class Metacritic < DefaultSite
+	def correlate_url( url)
+		if %r{^https://www.metacritic.com/} =~ url
+			return 'Metacritic', 'Reference', url
+		else
+			return nil, nil, nil
+		end
+	end
+
 	def find( scanner)
 		path = scanner.cache + "/metacritic.json"
 

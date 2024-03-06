@@ -31,12 +31,14 @@ class Spider
 		set_not_game_words
 	end
 
-	def add_link( title, url)
-		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
+	def add_link( title, url, site=@site, type=@type)
+		url = @pagoda.get_site_handler( site).coerce_url( url.strip)
+		@suggested_links[url] = true
+
 		if @pagoda.has?( 'link', :url, url)
 			0
 		else
-			@pagoda.add_link( @site, @type, title, url)
+			@pagoda.add_link( site, type, title, url)
 			1
 		end
 	end
@@ -83,6 +85,10 @@ class Spider
 				puts "... #{site}: #{count} #{k}"
 			end
 		end
+	end
+
+	def correlate_site( url)
+		return * @pagoda.correlate_site( url)
 	end
 
 	def debug_hook( site, name, url=nil)
@@ -214,10 +220,10 @@ class Spider
 		phrase.to_s.gsub( /[\.;:'"\/\-=\+\*\(\)\?]/, '').downcase.split( ' ')
 	end
 
-	def purge_lost_urls( re)
+	def purge_lost_urls
 		@pagoda.links do |link|
-			if re =~ link.url
-				unless @suggested_links[link.url] || link.collation
+			if (link.site == @site) && (link.type == @type)
+				unless @suggested_links[link.url]
 					puts "... Purging #{link.url}"
 					link.delete
 				end

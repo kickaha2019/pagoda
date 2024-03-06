@@ -63,7 +63,13 @@ class AdventureGamers < DefaultSite
 		end
 		return unless url
 
-		#p ['Adventure Gamers:get_game_details2', url]
+		if m = /^(http[^"]*)($|")/.match( url)
+			url = m[1]
+		else
+			return
+		end
+
+		#p ['Adventure Gamers:get_game_details2', url[0..100]]
 		page = http_get( url)
 
 		if after_developer = page.split('Developer:')[1]

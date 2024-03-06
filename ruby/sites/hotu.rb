@@ -1,6 +1,18 @@
 require_relative 'default_site'
 
 class Hotu < DefaultSite
+	def coerce_url( url)
+		if m = /^http:(.*)$/.match( url)
+			return 'https:' + m[1]
+		end
+
+		if m = /^(www.*)$/.match( url)
+			return 'https://' + m[1]
+		end
+
+		url
+	end
+
 	def find( scanner)
 		path = scanner.cache + "/hotu.json"
 

@@ -49,7 +49,7 @@ class Steam < DefaultSite
 			scanner.debug_hook( 'Steam:urls', text, url)
 		end
 
-		scanner.purge_lost_urls( /^https:\/\/store\.steampowered\.com\/app\//)
+		scanner.purge_lost_urls
 	end
 
 	def filter( pagoda, link, page, rec)
@@ -146,6 +146,10 @@ class Steam < DefaultSite
 			tags << tag[0].strip
 		end
 		tags
+	end
+
+	def ignore_redirects?
+		true
 	end
 
 	def incremental( scanner)

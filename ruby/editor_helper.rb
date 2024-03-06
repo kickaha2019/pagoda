@@ -302,9 +302,9 @@ ASPECT_ELEMENT
       locals
     end
 
-    def google_search( texts)
+    def google_search( label, texts)
       text = texts.join( ' ').downcase.gsub( /[^0-9a-z]/, ' ').gsub( ' ', '+')
-      "<a target=\"_blank\" href=\"https://www.google.com/search?q=#{text}\">Google</a>"
+      "<a target=\"_blank\" href=\"https://www.google.com/search?q=#{text}\">#{label}</a>"
     end
 
     def h(text, max_chars=1000)

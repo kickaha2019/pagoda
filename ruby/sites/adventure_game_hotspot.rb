@@ -1,6 +1,8 @@
 require_relative 'default_site'
 
 class AdventureGameHotspot < DefaultSite
+	BASE = 'https://adventuregamehotspot.com'
+
 	def filter( pagoda, link, page, rec)
 		title = rec[:title].strip
 		if m1 = /^(.*) Adventure Game Hotspot/.match( title)
@@ -13,9 +15,9 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def findReviews( scanner)
-		scanner.html_links( 'https://adventuregamehotspot.com/comments/reviews/') do |link|
-			if /com\/\d\d\d\d/ =~ link
-				scanner.add_link( '', link)
+		scanner.html_links( BASE + '/reviews/') do |link|
+			if /^\/review\/\d+\// =~ link
+				scanner.add_link( '', BASE+ link)
 			else
 				0
 			end
@@ -23,9 +25,9 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def findWalkthroughs( scanner)
-		scanner.html_links( 'https://adventuregamehotspot.com/hints/') do |link|
-			if /com\/\d\d\d\d/ =~ link
-				scanner.add_link( '', link)
+		scanner.html_links( BASE + '/walkthroughs/') do |link|
+			if /^\/walkthrough\/\d+\// =~ link
+				scanner.add_link( '', BASE+ link)
 			else
 				0
 			end

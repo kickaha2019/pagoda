@@ -7,6 +7,14 @@ class GooglePlay < DefaultSite
 		'google_play'
 	end
 
+	def correlate_url( url)
+		if %r{^https://play\.google\.com/store/apps/} =~ url
+			return name, 'Store', url
+		else
+			return nil, nil, nil
+		end
+	end
+
 	def find( scanner)
 		dir  = scanner.cache + '/' + cache_directory
 		found = {}
@@ -20,7 +28,7 @@ class GooglePlay < DefaultSite
 			end
 		end
 
-		scanner.purge_lost_urls( /^https:\/\/play\.google\.com\//)
+		scanner.purge_lost_urls
 	end
 
 	def filter( pagoda, link, page, rec)

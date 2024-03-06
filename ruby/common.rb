@@ -54,7 +54,7 @@ module Common
 	def http_get( url, delay = 10, headers = {})
 		response = http_get_response( url, delay, headers)
 		begin
-	  	response.value
+			response.value
 		rescue
 			puts "*** Problem URL: #{url}"
 			raise

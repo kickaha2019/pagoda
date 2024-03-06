@@ -81,6 +81,7 @@ GOG:
   index:  30
 Guiding:
   desc:   Lemmings like
+  index:  51
 Hi-res:
   desc:   "High resolution graphics"
   index:  45
@@ -92,6 +93,7 @@ Horror:
   match:
   - horror
 "Interactive Movie":
+  index: 52
   desc:   FMV
 Inventory:
   match:  inventory
@@ -104,6 +106,7 @@ iOS:
   index:  37
 JRPG:
   desc:   Random battles
+  index: 53
 "LGBTQ+":
   desc:   ""
   index:  32
@@ -141,6 +144,7 @@ Movie:
   title:   Interactive movie
   index: 4
 Myst:
+  index:  54
   desc:   Like Myst
 Non-mouse:
   desc:   Not totally mouse controlled

@@ -174,6 +174,7 @@ class VerifyLinks
 
   def verify_page( link, debug=false)
     status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
+    ignore = false
     p ['verify_page1', status, comment, response] if debug
 
     # Ignore redirects if site coerces redirect URL to original URL
@@ -182,24 +183,11 @@ class VerifyLinks
       p ['verify_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
       if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
         comment = nil
+      elsif @pagoda.get_site_handler( link.site).ignore_redirects?
+        comment = nil
+        ignore  = true
       end
     end
-
-    # if response.is_a?( Net::HTTPMovedPermanently)
-    #   new_url = complete_url( link.url, response['Location'])
-    #   p ['verify_page2', new_url] if debug
-    #   title = (/Moved Permanently/ =~ link.title) ? link.orig_title : link.title
-    #   @pagoda.add_link( link.site, link.type, title, new_url, link.static)
-    #   new_link = @pagoda.link( new_url)
-    #   binds = @pagoda.get( 'bind', :url, link.url)
-    #   if binds.size > 0
-    #     new_link.bind( binds[0][:id])
-    #   end
-    #
-    #   link.delete
-    #   verify_page( new_link, debug)
-    #   return
-    # end
 
     body = response.is_a?( String) ? response : response.body
 
@@ -224,13 +212,14 @@ class VerifyLinks
                   :undef             => :replace,
                   :universal_newline => true)
 
-    rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:false}
+    rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:ignore}
 
     # Get year if possible for link
     if status
       begin
         @pagoda.get_site_handler( link.site).get_game_year( @pagoda, link, body, rec)
       rescue Exception => bang
+        raise
         status = false
         rec[:comment] = bang.message
       end
@@ -264,12 +253,11 @@ class VerifyLinks
     File.open( new_path, 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
 
-    # Ignore link if so flagged unless bound to a game
+    # Ignore link if so flagged but comment if bound to a game
     if rec[:ignore]
+      link.bind( -1)
       if link.collation
         rec[:comment] = "Was bound to #{link.collation.name}"
-      else
-        link.bind( -1)
       end
     end
 

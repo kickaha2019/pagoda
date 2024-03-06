@@ -48,6 +48,10 @@ class DefaultSite
     end
   end
 
+  def ignore_redirects?
+    false
+  end
+
   def link_title( * titles)
     titles[0]
   end
