@@ -673,6 +673,7 @@ ASPECT_ELEMENT
         game_rec.update( params)
       else
         $pagoda.create_game( params)
+        set_selected_game( params[:id])
       end
     end
 

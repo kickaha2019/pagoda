@@ -39,6 +39,16 @@ class Pagoda
   end
 
   class PagodaGame < PagodaRecord
+    def initialize( owner, rec)
+      super
+
+      owner.add_name( name, id)
+
+      aliases.each do |arec|
+        owner.add_name( arec.name, id)
+      end
+    end
+
     def aliases
       @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
     end
@@ -375,15 +385,6 @@ class Pagoda
     # Populate names repository
     @database.select( 'game') do |game_rec|
       g = PagodaGame.new( self, game_rec)
-      @names.add( g.name, g.id)
-
-      g.aliases.each do |arec|
-        @names.add( arec.name, g.id)
-      end
-      #
-      # g.links do |l|
-      #   @names.add( l.title, g.id)
-      # end
     end
 
     # Poison names repository with titles of ignored links

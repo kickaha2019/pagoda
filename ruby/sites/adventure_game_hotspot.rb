@@ -17,7 +17,7 @@ class AdventureGameHotspot < DefaultSite
 	def findReviews( scanner)
 		scanner.html_links( BASE + '/reviews/') do |link|
 			if /^\/review\/\d+\// =~ link
-				scanner.add_link( '', BASE+ link)
+				scanner.add_link( '', BASE+ link) unless /#/ =~ link
 			else
 				0
 			end
@@ -27,7 +27,7 @@ class AdventureGameHotspot < DefaultSite
 	def findWalkthroughs( scanner)
 		scanner.html_links( BASE + '/walkthroughs/') do |link|
 			if /^\/walkthrough\/\d+\// =~ link
-				scanner.add_link( '', BASE+ link)
+				scanner.add_link( '', BASE+ link) unless /#/ =~ link
 			else
 				0
 			end

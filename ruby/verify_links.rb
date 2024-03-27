@@ -120,11 +120,19 @@ class VerifyLinks
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
+      next if link.static? && link.valid? && (link.timestamp > 100)
+
       if link.comment
         flagged << link
         next
       end
-      next if link.static? && link.valid? && (link.timestamp > 100)
+
+      if link.timestamp > 100
+        unless File.exist? @pagoda.cache_path( link.timestamp)
+          dubious << link
+          next
+        end
+      end
 
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
