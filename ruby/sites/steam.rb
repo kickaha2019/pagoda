@@ -19,7 +19,7 @@ class Steam < DefaultSite
 	end
 
 	def correlate_url( url)  # https://store.steampowered.com/app/1092660/Blair_Witch/
-		if m = /^(https:\/\/store\.steampowered\.com\/app\/[0-9]*)($|\/)/.match( url)
+		if m = /^(https:\/\/store\.steampowered\.com\/(?:app|bundle)\/[0-9]*)($|\/)/.match( url)
 			return "Steam", "Store", m[1]
 		end
 		return nil, nil, nil

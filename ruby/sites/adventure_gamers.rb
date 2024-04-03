@@ -70,23 +70,27 @@ class AdventureGamers < DefaultSite
 		end
 
 		#p ['Adventure Gamers:get_game_details2', url[0..100]]
-		page = http_get( url)
+		begin
+			page = http_get( url)
 
-		if after_developer = page.split('Developer:')[1]
-			if span = after_developer.split( '<span>')[1]
-				game[:developer] = span.split('<')[0]
-			end
-			if after_release = after_developer.split( 'Releases:')[1]
-				spans = after_release.split( '</span>')
-				if m2 = /(\d\d\d\d)$/m.match( spans[0])
-					game[:year] = m2[1]
+			if after_developer = page.split('Developer:')[1]
+				if span = after_developer.split( '<span>')[1]
+					game[:developer] = span.split('<')[0]
 				end
-				if spans[1]
-					if m3 = /by ([^<]*)$/.match( spans[1])
-						game[:publisher] = m3[1].strip
+				if after_release = after_developer.split( 'Releases:')[1]
+					spans = after_release.split( '</span>')
+					if m2 = /(\d\d\d\d)$/m.match( spans[0])
+						game[:year] = m2[1]
+					end
+					if spans[1]
+						if m3 = /by ([^<]*)$/.match( spans[1])
+							game[:publisher] = m3[1].strip
+						end
 					end
 				end
 			end
+		rescue Exception => bang
+			puts "*** #{url}: #{bang.message}"
 		end
 	end
 

@@ -39,6 +39,9 @@ full:
 - site:   Apple
   type:   Store
   method: full
+- site:   Big Fish Games
+  type:   Store
+  method: full
 - site:   GameBoomers
   type:   Review
   method: findReviews
