@@ -18,7 +18,7 @@ class GoodOldGames < DefaultSite
 	def find( scanner)
 		path = scanner.cache + "/gog.json"
 
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 6 * 24 * 60 * 60))
 			page, seen, old_seen = 0, {}, -1
 
 			while (seen.size > old_seen) && (page < 1000)
