@@ -182,6 +182,7 @@ Puzzle:
   index: 16
 Quest:
   desc: Syberia or JP like
+  index: 56
 Recent:
   desc: Game released within last year or so
   derive:  true

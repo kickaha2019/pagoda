@@ -726,6 +726,20 @@ class Pagoda
     @site_handlers.each_value {|handler| handler.terminate( self)}
   end
 
+  def update_link( url, site, type, title, new_url, static='N')
+    @database.start_transaction
+    @database.delete( 'link', :url, url)
+    insert( 'link',
+            {:site       => site,
+             :type       => type,
+             :title      => title,
+             :orig_title => title,
+             :url        => new_url,
+             :static     => static,
+             :timestamp  => 1})
+    @database.end_transaction
+  end
+
   def visited_key( key)
     start_transaction
     @database.delete( 'visited', :key, key)

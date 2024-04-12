@@ -129,6 +129,14 @@ class Spider
 		add_suggested
 	end
 
+	def get_links
+		@pagoda.links do |link|
+			(link.site == @site) && (link.type == @type)
+		end.each do |link|
+			yield link.title, link.url
+		end
+	end
+
 	def get_scan_stats( site, section)
 		return {} unless @scan_stats[site] && @scan_stats[site][section]
 		@scan_stats[site][section]
@@ -340,6 +348,10 @@ class Spider
 
 	def test_incremental( site, type)
 		incremental( site, type, 'test_incremental')
+	end
+
+	def update_link( url, site, type, title, new_url)
+		@pagoda.update_link( url, site, type, title, new_url)
 	end
 
 	def verified_links
