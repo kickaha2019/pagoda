@@ -28,31 +28,33 @@ class MobyGames < DefaultSite
 	end
 
 	def get_game_details( url, page, game)
-		publisher, developer, release = false, false, false
-		page.split("<div").each do |line|
-			if />Published\s+by</ =~ line
-				#p ['get_game_details1', line]
-				publisher = true
-			elsif />Developed\s+by</ =~ line
-				#p ['get_game_details2', line]
-				developer = true
-			elsif />Released</ =~ line
-				#p ['get_game_details3', line]
-				release = true
-			elsif m = />([^<]*)<\/a>/.match( line)
-				text = m[1].gsub( '&nbsp;', ' ')
-				#p ['get_game_details4', text]
-				if publisher
-					game[:publisher] = text
-				elsif developer
-					game[:developer] = text
-				elsif release
-					if m2 = /(\d\d\d\d)$/m.match( text)
-						game[:year] = m2[1]
-					end
-				end
-				publisher, developer, release = false, false, false
+		publisher, developer = false, false
+
+		page.split( "\n").each do |line|
+			if m = /"release_date": "\w{3} \d{2}, (\d{4})"}/.match( line)
+				game[:year] = m[1]
 			end
+
+			publisher = true if /<dt>Publishers<\/dt>/ =~ line
+			developer = true if /<dt>Developers<\/dt>/ =~ line
+
+			if m = />([^<]*)<\/a>/.match( line)
+				if publisher
+					append_details( game, :publisher, m[1])
+				elsif developer
+					append_details( game, :developer, m[1])
+				end
+
+				publisher, developer = false, false
+			end
+		end
+	end
+
+	def append_details( game, key, text)
+		if game[key]
+			game[key] = game[key] + ', ' + text
+		else
+			game[key] = text
 		end
 	end
 

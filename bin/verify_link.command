@@ -20,5 +20,5 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 #ruby ruby/verify_links.rb database 'https://adventuregamehotspot.com/2023/01/25/the-whispering-valley/' ~/Caches/Pagoda
 
-#ruby ruby/verify_links.rb database 'https://www.mobygames.com/game/20000-leagues-under-the-sea_' ~/Caches/Pagoda
-caffeinate -i ruby ruby/verify_links.rb database 1 ~/Caches/Pagoda 320
+ruby ruby/verify_links.rb database 'https://www.mobygames.com/game/last-express-gold-edition' ~/Caches/Pagoda
+#caffeinate -i ruby ruby/verify_links.rb database 1 ~/Caches/Pagoda 320

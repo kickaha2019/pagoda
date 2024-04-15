@@ -7,6 +7,7 @@ class Grabbed < DefaultSite
 
 		left = IO.readlines( path).select do |line|
 			url = line.strip
+			next if url == ''
 
 			title = 'Unknown'
 			begin
