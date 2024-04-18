@@ -214,6 +214,19 @@ class Pagoda
       self
     end
 
+    def update_details( params)
+      @owner.start_transaction
+      @owner.delete( 'game',    :id, id)
+      rec = {}
+      @record.each_pair {|k,v| rec[k] = v}
+      [:year, :developer, :publisher].each do |field|
+        rec[field] = params[field] ? params[field].to_s.strip : rec[field]
+      end
+      @record = @owner.insert( 'game', rec)
+      @owner.end_transaction
+      self
+    end
+
     def web
       'N'
     end
@@ -586,7 +599,13 @@ class Pagoda
   end
 
   def suggest( name)
-    @names.suggest( name, 20) {|game_id, freq| yield game(game_id), freq}
+    @names.suggest( name, 20) do |game_id, freq|
+      if g = game(game_id)
+        yield g, freq
+      else
+        puts "*** Lost #{game_id} for #{name} suggest"
+      end
+    end
   end
 
   def suggest_analysis( name)

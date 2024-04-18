@@ -16,14 +16,11 @@ module Sinatra
       end
 
       #p ['add_game_from_link', link_url]
-      g = {:name => link_rec.orig_title, :id => $pagoda.next_value( 'game', :id)}
+      g = {:name => link_rec.orig_title,
+           :id => $pagoda.next_value( 'game', :id)}
+      get_link_game_details( link_rec, g)
+
       begin
-        if link_rec.timestamp > 1000
-          page = get_cache( link_rec.timestamp)
-        else
-          page = http_get( link_url)
-        end
-        $pagoda.get_site_handler( link_rec.site).get_game_details( link_url, page, g)
         $pagoda.create_game( g)
         link_rec.bind( g[:id])
         "/game/#{g[:id]}"
@@ -95,6 +92,16 @@ ASPECT_ELEMENT
       page = get_cache( link_rec.timestamp)
       site = $pagoda.get_site_handler( link_rec.site)
       site.notify_bind( $pagoda, link_rec, page, bind_game)
+
+      game_rec = $pagoda.game( bind_game)
+      unless game_rec.year && game_rec.developer && game_rec.publisher
+        details = {}
+        get_link_game_details( link_rec, details)
+        details[:year] = nil if game_rec.year
+        details[:developer] = nil if game_rec.developer
+        details[:publisher] = nil if game_rec.publisher
+        game_rec.update_details( details)
+      end
 
       'Bound'
     end
@@ -288,6 +295,19 @@ ASPECT_ELEMENT
       path = $pagoda.cache_path( timestamp)
       return '' unless File.exist?( path)
       IO.read( path)
+    end
+
+    def get_link_game_details( link_rec, game_details)
+      begin
+        if link_rec.timestamp > 1000
+          page = get_cache( link_rec.timestamp)
+        else
+          page = http_get( link_rec.url)
+        end
+        $pagoda.get_site_handler( link_rec.site).get_game_details( link_rec.url, page, game_details)
+      rescue Exception => bang
+        puts( bang.message + "\n" + bang.backtrace.join( "\n"))
+      end
     end
 
     def get_locals( params, defs)
