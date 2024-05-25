@@ -31,7 +31,7 @@ class MobyGames < DefaultSite
 		publisher, developer = false, false
 
 		page.split( "\n").each do |line|
-			if m = /"release_date": "\w{3} \d{2}, (\d{4})"}/.match( line)
+			if m = /"release_date": "\w{3} \d{1,2}, (\d{4})"}/.match( line)
 				game[:year] = m[1]
 			end
 

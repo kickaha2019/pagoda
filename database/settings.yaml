@@ -36,9 +36,6 @@ full:
 - site:   Adventure Game Hotspot
   type:   Review
   method: findReviews
-- site:   Apple
-  type:   Store
-  method: full
 - site:   Big Fish Games
   type:   Store
   method: full

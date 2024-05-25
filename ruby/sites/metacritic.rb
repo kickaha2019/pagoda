@@ -20,6 +20,42 @@ class Metacritic < DefaultSite
 		end
 	end
 
+	def get_game_details( url, page, game)
+		nodes = Nodes.parse( page)
+
+		nodes.css( 'span.u-block') do |span|
+			if span.text == 'Initial Release Date:'
+				[]
+			else
+				nil
+			end
+		end.parent( 1).css( 'span.g-color-gray70') do |span1|
+			if m = /(\d\d\d\d)$/.match( span1.text)
+				game[:year] = m[1].to_i
+			end
+		end
+
+		nodes.css( 'span.u-block') do |span|
+			if span.text == 'Developer:'
+				[]
+			else
+				nil
+			end
+		end.parent( 1).css( 'li.u-inline-block') do |li|
+			game[:developer] = li.text
+		end
+
+		nodes.css( 'span.u-block') do |span|
+			if span.text == 'Publisher:'
+				[]
+			else
+				nil
+			end
+		end.parent( 1).css( 'span.g-color-gray70') do |span1|
+			game[:publisher] = span1.text
+		end
+	end
+
 	def get_game_year( pagoda, link, page, rec)
 		if g = link.collation
 			notify_bind( pagoda, link, page, g.id)
