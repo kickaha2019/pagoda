@@ -2,12 +2,14 @@
 "1st person":
   index:  1
   desc:   1st person perspective gameplay
+  type:   perspective
   match:
   - first person
   - "1st person"
   - FPP
 "3rd person":
   desc:   3rd person perspective gameplay
+  type:   perspective
   index: 2
   match:
   - third person
@@ -48,6 +50,7 @@ Cartoon:
   index:  42
 Comic:
   desc:   Comic cartoon like DOTT
+  type:   genre
   index:  49
 Dialogue:
   title:   Dialogue puzzles
@@ -64,9 +67,11 @@ Dialogue:
   index:  43
 "Edutainment":
   desc:   Learning in the form of a game
+  type:   genre
   index:  50
 Escape:
   title:   Escape room game
+  type:   genre
   index:  33
   match:
   - Escape room
@@ -81,31 +86,37 @@ GOG:
   index:  30
 Guiding:
   desc:   Lemmings like
+  type:   genre
   index:  51
 Hi-res:
   desc:   "High resolution graphics"
   index:  45
 HOG:
   desc:   Game has hidden object scenes
+  type:   genre
   index:  12
 Horror:
   index: 27
+  type:   genre
   match:
   - horror
 "Interactive Movie":
   index: 52
+  type:   genre
   desc:   FMV
 Inventory:
   match:  inventory
   index:  15
 Investigation:
   index:  13
+  type:   genre
 iOS:
   desc:   "iOS"
   derive: true
   index:  37
 JRPG:
   desc:   Random battles
+  type:   genre
   index: 53
 "LGBTQ+":
   desc:   ""
@@ -145,6 +156,7 @@ Movie:
   index: 4
 Myst:
   index:  54
+  type:   genre
   desc:   Like Myst
 Non-mouse:
   desc:   Not totally mouse controlled
@@ -179,9 +191,11 @@ Physics:
   index:  47
 Puzzle:
   desc:   Puzzles little connected to story
+  type:   genre
   index: 16
 Quest:
   desc: Syberia or JP like
+  type:   genre
   index: 56
 Recent:
   desc: Game released within last year or so
@@ -192,12 +206,14 @@ Retro:
   index: 28
 Roguelike:
   desc:   Dungeon crawling or roguelike
+  type:   genre
   index: 17
   match:
   - Roguelike
   - Dungeon crawl
 RPG:
   desc:   Role playing game where your character levels up as you play
+  type:   genre
   index: 19
 RPGMaker:
   title:   RPGMaker style games
@@ -255,6 +271,7 @@ Timer:
   - comic timing
 "Visual novel":
   index: 25
+  type:   genre
   match:
   - Visual novel
 VR:
@@ -273,3 +290,5 @@ Wishlist:
   index: 57
 "Word puzzle":
   index: 29
+'Wild West':
+  type:   setting

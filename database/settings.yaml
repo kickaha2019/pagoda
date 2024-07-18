@@ -11,9 +11,6 @@ incremental:
 - site:   Adventure Gamers
   type:   Review
   method: find
-- site:   Google Play
-  type:   Store
-  method: search
 - site:   Metacritic
   type:   Reference
   method: incremental
@@ -65,3 +62,6 @@ test_incremental:
 - site:   Grabbed
   type:   Reference
   method: incremental
+- site:   Google Play
+  type:   Store
+  method: search

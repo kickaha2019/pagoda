@@ -103,9 +103,6 @@ class GenerateSQL
   end
 
   def insert_value( type, value)
-    # if /Birthday Adventures/ =~ value.to_s
-    #   puts 'DEBUG100'
-    # end
     return value.to_i if /^int/ =~ type
     els = " #{value} ".split( "'")
     edited = els.join( "\\'")[1..-2]

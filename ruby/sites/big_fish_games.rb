@@ -1,13 +1,17 @@
 require_relative 'default_site'
 
 class BigFishGames < DefaultSite
+	def deleted_title( title)
+		title == 'Store'
+	end
+
 	def filter( pagoda, link, page, rec)
 		if m = /^(.*) &gt;/.match( rec[:title].strip)
-			rec[:title] = m[1].gsub( '&#39;', "'")
+			rec[:title] = reduce_title( m[1])
 			true
 		else
 			rec[:valid]   = false
-			rec[:comment] = 'Unexpected title'
+			rec[:comment] = 'Unexpected title: ' + rec[:title].strip
 			false
 		end
 	end
@@ -48,5 +52,12 @@ class BigFishGames < DefaultSite
 
 	def name
 		'Big Fish Games'
+	end
+
+	def reduce_title( title)
+		if m = /^(.*) &gt;/.match( title)
+			title = m[1]
+		end
+		title.gsub( '&#39;', "'")
 	end
 end

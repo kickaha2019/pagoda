@@ -328,7 +328,7 @@ class Pagoda
 
     def suggest
       sh = @owner.get_site_handler( site)
-      @owner.suggest( sh.link_title( title, orig_title)) {|game, freq| yield game, freq}
+      @owner.suggest( sh.reduce_title( sh.link_title( title, orig_title))) {|game, freq| yield game, freq}
     end
 
     def suggest_analysis

@@ -16,7 +16,8 @@ module Sinatra
       end
 
       #p ['add_game_from_link', link_url]
-      g = {:name => link_rec.orig_title,
+      sh = $pagoda.get_site_handler( link_rec.site)
+      g = {:name => sh.reduce_title( link_rec.orig_title),
            :id => $pagoda.next_value( 'game', :id)}
       get_link_game_details( link_rec, g)
 

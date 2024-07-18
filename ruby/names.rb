@@ -170,10 +170,6 @@ class Names
   end
 
   def reduce( name)
-    # if /Girl Who/ =~ name.to_s
-    #   puts "DEBUG100"
-    # end
-
     cached = @cache[name]
     return cached if cached
 
@@ -202,6 +198,7 @@ class Names
   end
 
   def remove( name, id)
+    name = name.to_s.downcase
     id = id.to_i
 
     string_combos( name) do |combo, weight|

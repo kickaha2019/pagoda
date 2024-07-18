@@ -41,10 +41,16 @@ class VerifyLinks
       return false
     end
 
+    # Title indicates link deleted
+    if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
+      return false
+    end
+
     # Apply site specific filter if link not bound
     unless link.bound?
       @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
     end
+    true
   end
 
   def get_title( page, defval)
@@ -233,11 +239,17 @@ class VerifyLinks
       end
     end
 
-    #
+    # Get details check for link apparently deleted
     if status
-      #status, valid, ignore, comment, title = get_details( link, body, rec)
       p ['verify_page3', status, rec] if debug
       status = get_details( link, body, rec)
+      unless status
+        if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
+          p ['verify_page5', link.url] if debug
+          link.delete
+          return
+        end
+      end
       p ['verify_page4', status, rec] if debug
     else
       rec[:valid] = false

@@ -18,6 +18,10 @@ class DefaultSite
     end
   end
 
+  def deleted_title( title)
+    false
+  end
+
   def elide_nav_blocks(page)
     page.gsub( /<nav.*?<\/nav>/mi, '')
   end
@@ -65,6 +69,10 @@ class DefaultSite
 
   def override_verify_url( url)
     return false, false, '', ''
+  end
+
+  def reduce_title( title)
+    title
   end
 
   def tag_aspects( pagoda, page)
