@@ -186,4 +186,8 @@ class GoodOldGames < DefaultSite
       puts "... #{@info_changed} tags added to gog.yaml"
     end
   end
+
+	def year_tolerance
+		1
+	end
 end

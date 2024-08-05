@@ -46,6 +46,14 @@ class AdventureGameHotspot < DefaultSite
 		elide_nav_blocks( elide_script_blocks page)
 	end
 
+	def get_link_year( page)
+		if m = /"datePublished":"(\d\d\d\d)-\d\d-\d\d"/.match( page)
+			m[1]
+		else
+			nil
+		end
+	end
+
 	def name
 		'Adventure Game Hotspot'
 	end

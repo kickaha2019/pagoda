@@ -155,6 +155,23 @@ ASPECT_ELEMENT
       'Deleted'
     end
 
+    def duplicate_game( id)
+      new_id = $pagoda.next_value( 'game', :id)
+      $pagoda.start_transaction
+      game_rec = $pagoda.get( 'game', :id, id)[0].clone
+      game_rec[:id] = new_id
+      game_rec[:name] += " DUPLICATE #{new_id}"
+      game_rec[:year] = nil
+      $pagoda.insert( 'game', game_rec)
+      $pagoda.get( 'aspect', :id, id).each do |aspect|
+        aspect_rec = aspect.dup
+        aspect_rec[:id] = new_id
+        $pagoda.insert( 'aspect', aspect_rec)
+      end
+      $pagoda.end_transaction
+      new_id
+    end
+
     def e( text)
       CGI.escape( text)
     end

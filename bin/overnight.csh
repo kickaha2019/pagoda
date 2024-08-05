@@ -27,7 +27,7 @@ rsync -rvt --delete database ~/temp/Pagoda
 if ($status != 0) exit 1
 
 # Compress the database for speed of opening editor
-ruby -Iruby ruby/compress_database.rb database
+ruby -Iruby ruby/compress_database.rb database ~/Caches/Pagoda
 if ($status != 0) exit 1
 
 # -----------------------------------------------------------------

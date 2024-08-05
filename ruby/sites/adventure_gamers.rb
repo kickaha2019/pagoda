@@ -97,4 +97,8 @@ class AdventureGamers < DefaultSite
   def name
     'Adventure Gamers'
   end
+
+	def year_tolerance
+		1
+	end
 end

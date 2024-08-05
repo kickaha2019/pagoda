@@ -1,4 +1,4 @@
-require_relative 'pagoda'
+require_relative '../pagoda'
 
 class DeterminePhraseFrequencies
   def initialize( dir)

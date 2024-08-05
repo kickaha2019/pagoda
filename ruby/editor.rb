@@ -41,6 +41,7 @@ post '/bind/:url/:game' do
 end
 
 get '/cache/:timestamp' do
+  content_type 'text/plain'
   get_cache( params[:timestamp].to_i)
 end
 
@@ -57,6 +58,11 @@ end
 post '/delete_game' do
   delete_game( params[:id].to_i)
   redirect '/new_game'
+end
+
+post '/duplicate_game' do
+  new_id = duplicate_game( params[:id].to_i)
+  redirect "/game/#{new_id}"
 end
 
 post '/forget/:url' do

@@ -52,6 +52,10 @@ class DefaultSite
     end
   end
 
+  def get_link_year( page)
+    nil
+  end
+
   def ignore_redirects?
     false
   end
@@ -79,5 +83,9 @@ class DefaultSite
   end
 
   def terminate( pagoda)
+  end
+
+  def year_tolerance
+    0
   end
 end

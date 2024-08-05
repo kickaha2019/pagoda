@@ -21,6 +21,10 @@ class Pagoda
         @record[m]
       end
     end
+
+    def record
+      @record
+    end
   end
 
   class PagodaAlias < PagodaRecord
@@ -283,6 +287,15 @@ class Pagoda
       orig_title
     end
 
+    def link_date
+      begin
+        sh = @owner.get_site_handler(site)
+        sh.get_link_year( IO.read( @owner.cache_path( timestamp)))
+      rescue StandardError => e
+        puts e.to_s
+      end
+    end
+
     def name
       title
     end
@@ -378,6 +391,7 @@ class Pagoda
   def initialize( dir, cache=nil)
     @dir       = dir
     @database  = Database.new( dir)
+    log 'Loaded database'
     @names     = Names.new
     @possibles = nil
     @cache     = cache
@@ -399,17 +413,24 @@ class Pagoda
     @database.select( 'game') do |game_rec|
       g = PagodaGame.new( self, game_rec)
     end
+    log 'Populate names repository'
 
     # Poison names repository with titles of ignored links
-    links do |link|
-      if link.status == 'Ignored'
-        @names.poison( link.orig_title)
-      end
-    end
+    # @database.get( 'bind', :id, -1) do |bind_rec|
+    #   @database.get( 'link', :url, bind_rec[:url]) do |link_rec|
+    #     @names.poison link_rec[:orig_title]
+    #   end
+    # end
+    # log 'Poison names repository'
 
     @aspect_info_timestamp = 0
     @cached_yaml = {}
     load_site_handlers
+    log 'Pagoda opened'
+  end
+
+  def log( msg)
+    puts "#{Time.now.strftime('%H:%S.%L')} - #{msg}"
   end
 
   def aliases
@@ -671,6 +692,24 @@ class Pagoda
     end
     end_transaction
     puts "*** Deleted #{visited_lost.size} old visited records" if visited_lost.size > 0
+  end
+
+  def clean_cache
+    deleted = 0
+    Dir.entries( @cache + '/verified').each do |section|
+      next if /^[._]/ =~ section
+      Dir.entries( @cache + '/verified/' + section).each do |f|
+        /^(\d+)\.html$/.match( f) do |m|
+          unless @database.has?( 'link', :timestamp, m[1].to_i) ||
+                 @database.has?( 'old_links', :timestamp, m[1].to_i)
+            path = @cache + '/verified/' + section + '/' + f
+            File.delete path
+            deleted += 1
+          end
+        end
+      end
+    end
+    puts "*** Deleted #{deleted} cached files" if deleted > 0
   end
 
   def count( table_name)

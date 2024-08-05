@@ -30,11 +30,11 @@ class MobyGames < DefaultSite
 	def get_game_details( url, page, game)
 		publisher, developer = false, false
 
-		page.split( "\n").each do |line|
-			if m = /"release_date": "\w{3} \d{1,2}, (\d{4})"}/.match( line)
-				game[:year] = m[1]
-			end
+		if year = get_link_year( page)
+			game[:year] = year
+		end
 
+		page.split( "\n").each do |line|
 			publisher = true if /<dt>Publishers<\/dt>/ =~ line
 			developer = true if /<dt>Developers<\/dt>/ =~ line
 
@@ -47,6 +47,14 @@ class MobyGames < DefaultSite
 
 				publisher, developer = false, false
 			end
+		end
+	end
+
+	def get_link_year( page)
+		if m = /<title>[^<]*\((\d\d\d\d)\)[^<]*<\/title>/i.match( page)
+			m[1]
+		else
+			nil
 		end
 	end
 

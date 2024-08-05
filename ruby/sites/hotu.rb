@@ -70,6 +70,21 @@ class Hotu < DefaultSite
 		''
 	end
 
+	def get_game_details( url, page, game)
+		publisher, developer, year = false, false, false
+		page.split("\n").each do |line|
+			if m = />([a-z0-9 ]*)<\/a>/i.match( line)
+				game[:publisher] = m[1] if publisher
+				game[:developer] = m[1] if developer
+				game[:year]      = m[1].to_i if year
+			end
+			publisher, developer, year = false, false, false
+			publisher = true if />Publisher:</.match( line )
+			developer = true if />Developer:</.match( line )
+			year = true if />Year:</.match( line )
+		end
+	end
+
 	def link_title( * titles)
 		('Home of the Underdogs' == titles[0]) ? titles[1] : titles[0]
 	end
@@ -77,4 +92,8 @@ class Hotu < DefaultSite
 	def name
 		'HOTU'
   end
+
+	def year_tolerance
+		3
+	end
 end

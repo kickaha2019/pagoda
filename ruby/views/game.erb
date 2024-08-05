@@ -190,9 +190,14 @@
         <td>
           <button formmethod="post" type="submit" onclick="return check_names();"><%= @create_label %></button>
         </td>
-        <td>
-          <%= "<button formaction=\"#{@delete_action}\" formmethod=\"#{@delete_method}\" type=\"submit\" onclick=\"return confirm_delete('#{@delete_label}');\">#{@delete_label}</button>" %>
-        </td>
+        <% if @game %>
+          <td>
+            <button formaction="/delete_game" formmethod="post" type="submit" onclick="return confirm_delete('Delete');">Delete</button>
+          </td>
+          <td>
+            <button formaction="/duplicate_game" formmethod="post" type="submit">Duplicate</button>
+          </td>
+        <% end %>
       </tr>
     </table>
 

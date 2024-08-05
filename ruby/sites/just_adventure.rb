@@ -11,7 +11,19 @@ class JustAdventure < DefaultSite
 		end
 	end
 
+	def get_link_year( page)
+		if m = /dateCreated">[A-Za-z0-9 ]*, (\d\d\d\d)<\/time>/.match( page)
+			m[1]
+		else
+			nil
+		end
+	end
+
 	def name
 		'Just Adventure'
+	end
+
+	def year_tolerance
+		100
 	end
 end

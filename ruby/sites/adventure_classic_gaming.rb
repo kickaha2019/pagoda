@@ -11,7 +11,19 @@ class AdventureClassicGaming < DefaultSite
 		end
 	end
 
+	def get_link_year( page)
+		if m = /First posted on \d+ \w+ (\d\d\d\d)/.match( page)
+			m[1]
+		else
+			nil
+		end
+	end
+
 	def name
 		'Adventure Classic Gaming'
+	end
+
+	def year_tolerance
+		50
 	end
 end

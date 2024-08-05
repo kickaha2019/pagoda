@@ -31,6 +31,14 @@ class GameBoomers < DefaultSite
 		page
 	end
 
+	def get_link_year( page)
+		if m = /design copyright  (\d\d\d\d)/.match( page)
+			m[1]
+		else
+			nil
+		end
+	end
+
 	def name
 		'GameBoomers'
 	end

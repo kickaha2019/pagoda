@@ -263,6 +263,12 @@ class VerifyLinks
       old_page = IO.read( old_path)
     end
 
+    # Save old link to old_links table
+    @pagoda.start_transaction
+    @pagoda.delete('old_links',:url, link.url)
+    @pagoda.insert('old_links',link.record)
+    @pagoda.end_transaction
+
     new_path = @pagoda.cache_path( rec[:timestamp])
     while File.exist?( new_path)
       sleep 1
@@ -282,9 +288,9 @@ class VerifyLinks
     end
 
     link.verified( rec)
-    if File.exist?( old_path)
-      File.delete( old_path)
-    end
+    # if File.exist?( old_path)
+    #   File.delete( old_path)
+    # end
   end
 
   def verify_url( url)
@@ -295,6 +301,14 @@ class VerifyLinks
       raise "No such link: #{url}"
     end
   end
+
+  def zap_old_links
+    @pagoda.start_transaction
+    @pagoda.select( 'old_links') do |rec|
+      @pagoda.delete( 'old_links', :url, rec[:url])
+    end
+    @pagoda.end_transaction
+  end
 end
 
 vl = VerifyLinks.new( ARGV[0], ARGV[2])
@@ -303,6 +317,7 @@ if /^http/ =~ ARGV[1]
   puts "... Verified #{ARGV[1]}"
 else
   puts "... Verifying links"
+  vl.zap_old_links
   count = 0
   vl.oldest( ARGV[1].to_i, ARGV[3].to_i) do |link|
     #puts "... Verifying #{link.url}"

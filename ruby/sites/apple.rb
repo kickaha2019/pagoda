@@ -186,4 +186,8 @@ class Apple < DefaultSite
     end
     0
   end
+
+  def year_tolerance
+    100
+  end
 end

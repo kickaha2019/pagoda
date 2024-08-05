@@ -20,6 +20,6 @@ endif
 # Launch the editor
 #
 cd $0:h
-sleep 25;open http://localhost:4567 &
+sleep 10;open http://localhost:4567 &
 ruby -I../ruby ../ruby/editor.rb ../database /Users/peter/Caches/Pagoda
 

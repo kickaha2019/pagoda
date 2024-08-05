@@ -211,4 +211,8 @@ class Steam < DefaultSite
 			puts "... #{@info_changed} tags added to steam.yaml"
 		end
 	end
+
+	def year_tolerance
+		1
+	end
 end

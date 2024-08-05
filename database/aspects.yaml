@@ -151,9 +151,6 @@ Mouse:
   desc:   Game can be controlled just with the mouse
   derive: true
   index:  18
-Movie:
-  title:   Interactive movie
-  index: 4
 Myst:
   index:  54
   type:   genre

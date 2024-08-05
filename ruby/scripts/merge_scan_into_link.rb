@@ -1,4 +1,4 @@
-require_relative 'database'
+require_relative '../database'
 
 database = Database.new( ARGV[0])
 

@@ -34,6 +34,7 @@
   <table class="link_record list">
     <tr><th>Site</th><td><%= h(@rec.site) %></td></tr>
     <tr><th>Type</th><td><%= h(@rec.type) %></td></tr>
+    <tr><th>Link date</th><td><%= @rec.link_date %></td></tr>
     <tr><th>Link</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.orig_title)}<a/>" %></td></tr>
     <tr><th>Cache</th><td>
       <%= @rec.valid? ? "<a href=\"/cache/#{@rec.timestamp}\">#{h(@rec.orig_title)}<a/>" : '' %>
