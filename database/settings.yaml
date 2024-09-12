@@ -19,7 +19,10 @@ incremental:
   method: incremental
 - site:   Mystery Manor
   type:   Review
-  method: find
+  method: find_reviews
+- site:   Mystery Manor
+  type:   Walkthrough
+  method: find_walkthroughs
 - site:   Steam
   type:   Store
   method: incremental
@@ -56,9 +59,6 @@ rebase:
   type:   Review
   method: find
 test_incremental:
-- site:   Grabbed
-  type:   Reference
-  method: incremental
-- site:   Google Play
-  type:   Store
-  method: search
+- site:   Mystery Manor
+  type:   Walkthrough
+  method: find_walkthroughs

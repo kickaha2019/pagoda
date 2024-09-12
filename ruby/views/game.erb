@@ -131,7 +131,7 @@
         <div class="aspects">
           <%=
             html = []
-            $pagoda.aspect_names do |aspect|
+            $pagoda.aspect_names(aspect_type) do |aspect|
               html << aspect_element( "#{aspect}", @aspects[aspect])
             end
             html.join( "\n")

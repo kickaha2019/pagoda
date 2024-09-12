@@ -70,12 +70,16 @@ post '/forget/:url' do
 end
 
 get '/game/:id' do
-  erb :game, :locals => {:id => params[:id].to_i}
+  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
+end
+
+get '/game/:id/:aspect_type' do
+  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => params[:aspect_type]}
 end
 
 post '/game' do
   update_game( params)
-  erb :game, :locals => {:id => params[:id].to_i}
+  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
 end
 
 get '/games' do
@@ -125,7 +129,7 @@ get '/links' do
 end
 
 get '/new_game' do
-  erb :game, :locals => {:id => -1}
+  erb :game, :locals => {:id => -1, :aspect_type => nil}
 end
 
 post '/pardon/:url' do

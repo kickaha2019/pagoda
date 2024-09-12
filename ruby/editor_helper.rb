@@ -15,15 +15,19 @@ module Sinatra
         return "/game/#{collated.id}"
       end
 
+      if link_rec.timestamp <= 1000
+        return ''
+      end
+
       #p ['add_game_from_link', link_url]
       sh = $pagoda.get_site_handler( link_rec.site)
       g = {:name => sh.reduce_title( link_rec.orig_title),
            :id => $pagoda.next_value( 'game', :id)}
-      get_link_game_details( link_rec, g)
 
       begin
         $pagoda.create_game( g)
         link_rec.bind( g[:id])
+        g.update_from_link(link_rec)
         "/game/#{g[:id]}"
       rescue Exception => bang
         puts( bang.message + "\n" + bang.backtrace.join( "\n"))
@@ -95,15 +99,7 @@ ASPECT_ELEMENT
       site.notify_bind( $pagoda, link_rec, page, bind_game)
 
       game_rec = $pagoda.game( bind_game)
-      unless game_rec.year && game_rec.developer && game_rec.publisher
-        details = {}
-        get_link_game_details( link_rec, details)
-        details[:year] = nil if game_rec.year
-        details[:developer] = nil if game_rec.developer
-        details[:publisher] = nil if game_rec.publisher
-        game_rec.update_details( details)
-      end
-
+      game_rec.update_from_link(link_rec)
       'Bound'
     end
 
@@ -162,6 +158,8 @@ ASPECT_ELEMENT
       game_rec[:id] = new_id
       game_rec[:name] += " DUPLICATE #{new_id}"
       game_rec[:year] = nil
+      game_rec[:developer] = nil
+      game_rec[:publisher] = nil
       $pagoda.insert( 'game', game_rec)
       $pagoda.get( 'aspect', :id, id).each do |aspect|
         aspect_rec = aspect.dup
@@ -313,19 +311,6 @@ ASPECT_ELEMENT
       path = $pagoda.cache_path( timestamp)
       return '' unless File.exist?( path)
       IO.read( path)
-    end
-
-    def get_link_game_details( link_rec, game_details)
-      begin
-        if link_rec.timestamp > 1000
-          page = get_cache( link_rec.timestamp)
-        else
-          page = http_get( link_rec.url)
-        end
-        $pagoda.get_site_handler( link_rec.site).get_game_details( link_rec.url, page, game_details)
-      rescue Exception => bang
-        puts( bang.message + "\n" + bang.backtrace.join( "\n"))
-      end
     end
 
     def get_locals( params, defs)
@@ -619,35 +604,6 @@ ASPECT_ELEMENT
       else
         name
       end
-    end
-
-    def suggest_aspects_records
-      now1d = Time.now.to_i - 3 * 24 * 60 * 60
-
-      recs = $pagoda.select( 'aspect_suggest') do |rec|
-        if rec[:timestamp] < now1d
-          false
-        elsif $pagoda.has?( 'visited', :key, rec[:visit])
-          false
-        else
-          game    = $pagoda.game( rec[:game])
-          aspects = game.aspects
-          check   = false
-
-          if rec[:aspect]
-            rec[:aspect].split(',').each do |aspect|
-              check = true if aspects[aspect].nil?
-            end
-          end
-
-          check
-        end
-      end
-
-      recs.each do |rec|
-        rec[:name] = $pagoda.game( rec[:game]).name
-      end
-      recs
     end
 
     def summary_line( site, type, counts, totals, html)

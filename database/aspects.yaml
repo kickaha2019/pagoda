@@ -44,6 +44,7 @@ Adventure:
   index: 10
 Cards:
   desc:   Card based gameplay like Slay the Spire
+  type:   genre
   index: 11
 Cartoon:
   desc:   Simple cartoon like visuals
@@ -276,6 +277,7 @@ VR:
   index: 26
 "Walking simulator":
   index:  36
+  type:   genre
   match:
   - Walking simulator
 Windows:
@@ -289,3 +291,4 @@ Wishlist:
   index: 29
 'Wild West':
   type:   setting
+  index:  1

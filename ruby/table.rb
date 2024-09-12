@@ -20,7 +20,14 @@ class Table
 
     @indexes[@columns[0]].each_value do |rows|
       rows.each do |row|
-        raise "No value for index column" if row[colind].nil?
+        if row[colind].nil?
+          if @types[column_name] == :to_i
+            row[colind] = 0
+          else
+            p [@name, column_name, row]
+            raise "No value for index column"
+          end
+        end
         index[row[colind]] << row
       end
     end

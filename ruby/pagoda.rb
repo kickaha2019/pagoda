@@ -231,6 +231,25 @@ class Pagoda
       self
     end
 
+    def update_from_link(link)
+      details = {}
+      begin
+        path = @owner.cache_path( link.timestamp)
+        page = File.exist?( path) ? IO.read( path) : ''
+        @owner.get_site_handler( link.site).get_game_details( link.url, page, details)
+      rescue Exception => bang
+        puts( bang.message + "\n" + bang.backtrace.join( "\n"))
+      end
+
+      details[:year] = nil if year
+      details[:developer] = nil if developer
+      details[:publisher] = nil if publisher
+
+      if details[:year] || details[:developer] || details[:publisher]
+        update_details( details)
+      end
+    end
+
     def web
       'N'
     end
@@ -451,8 +470,9 @@ class Pagoda
     @aspect_info
   end
 
-  def aspect_names
+  def aspect_names(aspect_type=nil)
     aspect_info.each_pair do |name, info|
+      next if aspect_type && info['type'] != aspect_type
       yield name if info['derive'].nil?
     end
   end

@@ -166,16 +166,18 @@ class VerifyLinks
           io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
         end
       end
+      v.shuffle!
     end
     #raise 'Dev'
 
     links = []
-    (0...n).each do |i|
-      links << flagged[i] if i < flagged.size
-      links << dubious[i] if i < dubious.size
-      links << free[i]    if i < free.size
-      links << bound[i]   if i < bound.size
-      links << ignored[i] if i < ignored.size
+    (0...n).each do
+      (0..9).each do
+        links << dubious.pop unless dubious.empty?
+      end
+      [flagged, free, bound, ignored].each do |type|
+        links << type.pop unless type.empty?
+      end
     end
 
     links = links[0...n] if links.size > n
@@ -288,9 +290,9 @@ class VerifyLinks
     end
 
     link.verified( rec)
-    # if File.exist?( old_path)
-    #   File.delete( old_path)
-    # end
+    if game = link.collation
+      game.update_from_link(link)
+    end
   end
 
   def verify_url( url)
