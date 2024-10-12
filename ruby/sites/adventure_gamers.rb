@@ -46,7 +46,7 @@ class AdventureGamers < DefaultSite
 		text.join( ' ')
 	end
 
-	def get_game_details( url, page, game)
+	def get_game_details1( url, page, game)
 		#p ['Adventure Gamers:get_game_details1', url]
 		url = nil
 		page.split("\n").each do |line|

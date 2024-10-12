@@ -184,7 +184,7 @@ class SuggestAspects
     page = IO.read( @pagoda.cache_path( timestamp))
     site = @pagoda.get_site_handler( site_name)
 
-    site.tag_aspects( @pagoda, page) do |aspect|
+    site.get_aspects(@pagoda, page) do |aspect|
       unless aspects.has_key?(aspect)
         @tagged += 1
         @pagoda.start_transaction

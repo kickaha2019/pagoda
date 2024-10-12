@@ -10,6 +10,7 @@ tags:
   - 3rd person
   VR:
   - ignore
+  - VR
   LGBTQ+:
   - ignore
   - LGBTQ+
@@ -49,7 +50,9 @@ tags:
   Puzzle: accept
   Puzzle Platformer: reject
   Platformer: reject
-  Visual Novel: ignore
+  Visual Novel:
+  - accept
+  - Visual novel
   Pixel Graphics:
   - ignore
   - Retro
@@ -74,7 +77,9 @@ tags:
   Psychological Horror:
   - ignore
   - Horror
-  Gore: ignore
+  Gore:
+  - ignore
+  - Horror
   Demons: ignore
   Psychological: ignore
   Mature: ignore
@@ -116,7 +121,9 @@ tags:
   Robots: ignore
   Arcade: reject
   Co-op: ignore
-  Roguelite: ignore
+  Roguelite:
+  - accept
+  - Roguelike
   4 Player Local: ignore
   Loot: ignore
   Abstract: ignore
@@ -126,7 +133,9 @@ tags:
   Top-Down: ignore
   Multiplayer: ignore
   Level Editor: ignore
-  Hidden Object: reject
+  Hidden Object:
+  - accept
+  - HOG
   Lovecraftian:
   - ignore
   - Horror
@@ -154,7 +163,7 @@ tags:
   Metroidvania: ignore
   Difficult: ignore
   Side Scroller: ignore
-  Tower Defense: ignore
+  Tower Defense: reject
   Replay Value: ignore
   Addictive: ignore
   Building: ignore
@@ -315,8 +324,9 @@ tags:
   JRPG:
   - accept
   - RPG
+  - JRPG
   Dungeon Crawler:
-  - ignore
+  - accept
   - Roguelike
   Flight: reject
   3D Fighter: reject
@@ -352,11 +362,11 @@ tags:
   Jet: ignore
   MOBA: ignore
   Roguelike:
-  - ignore
+  - accept
   - Roguelike
   Mystery Dungeon: ignore
   Traditional Roguelike:
-  - ignore
+  - accept
   - Roguelike
   God Game: ignore
   Hentai: reject
@@ -381,7 +391,7 @@ tags:
   Snow: ignore
   Hunting: ignore
   Roguelike Deckbuilder:
-  - ignore
+  - accept
   - Roguelike
   - Cards
   Automobile Sim: ignore
@@ -427,7 +437,9 @@ tags:
   Sailing: ignore
   Trivia: ignore
   Mini Golf: ignore
-  FMV: ignore
+  FMV:
+  - ignore
+  - FMV
   Nostalgia: ignore
   Automation: ignore
   Villain Protagonist: ignore

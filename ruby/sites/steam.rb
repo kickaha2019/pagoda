@@ -94,6 +94,19 @@ class Steam < DefaultSite
 		false
 	end
 
+	def get_aspects(pagoda, page)
+		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+		tags  = @info['tags']
+
+		get_tags( page).each do |tag|
+			action = tags[tag]
+			action = [action] unless action.is_a?(Array)
+			action.each do |aspect|
+				yield aspect unless ['accept','reject','ignore'].include?( aspect)
+			end
+		end
+	end
+
 	def get_derived_aspects( page)
 		yield 'Steam'
 		if /data-os="win"/m =~ page
@@ -191,18 +204,6 @@ class Steam < DefaultSite
 			return true, true, nil, 'Age check'
 		end
 		return false, false, nil, ''
-	end
-
-	def tag_aspects( pagoda, page)
-		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-		tags  = @info['tags']
-
-		get_tags( page).each do |tag|
-			action = tags[tag]
-			if action.is_a?( Array)
-				action[1..-1].each {|aspect| yield aspect}
-			end
-		end
 	end
 
 	def terminate( pagoda)

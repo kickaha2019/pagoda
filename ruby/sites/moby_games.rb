@@ -19,6 +19,20 @@ class MobyGames < DefaultSite
 		end
 	end
 
+	def get_aspects(pagoda, page)
+		if page.include? 'https://www.mobygames.com/genre/sheet/1st-person/'
+			yield '1st person'
+		end
+
+		if page.include? 'https://www.mobygames.com/genre/sheet/3rd-person/'
+			yield '3rd person'
+		end
+
+		if page.include? 'https://www.mobygames.com/genre/sheet/side-view/'
+			yield '3rd person'
+		end
+	end
+
 	def get_game_description( page)
 		desc, in_desc = [], false
 		page.split( "<h2>").each do |line|
@@ -68,19 +82,5 @@ class MobyGames < DefaultSite
 
 	def name
 		'MobyGames'
-	end
-
-	def tag_aspects( pagoda, page)
-		if page.include? 'https://www.mobygames.com/genre/sheet/1st-person/'
-			yield '1st person'
-		end
-
-		if page.include? 'https://www.mobygames.com/genre/sheet/3rd-person/'
-			yield '3rd person'
-		end
-
-		if page.include? 'https://www.mobygames.com/genre/sheet/side-view/'
-			yield '3rd person'
-		end
 	end
 end

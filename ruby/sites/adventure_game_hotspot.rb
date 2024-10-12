@@ -14,6 +14,31 @@ class AdventureGameHotspot < DefaultSite
 		end
 	end
 
+	def find_database( scanner)
+		to_scan, next_page = BASE + '/database', 1
+		while to_scan && (next_page < 2000)
+			scan, to_scan = to_scan, nil
+			next_page += 1
+
+			scanner.html_links( scan) do |link|
+				if /^\/game\/\d+\// =~ link
+					if /#/ =~ link
+						0
+					else
+						scanner.add_link( '', BASE+ link)
+					end
+				elsif m = /^\?r=0.*p=(\d+)$/.match(link)
+					if m[1].to_i == next_page
+						to_scan = BASE + '/database' + link
+					end
+					0
+				else
+					0
+				end
+			end
+		end
+	end
+
 	def findReviews( scanner)
 		scanner.html_links( BASE + '/reviews/') do |link|
 			if /^\/review\/\d+\// =~ link
@@ -42,6 +67,23 @@ class AdventureGameHotspot < DefaultSite
 		end
 	end
 
+	def get_game_details( url, page, game)
+		Nodes.parse( page).css('div.game-details th') do |th|
+			if th.text == 'Developer'
+				game[:developer] = th.parent.css('a').first.text.strip
+			end
+			if th.text == 'Publisher'
+				game[:publisher] = th.parent.css('a').first.text.strip
+			end
+			if th.text == 'Release'
+				time = th.parent.css('a time').first['datetime']
+				if m = /^(\d\d\d\d)-/.match(time)
+					game[:year] = m[1].to_i
+				end
+			end
+		end
+	end
+
 	def get_game_description( page)
 		elide_nav_blocks( elide_script_blocks page)
 	end
@@ -56,5 +98,13 @@ class AdventureGameHotspot < DefaultSite
 
 	def name
 		'Adventure Game Hotspot'
+	end
+
+	def reduce_title( title)
+		if m = /^(.*) review \|$/.match(title)
+			m[1]
+		else
+			title
+		end
 	end
 end

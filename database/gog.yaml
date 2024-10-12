@@ -46,7 +46,9 @@ tags:
   Funny: ignore
   Good Old Game: ignore
   Great Soundtrack: ignore
-  Hidden Object: reject
+  Hidden Object:
+  - accept
+  - HOG
   Historical: ignore
   Horror:
   - ignore
@@ -59,6 +61,7 @@ tags:
   JRPG:
   - accept
   - RPG
+  - JRPG
   Logic: accept
   Management: ignore
   Managerial: ignore
@@ -79,7 +82,9 @@ tags:
   Point&Click: ignore
   Post-apocalyptic: ignore
   Programming: ignore
-  Puzzle: accept
+  Puzzle:
+  - accept
+  - Puzzle
   Racing: reject
   Rally: reject
   Real-time: ignore
@@ -212,11 +217,12 @@ tags:
   Multiple Endings: ignore
   VR:
   - ignore
+  - VR
   Short: ignore
   Romance: ignore
   Transportation: ignore
   Roguelite:
-  - ignore
+  - accept
   - Roguelike
   Fishing: ignore
   Dog: ignore

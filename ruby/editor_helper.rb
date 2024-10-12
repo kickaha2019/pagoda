@@ -25,9 +25,9 @@ module Sinatra
            :id => $pagoda.next_value( 'game', :id)}
 
       begin
-        $pagoda.create_game( g)
+        game = $pagoda.create_game( g)
         link_rec.bind( g[:id])
-        g.update_from_link(link_rec)
+        game.update_from_link(link_rec)
         "/game/#{g[:id]}"
       rescue Exception => bang
         puts( bang.message + "\n" + bang.backtrace.join( "\n"))
@@ -491,6 +491,28 @@ ASPECT_ELEMENT
       summary
     end
 
+    def multiple_genre_records
+      unvisited = []
+
+      genre_aspects = {}
+      $pagoda.aspect_info.each_pair do |aspect, info|
+        genre_aspects[aspect] = true if info['type'] == 'genre'
+      end
+
+      $pagoda.games do |game|
+        visited = $pagoda.get( 'visited', :key, "multiple_genre:#{game.id}")
+        if visited.empty?
+          genres = 0
+          game.aspects.each_pair do |aspect, flag|
+            genres += 1 if flag && genre_aspects[aspect]
+          end
+          unvisited << game if genres > 1
+        end
+      end
+
+      unvisited.sort_by {|rec| rec.id}
+    end
+
     def pardon_link( link_url)
       link_rec = $pagoda.link( link_url)
       if link_rec
@@ -571,10 +593,10 @@ ASPECT_ELEMENT
       $pagoda.end_transaction
     end
 
-    def set_genre_checked( game_id)
+    def set_checked( game_id, flag)
       $pagoda.start_transaction
-      $pagoda.insert( 'visited', {key: "unchecked_genres:#{game_id}",
-                                                   timestamp: Time.now.to_i})
+      $pagoda.insert( 'visited', {key: "#{flag}:#{game_id}",
+                                  timestamp: Time.now.to_i})
       $pagoda.end_transaction
     end
 

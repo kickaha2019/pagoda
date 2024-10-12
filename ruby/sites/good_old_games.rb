@@ -103,6 +103,19 @@ class GoodOldGames < DefaultSite
 		true
 	end
 
+	def get_aspects(pagoda, page)
+		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
+		tags  = @info['tags']
+
+		get_tags( page).each do |tag|
+			actions = tags[tag]
+			actions = [actions] if actions.is_a?( String)
+			actions.each do |aspect|
+				yield aspect unless ['accept','ignore','reject'].include?( aspect)
+			end
+		end
+	end
+
 	def get_derived_aspects( page)
 		yield 'GOG'
 		if info = extract_card_product( page)
@@ -166,19 +179,6 @@ class GoodOldGames < DefaultSite
 	def name
 		'GOG'
   end
-
-	def tag_aspects( pagoda, page)
-		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
-		tags  = @info['tags']
-
-		get_tags( page).each do |tag|
-			actions = tags[tag]
-			actions = [actions] if actions.is_a?( String)
-			actions.each do |aspect|
-				yield aspect unless ['accept','ignore','reject'].include?( aspect)
-			end
-		end
-	end
 
   def terminate( pagoda)
     if @info_changed > 0

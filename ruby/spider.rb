@@ -102,10 +102,10 @@ class Spider
 		@errors += 1
 	end
 
-	def full( site, type)
+	def full( site, type, section='full')
 		found = false
 
-		@settings['full'].each do |scan|
+		@settings[section].each do |scan|
 			@site = scan['site']
 			@type = scan['type']
 			next unless (site == @site) || (site == 'All')
@@ -344,6 +344,10 @@ class Spider
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
 		@suggested_links[url] = true
+	end
+
+	def test_full( site, type)
+		full( site, type, 'test_full')
 	end
 
 	def test_incremental( site, type)

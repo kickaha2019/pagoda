@@ -233,26 +233,57 @@ class Pagoda
 
     def update_from_link(link)
       details = {}
+      site    = @owner.get_site_handler( link.site)
+      page    = ''
+
       begin
         path = @owner.cache_path( link.timestamp)
         page = File.exist?( path) ? IO.read( path) : ''
-        @owner.get_site_handler( link.site).get_game_details( link.url, page, details)
+        site.get_game_details( link.url, page, details)
       rescue Exception => bang
-        puts( bang.message + "\n" + bang.backtrace.join( "\n"))
+        link.complain bang.message
       end
 
-      details[:year] = nil if year
-      details[:developer] = nil if developer
-      details[:publisher] = nil if publisher
+      [:year, :developer, :publisher].each do |field|
+        details.delete(field) unless send(field).nil?
+      end
 
-      if details[:year] || details[:developer] || details[:publisher]
+      unless details.empty?
         update_details( details)
       end
+
+      cache_aspects = aspects
+      cache_types = {}
+      cache_aspects.each do |aspect, flag|
+        type = @owner.get_aspect_type(aspect)
+        if type && flag
+          cache_types[aspect] = true
+        end
+      end
+
+      site.get_aspects(@owner,page) do |aspect|
+        if @owner.aspect?(aspect)
+          site.get_aspects(@owner, page) do |aspect|
+            unless cache_aspects.has_key?(aspect)
+              type = @owner.get_aspect_type(aspect)
+              if type && cache_types[type]
+                link.complain "Multiple type aspect: #{aspect}"
+              else
+                @owner.start_transaction
+                @owner.insert( 'aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
+                @owner.end_transaction
+              end
+            end
+          end
+        else
+          link.complain "Unknown aspect: #{aspect}"
+        end
+      end
     end
 
-    def web
-      'N'
-    end
+    # def web
+    #   'N'
+    # end
   end
 
   class PagodaLink < PagodaRecord
@@ -281,11 +312,13 @@ class Pagoda
       end
     end
 
-    # def comment?
-    #   return false unless @record[:comment]
-    #   raise 'Unexpected comment value' if @record[:comment].strip == ''
-    #   @record[:comment].strip != ''
-    # end
+    def complain(msg)
+      @owner.start_transaction
+      @owner.delete( 'link', :url, @record[:url])
+      @record[:comment]    = msg
+      @owner.insert( 'link', @record)
+      @owner.end_transaction
+    end
 
     def delete
       @owner.start_transaction
@@ -295,7 +328,8 @@ class Pagoda
     end
 
     def generate?
-        valid? && collation && (! static?)
+      return false if type == 'Database'
+      valid? && collation && (! static?)
     end
 
     def id
@@ -434,18 +468,14 @@ class Pagoda
     end
     log 'Populate names repository'
 
-    # Poison names repository with titles of ignored links
-    # @database.get( 'bind', :id, -1) do |bind_rec|
-    #   @database.get( 'link', :url, bind_rec[:url]) do |link_rec|
-    #     @names.poison link_rec[:orig_title]
-    #   end
-    # end
-    # log 'Poison names repository'
-
     @aspect_info_timestamp = 0
     @cached_yaml = {}
     load_site_handlers
     log 'Pagoda opened'
+  end
+
+  def aspect?(name)
+    aspect_info[name]
   end
 
   def log( msg)
@@ -530,6 +560,7 @@ class Pagoda
     raise 'Names not unique' unless check_unique_names( params)
     g = PagodaGame.new( self, {id:params[:id]})
     g.update( params)
+    g
   end
 
   def delete_link( url)
@@ -674,6 +705,14 @@ class Pagoda
 
   def add_name( name, id)
     @names.add(name, id)
+  end
+
+  def get_aspect_type(aspect)
+    if info = aspect_info[aspect]
+      info['type']
+    else
+      nil
+    end
   end
 
   def clean

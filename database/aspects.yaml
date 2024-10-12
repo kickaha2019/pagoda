@@ -49,9 +49,10 @@ Cards:
 Cartoon:
   desc:   Simple cartoon like visuals
   index:  42
+Comedy:
+  type:   genre
 Comic:
   desc:   Comic cartoon like DOTT
-  type:   genre
   index:  49
 Dialogue:
   title:   Dialogue puzzles
@@ -66,6 +67,8 @@ Dialogue:
 "Drawing":
   desc:   Painting or drawing quality visuals
   index:  43
+"Dungeon crawl":
+  type:   genre
 "Edutainment":
   desc:   Learning in the form of a game
   type:   genre
@@ -76,6 +79,8 @@ Escape:
   index:  33
   match:
   - Escape room
+Exploration:
+  type:   genre
 FMV:
   index:  0
   match:
@@ -152,10 +157,8 @@ Mouse:
   desc:   Game can be controlled just with the mouse
   derive: true
   index:  18
-Myst:
-  index:  54
+Mystery:
   type:   genre
-  desc:   Like Myst
 Non-mouse:
   desc:   Not totally mouse controlled
   index: 6
@@ -204,7 +207,6 @@ Retro:
   index: 28
 Roguelike:
   desc:   Dungeon crawling or roguelike
-  type:   genre
   index: 17
   match:
   - Roguelike

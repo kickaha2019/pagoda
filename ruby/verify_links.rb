@@ -121,6 +121,49 @@ class VerifyLinks
     return status, status ? nil : response, response
   end
 
+  def load_page( link, debug=false)
+    status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
+    ignore = false
+    p ['load_page1', status, comment, response] if debug
+
+    # Ignore redirects if site coerces redirect URL to original URL
+    if m = /^Redirected to (.*)$/.match( comment)
+      redirect = m[1]
+      p ['load_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
+      if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
+        comment = nil
+      elsif @pagoda.get_site_handler( link.site).ignore_redirects?
+        comment = nil
+        ignore  = true
+      end
+    end
+
+    body = response.is_a?( String) ? response : response.body
+
+    unless status
+      if debug
+        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
+      end
+      puts "*** #{link.url}: #{body}"
+    end
+
+    # Try converting odd characters
+    begin
+      body = body.gsub( '–', '-').gsub( '’', "'")
+    rescue
+    end
+
+    # Force to US ASCII
+    body.force_encoding( 'UTF-8')
+    body.encode!( 'US-ASCII',
+                  :replace           => ' ',
+                  :invalid           => :replace,
+                  :undef             => :replace,
+                  :universal_newline => true)
+
+    return status, comment, ignore, body
+  end
+
   def oldest( n, valid_for)
     free, bound, dubious, ignored, flagged = [], [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
@@ -189,53 +232,58 @@ class VerifyLinks
   end
 
   def verify_page( link, debug=false)
-    status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
-    ignore = false
-    p ['verify_page1', status, comment, response] if debug
+    status, comment, ignore, body = load_page(link, debug)
+    site = @pagoda.get_site_handler( link.site)
 
-    # Ignore redirects if site coerces redirect URL to original URL
-    if m = /^Redirected to (.*)$/.match( comment)
-      redirect = m[1]
-      p ['verify_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
-      if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
-        comment = nil
-      elsif @pagoda.get_site_handler( link.site).ignore_redirects?
-        comment = nil
-        ignore  = true
-      end
+    if status && (comment = site.validate_page(link.url, body))
+      status = false
     end
-
-    body = response.is_a?( String) ? response : response.body
-
-    unless status
-      if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
-      end
-      puts "*** #{link.url}: #{body}"
-    end
-
-    # Try converting odd characters
-    begin
-      body = body.gsub( '–', '-').gsub( '’', "'")
-    rescue
-    end
-
-    # Force to US ASCII
-    body.force_encoding( 'UTF-8')
-    body.encode!( 'US-ASCII',
-                  :replace           => ' ',
-                  :invalid           => :replace,
-                  :undef             => :replace,
-                  :universal_newline => true)
+    # status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
+    # ignore = false
+    # p ['verify_page1', status, comment, response] if debug
+    #
+    # # Ignore redirects if site coerces redirect URL to original URL
+    # if m = /^Redirected to (.*)$/.match( comment)
+    #   redirect = m[1]
+    #   p ['verify_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
+    #   if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
+    #     comment = nil
+    #   elsif @pagoda.get_site_handler( link.site).ignore_redirects?
+    #     comment = nil
+    #     ignore  = true
+    #   end
+    # end
+    #
+    # body = response.is_a?( String) ? response : response.body
+    #
+    # unless status
+    #   if debug
+    #     File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
+    #   end
+    #   puts "*** #{link.url}: #{body}"
+    # end
+    #
+    # # Try converting odd characters
+    # begin
+    #   body = body.gsub( '–', '-').gsub( '’', "'")
+    # rescue
+    # end
+    #
+    # # Force to US ASCII
+    # body.force_encoding( 'UTF-8')
+    # body.encode!( 'US-ASCII',
+    #               :replace           => ' ',
+    #               :invalid           => :replace,
+    #               :undef             => :replace,
+    #               :universal_newline => true)
 
     rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:ignore}
 
     # Get year if possible for link
     if status
       begin
-        @pagoda.get_site_handler( link.site).get_game_year( @pagoda, link, body, rec)
+        site.get_game_year( @pagoda, link, body, rec)
       rescue Exception => bang
-        raise
         status = false
         rec[:comment] = bang.message
       end
@@ -246,7 +294,7 @@ class VerifyLinks
       p ['verify_page3', status, rec] if debug
       status = get_details( link, body, rec)
       unless status
-        if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
+        if site.deleted_title( rec[:title])
           p ['verify_page5', link.url] if debug
           link.delete
           return
@@ -259,7 +307,7 @@ class VerifyLinks
     end
 
     # Save old timestamp and page, get new unused timestamp
-    old_t, old_page, changed = link.timestamp, '', false
+    old_t, old_page = link.timestamp, ''
     old_path = @pagoda.cache_path( old_t)
     if File.exist?( old_path)
       old_page = IO.read( old_path)
@@ -280,6 +328,7 @@ class VerifyLinks
     # If OK save page to cache else to temp area
     File.open( new_path, 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
+    p ['verify_page5', new_path] if debug
 
     # Ignore link if so flagged but comment if bound to a game
     if rec[:ignore]
@@ -290,7 +339,7 @@ class VerifyLinks
     end
 
     link.verified( rec)
-    if game = link.collation
+    if status && (game = link.collation)
       game.update_from_link(link)
     end
   end

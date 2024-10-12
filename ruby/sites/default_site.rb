@@ -34,6 +34,9 @@ class DefaultSite
     true
   end
 
+  def get_aspects(pagoda, page)
+  end
+
   def get_derived_aspects( page)
   end
 
@@ -79,10 +82,11 @@ class DefaultSite
     title
   end
 
-  def tag_aspects( pagoda, page)
+  def terminate( pagoda)
   end
 
-  def terminate( pagoda)
+  def validate_page(url,page)
+    nil
   end
 
   def year_tolerance

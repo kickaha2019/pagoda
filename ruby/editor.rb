@@ -128,6 +128,10 @@ get '/links' do
   erb :links, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All', :status => 'All')
 end
 
+get '/multiple_genre' do
+  erb :multiple_genre, :locals => get_locals( params, :page => 1)
+end
+
 get '/new_game' do
   erb :game, :locals => {:id => -1, :aspect_type => nil}
 end
@@ -168,8 +172,8 @@ post '/set_official_checked/:game' do
   set_official_checked( params[:game].to_i)
 end
 
-post '/set_genre_checked/:game' do
-  set_genre_checked( params[:game].to_i)
+post '/set_checked/:game/:flag' do
+  set_checked( params[:game].to_i, params[:flag])
 end
 
 put '/set_variable/:name/:value' do
