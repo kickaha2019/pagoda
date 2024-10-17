@@ -25,7 +25,11 @@ get '/aliases' do
 end
 
 get '/aspects' do
-  erb :aspects
+  erb :aspects, :locals => get_locals(params, :aspect_type => '')
+end
+
+get '/aspect_types' do
+  erb :aspect_types
 end
 
 post '/aspect_delete/:aspect' do
@@ -74,7 +78,8 @@ get '/game/:id' do
 end
 
 get '/game/:id/:aspect_type' do
-  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => params[:aspect_type]}
+  type = params[:aspect_type].empty? ? nil : params[:aspect_type]
+  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => type}
 end
 
 post '/game' do
@@ -84,12 +89,15 @@ end
 
 get '/games' do
   erb :games,
-      :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
-end
-
-get '/games_added' do
-  erb :games_added,
-      :locals => get_locals( params, :aspect => '', :search => '', :page => 1, :selected => 0, :x => 0, :y => 0)
+      :locals => get_locals( params,
+                             :aspect => '',
+                             :no_aspect_type => '',
+                             :search => '',
+                             :page => 1,
+                             :selected => 0,
+                             :x => 0,
+                             :y => 0,
+                             :sort_by => 'name')
 end
 
 get '/games_check_inventory_aspect' do
@@ -182,6 +190,7 @@ end
 
 get '/static_summary' do
   erb :summary, :locals => get_locals( params,
+                                       :database    => true,
                                        :official    => true,
                                        :reference   => true,
                                        :review      => true,
@@ -192,6 +201,7 @@ end
 
 get '/summary' do
   erb :summary, :locals => get_locals( params,
+                                       :database    => true,
                                        :official    => true,
                                        :reference   => true,
                                        :review      => true,

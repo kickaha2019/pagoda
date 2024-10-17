@@ -131,13 +131,14 @@
         <div class="aspects">
           <%=
             html = []
-            $pagoda.aspect_names(aspect_type) do |aspect|
-              html << aspect_element( "#{aspect}", @aspects[aspect])
+            $pagoda.aspect_name_and_types do |aspect, type|
+              html << aspect_element( "#{aspect}",
+                                      @aspects[aspect],
+                                      aspect_type.nil? || (aspect_type == type))
             end
             html.join( "\n")
           %>
         </div>
-
       </td></tr>
 
     </table>

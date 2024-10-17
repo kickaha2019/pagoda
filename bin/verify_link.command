@@ -18,6 +18,6 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://www.uhs-hints.com/uhsweb/vampyre.php
 # http://www.gameboomers.com/reviews/Gg/AGoldenWake/AGoldenWake.htm
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
-ruby ruby/verify_links.rb database 'https://adventuregamehotspot.com/game/517/a-guidebook-of-babel' ~/Caches/Pagoda
+ruby ruby/verify_links.rb database 'https://adventuregamehotspot.com/game/883/49-keys' ~/Caches/Pagoda
 
 #caffeinate -i ruby ruby/verify_links.rb database 10 ~/Caches/Pagoda 320

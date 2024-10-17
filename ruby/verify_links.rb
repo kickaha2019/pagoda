@@ -238,44 +238,6 @@ class VerifyLinks
     if status && (comment = site.validate_page(link.url, body))
       status = false
     end
-    # status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
-    # ignore = false
-    # p ['verify_page1', status, comment, response] if debug
-    #
-    # # Ignore redirects if site coerces redirect URL to original URL
-    # if m = /^Redirected to (.*)$/.match( comment)
-    #   redirect = m[1]
-    #   p ['verify_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
-    #   if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
-    #     comment = nil
-    #   elsif @pagoda.get_site_handler( link.site).ignore_redirects?
-    #     comment = nil
-    #     ignore  = true
-    #   end
-    # end
-    #
-    # body = response.is_a?( String) ? response : response.body
-    #
-    # unless status
-    #   if debug
-    #     File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
-    #   end
-    #   puts "*** #{link.url}: #{body}"
-    # end
-    #
-    # # Try converting odd characters
-    # begin
-    #   body = body.gsub( '–', '-').gsub( '’', "'")
-    # rescue
-    # end
-    #
-    # # Force to US ASCII
-    # body.force_encoding( 'UTF-8')
-    # body.encode!( 'US-ASCII',
-    #               :replace           => ' ',
-    #               :invalid           => :replace,
-    #               :undef             => :replace,
-    #               :universal_newline => true)
 
     rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:ignore}
 

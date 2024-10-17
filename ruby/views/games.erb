@@ -1,14 +1,14 @@
-<%= erb :header, :locals => {:page => 'games', :aspect => aspect} %>
+<%= erb :header, :locals => {:page => 'games', :aspect => aspect, :no_aspect_type => no_aspect_type, :sort_by => sort_by} %>
 
 <div class="search control">
-  <button onclick="search_input( '<%= "/games?page=1&aspect=#{aspect}" %>')">Search</button>
+  <button onclick="search_input( '<%= "/games?page=1&sort_by=#{sort_by}&aspect=#{aspect}&no_aspect_type=#{no_aspect_type}" %>')">Search</button>
   <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
-      url = "/games?search=#{e(search)}&aspect=#{e(aspect)}"
+      url = "/games?search=#{e(search)}&sort_by=#{sort_by}&aspect=#{e(aspect)}&no_aspect_type=#{e(no_aspect_type)}"
       erb :page_control, :locals => {:view => 'games',
                                      :page => page,
                                      :url  => url,
-                                     :args => [aspect,search]}
+                                     :args => [aspect,no_aspect_type,search]}
   %>&nbsp;&nbsp;
 </div>
 
@@ -17,13 +17,13 @@
   <%=
     html = []
 
-    records       = games_records( aspect, search)
+    records       = games_records( aspect, no_aspect_type, search)
     current_page  = page
     total_pages   = (records.size + 99) /  100
     current_page  = 1 if total_pages < current_page
     selected_game = selected_game_id( selected)
     records.sort_by! do |rec|
-      rec.name.to_s
+      (sort_by == 'id') ? rec.id : rec.name.to_s
     end
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
@@ -36,7 +36,7 @@
       end
       html << "<tr #{style}>"
       html << "<td>#{rec.id}</td>"
-      html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}\">#{h(rec.name)}</a></td>"
+      html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}/#{no_aspect_type}\">#{h(rec.name)}</a></td>"
       html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"
       html << '</tr>'

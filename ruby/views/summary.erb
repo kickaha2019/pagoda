@@ -9,6 +9,8 @@
         @type_flags = {}
         types.each do |type|
           case type
+            when "Database"
+              @type_flags[type] = database
             when "Official"
               @type_flags[type] = official
             when "Reference"

@@ -16,6 +16,35 @@ class AdventureGamers < DefaultSite
 		end
 	end
 
+	def find_database( scanner)
+		have_database = {}
+		scanner.get_links_for(name,'Database') do |link|
+			if collation = link.collation
+				have_database[collation.id] = true
+			end
+		end
+
+		to_add = []
+		scanner.get_links_for(name,'Review') do |link|
+			if (collation = link.collation) && (! have_database[collation.id])
+				to_add << link
+			end
+		end
+
+		added = 0
+		to_add.each do |link|
+			page = scanner.read_cached_page link
+			if m = /<a href="(\/games\/[^"]*)"[^>]*>Full Game Details</.match(page)
+				if scanner.add_link('', BASE + m[1]) > 0
+					scanner.bind(BASE + m[1], link.collation.id)
+					added += 1
+				end
+			end
+		end
+
+		added
+	end
+
 	def filter( pagoda, link, page, rec)
 		title = rec[:title].strip
 		if m1 = /^(.*)(-|) review \| Adventure Gamers/.match( title)
@@ -47,32 +76,7 @@ class AdventureGamers < DefaultSite
 	end
 
 	def get_game_details1( url, page, game)
-		#p ['Adventure Gamers:get_game_details1', url]
-		url = nil
-		page.split("\n").each do |line|
-			if m = /"gtin":"(.*)"/.match(line)
-				url = m[1]
-				break
-			end
-			if m1 = /<a href="(https:\/\/adventuregamers\.com\/games\/view\/\d+)">([^<]*)<\/a>/.match( line)
-				if m1[2] == game[:name]
-					url = m1[1]
-					break
-				end
-			end
-		end
-		return unless url
-
-		if m = /^(http[^"]*)($|")/.match( url)
-			url = m[1]
-		else
-			return
-		end
-
-		#p ['Adventure Gamers:get_game_details2', url[0..100]]
 		begin
-			page = http_get( url)
-
 			if after_developer = page.split('Developer:')[1]
 				if span = after_developer.split( '<span>')[1]
 					game[:developer] = span.split('<')[0]

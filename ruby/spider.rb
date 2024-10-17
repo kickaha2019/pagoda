@@ -43,6 +43,18 @@ class Spider
 		end
 	end
 
+	def add_or_replace_link( title, url, site=@site, type=@type)
+		url = @pagoda.get_site_handler( site).coerce_url( url.strip)
+		@suggested_links[url] = true
+
+		if @pagoda.has?( 'link', :url, url)
+			@pagoda.delete_link(url)
+		end
+
+		@pagoda.add_link( site, type, title, url)
+		1
+	end
+
 	def add_suggested
 		site_suggests = Hash.new {|h,k| h[k] = 0}
 		site_adds     = Hash.new {|h,k| h[k] = 0}
@@ -85,6 +97,12 @@ class Spider
 				puts "... #{site}: #{count} #{k}"
 			end
 		end
+	end
+
+	def bind(url,game_id)
+		@pagoda.start_transaction
+		@pagoda.insert( 'bind', {:url => url, :id => game_id})
+		@pagoda.end_transaction
 	end
 
 	def correlate_site( url)
@@ -130,10 +148,16 @@ class Spider
 	end
 
 	def get_links
-		@pagoda.links do |link|
-			(link.site == @site) && (link.type == @type)
-		end.each do |link|
+		get_links_for(@site,@type) do |link|
 			yield link.title, link.url
+		end
+	end
+
+	def get_links_for(site,type)
+		@pagoda.links do |link|
+			(link.site == site) && (link.type == type)
+		end.each do |link|
+			yield link
 		end
 	end
 
@@ -192,17 +216,12 @@ class Spider
 		@pagoda.links do |link|
 			next unless link.site == site
 			next unless link.valid? && link.bound? && link.collation
-			path = @pagoda.cache_path( link.timestamp)
-			if File.exist?( path)
-				page = IO.read( path)
-				page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
-					if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
-						next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
-						yield link.collation.name, m[1], anchor[1]
-					end
+			page = read_cached_page link
+			page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
+				if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
+					next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
+					yield link.collation.name, m[1], anchor[1]
 				end
-			else
-				puts "*** Link file missing: #{link.url}"
 			end
 		end
 	end
@@ -250,6 +269,16 @@ class Spider
 		@scan_stats[site][section] = stats
 		File.open( @dir + '/scan_stats.yaml', 'w') do |io|
 			io.print @scan_stats.to_yaml
+		end
+	end
+
+	def read_cached_page(link)
+		path = @pagoda.cache_path( link.timestamp)
+		if File.exist?( path)
+			IO.read( path)
+		else
+			puts "*** Link file missing: #{link.url}"
+			''
 		end
 	end
 

@@ -94,7 +94,7 @@ class Pagoda
     def game_type
       flagged = aspects
       known = []
-      @owner.aspect_names {|name| known << name}
+      @owner.aspect_name_and_types {|name, _| known << name}
       return '?' unless flagged['Adventure']
       ['HOG','Physics','RPG','Stealth','Visual novel','VR'].each do |unwanted|
         raise "Unknown aspect #{unwanted}" unless known.include?( unwanted)
@@ -197,7 +197,7 @@ class Pagoda
         names_seen[name.downcase] = true
       end
 
-      @owner.aspect_names do |aspect|
+      @owner.aspect_name_and_types do |aspect, _|
         f = params["a_#{aspect}".to_sym]
         if ['Y','N'].include?( f)
           $pagoda.insert( 'aspect', {:id => id, :aspect => aspect, :flag => f})
@@ -253,28 +253,26 @@ class Pagoda
       end
 
       cache_aspects = aspects
-      cache_types = {}
-      cache_aspects.each do |aspect, flag|
-        type = @owner.get_aspect_type(aspect)
-        if type && flag
-          cache_types[aspect] = true
-        end
-      end
+      # cache_types = {}
+      # cache_aspects.each do |aspect, flag|
+      #   type = @owner.get_aspect_type(aspect)
+      #   if type && flag
+      #     cache_types[aspect] = true
+      #   end
+      # end
 
       site.get_aspects(@owner,page) do |aspect|
         if @owner.aspect?(aspect)
-          site.get_aspects(@owner, page) do |aspect|
             unless cache_aspects.has_key?(aspect)
-              type = @owner.get_aspect_type(aspect)
-              if type && cache_types[type]
-                link.complain "Multiple type aspect: #{aspect}"
-              else
+              # type = @owner.get_aspect_type(aspect)
+              # if type && cache_types[type]
+              #   link.complain "Multiple type aspect: #{aspect}"
+              # else
                 @owner.start_transaction
                 @owner.insert( 'aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
                 @owner.end_transaction
-              end
+              #              end
             end
-          end
         else
           link.complain "Unknown aspect: #{aspect}"
         end
@@ -500,10 +498,9 @@ class Pagoda
     @aspect_info
   end
 
-  def aspect_names(aspect_type=nil)
+  def aspect_name_and_types
     aspect_info.each_pair do |name, info|
-      next if aspect_type && info['type'] != aspect_type
-      yield name if info['derive'].nil?
+      yield name,info['type'] if info['derive'].nil?
     end
   end
 
@@ -566,6 +563,7 @@ class Pagoda
   def delete_link( url)
     @database.start_transaction
     @database.delete( 'link', :url, url)
+    @database.delete( 'bind', :url, url)
     @database.end_transaction
   end
 

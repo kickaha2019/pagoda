@@ -1,0 +1,17 @@
+<%= erb :header, :locals => {:page => 'aspect_types'} %>
+
+<div id="list"><table class="scan list">
+  <tr><th>Aspect type</th><th>None</th></tr>
+  <%=
+      html = []
+
+      aspect_type_records.each do |rec|
+        html << "<tr><td><a href=\"/aspects?aspect_type=#{rec[0]}\">#{rec[0]}</a></td>"
+        html << "<td><a href=\"/games?no_aspect_type=#{rec[0]}&sort_by=id\">#{rec[1]}</a></td></tr>"
+      end
+
+      html.join( "\n")
+  %>
+</table></div>
+</body>
+</html>

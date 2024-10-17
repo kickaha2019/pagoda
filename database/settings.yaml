@@ -39,6 +39,9 @@ full:
 - site:   Adventure Game Hotspot
   type:   Review
   method: findReviews
+- site:   Adventure Gamers
+  type:   Database
+  method: find_database
 - site:   Big Fish Games
   type:   Store
   method: full

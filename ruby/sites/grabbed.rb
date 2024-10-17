@@ -20,7 +20,7 @@ class Grabbed < DefaultSite
 			
 			site, type, link = * scanner.correlate_site( url)
 			if site
-				added += scanner.add_link( title, link, site, type)
+				added += scanner.add_or_replace_link( title, link, site, type)
 				false
 			else
 				added += scanner.add_link( title, url)

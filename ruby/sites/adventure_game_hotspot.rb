@@ -2,6 +2,10 @@ require_relative 'default_site'
 
 class AdventureGameHotspot < DefaultSite
 	BASE = 'https://adventuregamehotspot.com'
+	ASPECT_MAP = {
+		'Perspective' =>
+			{'Third-Person' => '3rd person'}
+	}.freeze
 
 	def filter( pagoda, link, page, rec)
 		title = rec[:title].strip
@@ -15,28 +19,32 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def find_database( scanner)
-		to_scan, next_page = BASE + '/database', 1
-		while to_scan && (next_page < 2000)
-			scan, to_scan = to_scan, nil
-			next_page += 1
+		have_database = {}
+		scanner.get_links_for(name,'Database') do |link|
+			if collation = link.collation
+				have_database[collation.id] = true
+			end
+		end
 
-			scanner.html_links( scan) do |link|
-				if /^\/game\/\d+\// =~ link
-					if /#/ =~ link
-						0
-					else
-						scanner.add_link( '', BASE+ link)
-					end
-				elsif m = /^\?r=0.*p=(\d+)$/.match(link)
-					if m[1].to_i == next_page
-						to_scan = BASE + '/database' + link
-					end
-					0
-				else
-					0
+		to_add = []
+		scanner.get_links_for(name,'Review') do |link|
+			if (collation = link.collation) && (! have_database[collation.id])
+				to_add << link
+			end
+		end
+
+		added = 0
+		to_add.each do |link|
+			page = scanner.read_cached_page link
+			if m = /<a href="(\/game\/[^"]*)">View in Database</.match(page)
+				if scanner.add_link('', BASE + m[1]) > 0
+					scanner.bind(BASE + m[1], link.collation.id)
+					added += 1
 				end
 			end
 		end
+
+		added
 	end
 
 	def findReviews( scanner)
@@ -67,6 +75,17 @@ class AdventureGameHotspot < DefaultSite
 		end
 	end
 
+	def get_aspects(pagoda, page)
+		Nodes.parse( page).css('div.game-details th') do |th|
+			if map = ASPECT_MAP[th.text]
+				th.parent.css('a').each do |value|
+					aspect = map[value.text] || "#{th.text}: #{value.text}"
+					yield aspect unless aspect.empty?
+				end
+			end
+		end
+	end
+
 	def get_game_details( url, page, game)
 		Nodes.parse( page).css('div.game-details th') do |th|
 			if th.text == 'Developer'
@@ -76,9 +95,12 @@ class AdventureGameHotspot < DefaultSite
 				game[:publisher] = th.parent.css('a').first.text.strip
 			end
 			if th.text == 'Release'
-				time = th.parent.css('a time').first['datetime']
-				if m = /^(\d\d\d\d)-/.match(time)
-					game[:year] = m[1].to_i
+				atime = th.parent.css('a time').first
+				if atime
+					time = atime['datetime']
+					if m = /^(\d\d\d\d)-/.match(time)
+						game[:year] = m[1].to_i
+					end
 				end
 			end
 		end
@@ -101,10 +123,14 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def reduce_title( title)
-		if m = /^(.*) review \|$/.match(title)
-			m[1]
-		else
-			title
+		if m = /^(.*\S)\s*\|$/.match(title)
+			title = m[1]
 		end
+
+		if m = /^(.*) review$/.match(title)
+			title = m[1]
+		end
+
+		title
 	end
 end

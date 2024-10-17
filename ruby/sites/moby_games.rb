@@ -1,6 +1,18 @@
 require_relative 'default_site'
 
 class MobyGames < DefaultSite
+	ASPECT_MAP = {
+		'1st-person'         => '1st person',
+		'2D scrolling'       => [],
+		'3rd-person (Other)' => '3rd person',
+		'Action'             => 'Action',
+		'Adventure'          => 'Adventure',
+		'Comedy'             => 'Comedy',
+		'Platform'           => 'Action',
+		'Puzzle elements'    => [],
+		'Side view'          => '3rd person'
+	}.freeze
+
 	def correlate_url( url)
 		if %r{^https://www\.mobygames\.com/} =~ url
 			return 'MobyGames', 'Reference', url
@@ -20,16 +32,13 @@ class MobyGames < DefaultSite
 	end
 
 	def get_aspects(pagoda, page)
-		if page.include? 'https://www.mobygames.com/genre/sheet/1st-person/'
-			yield '1st person'
-		end
-
-		if page.include? 'https://www.mobygames.com/genre/sheet/3rd-person/'
-			yield '3rd person'
-		end
-
-		if page.include? 'https://www.mobygames.com/genre/sheet/side-view/'
-			yield '3rd person'
+		Nodes.parse( page).css('div.info-genres dl.metadata a') do |a|
+			if mapped = ASPECT_MAP[a.text]
+				mapped = [mapped] unless mapped.is_a? Array
+				mapped.each {|m| yield m}
+			else
+				yield "MobyGames unhandled: #{a.text}"
+			end
 		end
 	end
 

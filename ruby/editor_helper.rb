@@ -42,10 +42,10 @@ module Sinatra
     end
 
     def aliases_records( aspect, search)
-      games_records( aspect, search).select {|g| g.aliases.size > 0}
+      games_records( aspect, '', search).select {|g| g.aliases.size > 0}
     end
 
-    def aspect_element( name, value)
+    def aspect_element( name, value, show)
       html = []
       colour, setting = 'white', '?'
       if value == false
@@ -54,12 +54,20 @@ module Sinatra
       if value == true
         colour, setting = 'lime', 'Y'
       end
+
+      if show
       html = <<"ASPECT_ELEMENT"
 <div id="d_#{name}" style="background: #{colour}" onclick="change_aspect( event, '#{name}')">  
 <span>#{name}</span>     
 <input id="i_#{name}" type="hidden" name="a_#{name}" value="#{setting}">
 </div>
 ASPECT_ELEMENT
+      else
+        html = <<"HIDDEN_ASPECT_ELEMENT"
+<input id="i_#{name}" type="hidden" name="a_#{name}" value="#{setting}">
+HIDDEN_ASPECT_ELEMENT
+      end
+
       html.gsub( />\s+</m, '><')
     end
 
@@ -71,6 +79,17 @@ ASPECT_ELEMENT
       $pagoda.start_transaction
       $pagoda.delete( 'aspect', :aspect, aspect)
       $pagoda.end_transaction
+    end
+
+    def aspect_type_records
+      types = []
+      $pagoda.aspect_info.each_value do |info|
+        types << info['type']
+      end
+
+      types.select {|type| type}.uniq.sort.collect do |type|
+        [type, games_records('', type, '').size]
+      end
     end
 
     def bind_id( link_rec)
@@ -194,8 +213,10 @@ ASPECT_ELEMENT
       "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
     end
 
-    def games_by_aspect_records
+    def games_by_aspect_records(aspect_type)
       map = Hash.new {|h,k| h[k] = 0}
+      aspect_info = $pagoda.aspect_info
+
       $pagoda.games do |game|
         found = false
         game.aspects.each_pair do |a,f|
@@ -207,11 +228,11 @@ ASPECT_ELEMENT
         end
       end
 
-      aspects = []
-      $pagoda.aspect_names {|aspect| aspects << aspect}
-      aspects.sort.collect do |aspect|
+      $pagoda.aspect_info.keys.select do |aspect|
+        aspect_type.empty? || (aspect_info[aspect]['type'] == aspect_type)
+      end.sort.collect do |aspect|
         [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
-      end + [['None', '', map['None']]]
+      end + (aspect_type.empty? ? [['None', '', map['None']]] : [])
     end
 
     def games_check_aspects_records( group, aspects, skip_if_set=false, limit=15)
@@ -256,7 +277,8 @@ ASPECT_ELEMENT
       recs.sort_by {|rec| rec.id}
     end
 
-    def games_records( aspect, search)
+    def games_records( aspect, no_aspect_type, search)
+      aspect_info = $pagoda.aspect_info
       $pagoda.games do |game|
         selected = $pagoda.contains_string( game.name, search)
         game.aliases.each do |a|
@@ -268,6 +290,15 @@ ASPECT_ELEMENT
             selected = (game.aspects.size == 0)
           else
             selected = game.aspects[aspect]
+          end
+        end
+
+        if selected && (no_aspect_type != '')
+          selected = ! game.aspects['Lost']
+          game.aspects.each_pair do |a, flag|
+            if flag && (aspect_info[a]['type'] == no_aspect_type)
+              selected = false
+            end
           end
         end
 
