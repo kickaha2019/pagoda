@@ -4,7 +4,7 @@
 "Twitch":
   client_id: kvnfu73c7dp7iz2c5i9tq456jl4f0z
   client_secret: z9p0monr0lzibumwhu8lda4318q7qd
-suggested_limit:  500
+suggested_limit:  499
 not_game_words:
 - demo
 - OST
