@@ -77,6 +77,10 @@ get '/game/:id' do
   erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
 end
 
+get '/game/:id/' do
+  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
+end
+
 get '/game/:id/:aspect_type' do
   type = params[:aspect_type].empty? ? nil : params[:aspect_type]
   erb :game, :locals => {:id => params[:id].to_i, :aspect_type => type}

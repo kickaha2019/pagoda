@@ -14,4 +14,8 @@ class TapRepeatedly < DefaultSite
 	def name
 		'Tap Repeatedly'
 	end
+
+	def static?
+		true
+	end
 end

@@ -94,7 +94,7 @@ class Steam < DefaultSite
 		false
 	end
 
-	def get_aspects(pagoda, page)
+	def get_aspects(pagoda, url, page)
 		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
 		tags  = @info['tags']
 
@@ -204,6 +204,13 @@ class Steam < DefaultSite
 			return true, true, nil, 'Age check'
 		end
 		return false, false, nil, ''
+	end
+
+	def reduce_title( title)
+		if m = /^(.+) on Steam$/.match( title)
+			title = m[1]
+		end
+		title.strip
 	end
 
 	def terminate( pagoda)

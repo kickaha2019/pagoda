@@ -54,6 +54,8 @@ Comedy:
 Comic:
   desc:   Comic cartoon like DOTT
   index:  49
+Contemporary:
+  type:   setting  
 Dialogue:
   title:   Dialogue puzzles
   index:  40
@@ -81,11 +83,15 @@ Escape:
   - Escape room
 Exploration:
   type:   genre
+Fantasy:
+  type: setting
 FMV:
   index:  0
   match:
   - FMV
   - full motion video
+Futuristic:
+  type: setting
 GOG:
   desc:   Game available on GOG
   derive: true
@@ -120,6 +126,8 @@ iOS:
   desc:   "iOS"
   derive: true
   index:  37
+Japan:
+  type:   setting
 JRPG:
   desc:   Random battles
   type:   genre
@@ -145,6 +153,8 @@ Maze:
   - Mazes
   ignore:
   - not a maze
+Medieval:
+  type: setting
 Mid-res:
   desc:   "Mid resolution graphics"
   index:  46
@@ -181,6 +191,8 @@ Other:
 Photo:
   desc: Photographic images used
   index:  39
+Pirates:
+  type: setting
 Played:
   desc: Game I've played
   index:  21
@@ -255,6 +267,8 @@ Steam:
   desc:   Game available on Steam
   index:  7
   derive: true
+Steampunk:
+  type: setting
 Strategy:
   index: 24
 Timer:
@@ -282,6 +296,8 @@ VR:
   type:   genre
   match:
   - Walking simulator
+War:
+  type: setting
 Windows:
   desc:   Game available on Windows
   index:  35
@@ -293,4 +309,3 @@ Wishlist:
   index: 29
 'Wild West':
   type:   setting
-  index:  1

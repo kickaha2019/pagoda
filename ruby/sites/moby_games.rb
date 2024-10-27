@@ -1,17 +1,9 @@
 require_relative 'default_site'
 
 class MobyGames < DefaultSite
-	ASPECT_MAP = {
-		'1st-person'         => '1st person',
-		'2D scrolling'       => [],
-		'3rd-person (Other)' => '3rd person',
-		'Action'             => 'Action',
-		'Adventure'          => 'Adventure',
-		'Comedy'             => 'Comedy',
-		'Platform'           => 'Action',
-		'Puzzle elements'    => [],
-		'Side view'          => '3rd person'
-	}.freeze
+	def initialize
+		@info         = nil
+	end
 
 	def correlate_url( url)
 		if %r{^https://www\.mobygames\.com/} =~ url
@@ -31,14 +23,17 @@ class MobyGames < DefaultSite
 		end
 	end
 
-	def get_aspects(pagoda, page)
+	def get_aspects(pagoda, url, page)
 		Nodes.parse( page).css('div.info-genres dl.metadata a') do |a|
-			if mapped = ASPECT_MAP[a.text]
-				mapped = [mapped] unless mapped.is_a? Array
-				mapped.each {|m| yield m}
-			else
-				yield "MobyGames unhandled: #{a.text}"
+			tag_to_aspects(pagoda, a.text).each do |aspect|
+				yield aspect
 			end
+			# if mapped = ASPECT_MAP[a.text]
+			# 	mapped = [mapped] unless mapped.is_a? Array
+			# 	mapped.each {|m| yield m}
+			# else
+			# 	yield "MobyGames unhandled: #{a.text}"
+			# end
 		end
 	end
 
@@ -86,6 +81,18 @@ class MobyGames < DefaultSite
 			game[key] = game[key] + ', ' + text
 		else
 			game[key] = text
+		end
+	end
+
+	def tag_to_aspects(pagoda, tag)
+		@info = pagoda.get_yaml( 'mobygames.yaml') if @info.nil?
+		aspects = @info['tags'][tag]
+		if aspects.nil?
+			["MobyGames unhandled: #{tag}"]
+		elsif aspects.is_a? Array
+			aspects
+		else
+			[aspects]
 		end
 	end
 

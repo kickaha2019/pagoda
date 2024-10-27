@@ -4,6 +4,7 @@ tags:
   Walking Simulator:
   - ignore
   - Walking simulator
+  - 1st person
   Female Protagonist: ignore
   Third Person:
   - ignore
@@ -112,7 +113,8 @@ tags:
   Time Travel: ignore
   Cartoony:
   - ignore
-  Hand-drawn: ignore
+  Hand-drawn:
+  - ignore
   1990's: ignore
   Conversation: ignore
   Conspiracy: ignore
@@ -185,7 +187,9 @@ tags:
   Tabletop: ignore
   Software: ignore
   Hacking: ignore
-  Cyberpunk: ignore
+  Cyberpunk:
+  - ignore
+  - Futuristic
   Programming: ignore
   Heist: ignore
   Immersive Sim: ignore
@@ -236,7 +240,9 @@ tags:
   Crafting: ignore
   Inventory Management: ignore
   Realistic: ignore
-  World War I: ignore
+  World War I:
+  - ignore
+  - War
   RPGMaker:
   - ignore
   - RPGMaker
@@ -334,7 +340,9 @@ tags:
   Isometric: ignore
   Design &amp; Illustration: ignore
   Souls-like: ignore
-  Pirates: ignore
+  Pirates:
+  - ignore
+  - Pirates
   1980s: ignore
   Creature Collector: ignore
   Sokoban: ignore
@@ -387,7 +395,9 @@ tags:
   Cult Classic: ignore
   Twin Stick Shooter: reject
   Swordplay: reject
-  Western: ignore
+  Western:
+  - ignore
+  - Wild West
   Snow: ignore
   Hunting: ignore
   Roguelike Deckbuilder:
@@ -466,7 +476,9 @@ tags:
   Software Training: ignore
   Chess: reject
   Vikings: ignore
-  Spaceships: ignore
+  Spaceships:
+  - ignore
+  - Futuristic
   Rome: ignore
   Audio Production: ignore
   Submarine: ignore

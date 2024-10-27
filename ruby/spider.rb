@@ -20,7 +20,6 @@ class Spider
 		@cache           = cache
 		@errors          = 0
 		@pagoda          = Pagoda.new( dir, cache)
-		@settings        = YAML.load( IO.read( dir + '/settings.yaml'))
 		@suggested       = []
 		@suggested_links = {}
 		if File.exist?( dir + '/scan_stats.yaml')
@@ -60,7 +59,7 @@ class Spider
 		site_adds     = Hash.new {|h,k| h[k] = 0}
 		site_dups     = Hash.new {|h,k| h[k] = 0}
 		site_nones    = Hash.new {|h,k| h[k] = 0}
-		limit         = @settings['suggested_limit']
+		limit         = @pagoda.settings['suggested_limit']
 		list          = []
 
 		@suggested.each do |link|
@@ -123,7 +122,7 @@ class Spider
 	def full( site, type, section='full')
 		found = false
 
-		@settings[section].each do |scan|
+		@pagoda.settings[section].each do |scan|
 			@site = scan['site']
 			@type = scan['type']
 			next unless (site == @site) || (site == 'All')
@@ -184,7 +183,7 @@ class Spider
 		found = false
     load_old_redirects( @cache + '/redirects.yaml')
 
-		@settings[section].each do |scan|
+		@pagoda.settings[section].each do |scan|
 			@site = scan['site']
 			@type = scan['type']
 			next unless (site == @site) || (site == 'All')
@@ -212,9 +211,14 @@ class Spider
     save_new_redirects( @cache + '/redirects.yaml')
 	end
 
-	def link_page_anchors( site)
+	def links_for_site( site)
 		@pagoda.links do |link|
-			next unless link.site == site
+			yield link if link.site == site
+		end
+	end
+
+	def link_page_anchors( site)
+		links_for_site( site) do |link|
 			next unless link.valid? && link.bound? && link.collation
 			page = read_cached_page link
 			page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
@@ -358,7 +362,7 @@ class Spider
 	def set_not_game_words
 		@not_game_words = Hash.new {|h,k| h[k] = false}
 
-		@settings['not_game_words'].each do |word|
+		@pagoda.settings['not_game_words'].each do |word|
 			@not_game_words[word.downcase] = true
 		end
 
@@ -383,9 +387,13 @@ class Spider
 		incremental( site, type, 'test_incremental')
 	end
 
-	def update_link( url, site, type, title, new_url)
-		@pagoda.update_link( url, site, type, title, new_url)
+	def update_link(link, rec, body, debug=false)
+		@pagoda.update_link(link, rec, body, debug)
 	end
+
+	# def update_new_link( url, site, type, title, new_url)
+	# 	@pagoda.update_new_link(url, site, type, title, new_url)
+	# end
 
 	def verified_links
 		Dir.entries( @cache + "/verified").each do |f|

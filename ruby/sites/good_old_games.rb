@@ -103,7 +103,7 @@ class GoodOldGames < DefaultSite
 		true
 	end
 
-	def get_aspects(pagoda, page)
+	def get_aspects(pagoda, url, page)
 		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
 		tags  = @info['tags']
 

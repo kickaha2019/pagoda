@@ -1,6 +1,9 @@
 ---
 "Twitter":
   "BEARER_TOKEN": AAAAAAAAAAAAAAAAAAAAACpiOQEAAAAAMyuk84Cm5NCY53yG5k7YC5vw72A%3DNRC3ZxenARnC3hW6JR5eoBYWTk3IFNOdrAZkZ4jaRO7ibmDmo8
+"Twitch":
+  client_id: kvnfu73c7dp7iz2c5i9tq456jl4f0z
+  client_secret: z9p0monr0lzibumwhu8lda4318q7qd
 suggested_limit:  500
 not_game_words:
 - demo

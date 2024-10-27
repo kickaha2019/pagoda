@@ -34,7 +34,7 @@ class DefaultSite
     true
   end
 
-  def get_aspects(pagoda, page)
+  def get_aspects(pagoda, url, page)
   end
 
   def get_derived_aspects( page)
@@ -59,6 +59,16 @@ class DefaultSite
     nil
   end
 
+  def get_title(pagoda, page, defval)
+    if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
+      title = m[1].gsub( /\s/, ' ')
+      title.strip.gsub( '  ', ' ')
+      (title == '') ? defval : title
+    else
+      defval
+    end
+  end
+
   def ignore_redirects?
     false
   end
@@ -71,15 +81,20 @@ class DefaultSite
     'Website'
   end
 
-  def notify_bind( pagoda, link, page, game_id)
-  end
-
   def override_verify_url( url)
     return false, false, '', ''
   end
 
+  def post_load(pagoda, page)
+    page
+  end
+
   def reduce_title( title)
     title
+  end
+
+  def static?
+    false
   end
 
   def terminate( pagoda)

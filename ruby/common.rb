@@ -95,6 +95,16 @@ module Common
 		}
 	end
 
+	def http_post( url, delay = 10, headers = {}, body = nil)
+		throttle( url, delay)
+		uri = URI.parse( url)
+		http = Net::HTTP.new(uri.hostname,uri.port)
+		http.use_ssl = true
+		request = Net::HTTP::Post.new(URI(url), headers)
+		request.body = body if body
+		http.request(request).body
+	end
+
 	def http_redirect( url, depth = 0, debug = false)
 		p ['http_redirect', url, depth] if debug
 		return url if /\.(jpg|jpeg|png|gif)$/i =~ url

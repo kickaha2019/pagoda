@@ -157,7 +157,7 @@ class SuggestAspects
       @pagoda.get( 'link', :url, bind[:url]).each do |link|
         next unless link[:timestamp] && (link[:timestamp] > 100)
         next if site_arg && (link[:site] != site_arg)
-        tag_aspects( link[:site], link[:timestamp], game)
+        tag_aspects( link, game)
       end
     end
 
@@ -179,12 +179,12 @@ class SuggestAspects
     return '', '', 0, '', ''
   end
 
-  def tag_aspects( site_name, timestamp, game)
+  def tag_aspects( link, game)
     aspects = game.aspects
-    page = IO.read( @pagoda.cache_path( timestamp))
-    site = @pagoda.get_site_handler( site_name)
+    page = IO.read( @pagoda.cache_path( link[:timestamp]))
+    site = @pagoda.get_site_handler( link[:site])
 
-    site.get_aspects(@pagoda, page) do |aspect|
+    site.get_aspects(@pagoda, link[:url], page) do |aspect|
       unless aspects.has_key?(aspect)
         @tagged += 1
         @pagoda.start_transaction

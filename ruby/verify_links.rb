@@ -24,8 +24,8 @@ class VerifyLinks
   end
 
   def get_details( link, body, rec)
-    status = true
-    rec[:title] = get_title( body, link.type)
+    site   = @pagoda.get_site_handler( link.site)
+    rec[:title] = site.get_title( link.url, body, link.type)
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ rec[:title]
@@ -51,16 +51,6 @@ class VerifyLinks
       @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
     end
     true
-  end
-
-  def get_title( page, defval)
-    if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
-      title = m[1].gsub( /\s/, ' ')
-      title.strip.gsub( '  ', ' ')
-      (title == '') ? defval : title
-    else
-      defval
-    end
   end
 
   def http_get_threaded( url)
@@ -165,11 +155,14 @@ class VerifyLinks
   end
 
   def oldest( n, valid_for)
-    free, bound, dubious, ignored, flagged = [], [], [], [], []
+    free, bound, dubious, ignored, flagged, static = [], [], [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
-      next if link.static? && link.valid? && (link.timestamp > 100)
+      if link.static? && link.valid? && (link.timestamp > 100)
+        static << link
+        next
+      end
 
       if link.comment
         flagged << link
@@ -200,8 +193,14 @@ class VerifyLinks
     puts "... Dubious: #{dubious.size}"
     puts "... Free:    #{free.size}"
     puts "... Ignored: #{ignored.size}"
+    puts "... Static:  #{static.size}"
 
-    {'flagged' => flagged, 'free' => free, 'dubious' => dubious, 'bound' => bound}.each_pair do |k,v|
+    {'flagged' => flagged,
+     'free'    => free,
+     'dubious' => dubious,
+     'bound'   => bound,
+     'static'  => static}.each_pair do |k,v|
+
       v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
       File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
         io.puts 'site,title,url,timestamp,valid'
@@ -209,6 +208,7 @@ class VerifyLinks
           io.puts "#{link.site},#{link.title},#{link.url},#{link.timestamp},#{link.valid}"
         end
       end
+
       v.shuffle!
     end
     #raise 'Dev'
@@ -218,7 +218,14 @@ class VerifyLinks
       (0..9).each do
         links << dubious.pop unless dubious.empty?
       end
-      [flagged, free, bound, ignored].each do |type|
+
+      (0..5).each do
+        [flagged, free, bound, static].each do |type|
+          links << type.pop unless type.empty?
+        end
+      end
+
+      [ignored].each do |type|
         links << type.pop unless type.empty?
       end
     end
@@ -232,8 +239,16 @@ class VerifyLinks
   end
 
   def verify_page( link, debug=false)
+    if link.static?
+      if game = link.collation
+        game.update_from_link(link)
+      end
+      return
+    end
+
     status, comment, ignore, body = load_page(link, debug)
     site = @pagoda.get_site_handler( link.site)
+    body = site.post_load(@pagoda, body) if status
 
     if status && (comment = site.validate_page(link.url, body))
       status = false
@@ -268,6 +283,9 @@ class VerifyLinks
       rec[:title] = link.title
     end
 
+    @pagoda.update_link(link, rec, body, debug)
+
+=begin
     # Save old timestamp and page, get new unused timestamp
     old_t, old_page = link.timestamp, ''
     old_path = @pagoda.cache_path( old_t)
@@ -301,6 +319,7 @@ class VerifyLinks
     end
 
     link.verified( rec)
+=end
     if status && (game = link.collation)
       game.update_from_link(link)
     end

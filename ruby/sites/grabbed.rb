@@ -35,7 +35,7 @@ class Grabbed < DefaultSite
 		scanner.get_links do |title, url|
 			site, type, link = * scanner.correlate_site( url)
 			if site
-				scanner.update_link( url, site, type, title, link)
+				scanner.update_new_link(url, site, type, title, link)
 			end
 		end
 

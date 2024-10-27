@@ -113,10 +113,6 @@ HIDDEN_ASPECT_ELEMENT
       return '' if bind_id( link_rec) == bind_game
       link_rec.bind( bind_game)
 
-      page = get_cache( link_rec.timestamp)
-      site = $pagoda.get_site_handler( link_rec.site)
-      site.notify_bind( $pagoda, link_rec, page, bind_game)
-
       game_rec = $pagoda.game( bind_game)
       game_rec.update_from_link(link_rec)
       'Bound'
@@ -339,9 +335,7 @@ HIDDEN_ASPECT_ELEMENT
     end
 
     def get_cache( timestamp)
-      path = $pagoda.cache_path( timestamp)
-      return '' unless File.exist?( path)
-      IO.read( path)
+      $pagoda.get_cached_page( timestamp)
     end
 
     def get_locals( params, defs)
@@ -483,12 +477,10 @@ HIDDEN_ASPECT_ELEMENT
       current_type
     end
 
-    def links_by_site_and_type( static = false)
+    def links_by_site_and_type
       cache = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = []}}
       $pagoda.links do |rec|
-        if rec.static? == static
-          cache[rec.site][rec.type] << rec
-        end
+        cache[rec.site][rec.type] << rec
       end
       cache.keys.sort.each do |site|
         cache[site].keys.sort.each do |type|
@@ -571,7 +563,7 @@ HIDDEN_ASPECT_ELEMENT
         if m = /^Redirected to (.*)$/.match( link_rec.comment)
           new_url = m[1]
           title = (/Moved Permanently/ =~ link_rec.title) ? link_rec.orig_title : link_rec.title
-          if $pagoda.add_link( link_rec.site, link_rec.type, title, new_url, link_rec.static)
+          if $pagoda.add_link( link_rec.site, link_rec.type, title, new_url)
             new_link = $pagoda.link( new_url)
             binds = $pagoda.get( 'bind', :url, link_rec.url)
             if binds.size > 0

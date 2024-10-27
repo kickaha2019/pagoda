@@ -261,7 +261,7 @@ class Pagoda
       #   end
       # end
 
-      site.get_aspects(@owner,page) do |aspect|
+      site.get_aspects(@owner, link.url, page) do |aspect|
         if @owner.aspect?(aspect)
             unless cache_aspects.has_key?(aspect)
               # type = @owner.get_aspect_type(aspect)
@@ -372,8 +372,9 @@ class Pagoda
     end
 
     def static?
-      return false unless @record[:static]
-      @record[:static] == 'Y'
+      @owner.get_site_handler( @record[:site]).static?
+      # return false unless @record[:static]
+      # @record[:static] == 'Y'
     end
 
     def status
@@ -439,9 +440,11 @@ class Pagoda
     end
   end
 
+  attr_reader :settings
   def initialize( dir, cache=nil)
     @dir       = dir
     @database  = Database.new( dir)
+    @settings  = YAML.load( IO.read( dir + '/settings.yaml'))
     log 'Loaded database'
     @names     = Names.new
     @possibles = nil
@@ -597,6 +600,12 @@ class Pagoda
     links {|link| link.generate?}
   end
 
+  def get_cached_page( timestamp)
+    path = cache_path( timestamp)
+    return '' unless File.exist?( path)
+    IO.read( path)
+  end
+
   def get_site_handler( site)
     if @site_handlers[site]
       @site_handlers[site]
@@ -684,7 +693,7 @@ class Pagoda
 
   # Wrapper methods for calls to database and names logic
 
-  def add_link( site, type, title, url, static='N')
+  def add_link( site, type, title, url)
     url = get_site_handler( site).coerce_url( url)
     return false if link(url) != nil
 
@@ -695,7 +704,6 @@ class Pagoda
                              :title      => title,
                              :orig_title => title,
                              :url        => url,
-                             :static     => static,
                              :timestamp  => 1})
     end_transaction
     true
@@ -841,7 +849,44 @@ class Pagoda
     @site_handlers.each_value {|handler| handler.terminate( self)}
   end
 
-  def update_link( url, site, type, title, new_url, static='N')
+  def update_link(link, rec, body, debug=false)
+
+    # Save old timestamp and page, get new unused timestamp
+    old_t, old_page = link.timestamp, ''
+    old_path = cache_path( old_t)
+    if File.exist?( old_path)
+      old_page = IO.read( old_path)
+    end
+
+    # Save old link to old_links table
+    start_transaction
+    delete('old_links',:url, link.url)
+    insert('old_links',link.record)
+    end_transaction
+
+    new_path = cache_path( rec[:timestamp])
+    while File.exist?( new_path)
+      sleep 1
+      rec[:timestamp] = Time.now.to_i
+    end
+
+    # If OK save page to cache else to temp area
+    File.open( new_path, 'w') {|io| io.print body}
+    rec[:changed] = (body.strip != old_page.strip)
+    p ['update_link5', new_path] if debug
+
+    # Ignore link if so flagged but comment if bound to a game
+    if rec[:ignore]
+      link.bind( -1)
+      if link.collation
+        rec[:comment] = "Was bound to #{link.collation.name}"
+      end
+    end
+
+    link.verified( rec)
+  end
+
+  def update_new_link(url, site, type, title, new_url, static='N')
     @database.start_transaction
     @database.delete( 'link', :url, url)
     insert( 'link',
@@ -850,7 +895,6 @@ class Pagoda
              :title      => title,
              :orig_title => title,
              :url        => new_url,
-             :static     => static,
              :timestamp  => 1})
     @database.end_transaction
   end

@@ -16,7 +16,9 @@ tags:
   Choices Matter: ignore
   Classic: ignore
   Combat: reject
-  Comedy: ignore
+  Comedy:
+  - ignore
+  - Comedy
   CRPG:
   - accept
   - RPG
@@ -36,7 +38,9 @@ tags:
   - ignore
   - 1st person
   FPS: reject
-  Fantasy: ignore
+  Fantasy:
+  - ignore
+  - Fantasy
   Female Protagonist: ignore
   Fighting: reject
   Flight: ignore
@@ -119,7 +123,9 @@ tags:
   Turn-Based: ignore
   Violent: ignore
   Virtual life: reject
-  Visual Novel: ignore
+  Visual Novel:
+  - ignore
+  - Visual novel
   Local Multiplayer: ignore
   Physics: ignore
   Noir: ignore
@@ -130,22 +136,32 @@ tags:
   Only On GOG: ignore
   Difficult: ignore
   Realistic: ignore
-  Western: ignore
-  Space: ignore
+  Western:
+  - ignore
+  - Wild West
+  Space:
+  - ignore
+  - Futuristic
   Family Friendly: ignore
   Relaxing: ignore
   Surreal: ignore
-  Military: ignore
+  Military:
+  - ignore
+  - War
   Resource Management: reject
   Base Building: ignore
   Gore: ignore
   Split Screen: ignore
   Dinosaurs: ignore
-  World War II: ignore
+  World War II:
+  - ignore
+  - War
   Tanks: ignore
   Education: ignore
   LifeSim: ignore
-  War: ignore
+  War:
+  - ignore
+  - War
   Magic: ignore
   Top-Down: ignore
   Psychological Horror:
@@ -154,7 +170,9 @@ tags:
   Real-Time: ignore
   Cartoony:
   - ignore
-  Cyberpunk: ignore
+  Cyberpunk:
+  - ignore
+  - Futuristic
   Grand Strategy: ignore
   Crime: ignore
   Text-Based: reject
@@ -175,9 +193,11 @@ tags:
   - accept
   - RPG
   Ninja: ignore
-  Pirates: ignore
+  Pirates:
+  - ignore
+  - Pirates
   Underwater: ignore
-  World War I: ignore
+  World War I: War
   Football: ignore
   Choose Your Own Adventure:
   - accept

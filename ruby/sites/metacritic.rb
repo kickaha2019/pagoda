@@ -56,12 +56,6 @@ class Metacritic < DefaultSite
 		end
 	end
 
-	def get_game_year( pagoda, link, page, rec)
-		if g = link.collation
-			notify_bind( pagoda, link, page, g.id)
-		end
-	end
-
 	def incremental( scanner)
 		path  = scanner.cache + "/metacritic.json"
 		found = File.exist?( path) ? JSON.parse( IO.read( path)) : {}
@@ -99,20 +93,4 @@ class Metacritic < DefaultSite
 	def name
 		'Metacritic'
   end
-
-	def notify_bind( pagoda, link, page, game_id)
-		Nodes.parse( page).css( 'li.full_review a') do |anchor|
-			[anchor['href']]
-		end.parent(5).css( 'div.source a') do |anchor, href|
-			href = href.strip
-			review = pagoda.link( href)
-			unless review
-				pagoda.add_link( anchor.text, 'Review', link.orig_title, href, 'Y')
-				review = pagoda.link( href)
-			end
-			unless review.bound?
-				review.bind( game_id)
-			end
-		end
-	end
 end

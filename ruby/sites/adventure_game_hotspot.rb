@@ -75,7 +75,7 @@ class AdventureGameHotspot < DefaultSite
 		end
 	end
 
-	def get_aspects(pagoda, page)
+	def get_aspects(pagoda, url, page)
 		Nodes.parse( page).css('div.game-details th') do |th|
 			if map = ASPECT_MAP[th.text]
 				th.parent.css('a').each do |value|
