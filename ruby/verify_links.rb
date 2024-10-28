@@ -155,12 +155,11 @@ class VerifyLinks
   end
 
   def oldest( n, valid_for)
-    free, bound, dubious, ignored, flagged, static = [], [], [], [], [], []
+    free, bound, dubious, ignored, flagged = [], [], [], [], []
     valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
 
     @pagoda.links do |link|
       if link.static? && link.valid? && (link.timestamp > 100)
-        static << link
         next
       end
 
@@ -193,13 +192,11 @@ class VerifyLinks
     puts "... Dubious: #{dubious.size}"
     puts "... Free:    #{free.size}"
     puts "... Ignored: #{ignored.size}"
-    puts "... Static:  #{static.size}"
 
     {'flagged' => flagged,
      'free'    => free,
      'dubious' => dubious,
-     'bound'   => bound,
-     'static'  => static}.each_pair do |k,v|
+     'bound'   => bound}.each_pair do |k,v|
 
       v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
       File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
@@ -220,7 +217,7 @@ class VerifyLinks
       end
 
       (0..5).each do
-        [flagged, free, bound, static].each do |type|
+        [flagged, free, bound].each do |type|
           links << type.pop unless type.empty?
         end
       end

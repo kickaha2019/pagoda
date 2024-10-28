@@ -470,7 +470,6 @@ class Pagoda
     log 'Populate names repository'
 
     @aspect_info_timestamp = 0
-    @cached_yaml = {}
     load_site_handlers
     log 'Pagoda opened'
   end

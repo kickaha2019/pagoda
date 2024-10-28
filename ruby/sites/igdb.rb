@@ -19,24 +19,12 @@ class Igdb < DefaultSite
 	def get_aspects(pagoda, url, page)
 		begin
 			info = JSON.parse(page)[0]
-
-			info['game_modes'].each do |mode|
-				tag_to_aspects(pagoda, mode['name']) {|aspect| yield aspect}
-			end
-
-			info['genres'].each do |mode|
-				tag_to_aspects(pagoda, mode['name']) {|aspect| yield aspect}
-			end
-
-			info['player_perspectives'].each do |mode|
-				tag_to_aspects(pagoda, mode['name']) {|aspect| yield aspect}
-			end
-
-			info['themes'].each do |mode|
-				tag_to_aspects(pagoda, mode['name']) {|aspect| yield aspect}
-			end
-
+			tag_to_aspects(pagoda, info, 'game_modes')          {|aspect| yield aspect}
+			tag_to_aspects(pagoda, info, 'genres')              {|aspect| yield aspect}
+			tag_to_aspects(pagoda, info, 'player_perspectives') {|aspect| yield aspect}
+			tag_to_aspects(pagoda, info, 'themes')              {|aspect| yield aspect}
 		rescue StandardError => e
+			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
 		end
 	end
@@ -45,6 +33,7 @@ class Igdb < DefaultSite
 		begin
 			JSON.parse(page)[0]['summary']
 		rescue StandardError => e
+			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
 			''
 		end
@@ -55,6 +44,7 @@ class Igdb < DefaultSite
 			info = JSON.parse(page)[0]
 			game[:year] = Time.at(info['first_release_date']).year
 		rescue StandardError => e
+			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
 		end
 	end
@@ -63,20 +53,25 @@ class Igdb < DefaultSite
 		begin
 			JSON.parse(page)[0]['name']
 		rescue StandardError => e
+			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
 			defval
 		end
 	end
 
-	def tag_to_aspects(pagoda, tag)
+	def tag_to_aspects(pagoda, data, key)
+		return if data[key].nil?
 		@info = pagoda.get_yaml( 'igdb.yaml') if @info.nil?
-		aspects = @info['tags'][tag]
-		if aspects.nil?
-			yield "IGDB unhandled: #{tag}"
-		elsif aspects.is_a? Array
-			aspects.each {|aspect| yield aspect}
-		else
-			yield aspects
+
+		data[key].each do |item|
+			aspects = @info['tags'][item['name']]
+			if aspects.nil?
+				yield "IGDB unhandled: #{item['name']}"
+			elsif aspects.is_a? Array
+				aspects.each {|aspect| yield aspect}
+			else
+				yield aspects
+			end
 		end
 	end
 
