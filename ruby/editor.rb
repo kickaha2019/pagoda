@@ -233,3 +233,9 @@ end
 post '/visited/:key' do
   visited_key( d(params[:key]))
 end
+
+post '/write_grabbed/:game_id' do
+  File.open(ARGV[1] + '/grabbed.txt', 'a') do |io|
+    io.puts params[:game_id]
+  end
+end

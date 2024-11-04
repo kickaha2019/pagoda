@@ -1,24 +1,32 @@
 <%= erb :header, :locals => {:page => (id >= 0) ? 'game' : 'new_game'} %>
 
 <script>
+    function write_id_to_grabbed( id) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST",
+                   "/write_grabbed/" + id,
+                   false);
+        xhttp.send();
+    }
+
     function check_name( field) {
         var name = document.getElementsByName(field)[0].value;
         if (name == '') {return true;}
 
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST",
-                   "/check_name",
-                   false);
+            "/check_name",
+            false);
         xhttp.setRequestHeader("Content-Type", "application/json");
         var data = {id:document.getElementById("id").value,
-                    name:name};
+            name:name};
         xhttp.send(JSON.stringify(data));
 
         if (xhttp.responseText != 'Y') {
-          alert( name + " already used");
-          return false;
+            alert( name + " already used");
+            return false;
         } else {
-          return true;
+            return true;
         }
     }
 
@@ -120,12 +128,12 @@
       <tr><th>Website:</th><td><%= input_element( 'website', 80, @website) %></td></tr>
 
       <tr><th>Search:</th><td>
-        <%= google_search( 'Game details', [@name, @developer, @publisher]) %>
-        <%= google_search( 'IGDB', [@name, 'IGDB']) %>
-        <%= google_search( 'MobyGames', [@name, 'MobyGames']) %>
-        <%= google_search( 'Metacritic', [@name, 'Metacritic']) %>
-        <%= google_search( 'Steam', [@name, 'Steam']) %>
-        <%= google_search( 'Apple', [@name, 'Apple', 'App', 'Store']) %>
+        <%= google_search( 'Game details', @id, [@name, @developer, @publisher]) %>
+        <%= google_search( 'IGDB', @id, [@name, 'IGDB']) %>
+        <%= google_search( 'MobyGames', @id, [@name, 'MobyGames']) %>
+        <%= google_search( 'Metacritic', @id, [@name, 'Metacritic']) %>
+        <%= google_search( 'Steam', @id, [@name, 'Steam']) %>
+        <%= google_search( 'Apple', @id, [@name, 'Apple', 'App', 'Store']) %>
       </td></tr>
 
       <tr><th>Aspects:</th><td>

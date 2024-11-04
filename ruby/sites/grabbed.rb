@@ -4,10 +4,16 @@ class Grabbed < DefaultSite
 	def incremental( scanner)
 		path  = scanner.cache + "/grabbed.txt"
 		added = 0
+		game  = -1
 
 		left = IO.readlines( path).select do |line|
 			url = line.strip
 			next if url == ''
+
+			if /^\d+$/ =~ url
+				game = url.to_i
+				next
+			end
 
 			title = 'Unknown'
 			begin
@@ -20,7 +26,11 @@ class Grabbed < DefaultSite
 			
 			site, type, link = * scanner.correlate_site( url)
 			if site
-				added += scanner.add_or_replace_link( title, link, site, type)
+				if scanner.add_or_replace_link( title, link, site, type) > 0
+					added += 1
+					scanner.add_bind(link, game) if game >= 0
+					game = -1
+				end
 				false
 			else
 				added += scanner.add_link( title, url)
@@ -32,12 +42,12 @@ class Grabbed < DefaultSite
 			io.print left.join( '')
 		end
 
-		scanner.get_links do |title, url|
-			site, type, link = * scanner.correlate_site( url)
-			if site
-				scanner.update_new_link(url, site, type, title, link)
-			end
-		end
+		# scanner.get_links do |title, url|
+		# 	site, type, link = * scanner.correlate_site( url)
+		# 	if site
+		# 		scanner.update_new_link(url, site, type, title, link)
+		# 	end
+		# end
 
 		added
 	end

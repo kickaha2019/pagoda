@@ -103,6 +103,10 @@ class Pagoda
       'A'
     end
 
+    def group?
+      @record[:is_group] == 'Y'
+    end
+
     def group_name
       if @record[:group_id]
         if group = @owner.get( 'game', :id, @record[:group_id])[0]
@@ -336,6 +340,19 @@ class Pagoda
 
     def label
       orig_title
+    end
+
+    def link_aspects
+      begin
+        sh = @owner.get_site_handler(site)
+        found = []
+        sh.get_aspects(@owner,url,IO.read( @owner.cache_path( timestamp))) do |aspect|
+          found << aspect
+        end
+        found.uniq.join(' ')
+      rescue StandardError => e
+        puts e.to_s
+      end
     end
 
     def link_date

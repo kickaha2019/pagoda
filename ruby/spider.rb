@@ -30,6 +30,13 @@ class Spider
 		set_not_game_words
 	end
 
+	def add_bind(url, game_id)
+		@pagoda.start_transaction
+		@pagoda.delete( 'bind', :url, url)
+		@pagoda.insert('bind', {url:url, id:game_id})
+		@pagoda.end_transaction
+	end
+
 	def add_link( title, url, site=@site, type=@type)
 		url = @pagoda.get_site_handler( site).coerce_url( url.strip)
 		@suggested_links[url] = true
@@ -391,9 +398,9 @@ class Spider
 		@pagoda.update_link(link, rec, body, debug)
 	end
 
-	# def update_new_link( url, site, type, title, new_url)
-	# 	@pagoda.update_new_link(url, site, type, title, new_url)
-	# end
+	def update_new_link( url, site, type, title, new_url)
+		@pagoda.update_new_link(url, site, type, title, new_url)
+	end
 
 	def verified_links
 		Dir.entries( @cache + "/verified").each do |f|

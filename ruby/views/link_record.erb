@@ -34,7 +34,6 @@
   <table class="link_record list">
     <tr><th>Site</th><td><%= h(@rec.site) %></td></tr>
     <tr><th>Type</th><td><%= h(@rec.type) %></td></tr>
-    <tr><th>Link date</th><td><%= @rec.link_date %></td></tr>
     <tr><th>Link</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.orig_title)}<a/>" %></td></tr>
     <tr><th>Cache</th><td>
       <%= @rec.valid? ? "<a href=\"/cache/#{@rec.timestamp}\">#{h(@rec.orig_title)}<a/>" : '' %>
@@ -47,6 +46,8 @@
     <tr><th>Static</th><td><%= @rec.static? ? 'Y' : 'N' %></td></tr>
     <tr><th>Comment</th><td><%= @rec.comment %></td></tr>
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
+    <tr><th>Link date</th><td><%= @rec.link_date %></td></tr>
+    <tr><th>Link aspects</th><td><%= @rec.link_aspects %></td></tr>
     <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
                                 link_action( @rec, 'bind') +
                                 link_action( @rec, 'unbind') +

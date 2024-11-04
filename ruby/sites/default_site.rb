@@ -59,7 +59,7 @@ class DefaultSite
     nil
   end
 
-  def get_title(pagoda, page, defval)
+  def get_title(url, page, defval)
     if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
       title.strip.gsub( '  ', ' ')

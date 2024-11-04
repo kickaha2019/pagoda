@@ -15,6 +15,7 @@ tags:
   Anime / Manga: []
   Arcade: Action
   Asia: []
+  Beat 'em up / brawler: []
   Behind view: 3rd person
   Board game: []
   Cards / tiles: Cards
@@ -33,6 +34,7 @@ tags:
   Digital extras: []
   Ecology / nature: []
   Educational: Edutainment
+  Egypt (Ancient): []
   Europe: []
   Extra content / game: []
   Fangame: []
@@ -43,6 +45,7 @@ tags:
   Free camera: []
   Full Motion Video (FMV): FMV
   Gambling elements: []
+  Game show / trivia / quiz: []
   Geography: []
   Graphic adventure: Adventure
   Graphics / art: []
@@ -87,6 +90,7 @@ tags:
   Puzzle elements: []
   Puzzle: Puzzle
   Quick Time Events (QTEs): []
+  Reading / writing: []
   Real-time: []
   Regional differences: []
   Religion: []
@@ -94,6 +98,7 @@ tags:
   Role-playing (RPG): RPG
   Romance: []
   RPG elements: RPG
+  Sandbox / open world: []
   Science: []
   Sci-fi / futuristic: Futuristic
   Sea pirates / Caribbean: Pirates
@@ -112,8 +117,9 @@ tags:
   Survival horror: Horror
   Tactical RPG: RPG
   Text parser: []
-  Text-based / Spreadsheet: []
+  Text-based / Spreadsheet: 1st person
   Thriller: []
+  Tile matching puzzle: []
   Top-down: 3rd person
   Trading / collectible card: []
   Train: []
@@ -126,6 +132,8 @@ tags:
   Visual novel:
   - Visual novel
   Western: Wild West
-  Word construction: Word puzzle
+  Word construction:
+  - Word puzzle
+  - 1st person
   World War I: War
   World War II: War

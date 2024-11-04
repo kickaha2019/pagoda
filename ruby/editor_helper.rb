@@ -276,6 +276,12 @@ HIDDEN_ASPECT_ELEMENT
     def games_records( aspect, no_aspect_type, search)
       aspect_info = $pagoda.aspect_info
       $pagoda.games do |game|
+        if /Bear With Me series/ =~ game.name
+          puts 'DEBUG100'
+        end
+        next if game.group? and (no_aspect_type != '')
+        next if game.group? and (aspect != '')
+
         selected = $pagoda.contains_string( game.name, search)
         game.aliases.each do |a|
           selected = true if $pagoda.contains_string( a.name, search)
@@ -350,9 +356,13 @@ HIDDEN_ASPECT_ELEMENT
       locals
     end
 
-    def google_search( label, texts)
+    def google_search( label, game_id, texts)
       text = texts.join( ' ').downcase.gsub( /[^0-9a-z]/, ' ').gsub( ' ', '+')
-      "<a target=\"_blank\" href=\"https://www.google.com/search?q=#{text}\">#{label}</a>"
+      <<SEARCH
+<a target="_blank" 
+onclick="write_id_to_grabbed(#{game_id})"
+href="https://www.google.com/search?q=#{text}">#{label}</a>
+SEARCH
     end
 
     def h(text, max_chars=1000)
@@ -576,6 +586,28 @@ HIDDEN_ASPECT_ELEMENT
         end
       end
       ''
+    end
+
+    def oldest_bound_link
+      oldest_link(true)
+    end
+
+    def oldest_ignored_link
+      oldest_link(false)
+    end
+
+    def oldest_link(bound)
+      oldest = nil
+      $pagoda.links do |link|
+        next if link.static?
+        if link.bound? && (link.collation.nil? != bound)
+          oldest = link if oldest.nil? || (link.timestamp < oldest.timestamp)
+        end
+      end
+      return '' if oldest.nil?
+      <<OLDEST_LINK
+<a target="_blank" href="/link/#{e(e(oldest.url))}">#{Time.at(oldest.timestamp).strftime('%Y-%m-%d')}</a>
+OLDEST_LINK
     end
 
     def refresh_metadata

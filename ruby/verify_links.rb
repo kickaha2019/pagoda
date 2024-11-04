@@ -154,9 +154,8 @@ class VerifyLinks
     return status, comment, ignore, body
   end
 
-  def oldest( n, valid_for)
-    free, bound, dubious, ignored, flagged = [], [], [], [], []
-    valid_from = Time.now.to_i - 24 * 60 * 60 * valid_for
+  def to_verify(n)
+    must, bound, loose = [], [], []
 
     @pagoda.links do |link|
       if link.static? && link.valid? && (link.timestamp > 100)
@@ -164,39 +163,32 @@ class VerifyLinks
       end
 
       if link.comment
-        flagged << link
+        must << link
         next
       end
 
       if link.timestamp > 100
         unless File.exist? @pagoda.cache_path( link.timestamp)
-          dubious << link
+          must << link
           next
         end
       end
 
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
-        dubious << link
+        must << link
       elsif /free/i =~ link.status
-        free << link
+        loose << link
       elsif link.status == 'Ignored'
-        ignored << link if link.timestamp < valid_from
+        loose << link
       else
-        bound << link if link.timestamp < valid_from
+        bound << link
       end
     end
 
-    puts "... Flagged: #{flagged.size}"
-    puts "... Bound:   #{bound.size}"
-    puts "... Dubious: #{dubious.size}"
-    puts "... Free:    #{free.size}"
-    puts "... Ignored: #{ignored.size}"
-
-    {'flagged' => flagged,
-     'free'    => free,
-     'dubious' => dubious,
-     'bound'   => bound}.each_pair do |k,v|
+    {'must'  => must,
+     'loose' => loose,
+     'bound' => bound}.each_pair do |k,v|
 
       v.sort_by! {|link| link.timestamp ? link.timestamp : 0}
       File.open( "/Users/peter/temp/#{k}.csv", 'w') do |io|
@@ -206,25 +198,17 @@ class VerifyLinks
         end
       end
 
-      v.shuffle!
+      puts "... #{k}: #{v.size} #{Time.at(v[0].timestamp)}" unless v.empty?
     end
     #raise 'Dev'
 
-    links = []
+    links = must
     (0...n).each do
       (0..9).each do
-        links << dubious.pop unless dubious.empty?
+        links << bound.pop unless bound.empty?
       end
 
-      (0..5).each do
-        [flagged, free, bound].each do |type|
-          links << type.pop unless type.empty?
-        end
-      end
-
-      [ignored].each do |type|
-        links << type.pop unless type.empty?
-      end
+      links << loose.pop unless loose.empty?
     end
 
     links = links[0...n] if links.size > n
@@ -281,42 +265,6 @@ class VerifyLinks
     end
 
     @pagoda.update_link(link, rec, body, debug)
-
-=begin
-    # Save old timestamp and page, get new unused timestamp
-    old_t, old_page = link.timestamp, ''
-    old_path = @pagoda.cache_path( old_t)
-    if File.exist?( old_path)
-      old_page = IO.read( old_path)
-    end
-
-    # Save old link to old_links table
-    @pagoda.start_transaction
-    @pagoda.delete('old_links',:url, link.url)
-    @pagoda.insert('old_links',link.record)
-    @pagoda.end_transaction
-
-    new_path = @pagoda.cache_path( rec[:timestamp])
-    while File.exist?( new_path)
-      sleep 1
-      rec[:timestamp] = Time.now.to_i
-    end
-
-    # If OK save page to cache else to temp area
-    File.open( new_path, 'w') {|io| io.print body}
-    rec[:changed] = (body.strip != old_page.strip)
-    p ['verify_page5', new_path] if debug
-
-    # Ignore link if so flagged but comment if bound to a game
-    if rec[:ignore]
-      link.bind( -1)
-      if link.collation
-        rec[:comment] = "Was bound to #{link.collation.name}"
-      end
-    end
-
-    link.verified( rec)
-=end
     if status && (game = link.collation)
       game.update_from_link(link)
     end
@@ -348,7 +296,7 @@ else
   puts "... Verifying links"
   vl.zap_old_links
   count = 0
-  vl.oldest( ARGV[1].to_i, ARGV[3].to_i) do |link|
+  vl.to_verify(ARGV[1].to_i) do |link|
     #puts "... Verifying #{link.url}"
     count += 1
     vl.throttle( link.url)

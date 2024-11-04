@@ -78,7 +78,11 @@ CHECKBOX
       summary_line( 'Totals', '', totals, {}, html)
       html.join( "\n")
     %>
-  </table>
+
+    <table class="summary list">
+      <tr><th align="left">Oldest bound link</th><td><%= oldest_bound_link %></td></tr>
+      <tr><th align="left">Oldest ignored link</th><td><%= oldest_ignored_link %></td></tr>
+    </table>
 
 </body>
 </html>

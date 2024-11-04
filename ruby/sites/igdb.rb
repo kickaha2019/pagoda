@@ -8,6 +8,10 @@ class Igdb < DefaultSite
 		@access_token = nil
 	end
 
+	def coerce_url( url)
+		url.split('/?')[0]
+	end
+
 	def correlate_url( url)
 		if %r{^https://www\.igdb\.com/games/} =~ url
 			return 'IGDB', 'Reference', url
@@ -18,7 +22,7 @@ class Igdb < DefaultSite
 
 	def get_aspects(pagoda, url, page)
 		begin
-			info = JSON.parse(page)[0]
+			info = get_json(page)
 			tag_to_aspects(pagoda, info, 'game_modes')          {|aspect| yield aspect}
 			tag_to_aspects(pagoda, info, 'genres')              {|aspect| yield aspect}
 			tag_to_aspects(pagoda, info, 'player_perspectives') {|aspect| yield aspect}
@@ -31,7 +35,7 @@ class Igdb < DefaultSite
 
 	def get_game_description(url, page)
 		begin
-			JSON.parse(page)[0]['summary']
+			get_json(page)['summary']
 		rescue StandardError => e
 			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
@@ -41,17 +45,43 @@ class Igdb < DefaultSite
 
 	def get_game_details( url, page, game)
 		begin
-			info = JSON.parse(page)[0]
-			game[:year] = Time.at(info['first_release_date']).year
+			info = get_json(page)
+
+			if frd = info['first_release_date']
+				game[:year] = Time.at(frd).year
+			elsif rd = info['release_dates']
+				game[:year] = rd.first['y']
+				rd[1..-1].each do |date|
+					game[:year] = date['y'] if date['y'] < game[:year]
+				end
+			end
+
+			if companies = info['involved_companies']
+				developers = companies.select {|c| c['developer']}
+				unless developers.empty?
+					game[:developer] = developers.collect {|c| c['company']['name']}.join(',')
+				end
+
+				publishers = companies.select {|c| c['publisher']}
+				unless publishers.empty?
+					game[:publisher] = publishers.collect {|c| c['company']['name']}.join(',')
+				end
+			end
+
 		rescue StandardError => e
 			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
 		end
 	end
 
-	def get_game_title( url, page, defval)
+	def get_json(page)
+		json = JSON.parse(page)
+		json.empty? ? [] : json[0]
+	end
+
+	def get_title(url, page, defval)
 		begin
-			JSON.parse(page)[0]['name']
+			get_json(page)['name']
 		rescue StandardError => e
 			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
@@ -99,8 +129,12 @@ class Igdb < DefaultSite
 			'game_modes.name',
 			'first_release_date',
 			'genres.name',
+			'involved_companies.company.name',
+			'involved_companies.developer',
+			'involved_companies.publisher',
 			'name',
 			'player_perspectives.name',
+			'release_dates.y',
 			'storyline',
 			'summary',
 			'themes.name'
