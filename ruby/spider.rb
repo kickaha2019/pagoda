@@ -284,13 +284,11 @@ class Spider
 	end
 
 	def read_cached_page(link)
-		path = @pagoda.cache_path( link.timestamp)
-		if File.exist?( path)
-			IO.read( path)
-		else
+		page = @pagoda.cache_read( link.timestamp)
+		if page == ''
 			puts "*** Link file missing: #{link.url}"
-			''
 		end
+		page
 	end
 
 	def rebase( site, type)
@@ -394,13 +392,13 @@ class Spider
 		incremental( site, type, 'test_incremental')
 	end
 
-	def update_link(link, rec, body, debug=false)
-		@pagoda.update_link(link, rec, body, debug)
-	end
+	# def update_link(link, rec, body, ext, debug=false)
+	# 	@pagoda.update_link(link, rec, body, ext, debug)
+	# end
 
-	def update_new_link( url, site, type, title, new_url)
-		@pagoda.update_new_link(url, site, type, title, new_url)
-	end
+	# def update_new_link( url, site, type, title, new_url)
+	# 	@pagoda.update_new_link(url, site, type, title, new_url)
+	# end
 
 	def verified_links
 		Dir.entries( @cache + "/verified").each do |f|

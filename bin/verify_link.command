@@ -20,4 +20,4 @@ setenv PATH $PAGODA/ruby:$PATH
 # https://play.google.com/store/apps/details?id=com.dsfishlabs.bout2en
 #ruby ruby/verify_links.rb database 'https://www.mobygames.com/game/84583/orwell-keeping-an-eye-on-you/' ~/Caches/Pagoda
 
-caffeinate -i ruby ruby/verify_links.rb database 10 ~/Caches/Pagoda
+caffeinate -i ruby ruby/verify_links.rb database 2 ~/Caches/Pagoda

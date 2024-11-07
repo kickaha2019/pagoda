@@ -241,8 +241,7 @@ class Pagoda
       page    = ''
 
       begin
-        path = @owner.cache_path( link.timestamp)
-        page = File.exist?( path) ? IO.read( path) : ''
+        page = @owner.cache_read( link.timestamp)
         site.get_game_details( link.url, page, details)
       rescue Exception => bang
         link.complain bang.message
@@ -346,7 +345,7 @@ class Pagoda
       begin
         sh = @owner.get_site_handler(site)
         found = []
-        sh.get_aspects(@owner,url,IO.read( @owner.cache_path( timestamp))) do |aspect|
+        sh.get_aspects(@owner,url,@owner.cache_read( timestamp)) do |aspect|
           found << aspect
         end
         found.uniq.join(' ')
@@ -358,7 +357,7 @@ class Pagoda
     def link_date
       begin
         sh = @owner.get_site_handler(site)
-        sh.get_link_year( IO.read( @owner.cache_path( timestamp)))
+        sh.get_link_year( @owner.cache_read( timestamp))
       rescue StandardError => e
         puts e.to_s
       end
@@ -523,9 +522,35 @@ class Pagoda
     end
   end
 
-  def cache_path( timestamp)
+  def cache_path( timestamp, extension)
     slice = (timestamp / (24 * 60 * 60)) % 10
-    @cache + "/verified/#{slice}/#{timestamp}.html"
+    @cache + "/verified/#{slice}/#{timestamp}.#{extension}"
+  end
+
+  def cache_read( timestamp)
+    slice = (timestamp / (24 * 60 * 60)) % 10
+    path = @cache + "/verified/#{slice}/#{timestamp}.html"
+    if File.exist?( path)
+      IO.read(path)
+    else
+      path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
+      if File.exist?( path)
+        YAML.parse(IO.read(path))
+      else
+        ''
+      end
+    end
+  end
+
+  def cache_timestamps
+    Dir.entries(@cache + '/verified').each do |slice|
+      next unless /^\d+$/ =~ slice
+      Dir.entries(@cache + '/verified/' + slice).each do |f|
+        if m = /^(\d+)\./.match(f)
+          yield m[1].to_i
+        end
+      end
+    end
   end
 
   def check_unique_name( name, id)
@@ -614,12 +639,6 @@ class Pagoda
 
   def generate_links
     links {|link| link.generate?}
-  end
-
-  def get_cached_page( timestamp)
-    path = cache_path( timestamp)
-    return '' unless File.exist?( path)
-    IO.read( path)
   end
 
   def get_site_handler( site)
@@ -865,14 +884,11 @@ class Pagoda
     @site_handlers.each_value {|handler| handler.terminate( self)}
   end
 
-  def update_link(link, rec, body, debug=false)
+  def update_link(link, rec, body, ext, debug=false)
 
     # Save old timestamp and page, get new unused timestamp
-    old_t, old_page = link.timestamp, ''
-    old_path = cache_path( old_t)
-    if File.exist?( old_path)
-      old_page = IO.read( old_path)
-    end
+    old_t = link.timestamp
+    old_page = cache_read( old_t)
 
     # Save old link to old_links table
     start_transaction
@@ -880,11 +896,9 @@ class Pagoda
     insert('old_links',link.record)
     end_transaction
 
-    new_path = cache_path( rec[:timestamp])
-    while File.exist?( new_path)
-      sleep 1
-      rec[:timestamp] = Time.now.to_i
-    end
+    sleep 1
+    rec[:timestamp] = Time.now.to_i
+    new_path = cache_path( rec[:timestamp], ext)
 
     # If OK save page to cache else to temp area
     File.open( new_path, 'w') {|io| io.print body}

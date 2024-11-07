@@ -168,7 +168,7 @@ class VerifyLinks
       end
 
       if link.timestamp > 100
-        unless File.exist? @pagoda.cache_path( link.timestamp)
+        unless @pagoda.cache_read(link.timestamp) != ''
           must << link
           next
         end
@@ -198,9 +198,9 @@ class VerifyLinks
         end
       end
 
-      puts "... #{k}: #{v.size} #{Time.at(v[0].timestamp)}" unless v.empty?
+      v.reverse!
+      puts "... #{k}: #{v.size}" unless v.empty?
     end
-    #raise 'Dev'
 
     links = must
     (0...n).each do
@@ -264,7 +264,7 @@ class VerifyLinks
       rec[:title] = link.title
     end
 
-    @pagoda.update_link(link, rec, body, debug)
+    @pagoda.update_link(link, rec, body, site.cache_extension, debug)
     if status && (game = link.collation)
       game.update_from_link(link)
     end

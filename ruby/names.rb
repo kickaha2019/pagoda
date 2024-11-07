@@ -25,6 +25,7 @@ class Names
         '&nbsp;'   => ' ',
         '&ndash;'  => '-',
         '&ocirc;'  => 'o',
+        '&omacr;'  => 'o',
         '&oslash;' => 'o',
         '&ouml;'   => 'o',
         '&quot;'   => '"',

@@ -151,8 +151,7 @@ class WebsiteFiltersPage
       next unless link.valid?
       if link.type == 'Store'
         site = @pagoda.get_site_handler( link.site)
-        path = @pagoda.cache_path( link.timestamp)
-        page = IO.read( path)
+        page = @pagoda.cache_read( link.timestamp)
         playable.record( site, link.url, page)
       end
     end

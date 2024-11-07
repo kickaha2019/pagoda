@@ -1,4 +1,8 @@
 class DefaultSite
+  def cache_extension
+    'html'
+  end
+
   def check_child_link( url, text, anchor)
   end
 

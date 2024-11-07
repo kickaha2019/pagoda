@@ -7,7 +7,7 @@ module Sinatra
     include Common
 
     @@selected_game = -1
-    @@today         = Time.now.to_i
+    @@timestamps    = {}
 
     def add_game_from_link( link_url)
       link_rec = $pagoda.link( link_url)
@@ -276,9 +276,6 @@ HIDDEN_ASPECT_ELEMENT
     def games_records( aspect, no_aspect_type, search)
       aspect_info = $pagoda.aspect_info
       $pagoda.games do |game|
-        if /Bear With Me series/ =~ game.name
-          puts 'DEBUG100'
-        end
         next if game.group? and (no_aspect_type != '')
         next if game.group? and (aspect != '')
 
@@ -341,7 +338,7 @@ HIDDEN_ASPECT_ELEMENT
     end
 
     def get_cache( timestamp)
-      $pagoda.get_cached_page( timestamp)
+      $pagoda.cache_read( timestamp)
     end
 
     def get_locals( params, defs)
@@ -414,7 +411,7 @@ SEARCH
     end
 
     def link_records( site, type, status, search)
-      $pagoda.links do |rec|
+     $pagoda.links do |rec|
         chosen = rec.name.to_s.downcase.index( search.downcase)
         unless chosen
           chosen = rec.url.downcase.index( search.downcase)
@@ -434,8 +431,7 @@ SEARCH
       return false if link_status(rec) == 'Ignored'
       return false if rec.static?
       return false if rec.timestamp < 101
-      return true unless File.exist?( $pagoda.cache_path( rec.timestamp))
-      (rec.timestamp + (500 * 24 * 60 * 60) < @@today)
+      ! @@timestamps[rec.timestamp]
     end
 
     def link_site_combo( view, combo_name, current_site, current_type, current_status, html)
@@ -671,6 +667,10 @@ OLDEST_LINK
       $debug = false
       ARGV[2..-1].each do |arg|
         $debug = true if /^debug=true$/i =~ arg
+      end
+
+      $pagoda.cache_timestamps do |t|
+        @@timestamps[t] = true
       end
     end
 

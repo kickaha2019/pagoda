@@ -28,12 +28,11 @@ HEADER
     return if link.timestamp <= 100
     site = @pagoda.get_site_handler(link.site)
     return if site.class == DefaultSite
-    path = @pagoda.cache_path( link.timestamp)
-    unless File.exist?(path)
+    page = @pagoda.cache_read( link.timestamp)
+    unless page != ''
       puts "*** Missing file for #{link.site} #{link.url}"
       return
     end
-    page = IO.read( path)
     details = {}
     site.get_game_details(link.url,page,details)
     if details[:year]
