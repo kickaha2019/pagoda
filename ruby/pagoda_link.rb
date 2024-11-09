@@ -1,7 +1,16 @@
 # frozen_string_literal: true
 
 class PagodaLink < PagodaRecord
+  def initialize(owner, rec)
+    super
+    @bound      = false
+    @bound_game = nil
+  end
+
   def bind( id)
+    @bound      = true
+    @bound_game = (id >= 0) ? @owner.game(id) : nil
+
     @owner.start_transaction
     @owner.delete( 'bind', :url, @record[:url])
     @owner.insert( 'bind', {
@@ -32,13 +41,11 @@ class PagodaLink < PagodaRecord
     @record[:comment]    = msg
     @owner.insert( 'link', @record)
     @owner.end_transaction
+    @owner.refresh_link(@record[:url])
   end
 
   def delete
-    @owner.start_transaction
-    @owner.delete( 'bind', :url, @record[:url])
-    @owner.delete( 'link', :url, @record[:url])
-    @owner.end_transaction
+    @owner.delete_link(@record[:url])
   end
 
   def generate?
@@ -90,6 +97,7 @@ class PagodaLink < PagodaRecord
     @record[:orig_title] = title
     @owner.insert( 'link', @record)
     @owner.end_transaction
+    @owner.refresh_link(@record[:url])
   end
 
   def set_checked
@@ -98,6 +106,7 @@ class PagodaLink < PagodaRecord
     @record[:changed] = 'N'
     @owner.insert( 'link', @record)
     @owner.end_transaction
+    @owner.refresh_link(@record[:url])
   end
 
   def static?
@@ -149,22 +158,26 @@ class PagodaLink < PagodaRecord
   end
 
   def verified( rec)
-    @owner.start_transaction
-    @owner.delete( 'link', :url, @record[:url])
-    @record[:url] = rec[:url] if rec[:url]
+    @record[:title]      = rec[:title]
+    ot = @record[:orig_title]
+    ot = rec[:title] if ot.nil? || (ot.strip == '')
+    @record[:orig_title] = rec[:orig_title] ? rec[:orig_title] : ot
+    @record[:timestamp]  = rec[:timestamp]
+    @record[:valid]      = rec[:valid] ? 'Y' : 'N'
+    @record[:comment]    = rec[:comment]
+    @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
+    @record[:year]       = rec[:year] ? rec[:year] : nil
 
-    unless @owner.has?( 'link', :url, @record[:url])
-      @record[:title]      = rec[:title]
-      ot = @record[:orig_title]
-      ot = rec[:title] if ot.nil? || (ot.strip == '')
-      @record[:orig_title] = rec[:orig_title] ? rec[:orig_title] : ot
-      @record[:timestamp]  = rec[:timestamp]
-      @record[:valid]      = rec[:valid] ? 'Y' : 'N'
-      @record[:comment]    = rec[:comment]
-      @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
-      @record[:year]       = rec[:year] ? rec[:year] : nil
+    if rec[:url] && (rec[:url] != @record[:url])
+      raise "*** verified changed URL"
+      #@owner.delete_link(@record[:url])
+      #@record[:url] = rec[:url]
+      #@owner.insert_link(@record)
+    else
+      @owner.start_transaction
+      @owner.delete( 'link', :url, @record[:url])
       @owner.insert( 'link', @record)
+      @owner.end_transaction
     end
-    @owner.end_transaction
   end
 end

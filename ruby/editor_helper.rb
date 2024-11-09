@@ -324,7 +324,7 @@ HIDDEN_ASPECT_ELEMENT
       return "No site found for url" unless site
 
       game = $pagoda.game( game_id)
-      unless $pagoda.has?( 'link', :url, url)
+      if $pagoda.link(url).nil?
         $pagoda.add_link( site, type, game.title, url)
       end
 

@@ -34,12 +34,13 @@ class Pagoda
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
-      g = PagodaGame.new( self, game_rec)
+      PagodaGame.new( self, game_rec)
     end
     log 'Populate names repository'
 
     @aspect_info_timestamp = 0
     load_site_handlers
+    @pagoda_links = load_links
     log 'Pagoda opened'
   end
 
@@ -159,9 +160,10 @@ class Pagoda
 
   def delete_link( url)
     @database.start_transaction
-    @database.delete( 'link', :url, url)
     @database.delete( 'bind', :url, url)
+    @database.delete( 'link', :url, url)
     @database.end_transaction
+    @pagoda_links.delete(url)
   end
 
   def game( id)
@@ -207,20 +209,23 @@ class Pagoda
   end
 
   def link( url)
-    if rec = get( 'link', :url, url)[0]
-      PagodaLink.new( self, rec)
-    else
-      nil
-    end
+    @pagoda_links[url]
   end
 
   def links
     selected = []
-    @database.select( 'link') do |rec|
-      s = PagodaLink.new( self, rec)
-      selected << s if (! block_given?) || (yield s)
+    @pagoda_links.each_value do |link|
+      selected << link if (! block_given?) || (yield link)
     end
     selected
+  end
+
+  def load_links
+    {}.tap do |links|
+      @database.select( 'link') do |rec|
+        links[rec[:url]] = PagodaLink.new( self, rec)
+      end
+    end
   end
 
   def load_site_handlers
@@ -238,15 +243,6 @@ class Pagoda
   def put_yaml( data, f)
     File.open( @dir + '/' + f, 'w') {|io| io.print data.to_yaml}
   end
-
-  # def reverify( url)
-  #   rec = @database.get( 'link', :url, url)[0]
-  #   rec[:valid] = 'Y'
-  #   @database.start_transaction
-  #   @database.delete( 'link', :url, url)
-  #   @database.insert( 'link', rec)
-  #   @database.end_transaction
-  # end
 
   def scan_stats_records
     path = @dir + "/scan_stats.yaml"
@@ -280,21 +276,25 @@ class Pagoda
   end
 
   # Wrapper methods for calls to database and names logic
-
   def add_link( site, type, title, url)
     url = get_site_handler( site).coerce_url( url)
-    return false if link(url) != nil
+    return false unless link(url).nil?
 
-    start_transaction
-    insert( 'link',
-                    {:site       => site,
-                             :type       => type,
-                             :title      => title,
-                             :orig_title => title,
-                             :url        => url,
-                             :timestamp  => 1})
-    end_transaction
+    rec = {:site       => site,
+           :type       => type,
+           :title      => title,
+           :orig_title => title,
+           :url        => url,
+           :timestamp  => 1}
+    insert_link rec
     true
+  end
+
+  def insert_link( rec)
+    start_transaction
+    insert( 'link', rec)
+    end_transaction
+    refresh_link rec[:url]
   end
 
   def add_name( name, id)
@@ -409,6 +409,14 @@ class Pagoda
     @database.rebuild
   end
 
+  def refresh_link(url)
+    if rec = @database.get('link', :url, url)[0]
+      @pagoda_links[url] = PagodaLink.new(url,rec)
+    else
+      @pagoda_links.delete(url)
+    end
+  end
+
   def select( table_name)
     @database.select( table_name) do |rec|
       yield rec
@@ -460,26 +468,14 @@ class Pagoda
 
     # Ignore link if so flagged but comment if bound to a game
     if rec[:ignore]
-      link.bind( -1)
       if link.collation
         rec[:comment] = "Was bound to #{link.collation.name}"
       end
+      link.bind( -1)
     end
 
     link.verified( rec)
-  end
-
-  def update_new_link(url, site, type, title, new_url, static='N')
-    @database.start_transaction
-    @database.delete( 'link', :url, url)
-    insert( 'link',
-            {:site       => site,
-             :type       => type,
-             :title      => title,
-             :orig_title => title,
-             :url        => new_url,
-             :timestamp  => 1})
-    @database.end_transaction
+    refresh_link link.url
   end
 
   def visited_key( key)

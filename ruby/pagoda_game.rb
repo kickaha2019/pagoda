@@ -39,6 +39,8 @@ class PagodaGame < PagodaRecord
     links do |l|
       @owner.delete_name( l.title, id)
     end
+    binds = @owner.get('bind',:id,id)
+
     @owner.start_transaction
     @owner.delete( 'game',           :id,   id)
     @owner.delete( 'alias',          :id,   id)
@@ -46,6 +48,10 @@ class PagodaGame < PagodaRecord
     @owner.delete( 'aspect',         :id,   id)
     @owner.delete( 'aspect_suggest', :game, id)
     @owner.end_transaction
+
+    binds.each do |bind|
+      @owner.refresh_link(bind[:url])
+    end
   end
 
   def game_type
@@ -93,12 +99,9 @@ class PagodaGame < PagodaRecord
   end
 
   def official_site
-    @owner.get( 'bind', :id, id).each do |rec|
-      if @owner.has?( 'link', :url, rec[:url])
-        link = @owner.link( rec[:url])
-        if link.site == 'Website' && link.type == 'Official'
-          return rec[:url]
-        end
+    links do |link|
+      if link.site == 'Website' && link.type == 'Official'
+        return rec[:url]
       end
     end
     ''
@@ -169,9 +172,12 @@ class PagodaGame < PagodaRecord
     if params[:website] && (os != params[:website])
       @owner.delete( 'bind', :url, os)
       @owner.delete( 'link', :url, os)
+      @owner.refresh_link(os)
       if params[:website] != ''
-        @owner.insert( 'link', {:url => params[:website], :site => 'Website', :type => 'Official', :title => name})
+        rec = {:url => params[:website], :site => 'Website', :type => 'Official', :title => name}
+        @owner.insert( 'link', rec)
         @owner.insert( 'bind', {:url => params[:website], :id => id})
+        @owner.refresh_link rec[:url]
       end
     end
 
