@@ -21,18 +21,35 @@ class PagodaLink < PagodaRecord
   end
 
   def bound?
-    @owner.has?( 'bind', :url, @record[:url])
+    @bound
+    # derived = @owner.has?( 'bind', :url, @record[:url])
+    # raise 'bound? conflict' unless derived == @bound
+    # derived
   end
 
   def collation
     return nil unless @record
-    binds = @owner.get( 'bind', :url, @record[:url])
-    if binds.size > 0
-      return nil if binds[0][:id] < 0
-      @owner.game( binds[0][:id])
-    else
-      nil
-    end
+    @bound_game
+    # binds = @owner.get( 'bind', :url, @record[:url])
+    # if binds.size > 0
+    #   if binds[0][:id] < 0
+    #     raise 'collation conflict1' unless @bound_game.nil?
+    #     nil
+    #   else
+    #     derived = @owner.game( binds[0][:id])
+    #     if derived.nil?
+    #       raise "collation conflict4 for #{url}" unless @bound_game.nil?
+    #       return nil
+    #     end
+    #     unless @bound_game && (derived.id == @bound_game.id)
+    #       raise "collation conflict2 for #{url}"
+    #     end
+    #     derived
+    #   end
+    # else
+    #   raise 'collation conflict3' unless @bound_game.nil?
+    #   nil
+    # end
   end
 
   def complain(msg)
@@ -151,6 +168,8 @@ class PagodaLink < PagodaRecord
     @owner.start_transaction
     @owner.delete( 'bind', :url, @record[:url])
     @owner.end_transaction
+    @bound = false
+    @bound_game = nil
   end
 
   def valid?

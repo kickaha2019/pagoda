@@ -224,6 +224,10 @@ class Pagoda
     {}.tap do |links|
       @database.select( 'link') do |rec|
         links[rec[:url]] = PagodaLink.new( self, rec)
+        binds = get('bind',:url,rec[:url])
+        if binds.size > 0
+          links[rec[:url]].bind(binds[0][:id])
+        end
       end
     end
   end
@@ -317,7 +321,9 @@ class Pagoda
     count = @database.clean_missing( 'aspect_suggest', :game, 'game', :id).size
     puts "*** Deleted #{count} aspect suggest records" if count > 0
     count = @database.clean_missing( 'bind', :url, 'link', :url).size
-    puts "*** Deleted #{count} bind records" if count > 0
+    puts "*** Deleted #{count} bind records no link" if count > 0
+    count = @database.clean_missing_positive( 'bind', :id, 'game', :id).size
+    puts "*** Deleted #{count} bind records no game" if count > 0
 
     aspects_lost = []
     @database.select( 'aspect') do |rec|
@@ -411,7 +417,11 @@ class Pagoda
 
   def refresh_link(url)
     if rec = @database.get('link', :url, url)[0]
-      @pagoda_links[url] = PagodaLink.new(url,rec)
+      @pagoda_links[url] = PagodaLink.new(self,rec)
+      binds = get('bind',:url,url)
+      if binds.size > 0
+        @pagoda_links[url].bind(binds[0][:id])
+      end
     else
       @pagoda_links.delete(url)
     end

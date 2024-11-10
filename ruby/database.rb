@@ -35,13 +35,20 @@ class Database
     end
   end
 
-  # def combinations( table_name, * columns)
-  #   @tables[table_name].combinations( * columns)
-  # end
-
   def clean_missing( table1, column1, table2, column2)
     start_transaction
     missed = missing( table1, column1, table2, column2)
+    missed.each do |key|
+      puts "... Cleaning #{table1} #{column1} #{key}"
+      delete( table1, column1, key)
+    end
+    end_transaction
+    missed
+  end
+
+  def clean_missing_positive( table1, column1, table2, column2)
+    start_transaction
+    missed = missing_positive( table1, column1, table2, column2)
     missed.each do |key|
       puts "... Cleaning #{table1} #{column1} #{key}"
       delete( table1, column1, key)
@@ -123,6 +130,18 @@ class Database
     missed = []
     @tables[table1].select do |rec|
       value = rec[column1]
+      unless has?( table2, column2, value)
+        missed << value
+      end
+    end
+    missed
+  end
+
+  def missing_positive( table1, column1, table2, column2)
+    missed = []
+    @tables[table1].select do |rec|
+      value = rec[column1]
+      next if value < 0
       unless has?( table2, column2, value)
         missed << value
       end

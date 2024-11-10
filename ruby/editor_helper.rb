@@ -594,15 +594,21 @@ SEARCH
 
     def oldest_link(bound)
       oldest = nil
+      count  = 0
       $pagoda.links do |link|
         next if link.static?
         if link.bound? && (link.collation.nil? != bound)
-          oldest = link if oldest.nil? || (link.timestamp < oldest.timestamp)
+          if oldest.nil? || (link.timestamp < oldest.timestamp)
+            oldest = link
+            count  = 1
+          elsif (oldest.yday == link.yday) && (oldest.year == link.year)
+            count += 1
+          end
         end
       end
       return '' if oldest.nil?
       <<OLDEST_LINK
-<a target="_blank" href="/link/#{e(e(oldest.url))}">#{Time.at(oldest.timestamp).strftime('%Y-%m-%d')}</a>
+<a target="_blank" href="/link/#{e(e(oldest.url))}">#{Time.at(oldest.timestamp).strftime('%Y-%m-%d')}</a> (#{count})
 OLDEST_LINK
     end
 
