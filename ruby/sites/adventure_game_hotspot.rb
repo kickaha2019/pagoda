@@ -4,7 +4,8 @@ class AdventureGameHotspot < DefaultSite
 	BASE = 'https://adventuregamehotspot.com'
 	ASPECT_MAP = {
 		'Perspective' =>
-			{'Third-Person' => '3rd person'}
+			{'First-Person' => '1st person',
+			 'Third-Person' => '3rd person'}
 	}.freeze
 
 	def filter( pagoda, link, page, rec)

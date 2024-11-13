@@ -1,11 +1,4 @@
 class DefaultSite
-  def cache_extension
-    'html'
-  end
-
-  def check_child_link( url, text, anchor)
-  end
-
   def coerce_url( url)
     url
   end
@@ -89,7 +82,7 @@ class DefaultSite
     return false, false, '', ''
   end
 
-  def post_load(pagoda, page)
+  def post_load(pagoda, url, page)
     page
   end
 

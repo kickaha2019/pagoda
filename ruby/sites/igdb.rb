@@ -1,6 +1,6 @@
-require_relative 'default_site'
+require_relative 'digest_site'
 
-class Igdb < DefaultSite
+class Igdb < DigestSite
 	include Common
 
 	def initialize
@@ -21,6 +21,11 @@ class Igdb < DefaultSite
 	end
 
 	def get_aspects(pagoda, url, page)
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+			return
+		end
+
 		begin
 			info = get_json(page)
 			tag_to_aspects(pagoda, info, 'game_modes')          {|aspect| yield aspect}
@@ -34,6 +39,10 @@ class Igdb < DefaultSite
 	end
 
 	def get_game_description(url, page)
+		unless page.is_a?(String)
+			return super
+		end
+
 		begin
 			get_json(page)['summary']
 		rescue StandardError => e
@@ -44,6 +53,11 @@ class Igdb < DefaultSite
 	end
 
 	def get_game_details( url, page, game)
+		unless page.is_a?(String)
+			super
+			return
+		end
+
 		begin
 			info = get_json(page)
 
@@ -80,6 +94,10 @@ class Igdb < DefaultSite
 	end
 
 	def get_title(url, page, defval)
+		unless page.is_a?(String)
+			return super
+		end
+
 		begin
 			get_json(page)['name']
 		rescue StandardError => e
@@ -109,7 +127,7 @@ class Igdb < DefaultSite
 		'IGDB'
 	end
 
-	def post_load(pagoda, page)
+	def post_load(pagoda, url, page)
 		twitch = pagoda.settings['Twitch']
 
 		if @access_token.nil?
@@ -139,10 +157,51 @@ class Igdb < DefaultSite
 			'summary',
 			'themes.name'
 		]
-		http_post( 'https://api.igdb.com/v4/games',
+
+		json = http_post( 'https://api.igdb.com/v4/games',
 							 10,
 							 {'Client-ID'    =>  twitch['client_id'],
 											 'Authorization' => "Bearer #{@access_token}"},
 							 "fields #{fields.join(',')}; where id=#{m[1]};")
+		info = JSON.parse(json)[0]
+
+		{}.tap do |digest|
+			digest['title']       = info['name']
+			digest['year']        = get_json_year(info)
+			digest['description'] = info['summary'] || info['storyline']
+			digest['developers']  = get_json_companies(info,'developer')
+			digest['publishers']  = get_json_companies(info,'publisher')
+			digest['aspects']     = []
+			get_aspects(pagoda, url, json) do |aspect|
+				digest['aspects'] << aspect
+			end
+		end
+	end
+
+	def get_json_companies(info,type)
+		if companies = info['involved_companies']
+			companies = companies.select {|c| c[type]}
+			if companies.empty?
+				[]
+			else
+				companies.collect {|c| c['company']['name']}
+			end
+		else
+			[]
+		end
+	end
+
+	def get_json_year(info)
+		if frd = info['first_release_date']
+			Time.at(frd).year
+		elsif rd = info['release_dates']
+			year = rd.first['y']
+			rd[1..-1].each do |date|
+				year = date['y'] if date['y'] < year
+			end
+			year
+		else
+			nil
+		end
 	end
 end

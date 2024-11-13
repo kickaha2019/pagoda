@@ -229,7 +229,7 @@ class VerifyLinks
 
     status, comment, ignore, body = load_page(link, debug)
     site = @pagoda.get_site_handler( link.site)
-    body = site.post_load(@pagoda, body) if status
+    body = site.post_load(@pagoda, link.url, body) if status
 
     if status && (comment = site.validate_page(link.url, body))
       status = false
@@ -264,7 +264,7 @@ class VerifyLinks
       rec[:title] = link.title
     end
 
-    @pagoda.update_link(link, rec, body, site.cache_extension, debug)
+    @pagoda.update_link(link, rec, body, debug)
     if status && (game = link.collation)
       game.update_from_link(link)
     end

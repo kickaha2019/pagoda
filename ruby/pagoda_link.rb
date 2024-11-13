@@ -8,9 +8,7 @@ class PagodaLink < PagodaRecord
   end
 
   def bind( id)
-    @bound      = true
-    @bound_game = (id >= 0) ? @owner.game(id) : nil
-
+    _bind(id)
     @owner.start_transaction
     @owner.delete( 'bind', :url, @record[:url])
     @owner.insert( 'bind', {
@@ -18,6 +16,11 @@ class PagodaLink < PagodaRecord
       id:id
     })
     @owner.end_transaction
+  end
+
+  def _bind( id)
+    @bound      = true
+    @bound_game = (id >= 0) ? @owner.game(id) : nil
   end
 
   def bound?

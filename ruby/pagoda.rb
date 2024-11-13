@@ -89,7 +89,7 @@ class Pagoda
     else
       path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
       if File.exist?( path)
-        YAML.parse(IO.read(path))
+        YAML.load(IO.read(path))
       else
         ''
       end
@@ -226,7 +226,7 @@ class Pagoda
         links[rec[:url]] = PagodaLink.new( self, rec)
         binds = get('bind',:url,rec[:url])
         if binds.size > 0
-          links[rec[:url]].bind(binds[0][:id])
+          links[rec[:url]]._bind(binds[0][:id])
         end
       end
     end
@@ -420,7 +420,7 @@ class Pagoda
       @pagoda_links[url] = PagodaLink.new(self,rec)
       binds = get('bind',:url,url)
       if binds.size > 0
-        @pagoda_links[url].bind(binds[0][:id])
+        @pagoda_links[url]._bind(binds[0][:id])
       end
     else
       @pagoda_links.delete(url)
@@ -455,11 +455,12 @@ class Pagoda
     @site_handlers.each_value {|handler| handler.terminate( self)}
   end
 
-  def update_link(link, rec, body, ext, debug=false)
+  def update_link(link, rec, body, debug=false)
 
     # Save old timestamp and page, get new unused timestamp
     old_t = link.timestamp
     old_page = cache_read( old_t)
+    old_page = old_page.is_a?(String) ? old_page : old_page.to_yaml
 
     # Save old link to old_links table
     start_transaction
@@ -469,9 +470,10 @@ class Pagoda
 
     sleep 1
     rec[:timestamp] = Time.now.to_i
-    new_path = cache_path( rec[:timestamp], ext)
+    new_path = cache_path( rec[:timestamp], body.is_a?(String) ? 'html' : 'yaml')
 
     # If OK save page to cache else to temp area
+    body = body.is_a?(String) ? body : body.to_yaml
     File.open( new_path, 'w') {|io| io.print body}
     rec[:changed] = (body.strip != old_page.strip)
     p ['update_link5', new_path] if debug

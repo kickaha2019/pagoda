@@ -31,3 +31,4 @@ scan_stats.yaml
 load_raw.csh
 pagoda.sql*
 database_bad
+database_backup
