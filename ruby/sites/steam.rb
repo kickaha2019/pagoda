@@ -1,9 +1,8 @@
-require_relative 'default_site'
+require_relative 'digest_site'
 
-class Steam < DefaultSite
+class Steam < DigestSite
 	def initialize
 		@info         = nil
-		@info_changed = 0
 	end
 
 	def coerce_url( url)
@@ -12,10 +11,6 @@ class Steam < DefaultSite
 		end
 
 		url.sub( '/agecheck/', '/')
-	end
-
-	def complete?( scanner)
-		true
 	end
 
 	def correlate_url( url)  # https://store.steampowered.com/app/1092660/Blair_Witch/
@@ -51,50 +46,62 @@ class Steam < DefaultSite
 
 		scanner.purge_lost_urls
 	end
-
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*) on Steam$/.match( rec[:title].strip)
-			rec[:title] = m[1]
-
-			tags = get_tags( page)
-			if tags.size > 0
-				@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-				tag_info = @info['tags']
-				rec[:ignore] = true
-
-				tags.each do |tag|
-					action = tag_info[tag]
-					action = action[0] if action.is_a?( Array)
-
-					if action == 'accept'
-						rec[:ignore] = false
-					elsif action.nil?
-						tag_info[tag] = 'ignore'
-						@info_changed += 1
-					end
-				end
-
-				tags.each do |tag|
-					if tag_info[tag] == 'reject'
-						#p tag
-						rec[:ignore] = true
-					end
-				end
-			end
-
-			rec[:ignore] = true unless rec[:year]
-			return true
-		end
-
-		rec[:ignore] = true
-		return true if /\/agecheck\/app\//  =~ link.url
-		return true if /^Site Error$/       =~ rec[:title]
-		return true if /^Welcome to Steam$/ =~ rec[:title]
-		rec[:valid] = false
-		false
-	end
+	#
+	# def filter( pagoda, link, page, rec)
+	# 	unless rec[:title]
+	# 		rec[:ignore] = true
+	# 		return true if /\/agecheck\/app\//  =~ link.url
+	# 		rec[:valid]  = false
+	# 		return false
+	# 	end
+	#
+	# 	if m = /^(.*) on Steam$/.match( rec[:title].strip)
+	# 		rec[:title] = m[1]
+	#
+	# 		tags = get_tags( page)
+	# 		if tags.size > 0
+	# 			@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+	# 			tag_info = @info['tags']
+	# 			rec[:ignore] = true
+	#
+	# 			tags.each do |tag|
+	# 				action = tag_info[tag]
+	# 				action = action[0] if action.is_a?( Array)
+	#
+	# 				if action == 'accept'
+	# 					rec[:ignore] = false
+	# 				elsif action.nil?
+	# 					tag_info[tag] = 'ignore'
+	# 					@info_changed += 1
+	# 				end
+	# 			end
+	#
+	# 			tags.each do |tag|
+	# 				if tag_info[tag] == 'reject'
+	# 					#p tag
+	# 					rec[:ignore] = true
+	# 				end
+	# 			end
+	# 		end
+	#
+	# 		rec[:ignore] = true unless rec[:year]
+	# 		return true
+	# 	end
+	#
+	# 	rec[:ignore] = true
+	# 	return true if /\/agecheck\/app\//  =~ link.url
+	# 	return true if /^Site Error$/       =~ rec[:title]
+	# 	return true if /^Welcome to Steam$/ =~ rec[:title]
+	# 	rec[:valid] = false
+	# 	false
+	# end
 
 	def get_aspects(pagoda, url, page)
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+			return
+		end
+
 		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
 		tags  = @info['tags']
 
@@ -108,7 +115,10 @@ class Steam < DefaultSite
 	end
 
 	def get_derived_aspects( page)
-		yield 'Steam'
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+		end
+
 		if /data-os="win"/m =~ page
 			yield 'Windows'
 		end
@@ -118,10 +128,19 @@ class Steam < DefaultSite
 	end
 
 	def get_game_description( page)
-		''
+		if page.is_a?(String)
+			''
+		else
+			super
+		end
 	end
 
 	def get_game_details( url, page, game)
+		unless page.is_a?(String)
+			super
+			return
+		end
+
 		publisher, developer, release = false, false, false
 		page.split("<div").each do |line|
 			if />Publisher:<\/div/ =~ line
@@ -170,16 +189,6 @@ class Steam < DefaultSite
 		raw   = JSON.parse( IO.read( path))['applist']['apps']
 		count = 0
 
-		# raw.each do |record|
-		# 	text = record['name']
-		# 	text.force_encoding( 'UTF-8')
-		# 	text.encode!( 'US-ASCII',
-		# 								:invalid => :replace, :undef => :replace, :universal_newline => true)
-		# 	url = "https://store.steampowered.com/app/#{record['appid']}"
-		# 	scanner.patch_orig_title( url, text)
-		# end
-		# raise 'Dev'
-
 		raw.each do |record|
 			text = record['name']
 			text.force_encoding( 'UTF-8')
@@ -206,6 +215,50 @@ class Steam < DefaultSite
 		return false, false, nil, ''
 	end
 
+	def post_load(pagoda, url, page)
+		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+		tag_info = @info['tags']
+
+		{}.tap do |digest|
+			nodes = Nodes.parse(page)
+
+			digest['platforms'] = []
+			nodes.css('span.platform_img') do |platform|
+				if m = /^platform_img (win|mac)$/.match(platform['class'])
+					digest['platforms'] << {'win' => 'Windows', 'mac' => 'Mac'}[m[1]]
+				end
+			end
+
+			nodes.css('div.apphub_AppName') do |game_title|
+				digest['title'] = game_title.text
+			end
+
+			nodes.css('div.release_date div.date') do |release_date|
+				if m = /\d+ \w+, (\d\d\d\d)$/.match(release_date.text)
+					digest['year'] = m[1].to_i
+				end
+			end
+
+			nodes.css('div.game_description_snippet') do |game_description|
+				digest['description'] = game_description.text.strip
+			end
+			digest['developers']  = get_companies(nodes,'Developer:')
+			digest['publishers']  = get_companies(nodes,'Publisher:')
+			digest['aspects']     = []
+
+			nodes.css('div.popular_tags a.app_tag') do |tag|
+				action = tag_info[tag.text.strip]
+				if action.nil?
+					digest['aspects'] << "Steam: #{tag.text.strip}"
+				elsif action.is_a?(String)
+					digest['aspects'] << action
+				else
+					action.each {|a| digest['aspects'] << a }
+				end
+			end
+		end
+	end
+
 	def reduce_title( title)
 		if m = /^(.+) on Steam$/.match( title)
 			title = m[1]
@@ -213,14 +266,19 @@ class Steam < DefaultSite
 		title.strip
 	end
 
-	def terminate( pagoda)
-		if @info_changed > 0
-			pagoda.put_yaml( @info, 'steam.yaml')
-			puts "... #{@info_changed} tags added to steam.yaml"
-		end
-	end
-
 	def year_tolerance
 		1
+	end
+
+	def get_companies(nodes, type)
+		[].tap do |companies|
+			nodes.css('div.dev_row div.subtitle') do |title|
+				[title.text.strip]
+			end.parent.css('a') do |anchor, header|
+				if header == type
+					companies << anchor.text.strip
+				end
+			end
+		end
 	end
 end

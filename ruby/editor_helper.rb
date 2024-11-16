@@ -495,31 +495,6 @@ SEARCH
       end
     end
 
-    def lost_forget_action( rec)
-      "<button onclick=\"delete_expect( '#{e(rec.url)}');\">Forget</button>"
-    end
-
-    def lost_revive_action( rec)
-      "<button onclick=\"revive_expect( '#{e(rec.url)}');\">Restore</button>"
-    end
-
-    def lost_records( site, type)
-      $pagoda.lost do |rec|
-        chosen = true
-        chosen = false unless ((rec.site == site) || (site == 'All'))
-        chosen = false unless ((rec.type == type) || (type == 'All'))
-        chosen
-      end
-    end
-
-    def lost_summary
-      summary = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = 0}}
-      $pagoda.lost do |rec|
-        summary[rec.site][rec.type] += 1
-      end
-      summary
-    end
-
     def multiple_genre_records
       unvisited = []
 

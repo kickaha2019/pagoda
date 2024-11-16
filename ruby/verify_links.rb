@@ -215,10 +215,6 @@ class VerifyLinks
     links.shuffle.each {|rec| yield rec}
   end
 
-  def terminate
-    @pagoda.terminate
-  end
-
   def verify_page( link, debug=false)
     if link.static?
       if game = link.collation
@@ -309,4 +305,3 @@ else
   end
   puts "... Verified #{count} links"
 end
-vl.terminate

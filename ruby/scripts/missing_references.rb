@@ -43,6 +43,7 @@ FOOTER
   def games
     (@from..@to).each do |id|
       if g = @pagoda.game(id)
+        next if g.aspects['Lost'] || g.group?
         yield g
       end
     end

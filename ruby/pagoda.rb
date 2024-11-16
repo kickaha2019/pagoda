@@ -451,10 +451,6 @@ class Pagoda
     @database.start_transaction
   end
 
-  def terminate
-    @site_handlers.each_value {|handler| handler.terminate( self)}
-  end
-
   def update_link(link, rec, body, debug=false)
 
     # Save old timestamp and page, get new unused timestamp

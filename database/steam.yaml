@@ -1,537 +1,510 @@
 ---
 tags:
-  Exploration: ignore
-  Walking Simulator:
-  - ignore
-  - Walking simulator
-  - 1st person
-  Female Protagonist: ignore
-  Third Person:
-  - ignore
-  - 3rd person
-  VR:
-  - ignore
-  - VR
-  LGBTQ+:
-  - ignore
-  - LGBTQ+
-  Story Rich: ignore
-  Cute: ignore
-  Relaxing: ignore
-  Stylized: ignore
-  Family Friendly: ignore
-  Atmospheric: ignore
-  Emotional: ignore
+  '': []
+  1980s: []
+  1990's: []
+  2.5D: []
+  2D: []
+  2D Fighter: reject
+  2D Platformer: reject
+  360 Video: []
+  3D: []
+  3D Fighter: reject
+  3D Platformer: reject
+  3D Vision: []
+  4 Player Local: []
+  4X: reject
+  6DOF: []
+  8-bit Music: []
+  ATV: []
+  Abstract: []
+  Action: []
+  Action RPG: reject
+  Action RTS: reject
+  Action Roguelike: reject
+  Action-Adventure: reject
+  Addictive: []
   Adventure:
   - accept
   - Adventure
-  Nature: ignore
-  Singleplayer: ignore
-  Indie: ignore
-  Narrative: ignore
-  Short: ignore
-  Dinosaurs: ignore
-  Quick-Time Events:
-  - ignore
-  - Action
-  Point &amp; Click: ignore
-  Action: ignore
-  Episodic: ignore
-  Movie: reject
-  Sci-fi: ignore
-  Horror:
-  - ignore
-  - Horror
-  Survival: ignore
-  Open World:
-  - ignore
-  - Open world
-  Casual: ignore
-  Simulation: ignore
-  Puzzle: accept
-  Puzzle Platformer: reject
-  Platformer: reject
-  Visual Novel:
-  - accept
-  - Visual novel
-  Pixel Graphics:
-  - ignore
-  - Retro
-  Anime: ignore
-  Colorful: ignore
-  Thriller: ignore
-  Logic: ignore
-  Mystery: ignore
-  Great Soundtrack: ignore
-  Violent: ignore
-  Surreal: ignore
-  Minimalist: ignore
-  First-Person:
-  - ignore
-  - 1st person
-  Beautiful: ignore
-  Music: ignore
-  Dark: ignore
-  3D Platformer: reject
-  Physics: ignore
-  Experience: ignore
-  Psychological Horror:
-  - ignore
-  - Horror
-  Gore:
-  - ignore
-  - Horror
-  Demons: ignore
-  Psychological: ignore
-  Mature: ignore
-  Narration: ignore
-  Fantasy: ignore
-  Touch-Friendly: ignore
-  Retro: Retro
-  Interactive Fiction: reject
-  Text-Based: reject
-  Choices Matter: ignore
-  Multiple Endings: ignore
-  Crime: ignore
-  Drama: ignore
-  RPG:
+  Agriculture: []
+  Aliens: []
+  Alternate History: []
+  Ambient: []
+  America: []
+  Animation &amp; Modeling: []
+  Anime: []
+  Arcade: reject
+  Archery: reject
+  Arena Shooter: reject
+  Artificial Intelligence: []
+  Assassin: []
+  Asymmetric VR:
+  - VR
+  Asynchronous Multiplayer: []
+  Atmospheric: []
+  Audio Production: []
+  Auto Battler: reject
+  Automation: []
+  Automobile Sim: []
+  BMX: []
+  Base Building: []
+  Baseball: reject
+  Based On A Novel: []
+  Basketball: reject
+  Battle Royale: reject
+  Beat 'em up: reject
+  Beautiful: []
+  Benchmark: []
+  Bikes: reject
+  Birds: []
+  Blood: []
+  Board Game: []
+  Boomer Shooter: []
+  Boss Rush: []
+  Bowling: []
+  Boxing: reject
+  Building: []
+  Bullet Hell: reject
+  Bullet Time: reject
+  CRPG:
   - accept
   - RPG
-  Modern: ignore
-  Philosophical: ignore
-  Historical: ignore
-  Experimental: ignore
-  Strategy: ignore
-  Free to Play: ignore
-  Farming Sim: ignore
-  Mars: ignore
-  Management: ignore
-  Sexual Content: reject
-  Nudity: reject
-  Romance: ignore
-  Comedy: ignore
-  Time Travel: ignore
-  Cartoony:
-  - ignore
-  Hand-drawn:
-  - ignore
-  1990's: ignore
-  Conversation: ignore
-  Conspiracy: ignore
-  Cats: ignore
-  Dark Humor: ignore
-  Robots: ignore
-  Arcade: reject
-  Co-op: ignore
-  Roguelite:
+  Capitalism: []
+  Card Battler: []
+  Card Game: []
+  Cartoon: []
+  Cartoony: []
+  Casual: []
+  Cats: []
+  Character Action Game: []
+  Character Customization: []
+  Chess: reject
+  Choices Matter: []
+  Choose Your Own Adventure: []
+  Cinematic: []
+  City Builder: []
+  Class-Based: []
+  Classic: []
+  Clicker: []
+  Co-op: []
+  Co-op Campaign: []
+  Coding: []
+  Cold War: []
+  Collectathon: []
+  Colony Sim: []
+  Colorful: []
+  Combat: reject
+  Combat Racing: reject
+  Comedy: []
+  Comic Book: []
+  Competitive: []
+  Conspiracy: []
+  Controller: []
+  Conversation: []
+  Cooking: []
+  Cozy: []
+  Crafting: []
+  Creature Collector: []
+  Cricket: []
+  Crime: []
+  Crowdfunded: []
+  Cult Classic: []
+  Cute: []
+  Cyberpunk:
+  - Futuristic
+  Cycling: reject
+  Dark: []
+  Dark Comedy: []
+  Dark Fantasy: []
+  Dark Humor: []
+  Dating Sim: []
+  Deckbuilding: []
+  Demons: []
+  Design &amp; Illustration: []
+  Destruction: []
+  Detective:
+  - Investigation
+  Dice: []
+  Difficult: []
+  Dinosaurs: []
+  Diplomacy: []
+  Documentary: []
+  Dog: []
+  Dragons: []
+  Drama: []
+  Driving: reject
+  Dungeon Crawler:
   - accept
   - Roguelike
-  4 Player Local: ignore
-  Loot: ignore
-  Abstract: ignore
-  Local Co-Op: ignore
-  Cartoon:
-  - ignore
-  Top-Down: ignore
-  Multiplayer: ignore
-  Level Editor: ignore
-  Hidden Object:
-  - accept
-  - HOG
-  Lovecraftian:
-  - ignore
-  - Horror
-  Survival Horror:
-  - ignore
-  - Horror
-  Investigation:
-  - ignore
-  - Investigation
-  Detective:
-  - ignore
-  - Investigation
+  Dungeons &amp; Dragons: []
+  Dwarf: []
+  Dynamic Narration: []
+  Dystopian: []
+  Early Access: []
+  Economy: []
+  Education: []
+  Electronic: []
+  Electronic Music: []
+  Elf: []
+  Emotional: []
+  Epic: []
+  Episodic: []
   Escape Room:
   - accept
   - Escape
-  Underwater: ignore
-  Education: ignore
-  Science: ignore
-  Kickstarter: ignore
-  Funny: ignore
-  2D Platformer: reject
-  Dark Comedy: ignore
-  Post-apocalyptic: ignore
-  Cinematic: ignore
-  Metroidvania: ignore
-  Difficult: ignore
-  Side Scroller: ignore
-  Tower Defense: reject
-  Replay Value: ignore
-  Addictive: ignore
-  Building: ignore
-  Shooter: reject
-  Bullet Hell: reject
-  Shoot 'Em Up: reject
-  Time Management: ignore
-  Futuristic: ignore
-  Space: ignore
-  Bullet Time: reject
-  Controller: ignore
-  Time Manipulation: ignore
-  Tutorial: ignore
-  Turn-Based: ignore
-  Online Co-Op: ignore
-  Party-Based RPG:
-  - accept
-  - RPG
-  Tabletop: ignore
-  Software: ignore
-  Hacking: ignore
-  Cyberpunk:
-  - ignore
-  - Futuristic
-  Programming: ignore
-  Heist: ignore
-  Immersive Sim: ignore
-  Typing: ignore
-  Magic: ignore
-  Old School: ignore
-  Fighting: reject
-  Action-Adventure: reject
-  Co-op Campaign: ignore
-  Linear: ignore
-  Immersive: ignore
-  Steampunk: ignore
-  PvE: ignore
-  Early Access: ignore
-  Zombies: ignore
-  Mythology: ignore
-  Supernatural: ignore
-  Psychedelic: ignore
-  Minigames: ignore
-  Dark Fantasy: ignore
+  Experience: []
+  Experimental: []
+  Exploration: []
+  Extraction Shooter: []
+  FMV:
+  - FMV
   FPS: reject
-  Ninja: ignore
-  Fast-Paced: ignore
-  Match 3: reject
-  Turn-Based Tactics: ignore
-  Card Game: ignore
-  Medieval: ignore
-  Card Battler: ignore
-  Turn-Based Strategy: ignore
-  Deckbuilding: ignore
-  Turn-Based Combat: ignore
-  Tactical: ignore
-  Combat: reject
-  Grid-Based Movement: ignore
-  Stealth: ignore
-  2.5D: ignore
-  Destruction: ignore
-  War: ignore
-  World War II: ignore
-  Rhythm: reject
-  Classic: ignore
-  Sandbox: ignore
-  Utilities: ignore
-  Game Development: ignore
-  Dungeons &amp; Dragons: ignore
-  Open World Survival Craft: ignore
-  Procedural Generation: ignore
-  Crafting: ignore
-  Inventory Management: ignore
-  Realistic: ignore
-  World War I:
-  - ignore
-  - War
-  RPGMaker:
-  - ignore
+  Faith: []
+  Family Friendly: []
+  Fantasy: []
+  Farming: reject
+  Farming Sim: []
+  Fast-Paced: []
+  Feature Film: []
+  Female Protagonist: []
+  Fighting: reject
+  First-Person:
+  - 1st person
+  Fishing: []
+  Flight: reject
+  Football: reject
+  Football (American): []
+  Football (Soccer): []
+  Foreign: []
+  Fox: []
+  Free to Play: []
+  Funny: []
+  Futuristic: []
+  Gambling: []
+  Game Development: []
+  GameMaker:
   - RPGMaker
-  Comic Book: ignore
-  Dog: ignore
-  Soundtrack: reject
-  Noir: ignore
-  6DOF: ignore
-  Dynamic Narration: ignore
-  Character Action Game: ignore
-  Choose Your Own Adventure:
-  - ignore
-  Collectathon: ignore
-  Benchmark: ignore
-  Dystopian: ignore
-  Action RPG: reject
-  Action Roguelike: reject
+  Games Workshop: []
+  Gaming: []
+  God Game: []
+  Golf: reject
+  Gore:
+  - Horror
+  Gothic: []
+  Grand Strategy: []
+  Great Soundtrack: []
+  Grid-Based Movement: []
+  Gun Customization: []
   Hack and Slash: reject
-  Agriculture: ignore
-  Fishing: ignore
-  Life Sim: ignore
-  City Builder: ignore
-  America: ignore
-  Racing: ignore
-  Political Sim: ignore
-  Political: ignore
-  Lore-Rich: ignore
-  Gambling: ignore
-  PvP: ignore
-  3D Vision: ignore
-  Steam Machine: ignore
-  Tactical RPG:
-  - accept
-  - RPG
-  Strategy RPG:
-  - accept
-  - RPG
-  Wargame: ignore
-  Hex Grid: ignore
-  Character Customization: ignore
-  Team-Based: ignore
-  Class-Based: ignore
-  Based On A Novel: ignore
-  Cold War: ignore
-  Skating: reject
-  Skateboarding: reject
-  Sports: reject
-  Combat Racing: reject
-  Split Screen: ignore
-  Vehicular Combat: ignore
-  Third-Person Shooter: reject
-  Superhero: ignore
-  Aliens: ignore
-  Transhumanism: ignore
-  Cooking: ignore
-  Alternate History: ignore
-  Basketball: reject
-  eSports: reject
-  Trading: ignore
-  Local Multiplayer: ignore
-  Dragons: ignore
-  Sequel: ignore
-  Clicker: ignore
-  Artificial Intelligence: ignore
-  Precision Platformer: reject
+  Hacking: []
+  Hand-drawn: []
+  Hardware: []
+  Heist: []
+  Hentai: reject
   Hero Shooter: reject
-  Perma Death: ignore
-  Runner: reject
-  Parkour: ignore
-  Score Attack: ignore
-  LEGO: ignore
-  Memes: ignore
-  Gothic: ignore
-  Nonlinear: ignore
-  Assassin: ignore
-  Space Sim: ignore
-  Top-Down Shooter: reject
-  Asymmetric VR:
-  - ignore
-  - VR
-  Asynchronous Multiplayer: ignore
-  RTS: reject
-  Action RTS: reject
-  Dating Sim: ignore
+  Hex Grid: []
+  Hidden Object:
+  - accept
+  - HOG
+  Historical: []
+  Hobby Sim: reject
+  Hockey: reject
+  Horror:
+  - Horror
+  Horses: []
+  Hunting: []
+  Idler: []
+  Illuminati: []
+  Immersive: []
+  Immersive Sim: []
+  Indie: []
+  Instrumental Music: []
+  Intentionally Awkward Controls: []
+  Interactive Fiction: reject
+  Inventory Management: []
+  Investigation:
+  - Investigation
+  Isometric: []
   JRPG:
   - accept
   - RPG
   - JRPG
-  Dungeon Crawler:
-  - accept
-  - Roguelike
-  Flight: reject
-  3D Fighter: reject
-  Arena Shooter: reject
-  Isometric: ignore
-  Design &amp; Illustration: ignore
-  Souls-like: ignore
-  Pirates:
-  - ignore
-  - Pirates
-  1980s: ignore
-  Creature Collector: ignore
-  Sokoban: ignore
-  Otome: ignore
-  Board Game: ignore
-  2D Fighter: reject
-  Beat 'em up: reject
-  Satire: ignore
-  Parody: ignore
-  Massively Multiplayer: reject
+  Jet: []
+  Job Simulator: []
+  Jump Scare: []
+  Kickstarter: []
+  LEGO: []
+  LGBTQ+:
+  - LGBTQ+
+  Lemmings: []
+  Level Editor: []
+  Life Sim: []
+  Linear: []
+  Local Co-Op: []
+  Local Multiplayer: []
+  Logic: []
+  Loot: []
+  Looter Shooter: reject
+  Lore-Rich: []
+  Lovecraftian:
+  - Horror
   MMORPG: reject
-  Spectacle fighter: ignore
-  CRPG:
+  MOBA: []
+  Magic: []
+  Mahjong: []
+  Management: []
+  Mars: []
+  Martial Arts: reject
+  Massively Multiplayer: reject
+  Match 3: reject
+  Mature: []
+  Mechs: []
+  Medical Sim: []
+  Medieval: []
+  Memes: []
+  Metroidvania: []
+  Military: []
+  Mini Golf: []
+  Minigames: []
+  Minimalist: []
+  Mining: []
+  Mod: []
+  Moddable: []
+  Modern: []
+  Motocross: reject
+  Motorbike: reject
+  Mouse only: []
+  Movie: reject
+  Multiplayer: []
+  Multiple Endings: []
+  Music: []
+  Music-Based Procedural Generation: []
+  Musou: []
+  Mystery: []
+  Mystery Dungeon: []
+  Mythology: []
+  NSFW: []
+  Narration: []
+  Narrative: []
+  Nature: []
+  Naval: []
+  Naval Combat: []
+  Ninja: []
+  Noir: []
+  Nonlinear: []
+  Nostalgia: []
+  Nudity: reject
+  Offroad: []
+  Old School: []
+  On-Rails Shooter: reject
+  Online Co-Op: []
+  Open World:
+  - Open world
+  Open World Survival Craft: []
+  Otome: []
+  Outbreak Sim: reject
+  Parkour: []
+  Parody: []
+  Party: []
+  Party Game: []
+  Party-Based RPG:
   - accept
   - RPG
-  Transportation: ignore
-  Resource Management: ignore
-  Military: ignore
-  Music-Based Procedural Generation: ignore
-  GameMaker:
-  - ignore
+  Perma Death: []
+  Philosophical: []
+  Photo Editing: []
+  Physics: []
+  Pinball: []
+  Pirates:
+  - Pirates
+  Pixel Graphics:
+  - Retro
+  Platformer: reject
+  Point & Click: []
+  Point &amp; Click: []
+  Political: []
+  Political Sim: []
+  Politics: []
+  Pool: []
+  Post-apocalyptic: []
+  Precision Platformer: reject
+  Procedural Generation: []
+  Programming: []
+  Psychedelic: []
+  Psychological: []
+  Psychological Horror:
+  - Horror
+  Puzzle: accept
+  Puzzle Platformer: reject
+  PvE: []
+  PvP: []
+  Quick-Time Events:
+  - Action
+  RPG:
+  - accept
+  - RPG
+  RPGMaker:
   - RPGMaker
+  RTS: reject
+  Racing: []
   Real Time Tactics: reject
-  Economy: ignore
-  Jet: ignore
-  MOBA: ignore
+  Real-Time: reject
+  Real-Time with Pause: []
+  Realistic: []
+  Reboot: []
+  Relaxing: []
+  Remake: []
+  Replay Value: []
+  Resource Management: []
+  Retro: Retro
+  Rhythm: reject
+  Robots: []
+  Rock Music: []
   Roguelike:
   - accept
   - Roguelike
-  Mystery Dungeon: ignore
-  Traditional Roguelike:
-  - accept
-  - Roguelike
-  God Game: ignore
-  Hentai: reject
-  NSFW: ignore
-  Time Attack: ignore
-  Web Publishing: ignore
-  Illuminati: ignore
-  Pinball: ignore
-  Idler: ignore
-  Driving: reject
-  Competitive: ignore
-  Trains: ignore
-  Mouse only: ignore
-  Auto Battler: reject
-  Battle Royale: reject
-  Remake: ignore
-  On-Rails Shooter: reject
-  Cult Classic: ignore
-  Twin Stick Shooter: reject
-  Swordplay: reject
-  Western:
-  - ignore
-  - Wild West
-  Snow: ignore
-  Hunting: ignore
   Roguelike Deckbuilder:
   - accept
   - Roguelike
   - Cards
-  Automobile Sim: ignore
-  Moddable: ignore
-  Base Building: ignore
-  Colony Sim: ignore
-  Real-Time: reject
-  Unforgiving: ignore
-  4X: reject
-  Soccer: reject
-  Real-Time with Pause: ignore
-  Mod: ignore
-  Mechs: ignore
-  Animation &amp; Modeling: ignore
-  Voxel: ignore
-  Diplomacy: ignore
-  Grand Strategy: ignore
-  Warhammer 40K: reject
-  Politics: ignore
-  Underground: ignore
-  Offroad: ignore
-  Mining: ignore
-  Boss Rush: ignore
-  Tennis: reject
-  Ambient: ignore
-  Social Deduction: ignore
-  Voice Control: ignore
-  Werewolves: ignore
-  Capitalism: ignore
-  Golf: reject
-  Video Production: ignore
-  Solitaire: ignore
-  Party Game: ignore
-  Party: ignore
-  Looter Shooter: reject
-  Football: reject
-  Bikes: reject
-  Motorbike: reject
-  Naval: ignore
-  Naval Combat: ignore
-  Horses: ignore
-  Tanks: ignore
-  Sailing: ignore
-  Trivia: ignore
-  Mini Golf: ignore
-  FMV:
-  - ignore
-  - FMV
-  Nostalgia: ignore
-  Automation: ignore
-  Villain Protagonist: ignore
-  Intentionally Awkward Controls: ignore
-  Martial Arts: reject
-  Medical Sim: ignore
-  Trading Card Game: ignore
-  Blood: ignore
-  Vampire: ignore
-  Crowdfunded: ignore
-  Faith: ignore
-  Foreign: ignore
-  Documentary: ignore
-  Gun Customization: ignore
-  Well-Written: ignore
-  Word Game: ignore
-  Instrumental Music: ignore
-  Gaming: ignore
-  Epic: ignore
-  Electronic Music: ignore
-  Games Workshop: ignore
-  Archery: reject
-  Silent Protagonist: ignore
-  Software Training: ignore
-  Chess: reject
-  Vikings: ignore
-  Spaceships:
-  - ignore
-  - Futuristic
-  Rome: ignore
-  Audio Production: ignore
-  Submarine: ignore
-  8-bit Music: ignore
-  Wrestling: reject
-  Spelling: ignore
-  Hockey: reject
-  Boxing: reject
-  Electronic: ignore
-  Sniper: reject
-  Pool: ignore
-  Outbreak Sim: reject
-  Farming: reject
-  Roguevania: ignore
-  Bowling: ignore
-  360 Video: ignore
-  Snowboarding: reject
-  Motocross: reject
-  Cycling: reject
-  Baseball: reject
-  Jump Scare: ignore
-  Rock Music: ignore
-  BMX: ignore
+  Roguelite:
+  - accept
+  - Roguelike
+  Roguevania: []
+  Romance: []
+  Rome: []
+  Rugby: []
+  Runner: reject
+  Sailing: []
+  Sandbox: []
+  Satire: []
+  Sci-fi: []
+  Science: []
+  Score Attack: []
+  Sequel: []
+  Sexual Content: reject
+  Shoot 'Em Up: reject
+  Shooter: reject
+  Shop Keeper: []
+  Short: []
+  Side Scroller: []
+  Silent Protagonist: []
+  Simulation: []
+  Singleplayer: []
+  Skateboarding: reject
+  Skating: reject
   Skiing: reject
-  Hardware: ignore
-  Lemmings: ignore
-  ATV: ignore
-  Photo Editing: ignore
-  2D: ignore
-  3D: ignore
-  Wholesome: ignore
-  Cozy: ignore
-  TrackIR: ignore
-  Snooker: ignore
-  Volleyball: ignore
-  Job Simulator: ignore
-  Feature Film: ignore
-  Cricket: ignore
-  Rugby: ignore
-  Musou: ignore
-  Reboot: ignore
-  Mahjong: ignore
-  Shop Keeper: ignore
-  Tile-Matching: ignore
-  Football (American): ignore
-  Football (Soccer): ignore
-  Fox: ignore
-  Hobby Sim: reject
-  Birds: ignore
-  Coding: ignore
-  Extraction Shooter: ignore
-  Boomer Shooter: ignore
-  Dwarf: ignore
-  '': ignore
-  Elf: ignore
-  Dice: ignore
+  Sniper: reject
+  Snooker: []
+  Snow: []
+  Snowboarding: reject
+  Soccer: reject
+  Social Deduction: []
+  Software: []
+  Software Training: []
+  Sokoban: []
+  Solitaire: []
+  Souls-like: []
+  Soundtrack: reject
+  Space: []
+  Space Sim: []
+  Spaceships:
+  - Futuristic
+  Spectacle fighter: []
+  Spelling: []
+  Split Screen: []
+  Sports: reject
+  Stealth: []
+  Steam Machine: []
+  Steampunk: []
+  Story Rich: []
+  Strategy: []
+  Strategy RPG:
+  - accept
+  - RPG
+  Stylized: []
+  Submarine: []
+  Superhero: []
+  Supernatural: []
+  Surreal: []
+  Survival: []
+  Survival Horror:
+  - Horror
+  Swordplay: reject
+  Tabletop: []
+  Tactical: []
+  Tactical RPG:
+  - accept
+  - RPG
+  Tanks: []
+  Team-Based: []
+  Tennis: reject
+  Text-Based: reject
+  Third Person:
+  - 3rd person
+  Third-Person Shooter: reject
+  Thriller: []
+  Tile-Matching: []
+  Time Attack: []
+  Time Management: []
+  Time Manipulation: []
+  Time Travel: []
+  Top-Down: []
+  Top-Down Shooter: reject
+  Touch-Friendly: []
+  Tower Defense: reject
+  TrackIR: []
+  Trading: []
+  Trading Card Game: []
+  Traditional Roguelike:
+  - accept
+  - Roguelike
+  Trains: []
+  Transhumanism: []
+  Transportation: []
+  Trivia: []
+  Turn-Based: []
+  Turn-Based Combat: []
+  Turn-Based Strategy: []
+  Turn-Based Tactics: []
+  Tutorial: []
+  Twin Stick Shooter: reject
+  Typing: []
+  Underground: []
+  Underwater: []
+  Unforgiving: []
+  Utilities: []
+  VR:
+  - VR
+  Vampire: []
+  Vehicular Combat: []
+  Video Production: []
+  Vikings: []
+  Villain Protagonist: []
+  Violent: []
+  Visual Novel:
+  - accept
+  - Visual novel
+  Voice Control: []
+  Volleyball: []
+  Voxel: []
+  Walking Simulator:
+  - Walking simulator
+  - 1st person
+  War: []
+  Wargame: []
+  Warhammer 40K: reject
+  Web Publishing: []
+  Well-Written: []
+  Werewolves: []
+  Western:
+  - Wild West
+  Wholesome: []
+  Word Game: []
+  World War I:
+  - War
+  World War II: []
+  Wrestling: reject
+  Zombies: []
+  eSports: reject

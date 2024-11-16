@@ -1,9 +1,33 @@
 require_relative 'default_site'
 
 class DigestSite < DefaultSite
+  def filter( pagoda, link, page, rec)
+    page['aspects'].each do |tag|
+      if tag == 'reject'
+        rec[:ignore] = true
+        return
+      end
+    end
+
+    page['aspects'].each do |tag|
+      if tag == 'accept'
+        rec[:ignore] = false
+        return
+      end
+    end
+
+    rec[:ignore] = true
+  end
+
   def get_aspects(pagoda, url, page)
     page['aspects'].each do |aspect|
-      yield aspect
+      yield aspect unless ['accept','reject','ignore'].include?( aspect)
+    end
+  end
+
+  def get_derived_aspects( page)
+    if page['platforms']
+      page['platforms'].each {|platform| yield platform}
     end
   end
 
