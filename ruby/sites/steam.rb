@@ -46,55 +46,6 @@ class Steam < DigestSite
 
 		scanner.purge_lost_urls
 	end
-	#
-	# def filter( pagoda, link, page, rec)
-	# 	unless rec[:title]
-	# 		rec[:ignore] = true
-	# 		return true if /\/agecheck\/app\//  =~ link.url
-	# 		rec[:valid]  = false
-	# 		return false
-	# 	end
-	#
-	# 	if m = /^(.*) on Steam$/.match( rec[:title].strip)
-	# 		rec[:title] = m[1]
-	#
-	# 		tags = get_tags( page)
-	# 		if tags.size > 0
-	# 			@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-	# 			tag_info = @info['tags']
-	# 			rec[:ignore] = true
-	#
-	# 			tags.each do |tag|
-	# 				action = tag_info[tag]
-	# 				action = action[0] if action.is_a?( Array)
-	#
-	# 				if action == 'accept'
-	# 					rec[:ignore] = false
-	# 				elsif action.nil?
-	# 					tag_info[tag] = 'ignore'
-	# 					@info_changed += 1
-	# 				end
-	# 			end
-	#
-	# 			tags.each do |tag|
-	# 				if tag_info[tag] == 'reject'
-	# 					#p tag
-	# 					rec[:ignore] = true
-	# 				end
-	# 			end
-	# 		end
-	#
-	# 		rec[:ignore] = true unless rec[:year]
-	# 		return true
-	# 	end
-	#
-	# 	rec[:ignore] = true
-	# 	return true if /\/agecheck\/app\//  =~ link.url
-	# 	return true if /^Site Error$/       =~ rec[:title]
-	# 	return true if /^Welcome to Steam$/ =~ rec[:title]
-	# 	rec[:valid] = false
-	# 	false
-	# end
 
 	def get_aspects(pagoda, url, page)
 		unless page.is_a?(String)
@@ -115,8 +66,11 @@ class Steam < DigestSite
 	end
 
 	def get_derived_aspects( page)
+		yield 'Steam'
+
 		unless page.is_a?(String)
 			super {|aspect| yield aspect}
+			return
 		end
 
 		if /data-os="win"/m =~ page
@@ -178,10 +132,6 @@ class Steam < DigestSite
 			tags << tag[0].strip
 		end
 		tags
-	end
-
-	def ignore_redirects?
-		true
 	end
 
 	def incremental( scanner)

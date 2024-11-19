@@ -1,9 +1,8 @@
-require_relative 'default_site'
+require_relative 'digest_site'
 
-class GoodOldGames < DefaultSite
+class GoodOldGames < DigestSite
   def initialize
     @info         = nil
-    @info_changed = 0
   end
 
 	def extract_card_product( html)
@@ -58,52 +57,56 @@ class GoodOldGames < DefaultSite
 		end
 	end
 
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
-			rec[:title] = m[1]
-			if m1 = /^\-\d+% (.*)$/.match( rec[:title])
-				rec[:title] = m1[1]
-			end
-		else
-			rec[:valid]   = false
-			rec[:comment] = 'Unexpected title'
-			return false
-		end
-
-		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
-		tags  = @info['tags']
-		found = get_tags( page)
-
-		if found.empty?
-			rec[:valid]   = false
-			rec[:comment] = 'No tags'
-			return false
-		end
-
-		rec[:ignore] = true
-		found.each do |tag|
-			action = tags[tag]
-			action = action[0] if action.is_a?( Array)
-
-			if action == 'accept'
-				rec[:ignore] = false
-      elsif action.nil?
-        tags[tag] = 'ignore'
-        @info_changed += 1
-			end
-		end
-
-		found.each do |tag|
-			if tags[tag] == 'reject'
-				rec[:ignore] = true
-			end
-		end
-
-		rec[:ignore] = true unless rec[:year]
-		true
-	end
+	# def filter( pagoda, link, page, rec)
+	# 	if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
+	# 		rec[:title] = m[1]
+	# 		if m1 = /^\-\d+% (.*)$/.match( rec[:title])
+	# 			rec[:title] = m1[1]
+	# 		end
+	# 	else
+	# 		rec[:valid]   = false
+	# 		rec[:comment] = 'Unexpected title'
+	# 		return false
+	# 	end
+	#
+	# 	@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
+	# 	tags  = @info['tags']
+	# 	found = get_tags( page)
+	#
+	# 	if found.empty?
+	# 		rec[:valid]   = false
+	# 		rec[:comment] = 'No tags'
+	# 		return false
+	# 	end
+	#
+	# 	rec[:ignore] = true
+	# 	found.each do |tag|
+	# 		action = tags[tag]
+	# 		action = action[0] if action.is_a?( Array)
+	#
+	# 		if action == 'accept'
+	# 			rec[:ignore] = false
+  #     elsif action.nil?
+  #       tags[tag] = 'ignore'
+	# 		end
+	# 	end
+	#
+	# 	found.each do |tag|
+	# 		if tags[tag] == 'reject'
+	# 			rec[:ignore] = true
+	# 		end
+	# 	end
+	#
+	# 	rec[:ignore] = true unless rec[:year]
+	# 	true
+	# end
 
 	def get_aspects(pagoda, url, page)
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+			return
+		end
+
 		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
 		tags  = @info['tags']
 
@@ -118,6 +121,12 @@ class GoodOldGames < DefaultSite
 
 	def get_derived_aspects( page)
 		yield 'GOG'
+
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+			return
+		end
+
 		if info = extract_card_product( page)
 			info['supportedOperatingSystems'].each do |opsys|
 				name = opsys['operatingSystem']['name']
@@ -128,14 +137,23 @@ class GoodOldGames < DefaultSite
 	end
 
 	def get_game_description( page)
-		if info = extract_card_product( page)
-			info['description']
+		if page.is_a?(String)
+			if info = extract_card_product( page)
+				info['description']
+			else
+				''
+			end
 		else
-			''
+			super
 		end
 	end
 
 	def get_game_details( url, page, game)
+		unless page.is_a?(String)
+			super
+			return
+		end
+
 		if info = extract_card_product( page)
 			game[:name]      = info['title']
 			game[:publisher] = info['publisher']
@@ -180,14 +198,53 @@ class GoodOldGames < DefaultSite
 		'GOG'
   end
 
-  def terminate( pagoda)
-    if @info_changed > 0
-      pagoda.put_yaml( @info, 'gog.yaml')
-      puts "... #{@info_changed} tags added to gog.yaml"
-    end
-  end
-
 	def year_tolerance
 		1
+	end
+
+	def post_load(pagoda, url, page)
+		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
+		tag_info = @info['tags']
+
+		{}.tap do |digest|
+			if info = extract_card_product( page)
+				digest['title']       = info['title']
+				digest['description'] = info['description']
+
+				digest['publishers']  = [info['publisher']] if info['publisher']
+				if info['developers']
+					digest['developers']  = info['developers'].collect {|developer| developer['name']}
+				end
+
+				if m = /^(\d+)-(\d+)-(\d+)T/.match( info['globalReleaseDate'])
+					t = Time.new( m[1].to_i, m[2].to_i, m[3].to_i)
+					digest['year'] = t.year if t <= Time.now
+				end
+
+				digest['platforms'] = []
+				info['supportedOperatingSystems'].each do |opsys|
+					name = opsys['operatingSystem']['name']
+					digest['platforms'] << 'Windows' if name == 'windows'
+					digest['platforms'] << 'Mac'     if name == 'osx'
+				end
+			end
+
+			aspects = {}
+			get_tags(page).each do |tag|
+				action = tag_info[tag]
+				if action.nil?
+					aspects["GOG: #{tag.text.strip}"] = true
+				elsif action.is_a?(String)
+					aspects[action] = true
+				else
+					action.each {|a| aspects[a] = a}
+				end
+			end
+			digest['aspects'] = aspects.keys
+		end
+	end
+
+	def validate_page(url,page)
+		page['title'] ? nil : 'Link deleted'
 	end
 end

@@ -1,6 +1,6 @@
-require_relative 'default_site'
+require_relative 'digest_site'
 
-class MobyGames < DefaultSite
+class MobyGames < DigestSite
 	def initialize
 		@info         = nil
 	end
@@ -13,39 +13,43 @@ class MobyGames < DefaultSite
 		end
 	end
 
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*)- MobyGames/.match( rec[:title].strip)
-			rec[:title] = m[1].strip
-			true
-		else
-			rec[:valid] = false
-			false
+	def reduce_title( title)
+		if m = /^(.+)- MobyGames/.match( title)
+			title = m[1]
 		end
+		title.strip
 	end
 
 	def get_aspects(pagoda, url, page)
+		unless page.is_a?(String)
+			super {|aspect| yield aspect}
+			return
+		end
+
 		Nodes.parse( page).css('div.info-genres dl.metadata a') do |a|
 			tag_to_aspects(pagoda, a.text).each do |aspect|
 				yield aspect
 			end
-			# if mapped = ASPECT_MAP[a.text]
-			# 	mapped = [mapped] unless mapped.is_a? Array
-			# 	mapped.each {|m| yield m}
-			# else
-			# 	yield "MobyGames unhandled: #{a.text}"
-			# end
 		end
 	end
 
 	def get_game_description( page)
-		desc, in_desc = [], false
+		unless page.is_a?(String)
+			return super
+		end
+
 		page.split( "<h2>").each do |line|
 			return line if /^Description/ =~ line
 		end
-		page
+		''
 	end
 
 	def get_game_details( url, page, game)
+		unless page.is_a?(String)
+			super
+			return
+		end
+
 		publisher, developer = false, false
 
 		if year = get_link_year( page)
@@ -70,7 +74,7 @@ class MobyGames < DefaultSite
 
 	def get_link_year( page)
 		if m = /<title>[^<]*\((\d\d\d\d)\)[^<]*<\/title>/i.match( page)
-			m[1]
+			m[1].to_i
 		else
 			nil
 		end
@@ -98,5 +102,50 @@ class MobyGames < DefaultSite
 
 	def name
 		'MobyGames'
+	end
+
+	def post_load(pagoda, url, page)
+		@info    = pagoda.get_yaml( 'mobygames.yaml') if @info.nil?
+		tag_info = @info['tags']
+		nodes    = Nodes.parse( page)
+
+		{}.tap do |digest|
+			digest['title']       = get_title(url,page,nil)
+			nodes.css('#description-text') do |desc|
+				digest['description'] = desc.text
+			end
+			digest['year']        = get_link_year(page)
+			digest['developers']  = []
+			digest['publishers']  = []
+
+			publisher, developer = false, false
+			page.split( "\n").each do |line|
+				publisher = true if /<dt>Publishers<\/dt>/ =~ line
+				developer = true if /<dt>Developers<\/dt>/ =~ line
+
+				if m = />([^<]*)<\/a>/.match( line)
+					if publisher
+						digest['publishers'] << m[1]
+					elsif developer
+						digest['developers'] << m[1]
+					end
+
+					publisher, developer = false, false
+				end
+			end
+
+			aspects = {}
+			nodes.css('div.info-genres dl.metadata a') do |tag|
+				action = tag_info[tag.text.strip]
+				if action.nil?
+					aspects["MobyGames: #{tag.text.strip}"] = true
+				elsif action.is_a?(String)
+					aspects[action] = true
+				else
+					action.each {|a| aspects[a] = true}
+				end
+			end
+			digest['aspects'] = aspects.keys
+		end
 	end
 end

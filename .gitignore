@@ -17,7 +17,6 @@ restructure.rb
 nbproject
 *.sql
 *.old
-.tool-versions
 Rintrah
 synch.rb
 apple_fix.command
@@ -32,3 +31,5 @@ load_raw.csh
 pagoda.sql*
 database_bad
 database_backup
+gog_old.yaml
+steam_old.yaml

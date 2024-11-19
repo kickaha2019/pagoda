@@ -1,288 +1,261 @@
 ---
 tags:
+  2D: []
   4X: reject
-  Action: ignore
+  Action: []
   Adventure:
   - accept
   - Adventure
+  Amazon Luna: []
   Arcade: reject
-  Atmospheric: ignore
-  Building: ignore
-  Card Game:
-  - ignore
-  - Cards
-  Casual: ignore
-  Chess: reject
-  Choices Matter: ignore
-  Classic: ignore
-  Combat: reject
-  Comedy:
-  - ignore
-  - Comedy
+  Artbook: reject
+  Atmospheric: []
+  Auto Battler: reject
+  Base Building: []
+  Beat 'em up: reject
+  Board Game: []
+  Building: []
+  Bullet Hell: reject
   CRPG:
   - accept
   - RPG
-  Dark: ignore
+  Card Game:
+  - Cards
+  Cartoony: []
+  Casual: []
+  Cats: []
+  Chess: reject
+  Choices Matter: []
+  Choose Your Own Adventure:
+  - accept
+  City builder: []
+  Classic: []
+  Combat: reject
+  Comedy:
+  - Comedy
+  Coming of age: []
+  Cooking: []
+  Cozy: []
+  Crafting: []
+  Crime: []
+  Crossplay: []
+  Cyberpunk:
+  - Futuristic
+  Dark: []
+  Dark Comedy: []
+  Dating Sim: reject
+  Deckbuilding: []
+  Demo: reject
   Detective-mystery:
-  - ignore
   - Investigation
-  Dystopian: ignore
-  Economic: ignore
-  Educational: ignore
-  Espionage: ignore
-  Exploration: ignore
-  First-Person:
-  - ignore
-  - 1st person
+  Difficult: []
+  Dinosaurs: []
+  Dog: []
+  Dungeon Crawler:
+  - accept
+  - Roguelike
+  Dystopian: []
+  Economic: []
+  Education: []
+  Educational: []
+  Emotional: []
+  Escape Room:
+  - accept
+  - Escape
+  Espionage: []
+  Exploration: []
+  FMV:
+  - FMV
   FPP:
-  - ignore
   - 1st person
   FPS: reject
+  Family Friendly: []
   Fantasy:
-  - ignore
   - Fantasy
-  Female Protagonist: ignore
+  Farming: []
+  Female Protagonist: []
   Fighting: reject
-  Flight: ignore
-  FMV:
-  - ignore
-  - FMV
-  Funny: ignore
-  Good Old Game: ignore
-  Great Soundtrack: ignore
+  First-Person:
+  - 1st person
+  Fishing: []
+  Flight: []
+  Football: []
+  Free Game: []
+  Funny: []
+  Good Old Game: []
+  Gore: []
+  Grand Strategy: []
+  Great Soundtrack: []
+  Hack and Slash: []
+  Hentai: reject
   Hidden Object:
   - accept
   - HOG
-  Historical: ignore
+  Historical: []
   Horror:
-  - ignore
   - Horror
-  Indie: ignore
+  Indie: []
   Investigation:
-  - ignore
   - Investigation
-  Isometric: ignore
+  Isometric: []
   JRPG:
   - accept
   - RPG
   - JRPG
+  LGBTQ+:
+  - LGBTQ+
+  LevelEditor: []
+  LifeSim: []
+  Local Co-Op: []
+  Local Multiplayer: []
   Logic: accept
-  Management: ignore
-  Managerial: ignore
-  Metroidvania: ignore
-  Modern: ignore
+  Looter Shooter: reject
+  Lovecraftian: []
+  Magic: []
+  Management: []
+  Managerial: []
+  Martial Arts: []
+  Match3: reject
+  Mature: []
+  Medieval: []
+  Metroidvania: []
+  Military:
+  - War
+  Modern: []
+  Movie: reject
   Multiplayer: reject
-  Mystery: ignore
-  Narrative: ignore
-  Naval: ignore
+  Multiple Endings: []
+  Mystery: []
+  Mythology: []
+  NSFW: []
+  Narrative: []
+  Nature: []
+  Naval: []
+  Ninja: []
+  Noir: []
+  Non Violent: []
   Nudity: reject
-  Off-road: ignore
+  OST: reject
+  Off-road: []
+  Online-only: []
+  Only On GOG: []
   Open World:
-  - ignore
   - Open world
+  Parody: []
+  Party Game: []
+  Perma Death: []
+  Petting Dogs: []
+  Philosophical: []
+  Physics: []
   Pinball: reject
+  Pirates:
+  - Pirates
+  Pixel Graphics:
+  - Retro
   Platformer: reject
-  Point-and-click: ignore
-  Point&Click: ignore
-  Post-apocalyptic: ignore
-  Programming: ignore
+  Point&Click: []
+  Point-and-click: []
+  Politics: []
+  Post-apocalyptic: []
+  Procedural Generation: []
+  Programming: []
+  Psychological: []
+  Psychological Horror:
+  - Horror
   Puzzle:
   - accept
   - Puzzle
+  Puzzle Platformer: reject
+  RTS: reject
   Racing: reject
   Rally: reject
-  Real-time: ignore
-  Roguelike: ignore
-  Role-playing:
-  - accept
-  - RPG
-  RTS: reject
-  Sandbox: ignore
-  Science: ignore
-  Sci-fi: ignore
-  Sexual Content: reject
-  Shoot 'em Up: reject
-  Shooter: reject
-  Simulation: ignore
-  Soccer: reject
-  Sports: reject
-  Stealth: ignore
-  Story Rich: ignore
-  Strategy: ignore
-  Survival: ignore
-  Third Person:
-  - ignore
-  - 3rd person
-  TPP:
-  - ignore
-  - 3rd person
-  Tactical: ignore
-  Team sport: reject
-  Touring: ignore
-  Turn-based: ignore
-  Turn-Based: ignore
-  Violent: ignore
-  Virtual life: reject
-  Visual Novel:
-  - ignore
-  - Visual novel
-  Local Multiplayer: ignore
-  Physics: ignore
-  Noir: ignore
-  Psychological: ignore
-  Shoot'EmUp: reject
-  Hack and Slash: ignore
-  Time Manipulation: ignore
-  Only On GOG: ignore
-  Difficult: ignore
-  Realistic: ignore
-  Western:
-  - ignore
-  - Wild West
-  Space:
-  - ignore
-  - Futuristic
-  Family Friendly: ignore
-  Relaxing: ignore
-  Surreal: ignore
-  Military:
-  - ignore
-  - War
+  Real-Time: []
+  Real-time: []
+  Realistic: []
+  Relaxing: []
+  Remake: []
   Resource Management: reject
-  Base Building: ignore
-  Gore: ignore
-  Split Screen: ignore
-  Dinosaurs: ignore
-  World War II:
-  - ignore
-  - War
-  Tanks: ignore
-  Education: ignore
-  LifeSim: ignore
-  War:
-  - ignore
-  - War
-  Magic: ignore
-  Top-Down: ignore
-  Psychological Horror:
-  - ignore
-  - Horror
-  Real-Time: ignore
-  Cartoony:
-  - ignore
-  Cyberpunk:
-  - ignore
-  - Futuristic
-  Grand Strategy: ignore
-  Crime: ignore
-  Text-Based: reject
-  Medieval: ignore
-  Dark Comedy: ignore
-  Parody: ignore
-  Trading: ignore
-  Crafting: ignore
-  Robots: ignore
-  Pixel Graphics:
-  - ignore
-  - Retro
-  Thriller: ignore
-  Supernatural: ignore
-  Petting Dogs: ignore
-  Werewolves: ignore
-  Tactical RPG:
-  - accept
-  - RPG
-  Ninja: ignore
-  Pirates:
-  - ignore
-  - Pirates
-  Underwater: ignore
-  World War I: War
-  Football: ignore
-  Choose Your Own Adventure:
-  - accept
-  Procedural Generation: ignore
-  Perma Death: ignore
-  Board Game: ignore
-  Emotional: ignore
-  Dungeon Crawler:
-  - accept
-  - Roguelike
-  Local Co-Op: ignore
-  Puzzle Platformer: reject
-  LevelEditor: ignore
-  Mature: ignore
-  Remake: ignore
-  Lovecraftian: ignore
-  Superhero: ignore
-  Steampunk: ignore
-  Tabletop: ignore
-  Mythology: ignore
-  Vikings: ignore
-  City builder: ignore
-  Walking Simulator:
-  - ignore
-  - Walking simulator
-  LGBTQ+:
-  - ignore
-  - LGBTQ+
-  Beat 'em up: reject
-  Tower Defense: reject
-  Underground: ignore
-  Martial Arts: ignore
-  Vampire: ignore
-  Zombies: ignore
-  Politics: ignore
-  Trains: ignore
-  Multiple Endings: ignore
-  VR:
-  - ignore
-  - VR
-  Short: ignore
-  Romance: ignore
-  Transportation: ignore
+  Retro: Retro
+  Rhythm: []
+  Robots: []
+  Roguelike: []
   Roguelite:
   - accept
   - Roguelike
-  Fishing: ignore
-  Dog: ignore
-  Sniper: reject
-  Survival Horror:
-  - ignore
-  - Horror
-  Dating Sim: reject
-  Rhythm: ignore
-  Souls-like: ignore
-  Typing: ignore
-  Cooking: ignore
-  Philosophical: ignore
-  Deckbuilding: ignore
-  Party Game: ignore
-  Escape Room:
+  Role-playing:
   - accept
-  - Escape
-  Bullet Hell: reject
-  Cats: ignore
-  Nature: ignore
-  Match3: reject
-  NSFW: ignore
+  - RPG
+  Romance: []
+  Sandbox: []
+  Sci-fi: []
+  Science: []
+  Sexual Content: reject
+  Shoot 'em Up: reject
+  Shoot'EmUp: reject
+  Shooter: reject
+  Short: []
+  Simulation: []
+  Sniper: reject
+  Soccer: reject
+  Souls-like: []
+  Space:
+  - Futuristic
+  Split Screen: []
+  Sports: reject
+  Stealth: []
+  Steampunk: []
+  Story Rich: []
+  Strategy: []
+  Superhero: []
+  Supernatural: []
+  Surreal: []
+  Survival: []
+  Survival Horror:
+  - Horror
+  TPP:
+  - 3rd person
+  Tabletop: []
+  Tactical: []
+  Tactical RPG:
+  - accept
+  - RPG
+  Tanks: []
+  Team sport: reject
+  Text-Based: reject
+  Third Person:
+  - 3rd person
+  Thriller: []
+  Time Manipulation: []
+  Top-Down: []
+  Touring: []
+  Tower Defense: reject
+  Trading: []
+  Trains: []
+  Transportation: []
+  Turn-Based: []
+  Turn-based: []
   Twin Stick Shooter: reject
-  Movie: reject
-  Hentai: reject
-  Demo: reject
-  Farming: ignore
-  Looter Shooter: reject
-  Auto Battler: reject
-  building: ignore
-  crossplay: ignore
-  Artbook: reject
-  Free Game: ignore
-  OST: reject
-  Coming of age: ignore
-  Non Violent: ignore
-  Retro: Retro
-  2D: ignore
-  Crossplay: ignore
-  Online-only: ignore
-  Cozy: ignore
-  Amazon Luna: ignore
+  Typing: []
+  Underground: []
+  Underwater: []
+  VR:
+  - VR
+  Vampire: []
+  Vikings: []
+  Violent: []
+  Virtual life: reject
+  Visual Novel:
+  - Visual novel
+  Walking Simulator:
+  - Walking simulator
+  War:
+  - War
+  Werewolves: []
+  Western:
+  - Wild West
+  World War I: War
+  World War II:
+  - War
+  Zombies: []
+  building: []
+  crossplay: []

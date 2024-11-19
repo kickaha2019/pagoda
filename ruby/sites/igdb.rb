@@ -38,7 +38,7 @@ class Igdb < DigestSite
 		end
 	end
 
-	def get_game_description(url, page)
+	def get_game_description(page)
 		unless page.is_a?(String)
 			return super
 		end

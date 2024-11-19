@@ -4,6 +4,7 @@ require_relative 'database'
 require_relative 'names'
 require_relative 'pagoda_record'
 require_relative 'pagoda_alias'
+require_relative 'pagoda_collation'
 require_relative 'pagoda_game'
 require_relative 'pagoda_link'
 

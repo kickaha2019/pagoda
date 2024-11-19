@@ -101,7 +101,7 @@ class PagodaGame < PagodaRecord
   def official_site
     links do |link|
       if link.site == 'Website' && link.type == 'Official'
-        return rec[:url]
+        return link.url
       end
     end
     ''

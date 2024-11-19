@@ -122,9 +122,6 @@ class VerifyLinks
       p ['load_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
       if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
         comment = nil
-      elsif @pagoda.get_site_handler( link.site).ignore_redirects?
-        comment = nil
-        ignore  = true
       end
     end
 
@@ -204,10 +201,7 @@ class VerifyLinks
 
     links = must
     (0...n).each do
-      (0..9).each do
-        links << bound.pop unless bound.empty?
-      end
-
+      links << bound.pop unless bound.empty?
       links << loose.pop unless loose.empty?
     end
 
@@ -231,7 +225,12 @@ class VerifyLinks
       status = false
     end
 
-    rec = {title:'', timestamp:Time.now.to_i, valid:true, comment:comment, changed: false, ignore:ignore}
+    rec = {title:'',
+           timestamp:Time.now.to_i,
+           valid:true,
+           comment:comment,
+           changed: false,
+           ignore:ignore}
 
     # Get year if possible for link
     if status

@@ -69,6 +69,8 @@ tags:
   - JRPG
   Licensed: []
   Live action: []
+  Map / level: []
+  Managerial / business simulation: []
   Math / logic: []
   Medieval: Medieval
   Meditative / Zen: []
@@ -110,6 +112,7 @@ tags:
   Shooter: Action
   Side view: 3rd person
   Simulation: []
+  Sociology: []
   South America: []
   Space flight: Futuristic
   Special edition: []
@@ -126,6 +129,8 @@ tags:
   Text-based / Spreadsheet: 1st person
   Thriller: []
   Tile matching puzzle: []
+  Time management: []
+  Timed input: Timer
   Top-down: 3rd person
   Trading / collectible card: []
   Train: []
@@ -144,3 +149,4 @@ tags:
   - 1st person
   World War I: War
   World War II: War
+  Wrestling: []

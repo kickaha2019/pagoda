@@ -38,8 +38,8 @@ class DigestSite < DefaultSite
   def get_game_details( url, page, game)
     game[:year]      = page['year']
     game[:name]      = null_if_blank(page['title'])
-    game[:publisher] = null_if_blank(page['publishers'].join(', '))
-    game[:developer] = null_if_blank(page['developers'].join(', '))
+    game[:publisher] = page['publishers'] ? null_if_blank(page['publishers'].join(', ')) : nil
+    game[:developer] = page['developers'] ? null_if_blank(page['developers'].join(', ')) : nil
   end
 
   def get_title(url, page, defval)
