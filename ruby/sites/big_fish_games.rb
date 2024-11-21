@@ -1,19 +1,8 @@
-require_relative 'default_site'
+require_relative 'digest_site'
 
-class BigFishGames < DefaultSite
+class BigFishGames < DigestSite
 	def deleted_title( title)
 		title == 'Store'
-	end
-
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*) &gt;/.match( rec[:title].strip)
-			rec[:title] = reduce_title( m[1])
-			true
-		else
-			rec[:valid]   = false
-			rec[:comment] = 'Unexpected title: ' + rec[:title].strip
-			false
-		end
 	end
 
 	def full( scanner)
@@ -47,6 +36,10 @@ class BigFishGames < DefaultSite
 	end
 
 	def get_game_description( page)
+		unless page.is_a?(String)
+			return super
+		end
+
 		page
 	end
 
@@ -59,5 +52,18 @@ class BigFishGames < DefaultSite
 			title = m[1]
 		end
 		title.gsub( '&#39;', "'")
+	end
+
+	def post_load(pagoda, url, page)
+		nodes    = Nodes.parse( page)
+
+		{}.tap do |digest|
+			nodes.css('div.productBreadcrumb__root') do |breadcrumbs|
+				digest['title'] = breadcrumbs.text.split('>')[-1].strip
+			end
+			nodes.css('div.productFullDetail__descriptionContent') do |desc|
+				digest['description'] = desc.text.strip
+			end
+		end
 	end
 end

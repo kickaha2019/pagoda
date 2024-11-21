@@ -201,7 +201,9 @@ class VerifyLinks
 
     links = must
     (0...n).each do
-      links << bound.pop unless bound.empty?
+      (0..2).each do
+        links << bound.pop unless bound.empty?
+      end
       links << loose.pop unless loose.empty?
     end
 

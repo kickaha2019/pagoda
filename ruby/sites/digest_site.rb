@@ -20,6 +20,7 @@ class DigestSite < DefaultSite
   end
 
   def get_aspects(pagoda, url, page)
+    return unless page['aspects']
     page['aspects'].each do |aspect|
       yield aspect unless ['accept','reject','ignore'].include?( aspect)
     end
