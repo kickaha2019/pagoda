@@ -9,5 +9,5 @@ def log( msg)
 end
 
 log "Start"
-Pagoda.new(ARGV[0])
+Pagoda.release(ARGV[0])
 log "Opened Pagoda"

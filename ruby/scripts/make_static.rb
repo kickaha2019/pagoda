@@ -5,7 +5,7 @@ require_relative '../database'
 require_relative 'pagoda'
 
 #db = Database.new( ARGV[0])
-$pagoda = Pagoda.new( ARGV[0])
+$pagoda = Pagoda.release( ARGV[0])
 
 def links
   $pagoda.links do |link|

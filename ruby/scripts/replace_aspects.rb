@@ -5,7 +5,7 @@ require_relative '../pagoda'
 
 class ReplaceAspects
   def initialize(database)
-    @pagoda  = Pagoda.new(database)
+    @pagoda  = Pagoda.release(database)
     @aspects = @pagoda.aspect_info
   end
 

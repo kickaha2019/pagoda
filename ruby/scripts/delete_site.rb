@@ -3,7 +3,7 @@ require 'net/https'
 require 'uri'
 require_relative '../pagoda'
 
-$pagoda = Pagoda.new( ARGV[0])
+$pagoda = Pagoda.release( ARGV[0])
 
 def links
   $pagoda.links do |link|

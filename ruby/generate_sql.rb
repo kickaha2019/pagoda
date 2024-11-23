@@ -2,7 +2,7 @@ require_relative 'pagoda'
 
 class GenerateSQL
   def initialize( dir)
-    @pagoda  = Pagoda.new( dir)
+    @pagoda  = Pagoda.release( dir)
     @indexes = 0
   end
 

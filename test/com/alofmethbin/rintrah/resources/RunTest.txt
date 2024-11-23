@@ -1,5 +1,0 @@
-root test
-	run Branch "Desmond"
-	
-branch Branch name
-	write name

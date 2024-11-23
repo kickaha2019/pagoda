@@ -1,6 +1,0 @@
-root once
-	write "Zaphod"
-	
-root twice
-	write "Beyond"
-	write "Time"

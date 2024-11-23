@@ -1,4 +1,0 @@
-root test
-	set X " "
-	set Y "Hello"+X+"World"
-	write Y

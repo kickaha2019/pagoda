@@ -27,6 +27,9 @@ incremental:
 - site:   Mystery Manor
   type:   Walkthrough
   method: find_walkthroughs
+- site:   Steam
+  type:   Store
+  method: incremental
 - site:   TouchArcade
   type:   Review
   method: incremental

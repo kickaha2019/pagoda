@@ -44,7 +44,7 @@ class WebsiteFiltersPage
 
   def initialize( dir, cache, templates, local)
     @dir       = dir
-    @pagoda    = Pagoda.new( dir, cache)
+    @pagoda    = Pagoda.release( dir, cache)
     @cache     = cache
     @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
     @templates = templates

@@ -136,6 +136,13 @@ class Steam < DigestSite
 
 	def incremental( scanner)
 		path  = scanner.cache + '/steam.json'
+
+		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
+			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
+				raise 'Error retrieving steam data'
+			end
+		end
+
 		raw   = JSON.parse( IO.read( path))['applist']['apps']
 		count = 0
 
@@ -148,7 +155,7 @@ class Steam < DigestSite
 			scanner.debug_hook( 'Steam:urls', text, url)
 			count += scanner.add_link( text, url)
 
-			break if count >= 150
+			break if count >= 100
 		end
 
 		count

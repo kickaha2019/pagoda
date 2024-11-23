@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative 'database'
+require_relative '../../ruby/database'
 
 class DatabaseTest < Minitest::Test
   def ends_with( f, text)

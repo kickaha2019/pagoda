@@ -1,7 +1,0 @@
-root test
-	file "JAVE"
-	next BODY
-	yreve META
-	attribute content Content
-	write Content
-	prune

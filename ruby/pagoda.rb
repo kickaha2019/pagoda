@@ -1,6 +1,6 @@
 require 'yaml'
 
-require_relative 'database'
+require_relative 'file_database'
 require_relative 'names'
 require_relative 'pagoda_record'
 require_relative 'pagoda_alias'
@@ -11,10 +11,10 @@ require_relative 'pagoda_link'
 class Pagoda
   attr_reader :settings
 
-  def initialize( dir, cache=nil)
-    @dir       = dir
-    @database  = Database.new( dir)
-    @settings  = YAML.load( IO.read( dir + '/settings.yaml'))
+  def initialize( database, metadata, cache=nil)
+    @dir       = metadata
+    @database  = database
+    @settings  = YAML.load( IO.read( @dir + '/settings.yaml'))
     log 'Loaded database'
     @names     = Names.new
     @possibles = nil
@@ -43,6 +43,10 @@ class Pagoda
     load_site_handlers
     @pagoda_links = load_links
     log 'Pagoda opened'
+  end
+
+  def self.release(dir, cache=nil)
+    Pagoda.new(FileDatabase.new( dir), dir, cache)
   end
 
   def aspect?(name)

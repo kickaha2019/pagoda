@@ -1,7 +1,7 @@
 require_relative '../pagoda'
 require 'yaml'
 
-pagoda = Pagoda.new( ARGV[0])
+pagoda = Pagoda.release( ARGV[0])
 
 counts = Hash.new {|h,k| h[k] = 0}
 tags   = {}

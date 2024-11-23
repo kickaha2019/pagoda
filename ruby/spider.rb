@@ -19,7 +19,7 @@ class Spider
 		@dir             = dir
 		@cache           = cache
 		@errors          = 0
-		@pagoda          = Pagoda.new( dir, cache)
+		@pagoda          = Pagoda.release( dir, cache)
 		@suggested       = []
 		@suggested_links = {}
 		if File.exist?( dir + '/scan_stats.yaml')

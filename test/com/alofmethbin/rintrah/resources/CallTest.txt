@@ -1,5 +1,0 @@
-root test
-	call test1
-	
-branch test1
-	write "Tall"+"inn"

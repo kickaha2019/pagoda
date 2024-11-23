@@ -2,7 +2,7 @@ require_relative '../pagoda'
 
 class DeterminePhraseFrequencies
   def initialize( dir)
-    @pagoda = Pagoda.new( dir)
+    @pagoda = Pagoda.release( dir)
   end
 
   def analyse

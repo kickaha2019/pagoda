@@ -15,11 +15,13 @@ tags:
   Anime / Manga: []
   Arcade: Action
   Asia: []
+  Audio game: []
   Beat 'em up / brawler: []
   Behind view: 3rd person
   Board game: []
   Cards / tiles: Cards
   China (Ancient / Imperial): []
+  City building / construction simulation: []
   Classical antiquity: []
   Cinematic camera: []
   Cold War: []
@@ -61,6 +63,7 @@ tags:
   Interactive fiction / text adventure: []
   Interwar: []
   Isometric: 3rd person
+  Item: []
   Japan (Modern/Futuristic): Japan
   Japan (Ancient/Classical/Medieval): []
   Japanese-style adventure: []
@@ -86,6 +89,7 @@ tags:
   Naval / watercraft: []
   North America: []
   Oceania: []
+  Other: []
   Persistent: []
   Physical extras: []
   Point and select: []
@@ -142,6 +146,7 @@ tags:
   Video backdrop: []
   Visual novel:
   - Visual novel
+  Voice control: []
   War: War
   Western: Wild West
   Word construction:

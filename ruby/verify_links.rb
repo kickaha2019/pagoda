@@ -20,7 +20,7 @@ class VerifyLinks
   include Common
 
   def initialize( dir, cache)
-    @pagoda   = Pagoda.new( dir, cache)
+    @pagoda   = Pagoda.release( dir, cache)
   end
 
   def get_details( link, body, rec)

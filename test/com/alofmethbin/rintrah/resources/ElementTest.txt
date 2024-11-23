@@ -1,5 +1,0 @@
-root test
-	file "YesAsia"
-	next HEAD
-	element Element
-	write Element

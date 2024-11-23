@@ -1,15 +1,11 @@
 class Table
-  def initialize( path)
-    @name    = path.split('/')[-1].split('.')[0]
-    lines    = IO.readlines( path).collect {|line| line.chomp}
-    @columns = lines[0].split( "\t").collect {|name| name.to_sym}
+  attr_reader :name
+
+  def initialize(name, columns, data)
+    @name    = name
+    @columns = columns
     @joins   = {}
     @types   = Hash.new {|h,k| h[k] = :to_s}
-
-    data = lines[1..-1].collect do |line|
-      line.split( "\t").collect {|v| (v.strip == '') ? nil : v.strip}
-    end
-
     initialize_indexes( data)
   end
 
@@ -42,25 +38,6 @@ class Table
   def column_index( column_name)
     @columns.index( column_name)
   end
-
-  # def combinations( * cols)
-  #   map = {}
-  #   @indexes[@columns[0]].each_value do |rows|
-  #     rows.each do |row|
-  #       m = map
-  #       cols.each do |col|
-  #         v = row[column_index(col)]
-  #         raise "Column value nil" if v.nil?
-  #         if m.key?(v)
-  #           m = m[v]
-  #         else
-  #           m = m[v] = {}
-  #         end
-  #       end
-  #     end
-  #   end
-  #   map
-  # end
 
   def declare_integer( column_name)
     @types[column_name] = :to_i
