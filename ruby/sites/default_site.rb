@@ -1,4 +1,8 @@
+require_relative '../common'
+
 class DefaultSite
+  include Common
+
   def coerce_url( url)
     url
   end
@@ -99,5 +103,23 @@ class DefaultSite
 
   def year_tolerance
     0
+  end
+
+  def digest_link(pagoda, url)
+    status, response = http_get_threaded(url)
+
+    unless status
+      return status, response
+    end
+
+    if response.is_a? Net::HTTPRedirection
+      return false, "Redirected to #{response['location']}"
+    end
+
+    unless response.is_a? Net::HTTPSuccess
+      return false, response.message
+    end
+
+    return true, post_load(pagoda, url, response.body)
   end
 end

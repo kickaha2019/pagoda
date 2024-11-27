@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require_relative '../../ruby/database'
+require_relative '../../ruby/file_database'
 
 class DatabaseTest < Minitest::Test
   def ends_with( f, text)
@@ -8,7 +8,7 @@ class DatabaseTest < Minitest::Test
   end
 
   def load_database
-    Database.new( @dir)
+    FileDatabase.new( @dir)
   end
 
   def setup

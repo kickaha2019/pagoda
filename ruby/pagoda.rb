@@ -49,6 +49,21 @@ class Pagoda
     Pagoda.new(FileDatabase.new( dir), dir, cache)
   end
 
+  def self.testing(metadata, cache)
+    database = Database.new
+    database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
+    database.add_table(Table.new('aspect',[:id,:aspect,:flag],[]))
+    database.add_table(Table.new('aspect_suggest',[:game,:aspect,:text,:cache,:visit,:timestamp,:site],[]))
+    database.add_table(Table.new('bind',[:url,:id],[]))
+    database.add_table(Table.new('company_alias',[:name,:alias],[]))
+    database.add_table(Table.new('company',[:name],[]))
+    database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
+    database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
+    database.add_table(Table.new('old_links',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
+    database.add_table(Table.new('visited',[:key,:timestamp],[]))
+    Pagoda.new(database, metadata, cache)
+  end
+
   def aspect?(name)
     aspect_info[name]
   end
@@ -458,11 +473,6 @@ class Pagoda
 
   def update_link(link, rec, body, debug=false)
 
-    # Save old timestamp and page, get new unused timestamp
-    old_t = link.timestamp
-    old_page = cache_read( old_t)
-    old_page = old_page.is_a?(String) ? old_page : old_page.to_yaml
-
     # Save old link to old_links table
     start_transaction
     delete('old_links',:url, link.url)
@@ -476,7 +486,6 @@ class Pagoda
     # If OK save page to cache else to temp area
     body = body.is_a?(String) ? body : body.to_yaml
     File.open( new_path, 'w') {|io| io.print body}
-    rec[:changed] = (body.strip != old_page.strip)
     p ['update_link5', new_path] if debug
 
     # Ignore link if so flagged but comment if bound to a game

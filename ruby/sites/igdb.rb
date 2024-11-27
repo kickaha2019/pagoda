@@ -1,8 +1,6 @@
 require_relative 'digest_site'
 
 class Igdb < DigestSite
-	include Common
-
 	def initialize
 		@info         = nil
 		@access_token = nil

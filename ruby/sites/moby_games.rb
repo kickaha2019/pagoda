@@ -110,7 +110,10 @@ class MobyGames < DigestSite
 		nodes    = Nodes.parse( page)
 
 		{}.tap do |digest|
-			digest['title']       = get_title(url,page,nil)
+			if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
+				title = m[1].gsub( /\s/, ' ')
+				digest['title'] = reduce_title(title.strip.gsub( '  ', ' '))
+			end
 			nodes.css('#description-text') do |desc|
 				digest['description'] = desc.text
 			end

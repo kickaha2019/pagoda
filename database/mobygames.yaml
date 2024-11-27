@@ -16,8 +16,11 @@ tags:
   Arcade: Action
   Asia: []
   Audio game: []
+  Automobile: []
+  Basketball: []
   Beat 'em up / brawler: []
   Behind view: 3rd person
+  Bike / bicycling: []
   Board game: []
   Cards / tiles: Cards
   China (Ancient / Imperial): []
@@ -29,7 +32,9 @@ tags:
   Compilation: []
   Contemporary: Contemporary
   Crime: []
+  Customization / outfit / skin: []
   Cyberpunk / dark sci-fi: Futuristic
+  Dating simulation: []
   Detective / mystery: Mystery
   Diagonal-down: 3rd person
   Direct control: []
@@ -71,9 +76,11 @@ tags:
   - RPG
   - JRPG
   Licensed: []
+  Life / social simulation: []
   Live action: []
   Map / level: []
   Managerial / business simulation: []
+  Massively Multiplayer: []
   Math / logic: []
   Medieval: Medieval
   Meditative / Zen: []

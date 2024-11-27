@@ -5,9 +5,6 @@ require 'rack/utils'
 require 'uri'
 require "selenium-webdriver"
 
-require_relative 'pagoda'
-require_relative 'sites/default_site'
-
 module Common
 	@@throttling    = Hash.new {|h,k| h[k] = 0}
 	@@old_redirects = {}
@@ -93,6 +90,38 @@ module Common
 		Net::HTTP.start( uri.hostname, uri.port, :use_ssl => use_ssl, :verify_mode => verify_mode) {|http|
 			http.request( request)
 		}
+	end
+
+	def http_get_threaded( url)
+		@http_get_threaded_url = url
+		@http_get_threaded_got = nil
+
+		Thread.new do
+			begin
+				response = http_get_response( url)
+				if url == @http_get_threaded_url
+					if response.is_a?( Net::HTTPNotFound)
+						@http_get_threaded_got = [false, 'Not found']
+					else
+						@http_get_threaded_got = [true, response]
+					end
+				end
+			rescue Exception => bang
+				if url == @http_get_threaded_url
+					@http_get_threaded_got = [false, bang.message]
+				end
+			end
+		end
+
+		(0...600).each do
+			sleep 0.1
+			unless @http_get_threaded_got.nil?
+				return * @http_get_threaded_got
+			end
+		end
+
+		sleep 300
+		return false, "Timeout"
 	end
 
 	def http_post( url, delay = 10, headers = {}, body = nil)

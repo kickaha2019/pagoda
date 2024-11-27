@@ -123,7 +123,6 @@ class PagodaLink < PagodaRecord
   def set_checked
     @owner.start_transaction
     @owner.delete( 'link', :url, @record[:url])
-    @record[:changed] = 'N'
     @owner.insert( 'link', @record)
     @owner.end_transaction
     @owner.refresh_link(@record[:url])
@@ -187,7 +186,6 @@ class PagodaLink < PagodaRecord
     @record[:timestamp]  = rec[:timestamp]
     @record[:valid]      = rec[:valid] ? 'Y' : 'N'
     @record[:comment]    = rec[:comment]
-    @record[:changed]    = rec[:changed] ? 'Y' : @record[:changed]
     @record[:year]       = rec[:year] ? rec[:year] : nil
 
     if rec[:url] && (rec[:url] != @record[:url])

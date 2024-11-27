@@ -60,9 +60,9 @@ tags:
   Birds: []
   Blood: []
   Board Game: []
-  Boomer Shooter: []
+  Boomer Shooter: reject
   Boss Rush: []
-  Bowling: []
+  Bowling: reject
   Boxing: reject
   Building: []
   Bullet Hell: reject
@@ -83,7 +83,7 @@ tags:
   Choices Matter: []
   Choose Your Own Adventure: []
   Cinematic: []
-  City Builder: []
+  City Builder: reject
   Class-Based: []
   Classic: []
   Clicker: []
@@ -122,6 +122,7 @@ tags:
   Deckbuilding: []
   Demons: []
   Design &amp; Illustration: []
+  Design & Illustration: []
   Destruction: []
   Detective:
   - Investigation
@@ -157,7 +158,7 @@ tags:
   Experience: []
   Experimental: []
   Exploration: []
-  Extraction Shooter: []
+  Extraction Shooter: reject
   FMV:
   - FMV
   FPS: reject
@@ -165,7 +166,7 @@ tags:
   Family Friendly: []
   Fantasy: []
   Farming: reject
-  Farming Sim: []
+  Farming Sim: reject
   Fast-Paced: []
   Feature Film: []
   Female Protagonist: []
@@ -175,8 +176,8 @@ tags:
   Fishing: []
   Flight: reject
   Football: reject
-  Football (American): []
-  Football (Soccer): []
+  Football (American): reject
+  Football (Soccer): reject
   Foreign: []
   Fox: []
   Free to Play: []
@@ -384,7 +385,7 @@ tags:
   Science: []
   Score Attack: []
   Sequel: []
-  Sexual Content: reject
+  Sexual Content: []
   Shoot 'Em Up: reject
   Shooter: reject
   Shop Keeper: []
@@ -407,7 +408,7 @@ tags:
   Sokoban: []
   Solitaire: []
   Souls-like: []
-  Soundtrack: reject
+  Soundtrack: []
   Space: []
   Space Sim: []
   Spaceships:

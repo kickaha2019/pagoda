@@ -10,6 +10,7 @@
 =end
 
 require_relative 'common'
+require_relative 'pagoda'
 
 class Spider
 	include Common

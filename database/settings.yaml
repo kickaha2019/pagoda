@@ -5,7 +5,7 @@
   client_id: kvnfu73c7dp7iz2c5i9tq456jl4f0z
   client_secret: ebx8hrxjwyfes0dkg8m0ojxk1x2n1d
 "rawg.io":  58f66f75d8124171bb55205683cd79ec
-suggested_limit:  499
+suggested_limit:  10
 not_game_words:
 - demo
 - OST
@@ -60,6 +60,9 @@ full:
   method: find
 - site:   Nice Game Hints
   type:   Walkthrough
+  method: find
+- site:   Steam
+  type:   Store
   method: find
 rebase:
 - site:   TouchArcade

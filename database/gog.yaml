@@ -8,7 +8,7 @@ tags:
   - Adventure
   Amazon Luna: []
   Arcade: reject
-  Artbook: reject
+  Artbook: []
   Atmospheric: []
   Auto Battler: reject
   Base Building: []
@@ -28,13 +28,13 @@ tags:
   Choices Matter: []
   Choose Your Own Adventure:
   - accept
-  City builder: []
+  City builder: reject
   Classic: []
   Combat: reject
   Comedy:
   - Comedy
   Coming of age: []
-  Cooking: []
+  Cooking: reject
   Cozy: []
   Crafting: []
   Crime: []
@@ -43,9 +43,9 @@ tags:
   - Futuristic
   Dark: []
   Dark Comedy: []
-  Dating Sim: reject
+  Dating Sim: []
   Deckbuilding: []
-  Demo: reject
+  Demo: []
   Detective-mystery:
   - Investigation
   Difficult: []
@@ -72,14 +72,14 @@ tags:
   Family Friendly: []
   Fantasy:
   - Fantasy
-  Farming: []
+  Farming: reject
   Female Protagonist: []
   Fighting: reject
   First-Person:
   - 1st person
-  Fishing: []
-  Flight: []
-  Football: []
+  Fishing: reject
+  Flight: reject
+  Football: reject
   Free Game: []
   Funny: []
   Good Old Game: []
@@ -114,7 +114,7 @@ tags:
   Magic: []
   Management: []
   Managerial: []
-  Martial Arts: []
+  Martial Arts: reject
   Match3: reject
   Mature: []
   Medieval: []
@@ -137,7 +137,7 @@ tags:
   Nudity: reject
   OST: reject
   Off-road: []
-  Online-only: []
+  Online-only: reject
   Only On GOG: []
   Open World:
   - Open world
@@ -146,7 +146,7 @@ tags:
   Perma Death: []
   Petting Dogs: []
   Philosophical: []
-  Physics: []
+  Physics: reject
   Pinball: reject
   Pirates:
   - Pirates
@@ -189,7 +189,7 @@ tags:
   Sandbox: []
   Sci-fi: []
   Science: []
-  Sexual Content: reject
+  Sexual Content: []
   Shoot 'em Up: reject
   Shoot'EmUp: reject
   Shooter: reject

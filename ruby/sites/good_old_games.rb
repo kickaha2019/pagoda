@@ -57,50 +57,6 @@ class GoodOldGames < DigestSite
 		end
 	end
 
-	# def filter( pagoda, link, page, rec)
-	# 	if m = /^(.*) on GOG\.com$/.match( rec[:title].strip)
-	# 		rec[:title] = m[1]
-	# 		if m1 = /^\-\d+% (.*)$/.match( rec[:title])
-	# 			rec[:title] = m1[1]
-	# 		end
-	# 	else
-	# 		rec[:valid]   = false
-	# 		rec[:comment] = 'Unexpected title'
-	# 		return false
-	# 	end
-	#
-	# 	@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
-	# 	tags  = @info['tags']
-	# 	found = get_tags( page)
-	#
-	# 	if found.empty?
-	# 		rec[:valid]   = false
-	# 		rec[:comment] = 'No tags'
-	# 		return false
-	# 	end
-	#
-	# 	rec[:ignore] = true
-	# 	found.each do |tag|
-	# 		action = tags[tag]
-	# 		action = action[0] if action.is_a?( Array)
-	#
-	# 		if action == 'accept'
-	# 			rec[:ignore] = false
-  #     elsif action.nil?
-  #       tags[tag] = 'ignore'
-	# 		end
-	# 	end
-	#
-	# 	found.each do |tag|
-	# 		if tags[tag] == 'reject'
-	# 			rec[:ignore] = true
-	# 		end
-	# 	end
-	#
-	# 	rec[:ignore] = true unless rec[:year]
-	# 	true
-	# end
-
 	def get_aspects(pagoda, url, page)
 		unless page.is_a?(String)
 			super {|aspect| yield aspect}
@@ -246,5 +202,9 @@ class GoodOldGames < DigestSite
 
 	def validate_page(url,page)
 		page['title'] ? nil : 'Link deleted'
+	end
+
+	def digest_link(pagoda, url)
+		super(pagoda, url.sub('/www.gog.com/game/','/www.gog.com/en/game/'))
 	end
 end

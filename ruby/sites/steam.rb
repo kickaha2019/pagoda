@@ -136,13 +136,6 @@ class Steam < DigestSite
 
 	def incremental( scanner)
 		path  = scanner.cache + '/steam.json'
-
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
-				raise 'Error retrieving steam data'
-			end
-		end
-
 		raw   = JSON.parse( IO.read( path))['applist']['apps']
 		count = 0
 
@@ -179,40 +172,104 @@ class Steam < DigestSite
 		{}.tap do |digest|
 			nodes = Nodes.parse(page)
 
-			digest['platforms'] = []
+			platforms = []
 			nodes.css('span.platform_img') do |platform|
 				if m = /^platform_img (win|mac)$/.match(platform['class'])
-					digest['platforms'] << {'win' => 'Windows', 'mac' => 'Mac'}[m[1]]
+					platforms << {'win' => 'Windows', 'mac' => 'Mac'}[m[1]]
 				end
 			end
+			digest['platforms'] = platforms.uniq
 
 			nodes.css('div.apphub_AppName') do |game_title|
 				digest['title'] = game_title.text
 			end
 
 			nodes.css('div.release_date div.date') do |release_date|
-				if m = /\d+ \w+, (\d\d\d\d)$/.match(release_date.text)
-					digest['year'] = m[1].to_i
+				begin
+					t = Date.parse(release_date).to_time
+					if t <= Time.now
+						digest['year'] = t.year
+					end
+				rescue StandardError
 				end
 			end
+
+			digest['unreleased'] = true unless digest['year']
 
 			nodes.css('div.game_description_snippet') do |game_description|
 				digest['description'] = game_description.text.strip
 			end
 			digest['developers']  = get_companies(nodes,'Developer:')
 			digest['publishers']  = get_companies(nodes,'Publisher:')
-			digest['aspects']     = []
+			aspects               = []
 
 			nodes.css('div.popular_tags a.app_tag') do |tag|
 				action = tag_info[tag.text.strip]
 				if action.nil?
-					digest['aspects'] << "Steam: #{tag.text.strip}"
+					aspects << "Steam: #{tag.text.strip}"
 				elsif action.is_a?(String)
-					digest['aspects'] << action
+					aspects << action
 				else
-					action.each {|a| digest['aspects'] << a }
+					action.each {|a| aspects << a }
 				end
 			end
+			digest['aspects'] = aspects.uniq
+		end
+	end
+
+	def post_load_steamdb(pagoda, url, page)
+		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
+		tag_info = @info['tags']
+
+		{}.tap do |digest|
+			nodes = Nodes.parse(page)
+
+			platforms = []
+			nodes.css('td.os-icons svg') do |platform|
+				if m = /octicon-(windows|macos)/.match(platform['class'])
+					platforms << {'windows' => 'Windows', 'macos' => 'Mac'}[m[1]]
+				end
+			end
+			digest['platforms'] = platforms.uniq
+
+			nodes.css('h1') do |h1|
+				digest['title'] = h1.text if h1['itemprop'] == 'name'
+			end
+
+			nodes.css('td') { |td1| td1.text}.next_element do |label, td2|
+				if label == 'Release Date'
+					begin
+						t = Date.parse(td2.text).to_time
+						if t <= Time.now
+							digest['year'] = t.year
+						end
+					rescue StandardError
+						digest['year'] = nil
+					end
+				end
+			end
+
+			digest['unreleased'] = true unless digest['year']
+
+			nodes.css('p.header-description') do |game_description|
+				digest['description'] = game_description.text.strip
+			end
+			digest['developers']  = get_companies_steamdb(nodes,'Developer:')
+			digest['publishers']  = get_companies_steamdb(nodes,'Publisher:')
+			aspects               = []
+
+			nodes.css('a.btn') do |tag|
+				next unless /^\/tag\/\d+\/$/ =~ tag['href']
+				action = tag_info[tag.text.strip]
+				if action.nil?
+					aspects << "Steamdb: #{tag.text.strip}"
+				elsif action.is_a?(String)
+					aspects << action
+				else
+					action.each {|a| aspects << a }
+				end
+			end
+			digest['aspects'] = aspects.uniq
 		end
 	end
 
@@ -237,5 +294,40 @@ class Steam < DigestSite
 				end
 			end
 		end
+	end
+
+	def get_companies_steamdb(nodes, type)
+		[].tap do |companies|
+			nodes.css('td') do |title|
+				[title.text.strip]
+			end.parent.css('a') do |anchor, header|
+				if header == type
+					companies << anchor.text.strip
+				end
+			end
+		end
+	end
+
+	def digest_link(pagoda, url)
+		status, response = http_get_threaded(url)
+
+		unless status
+			return status, response
+		end
+
+		if response.is_a? Net::HTTPSuccess
+			return status, post_load(pagoda, url, response.body)
+		end
+
+		if (response.is_a? Net::HTTPRedirection) &&
+				(/agecheck/ =~ response['location'])
+			return true, {'aspects' => ['accept']}
+		end
+
+		if response.is_a? Net::HTTPRedirection
+			return false, "Redirected to #{response['location']}"
+		end
+
+		return false, response.message
 	end
 end
