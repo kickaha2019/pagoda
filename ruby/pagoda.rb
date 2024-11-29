@@ -127,6 +127,16 @@ class Pagoda
     end
   end
 
+  def cached_digest( timestamp)
+    slice = (timestamp / (24 * 60 * 60)) % 10
+    path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
+    if File.exist?( path)
+      YAML.load(IO.read(path))
+    else
+      {}
+    end
+  end
+
   def check_unique_name( name, id)
     return true if name.nil? or name == ''
     @names.check_unique_name( name, id.to_i)

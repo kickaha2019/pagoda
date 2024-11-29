@@ -203,6 +203,10 @@ class Steam < DigestSite
 			digest['publishers']  = get_companies(nodes,'Publisher:')
 			aspects               = []
 
+			if /This content requires the base game/ =~ page
+				aspects << "reject"
+			end
+
 			nodes.css('div.popular_tags a.app_tag') do |tag|
 				action = tag_info[tag.text.strip]
 				if action.nil?
@@ -257,6 +261,10 @@ class Steam < DigestSite
 			digest['developers']  = get_companies_steamdb(nodes,'Developer:')
 			digest['publishers']  = get_companies_steamdb(nodes,'Publisher:')
 			aspects               = []
+
+			if /This content requires the base game/ =~ page
+				aspects << "reject"
+			end
 
 			nodes.css('a.btn') do |tag|
 				next unless /^\/tag\/\d+\/$/ =~ tag['href']
@@ -321,7 +329,21 @@ class Steam < DigestSite
 
 		if (response.is_a? Net::HTTPRedirection) &&
 				(/agecheck/ =~ response['location'])
-			return true, {'aspects' => ['accept']}
+			begin
+				driver = browser_driver
+				driver.navigate.to response['location']
+				sleep 15
+				year_select = driver.find_element(id:'ageYear')
+				year_select.send_keys('1990')
+				button = driver.find_element(id:'view_product_page_btn')
+				button.click
+				sleep 10
+				body = driver.execute_script('return document.documentElement.outerHTML;')
+				return true, post_load(pagoda, url, body)
+			rescue StandardError => bang
+				return false, bang.message
+			end
+			# return true, {'aspects' => ['accept']}
 		end
 
 		if response.is_a? Net::HTTPRedirection

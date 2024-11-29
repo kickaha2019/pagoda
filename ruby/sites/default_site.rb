@@ -83,7 +83,13 @@ class DefaultSite
   end
 
   def post_load(pagoda, url, page)
-    page
+    if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
+      title = m[1].gsub( /\s/, ' ')
+      title.strip.gsub( '  ', ' ')
+      (title == '') ? {} : { 'title' => title }
+    else
+      { }
+    end
   end
 
   def reduce_title( title)

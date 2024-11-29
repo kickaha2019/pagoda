@@ -82,16 +82,18 @@ class PagodaLink < PagodaRecord
   end
 
   def link_aspects
-    begin
-      sh = @owner.get_site_handler(site)
-      found = []
-      sh.get_aspects(@owner,url,@owner.cache_read( timestamp)) do |aspect|
-        found << aspect
-      end
-      found.uniq.join(' ')
-    rescue StandardError => e
-      puts e.to_s
-    end
+    #    begin
+      digest = @owner.cached_digest(timestamp)
+      (digest['aspects'] || []).uniq.join(' ')
+    #   sh = @owner.get_site_handler(site)
+    #   found = []
+    #   sh.get_aspects(@owner,url,@owner.cache_read( timestamp)) do |aspect|
+    #     found << aspect
+    #   end
+    #   found.uniq.join(' ')
+    # rescue StandardError => e
+    #   puts e.to_s
+    # end
   end
 
   def link_date

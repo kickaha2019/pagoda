@@ -22,7 +22,7 @@ class WebsiteFiltersPage
       bits
     end
 
-    def record( site, url, page)
+    def record( site, url, digest)
       if site.name == 'GOG'
         @gog = url.split('/')[-1] unless @gog
       end
@@ -31,7 +31,7 @@ class WebsiteFiltersPage
         @steam = url.split('/')[-1] unless @steam
       end
 
-      site.get_derived_aspects( page) do |aspect|
+      (digest['platforms'] || []).each do |aspect|
         record_aspect( aspect)
       end
     end
@@ -150,9 +150,8 @@ class WebsiteFiltersPage
     game.links do |link|
       next unless link.valid?
       if link.type == 'Store'
-        site = @pagoda.get_site_handler( link.site)
-        page = @pagoda.cache_read( link.timestamp)
-        playable.record( site, link.url, page)
+        digest = @pagoda.cached_digest( link.timestamp)
+        playable.record( site, link.url, digest)
       end
     end
 

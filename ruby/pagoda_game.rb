@@ -200,19 +200,33 @@ class PagodaGame < PagodaRecord
 
   def update_from_link(link)
     details = {}
-    site    = @owner.get_site_handler( link.site)
-    page    = ''
+    digest  = @owner.cached_digest(link.timestamp)
 
-    begin
-      page = @owner.cache_read( link.timestamp)
-      site.get_game_details( link.url, page, details)
-    rescue Exception => bang
-      link.complain bang.message
+    if year.nil? && digest['year']
+      details[:year] = digest['year']
     end
 
-    [:year, :developer, :publisher].each do |field|
-      details.delete(field) unless send(field).nil?
+    if developer.nil? && digest['developer']
+      details[:developer] = digest['developer'].join(', ')
     end
+
+    if publisher.nil? && digest['publisher']
+      details[:publisher] = digest['publisher'].join(', ')
+    end
+
+    # site    = @owner.get_site_handler( link.site)
+    # page    = ''
+    #
+    # begin
+    #   page = @owner.cache_read( link.timestamp)
+    #   site.get_game_details( link.url, page, details)
+    # rescue Exception => bang
+    #   link.complain bang.message
+    # end
+    #
+    # [:year, :developer, :publisher].each do |field|
+    #   details.delete(field) unless send(field).nil?
+    # end
 
     unless details.empty?
       update_details( details)
@@ -227,7 +241,7 @@ class PagodaGame < PagodaRecord
     #   end
     # end
 
-    site.get_aspects(@owner, link.url, page) do |aspect|
+    (digest['aspects'] || []).each do |aspect|
       if @owner.aspect?(aspect)
         unless cache_aspects.has_key?(aspect)
           # type = @owner.get_aspect_type(aspect)

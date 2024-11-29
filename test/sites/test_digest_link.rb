@@ -3,7 +3,7 @@ require 'minitest/autorun'
 require_relative '../../ruby/common'
 require_relative '../../ruby/pagoda'
 
-class TestPostLoad < Minitest::Test
+class TestDigestLink < Minitest::Test
   include Common
 
   def test_big_fish_games
@@ -23,7 +23,7 @@ class TestPostLoad < Minitest::Test
     assert_equal ["accept", "RPG", "Open world"], info['aspects']
   end
 
-  def test_igdb
+  def test_igdb_data
     info = fire('IGDB','https://www.igdb.com/games/a-fork-in-the-tale')
     assert_equal 'A Fork in the Tale', info['title']
     assert_equal 1997, info['year']
@@ -31,6 +31,10 @@ class TestPostLoad < Minitest::Test
     assert_equal ['Advance Reality Interactive'], info['developers']
     assert_equal ['Any River Entertainment'], info['publishers']
     assert_equal ['Adventure', 'Fantasy', 'Comedy'], info['aspects']
+  end
+
+  def test_igdb_nodata
+    fire('IGDB','https://www.igdb.com/games/three-sisters-story')
   end
 
   def test_moby_games
@@ -60,9 +64,20 @@ class TestPostLoad < Minitest::Test
     assert info['unreleased']
   end
 
+  def test_steam_addon
+    info = fire('Steam','https://store.steampowered.com/app/2156236')
+    assert info['aspects'].include?('reject')
+  end
+
   def test_steam_agecheck
     info = fire('Steam','https://store.steampowered.com/app/1086940')
-    assert_equal ["accept"], info['aspects']
+    assert_equal ["accept", "RPG", "Fantasy", "Adventure"], info['aspects']
+    assert_equal ["Windows", "Mac"], info['platforms']
+    assert_equal "Baldur's Gate 3", info['title']
+    assert_equal 2023, info['year']
+    assert /Dungeons & Dragons/ =~ info['description']
+    assert_equal ["Larian Studios"], info['developers']
+    assert_equal ['Larian Studios'], info['publishers']
   end
 
   def setup

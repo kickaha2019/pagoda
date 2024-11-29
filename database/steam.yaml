@@ -86,7 +86,7 @@ tags:
   City Builder: reject
   Class-Based: []
   Classic: []
-  Clicker: []
+  Clicker: reject
   Co-op: []
   Co-op Campaign: []
   Coding: []
@@ -94,7 +94,7 @@ tags:
   Collectathon: []
   Colony Sim: []
   Colorful: []
-  Combat: reject
+  Combat: []
   Combat Racing: reject
   Comedy: []
   Comic Book: []
@@ -296,7 +296,7 @@ tags:
   Noir: []
   Nonlinear: []
   Nostalgia: []
-  Nudity: reject
+  Nudity: []
   Offroad: []
   Old School: []
   On-Rails Shooter: reject

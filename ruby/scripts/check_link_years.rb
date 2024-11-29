@@ -27,20 +27,21 @@ HEADER
   def check_years(game,link)
     return if link.timestamp <= 100
     site = @pagoda.get_site_handler(link.site)
-    return if site.class == DefaultSite
-    page = @pagoda.cache_read( link.timestamp)
-    unless page != ''
-      puts "*** Missing file for #{link.site} #{link.url}"
+    # return if site.class == DefaultSite
+    digest = @pagoda.cache_digest( link.timestamp)
+    # unless page != ''
+    #   puts "*** Missing file for #{link.site} #{link.url}"
+    #   return
+    # end
+    # details = {}
+    # site.get_game_details(link.url,page,details)
+    if digest['year']
+      year, tolerance = details[:year], 1
+    elsif digest['link_year']
+      year, tolerance = digest['link_year'], site.year_tolerance
+    else
       return
     end
-    details = {}
-    site.get_game_details(link.url,page,details)
-    if details[:year]
-      year, tolerance = details[:year], 1
-    else
-      year, tolerance = site.get_link_year(page), site.year_tolerance
-    end
-    return if year.nil?
     okay, year = game.year, year.to_i
     okay = false if okay && (year < game.year)
     okay = false if okay && (year > (tolerance + game.year))

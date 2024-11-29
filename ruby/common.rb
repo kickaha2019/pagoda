@@ -10,11 +10,16 @@ module Common
 	@@old_redirects = {}
 	@@new_redirects = {}
 
+	def browser_driver
+		@@driver = Selenium::WebDriver.for :chrome unless defined?( @@driver)
+		@@driver
+	end
+
 	def browser_get( url)
-		@driver = Selenium::WebDriver.for :chrome unless defined?( @driver)
-		@driver.navigate.to url
+		driver = browser_driver
+		driver.navigate.to url
 		sleep 15
-		@driver.execute_script('return document.documentElement.outerHTML;')
+		driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
 	def complete_url( base, url)

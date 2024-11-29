@@ -139,7 +139,7 @@ class Igdb < DigestSite
 		end
 
 		m = /data-game-id="(\d+)"/.match(page)
-		return '[{}]' unless m
+		return {} unless m
 
 		fields = [
 			'game_modes.name',
@@ -162,6 +162,7 @@ class Igdb < DigestSite
 											 'Authorization' => "Bearer #{@access_token}"},
 							 "fields #{fields.join(',')}; where id=#{m[1]};")
 		info = JSON.parse(json)[0]
+		return {} if info.nil?
 
 		{}.tap do |digest|
 			digest['title']       = info['name']

@@ -24,8 +24,9 @@ class VerifyLinks
   end
 
   def get_details( link, body, rec)
-    site   = @pagoda.get_site_handler( link.site)
-    rec[:title] = site.get_title( link.url, body, link.type)
+    # site   = @pagoda.get_site_handler( link.site)
+    # rec[:title] = site.get_title( link.url, body, link.type)
+    rec[:title] = body.is_a?(String) ? nil : body['title']
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ rec[:title]
@@ -42,14 +43,14 @@ class VerifyLinks
     end
 
     # Title indicates link deleted
-    if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
-      return false
-    end
+    # if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
+    #   return false
+    # end
 
     # Apply site specific filter if link not bound
-    unless link.bound?
-      @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
-    end
+    # unless link.bound?
+    #   @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
+    # end
     true
   end
 
@@ -235,13 +236,14 @@ class VerifyLinks
            ignore:ignore}
 
     # Get year if possible for link
-    if status
-      begin
-        site.get_game_year( @pagoda, link, body, rec)
-      rescue Exception => bang
-        status = false
-        rec[:comment] = bang.message
-      end
+    if status && (! body.is_a?( String )) && (body['year'])
+      rec[:year] = body['year']
+      # begin
+      #   site.get_game_year( @pagoda, link, body, rec)
+      # rescue Exception => bang
+      #   status = false
+      #   rec[:comment] = bang.message
+      # end
     end
 
     # Get details check for link apparently deleted
@@ -291,6 +293,7 @@ if /^http/ =~ ARGV[1]
   puts "... Verified #{ARGV[1]}"
 else
   puts "... Verifying links"
+  vl.browser_driver
   vl.zap_old_links
   count = 0
   vl.to_verify(ARGV[1].to_i) do |link|
