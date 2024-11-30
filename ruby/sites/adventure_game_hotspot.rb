@@ -8,17 +8,6 @@ class AdventureGameHotspot < DefaultSite
 			 'Third-Person' => '3rd person'}
 	}.freeze
 
-	def filter( pagoda, link, page, rec)
-		title = rec[:title].strip
-		if m1 = /^(.*) Adventure Game Hotspot/.match( title)
-			rec[:title] = m1[1].strip.sub( / -$/, '')
-			true
-		else
-			rec[:valid] = false
-			false
-		end
-	end
-
 	def find_database( scanner)
 		have_database = {}
 		scanner.get_links_for(name,'Database') do |link|
@@ -35,15 +24,15 @@ class AdventureGameHotspot < DefaultSite
 		end
 
 		added = 0
-		to_add.each do |link|
-			page = scanner.read_cached_page link
-			if m = /<a href="(\/game\/[^"]*)">View in Database</.match(page)
-				if scanner.add_link('', BASE + m[1]) > 0
-					scanner.bind(BASE + m[1], link.collation.id)
-					added += 1
-				end
-			end
-		end
+		# to_add.each do |link|
+		# 	page = scanner.read_cached_page link
+		# 	if m = /<a href="(\/game\/[^"]*)">View in Database</.match(page)
+		# 		if scanner.add_link('', BASE + m[1]) > 0
+		# 			scanner.bind(BASE + m[1], link.collation.id)
+		# 			added += 1
+		# 		end
+		# 	end
+		# end
 
 		added
 	end
@@ -124,6 +113,10 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def reduce_title( title)
+		if m1 = /^(.*) Adventure Game Hotspot/.match( title)
+			title = m1[1].strip.sub( / -$/, '')\
+		end
+
 		if m = /^(.*\S)\s*\|$/.match(title)
 			title = m[1]
 		end

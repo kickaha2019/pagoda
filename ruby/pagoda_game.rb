@@ -242,6 +242,7 @@ class PagodaGame < PagodaRecord
     # end
 
     (digest['aspects'] || []).each do |aspect|
+      next if ['accept','reject'].include?(aspect)
       if @owner.aspect?(aspect)
         unless cache_aspects.has_key?(aspect)
           # type = @owner.get_aspect_type(aspect)

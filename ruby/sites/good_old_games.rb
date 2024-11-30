@@ -177,7 +177,7 @@ class GoodOldGames < DigestSite
 					digest['year'] = t.year if t <= Time.now
 				end
 
-				digest['platforms'] = []
+				digest['platforms'] = ['GOG']
 				info['supportedOperatingSystems'].each do |opsys|
 					name = opsys['operatingSystem']['name']
 					digest['platforms'] << 'Windows' if name == 'windows'

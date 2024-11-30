@@ -27,19 +27,25 @@ class GameBoomers < DefaultSite
 		end
 	end
 
-	def get_game_description( page)
-		page
-	end
-
-	def get_link_year( page)
-		if m = /design copyright  (\d\d\d\d)/.match( page)
-			m[1]
-		else
-			nil
-		end
-	end
-
 	def name
 		'GameBoomers'
+	end
+
+	def post_load(pagoda, url, page)
+		digest = super
+
+		if m = />design copyright[^<]*(\d\d\d\d)\s*</m.match( page)
+			digest['link_year'] = m[1].to_i
+		end
+
+		digest
+	end
+
+	def reduce_title( title)
+		if m = /^(.*) review\s*$/.match(title)
+			title = m[1]
+		end
+
+		title
 	end
 end

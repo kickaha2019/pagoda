@@ -32,15 +32,15 @@ class AdventureGamers < DefaultSite
 		end
 
 		added = 0
-		to_add.each do |link|
-			page = scanner.read_cached_page link
-			if m = /<a href="(\/games\/[^"]*)"[^>]*>Full Game Details</.match(page)
-				if scanner.add_link('', BASE + m[1]) > 0
-					scanner.bind(BASE + m[1], link.collation.id)
-					added += 1
-				end
-			end
-		end
+		# to_add.each do |link|
+		# 	page = scanner.read_cached_page link
+		# 	if m = /<a href="(\/games\/[^"]*)"[^>]*>Full Game Details</.match(page)
+		# 		if scanner.add_link('', BASE + m[1]) > 0
+		# 			scanner.bind(BASE + m[1], link.collation.id)
+		# 			added += 1
+		# 		end
+		# 	end
+		# end
 
 		added
 	end

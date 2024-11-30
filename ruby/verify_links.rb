@@ -42,114 +42,7 @@ class VerifyLinks
       return false
     end
 
-    # Title indicates link deleted
-    # if @pagoda.get_site_handler( link.site).deleted_title( rec[:title])
-    #   return false
-    # end
-
-    # Apply site specific filter if link not bound
-    # unless link.bound?
-    #   @pagoda.get_site_handler( link.site).filter( @pagoda, link, body, rec)
-    # end
     true
-  end
-
-  def http_get_threaded( url)
-    @http_get_threaded_url = url
-    @http_get_threaded_got = nil
-
-    Thread.new do
-      begin
-        response = http_get_response( url)
-        if url == @http_get_threaded_url
-          if response.is_a?( Net::HTTPNotFound)
-            @http_get_threaded_got = [false, 'Not found']
-          else
-            @http_get_threaded_got = [true, response]
-          end
-        end
-      rescue Exception => bang
-        if url == @http_get_threaded_url
-          @http_get_threaded_got = [false, bang.message]
-        end
-      end
-    end
-
-    (0...600).each do
-      sleep 0.1
-      unless @http_get_threaded_got.nil?
-        return * @http_get_threaded_got
-      end
-    end
-
-    sleep 300
-    return false, "Timeout"
-  end
-
-  def http_get_with_redirect( site, url, depth = 0, debug = false)
-    overriden, status, comment, response = @pagoda.get_site_handler( site).override_verify_url( url)
-    if overriden
-      return status, comment, response
-    end
-
-    p ['http_get_with_redirect1', url] if debug
-    comment = nil
-    status, response = http_get_threaded( url)
-
-    # Record redirections
-    if status && (depth < 4) &&
-        response.is_a?( Net::HTTPRedirection)
-
-      location = complete_url( url, response['Location'])
-      comment = 'Redirected to ' + location
-      p ['http_get_with_redirect2', url, response, response.code] if debug
-
-      status, comment1, response = http_get_with_redirect( site, location, depth+1, debug)
-      comment = comment1 if comment1
-      return status, comment, response
-    end
-
-    return status, status ? nil : response, response
-  end
-
-  def load_page( link, debug=false)
-    status, comment, response = http_get_with_redirect( link.site, link.url, 0, debug)
-    ignore = false
-    p ['load_page1', status, comment, response] if debug
-
-    # Ignore redirects if site coerces redirect URL to original URL
-    if m = /^Redirected to (.*)$/.match( comment)
-      redirect = m[1]
-      p ['load_page1a', redirect, @pagoda.get_site_handler( link.site).coerce_url( redirect)] if debug
-      if @pagoda.get_site_handler( link.site).coerce_url( redirect).sub( /\/$/, '') == link.url.sub( /\/$/, '')
-        comment = nil
-      end
-    end
-
-    body = response.is_a?( String) ? response : response.body
-
-    unless status
-      if debug
-        File.open( "/Users/peter/temp/verify_links.html", 'w') {|io| io.print body}
-      end
-      puts "*** #{link.url}: #{body}"
-    end
-
-    # Try converting odd characters
-    begin
-      body = body.gsub( '–', '-').gsub( '’', "'")
-    rescue
-    end
-
-    # Force to US ASCII
-    body.force_encoding( 'UTF-8')
-    body.encode!( 'US-ASCII',
-                  :replace           => ' ',
-                  :invalid           => :replace,
-                  :undef             => :replace,
-                  :universal_newline => true)
-
-    return status, comment, ignore, body
   end
 
   def to_verify(n)
@@ -165,12 +58,12 @@ class VerifyLinks
         next
       end
 
-      if link.timestamp > 100
-        unless @pagoda.cache_read(link.timestamp) != ''
-          must << link
-          next
-        end
-      end
+      # if link.timestamp > 100
+      #   unless @pagoda.cache_read(link.timestamp) != ''
+      #     must << link
+      #     next
+      #   end
+      # end
 
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
@@ -220,47 +113,33 @@ class VerifyLinks
       return
     end
 
-    status, comment, ignore, body = load_page(link, debug)
     site = @pagoda.get_site_handler( link.site)
-    body = site.post_load(@pagoda, link.url, body) if status
+    status, body = site.digest_link(@pagoda, link.url)
 
     if status && (comment = site.validate_page(link.url, body))
       status = false
+      body   = comment
     end
 
     rec = {title:'',
            timestamp:Time.now.to_i,
            valid:true,
-           comment:comment,
-           changed: false,
-           ignore:ignore}
+           changed: false}
 
     # Get year if possible for link
-    if status && (! body.is_a?( String )) && (body['year'])
+    if status && body['year']
       rec[:year] = body['year']
-      # begin
-      #   site.get_game_year( @pagoda, link, body, rec)
-      # rescue Exception => bang
-      #   status = false
-      #   rec[:comment] = bang.message
-      # end
     end
 
-    # Get details check for link apparently deleted
+    # Get details
     if status
       p ['verify_page3', status, rec] if debug
       status = get_details( link, body, rec)
-      unless status
-        if site.deleted_title( rec[:title])
-          p ['verify_page5', link.url] if debug
-          link.delete
-          return
-        end
-      end
       p ['verify_page4', status, rec] if debug
     else
-      rec[:valid] = false
-      rec[:title] = link.title
+      rec[:valid]   = false
+      rec[:title]   = link.title
+      rec[:comment] = body
     end
 
     @pagoda.update_link(link, rec, body, debug)
@@ -293,13 +172,11 @@ if /^http/ =~ ARGV[1]
   puts "... Verified #{ARGV[1]}"
 else
   puts "... Verifying links"
-  vl.browser_driver
   vl.zap_old_links
   count = 0
   vl.to_verify(ARGV[1].to_i) do |link|
     #puts "... Verifying #{link.url}"
     count += 1
-    vl.throttle( link.url)
     begin
       vl.verify_page( link)
     rescue

@@ -337,9 +337,9 @@ HIDDEN_ASPECT_ELEMENT
       end
     end
 
-    def get_cache( timestamp)
-      $pagoda.cache_read( timestamp)
-    end
+    # def get_cache( timestamp)
+    #   $pagoda.cache_read( timestamp)
+    # end
 
     def get_locals( params, defs)
       locals = {}
@@ -428,10 +428,11 @@ SEARCH
     end
 
     def link_lost?( rec)
-      return false if link_status(rec) == 'Ignored'
-      return false if rec.static?
-      return false if rec.timestamp < 101
-      ! @@timestamps[rec.timestamp]
+      false
+      # return false if link_status(rec) == 'Ignored'
+      # return false if rec.static?
+      # return false if rec.timestamp < 101
+      # ! @@timestamps[rec.timestamp]
     end
 
     def link_site_combo( view, combo_name, current_site, current_type, current_status, html)
@@ -657,9 +658,9 @@ OLDEST_LINK
         $debug = true if /^debug=true$/i =~ arg
       end
 
-      $pagoda.cache_timestamps do |t|
-        @@timestamps[t] = true
-      end
+      # $pagoda.cache_timestamps do |t|
+      #   @@timestamps[t] = true
+      # end
     end
 
     def sort_name( name)

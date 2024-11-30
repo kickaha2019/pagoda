@@ -101,31 +101,31 @@ class Pagoda
     @cache + "/verified/#{slice}/#{timestamp}.#{extension}"
   end
 
-  def cache_read( timestamp)
-    slice = (timestamp / (24 * 60 * 60)) % 10
-    path = @cache + "/verified/#{slice}/#{timestamp}.html"
-    if File.exist?( path)
-      IO.read(path)
-    else
-      path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
-      if File.exist?( path)
-        YAML.load(IO.read(path))
-      else
-        ''
-      end
-    end
-  end
+  # def cache_read( timestamp)
+  #   slice = (timestamp / (24 * 60 * 60)) % 10
+  #   path = @cache + "/verified/#{slice}/#{timestamp}.html"
+  #   if File.exist?( path)
+  #     IO.read(path)
+  #   else
+  #     path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
+  #     if File.exist?( path)
+  #       YAML.load(IO.read(path))
+  #     else
+  #       ''
+  #     end
+  #   end
+  # end
 
-  def cache_timestamps
-    Dir.entries(@cache + '/verified').each do |slice|
-      next unless /^\d+$/ =~ slice
-      Dir.entries(@cache + '/verified/' + slice).each do |f|
-        if m = /^(\d+)\./.match(f)
-          yield m[1].to_i
-        end
-      end
-    end
-  end
+  # def cache_timestamps
+  #   Dir.entries(@cache + '/verified').each do |slice|
+  #     next unless /^\d+$/ =~ slice
+  #     Dir.entries(@cache + '/verified/' + slice).each do |f|
+  #       if m = /^(\d+)\./.match(f)
+  #         yield m[1].to_i
+  #       end
+  #     end
+  #   end
+  # end
 
   def cached_digest( timestamp)
     slice = (timestamp / (24 * 60 * 60)) % 10
@@ -493,9 +493,10 @@ class Pagoda
     rec[:timestamp] = Time.now.to_i
     new_path = cache_path( rec[:timestamp], body.is_a?(String) ? 'html' : 'yaml')
 
-    # If OK save page to cache else to temp area
-    body = body.is_a?(String) ? body : body.to_yaml
-    File.open( new_path, 'w') {|io| io.print body}
+    # If OK save page to cache
+    unless body.is_a?(String)
+      File.open( new_path, 'w') {|io| io.print body.to_yaml}
+    end
     p ['update_link5', new_path] if debug
 
     # Ignore link if so flagged but comment if bound to a game

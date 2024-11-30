@@ -49,13 +49,13 @@ class Apple < DefaultSite
   end
 
   def full( scanner)
-    scanner.link_page_anchors( 'TouchArcade') do |game, url, text|
-      if text.downcase == 'buy now'
-        if m = /\/link\/.*apple\.com.*\/app\/(.*)\?/.match( url)
-          scanner.suggest_link( game, "https://apps.apple.com/app/#{m[1]}")
-        end
-      end
-    end
+    # scanner.link_page_anchors( 'TouchArcade') do |game, url, text|
+    #   if text.downcase == 'buy now'
+    #     if m = /\/link\/.*apple\.com.*\/app\/(.*)\?/.match( url)
+    #       scanner.suggest_link( game, "https://apps.apple.com/app/#{m[1]}")
+    #     end
+    #   end
+    # end
 
     Dir.entries( scanner.cache + '/ios').each do |f|
       if /\.json$/ =~ f

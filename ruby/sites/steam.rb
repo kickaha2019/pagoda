@@ -172,7 +172,7 @@ class Steam < DigestSite
 		{}.tap do |digest|
 			nodes = Nodes.parse(page)
 
-			platforms = []
+			platforms = ['Steam']
 			nodes.css('span.platform_img') do |platform|
 				if m = /^platform_img (win|mac)$/.match(platform['class'])
 					platforms << {'win' => 'Windows', 'mac' => 'Mac'}[m[1]]
@@ -195,6 +195,10 @@ class Steam < DigestSite
 			end
 
 			digest['unreleased'] = true unless digest['year']
+
+			if /English language not supported/ =~ page
+				digest['unreleased'] = true
+			end
 
 			nodes.css('div.game_description_snippet') do |game_description|
 				digest['description'] = game_description.text.strip

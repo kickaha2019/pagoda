@@ -46,7 +46,7 @@ end
 
 get '/cache/:timestamp' do
   content_type 'text/plain'
-  get_cache( params[:timestamp].to_i)
+  cached_digest( params[:timestamp].to_i).to_yaml
 end
 
 post '/check_name' do

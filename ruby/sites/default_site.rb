@@ -19,10 +19,6 @@ class DefaultSite
     end
   end
 
-  def deleted_title( title)
-    false
-  end
-
   def elide_nav_blocks(page)
     page.gsub( /<nav.*?<\/nav>/mi, '')
   end
@@ -86,7 +82,7 @@ class DefaultSite
     if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
       title.strip.gsub( '  ', ' ')
-      (title == '') ? {} : { 'title' => title }
+      (title == '') ? {} : { 'title' => reduce_title( title ) }
     else
       { }
     end

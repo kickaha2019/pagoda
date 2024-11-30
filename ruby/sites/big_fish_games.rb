@@ -1,8 +1,12 @@
 require_relative 'digest_site'
 
 class BigFishGames < DigestSite
-	def deleted_title( title)
-		title == 'Store'
+	def validate_page(url,digest)
+		if digest['title'] == 'Store'
+			'Deleted link'
+		else
+			nil
+		end
 	end
 
 	def full( scanner)

@@ -97,12 +97,7 @@ class PagodaLink < PagodaRecord
   end
 
   def link_date
-    begin
-      sh = @owner.get_site_handler(site)
-      sh.get_link_year( @owner.cache_read( timestamp))
-    rescue StandardError => e
-      puts e.to_s
-    end
+    @owner.cached_digest(timestamp)['link_year']
   end
 
   def name

@@ -225,19 +225,6 @@ class Spider
 		end
 	end
 
-	def link_page_anchors( site)
-		links_for_site( site) do |link|
-			next unless link.valid? && link.bound? && link.collation
-			page = read_cached_page link
-			page.scan( /<a([^>]*)>([^<]*)</im) do |anchor|
-				if m = /href\s*=\s*"([^"]*)"/i.match( anchor[0])
-					next if /\.(jpg|jpeg|png|gif)$/i =~ m[1]
-					yield link.collation.name, m[1], anchor[1]
-				end
-			end
-		end
-	end
-
 	def lowest_frequency( name)
     @pagoda.rarity( name)
 	end
@@ -284,13 +271,13 @@ class Spider
 		end
 	end
 
-	def read_cached_page(link)
-		page = @pagoda.cache_read( link.timestamp)
-		if page == ''
-			puts "*** Link file missing: #{link.url}"
-		end
-		page
-	end
+	# def read_cached_page(link)
+	# 	page = @pagoda.cache_read( link.timestamp)
+	# 	if page == ''
+	# 		puts "*** Link file missing: #{link.url}"
+	# 	end
+	# 	page
+	# end
 
 	def rebase( site, type)
 		unless @rebases[site][type]
@@ -421,5 +408,6 @@ class Spider
 end
 
 spider = Spider.new( ARGV[0], ARGV[1])
+spider.browser_driver
 spider.send( ARGV[2].to_sym, ARGV[3], ARGV[4])
 spider.report
