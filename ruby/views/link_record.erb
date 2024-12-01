@@ -43,6 +43,7 @@
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
     <tr><th>Collation</th><td><%= @rec.collation ? game_link(@rec.collation.id) : '' %>
     <tr><th>Valid</th><td><%= @rec.valid %></td></tr>
+    <tr><th>Released</th><td><%= @rec.unreleased? ? 'N' : 'Y' %></td></tr>
     <tr><th>Static</th><td><%= @rec.static? ? 'Y' : 'N' %></td></tr>
     <tr><th>Comment</th><td><%= @rec.comment %></td></tr>
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>

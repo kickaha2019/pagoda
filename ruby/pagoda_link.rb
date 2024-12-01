@@ -138,6 +138,8 @@ class PagodaLink < PagodaRecord
       else
         'Invalid'
       end
+    elsif unreleased?
+      'Unreleased'
     elsif bound?
       collation ? 'Bound' : 'Ignored'
     else
@@ -169,6 +171,10 @@ class PagodaLink < PagodaRecord
     @owner.end_transaction
     @bound = false
     @bound_game = nil
+  end
+
+  def unreleased?
+    @record[:unreleased] == 'Y'
   end
 
   def valid?

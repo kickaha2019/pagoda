@@ -508,6 +508,12 @@ class Pagoda
     end
 
     link.verified( rec)
+
+    # Unbind unreleased links
+    if link.unreleased?
+      link.unbind
+    end
+
     refresh_link link.url
   end
 

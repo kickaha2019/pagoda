@@ -33,7 +33,7 @@ class TestDigestLink < Minitest::Test
     assert_equal 2003, info['link_year']
   end
 
-  def test_good_old_games
+  def test_good_old_games1
     info = fire('GOG','https://www.gog.com/game/atom_rpg_trudograd')
     assert_equal 'ATOM RPG: Trudograd', info['title']
     assert_equal 2020, info['year']
@@ -58,7 +58,7 @@ class TestDigestLink < Minitest::Test
     fire('IGDB','https://www.igdb.com/games/three-sisters-story')
   end
 
-  def test_moby_games
+  def test_moby_games1
     info = fire('MobyGames','https://www.mobygames.com/game/20148/agon-episode-1-london-scene/')
     assert_equal 'AGON: Episode 1 - London Scene (2003)', info['title']
     assert_equal 2003, info['year']
@@ -66,6 +66,11 @@ class TestDigestLink < Minitest::Test
     assert_equal ['Private Moon Studios'], info['developers']
     assert_equal ['Private Moon Studios'], info['publishers']
     assert_equal ["Adventure", "1st person"], info['aspects']
+  end
+
+  def test_moby_games2
+    info = fire('MobyGames','https://www.mobygames.com/game/194984/mystical-riddles-behind-dolls-eyes-collectors-edition/')
+    assert_equal 'Mystical Riddles: Behind Doll s Eyes (Collector&#39;s Edition) (2022)', info['title']
   end
 
   def test_steam_released
@@ -122,7 +127,7 @@ class TestDigestLink < Minitest::Test
   def fire(site,url)
     status, result = @pagoda.get_site_handler(site).digest_link(@pagoda, url)
     assert status, result
-    result
+    force_ascii result
   end
 
   def mkdir(path)

@@ -31,6 +31,38 @@ module Common
 		raise "Unable to complete #{url} for #{base}"
 	end
 
+	def force_ascii(data)
+		if data.is_a? String
+			# Try converting odd characters
+			begin
+				data = data.gsub( '–', '-').gsub( '’', "'")
+			rescue
+			end
+
+			# Force to US ASCII
+			data.force_encoding( 'UTF-8')
+			data.encode!( 'US-ASCII',
+										:replace           => ' ',
+										:invalid           => :replace,
+										:undef             => :replace,
+										:universal_newline => true)
+		elsif data.is_a? Array
+			[].tap do |array|
+				data.each do |d|
+					array << force_ascii(d)
+				end
+			end
+		elsif data.is_a? Hash
+			{}.tap do |map|
+				data.each_pair do |k,v|
+					map[k] = force_ascii(v)
+				end
+			end
+		else
+			data
+		end
+	end
+
 	def h(text)
 		return '' if text.nil?
 		Rack::Utils.escape_html(text)

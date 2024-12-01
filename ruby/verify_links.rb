@@ -58,19 +58,14 @@ class VerifyLinks
         next
       end
 
-      # if link.timestamp > 100
-      #   unless @pagoda.cache_read(link.timestamp) != ''
-      #     must << link
-      #     next
-      #   end
-      # end
-
       if (link.status == 'Invalid') || link.comment
         #puts "Dubious: #{link.url} / #{link.comment}"
         must << link
       elsif /free/i =~ link.status
         loose << link
       elsif link.status == 'Ignored'
+        loose << link
+      elsif link.unreleased?
         loose << link
       else
         bound << link
@@ -115,6 +110,7 @@ class VerifyLinks
 
     site = @pagoda.get_site_handler( link.site)
     status, body = site.digest_link(@pagoda, link.url)
+    body = status ? force_ascii(body) : body
 
     if status && (comment = site.validate_page(link.url, body))
       status = false
@@ -123,6 +119,7 @@ class VerifyLinks
 
     rec = {title:'',
            timestamp:Time.now.to_i,
+           unreleased:(body['unreleased'] ? true : false),
            valid:true,
            changed: false}
 
