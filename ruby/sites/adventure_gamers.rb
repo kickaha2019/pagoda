@@ -45,17 +45,14 @@ class AdventureGamers < DefaultSite
 		added
 	end
 
-	def filter( pagoda, link, page, rec)
-		title = rec[:title].strip
+	def reduce_title(title)
+		title = title.strip
 		if m1 = /^(.*)(-|) review \| Adventure Gamers/.match( title)
-			rec[:title] = m1[1].strip
-			true
+			m1[1].strip
 		elsif m = /^(.*)(-|) \| Adventure Gamers/.match( title)
-			rec[:title] = m[1].strip
-			true
+			m[1].strip
 		else
-			rec[:valid] = false
-			false
+			title
 		end
 	end
 

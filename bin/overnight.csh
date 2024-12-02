@@ -14,7 +14,7 @@ if ($status != 0) exit 1
 
 # Verify the links starting with the oldest verified
 date
-ruby ruby/verify_links.rb database 2000 ~/Caches/Pagoda
+ruby ruby/scripts/verify_multiple_links.rb database 2000 ~/Caches/Pagoda
 if ($status != 0) exit 1
 
 # Suggest some aspects

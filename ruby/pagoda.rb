@@ -481,7 +481,7 @@ class Pagoda
     @database.start_transaction
   end
 
-  def update_link(link, rec, body, debug=false)
+  def update_link(link, rec, digest, debug=false)
 
     # Save old link to old_links table
     start_transaction
@@ -489,31 +489,29 @@ class Pagoda
     insert('old_links',link.record)
     end_transaction
 
+    # Save the digest
     sleep 1
     rec[:timestamp] = Time.now.to_i
-    new_path = cache_path( rec[:timestamp], body.is_a?(String) ? 'html' : 'yaml')
-
-    # If OK save page to cache
-    unless body.is_a?(String)
-      File.open( new_path, 'w') {|io| io.print body.to_yaml}
-    end
+    new_path = cache_path( rec[:timestamp], 'yaml')
+    File.open( new_path, 'w') {|io| io.print digest.to_yaml}
     p ['update_link5', new_path] if debug
 
-    # Ignore link if so flagged but comment if bound to a game
-    if rec[:ignore]
-      if link.collation
-        rec[:comment] = "Was bound to #{link.collation.name}"
+    # Unbind unreleased links
+    if rec[:unreleased]
+      link.unbind
+    elsif digest['aspects']
+      ignore = ! digest['aspects'].include?('accept')
+      ignore = true if digest['aspects'].include?('reject')
+
+      if ignore
+        if link.collation
+          rec[:comment] = "Was bound to #{link.collation.name}"
+        end
+        link.bind( -1)
       end
-      link.bind( -1)
     end
 
     link.verified( rec)
-
-    # Unbind unreleased links
-    if link.unreleased?
-      link.unbind
-    end
-
     refresh_link link.url
   end
 

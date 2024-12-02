@@ -137,7 +137,7 @@ class MobyGames < DigestSite
 				end
 			end
 
-			aspects = {}
+			aspects = {'accept' => true}
 			nodes.css('div.info-genres dl.metadata a') do |tag|
 				action = tag_info[tag.text.strip]
 				if action.nil?

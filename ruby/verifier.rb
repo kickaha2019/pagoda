@@ -1,13 +1,3 @@
-#
-# Verify links
-#
-# Command line
-#   Pagoda database directory
-#   URL to validate or number of links to validate
-#   Cache directory
-#   How old in days before revalidating link
-#
-
 require 'net/http'
 require 'uri'
 require 'openssl'
@@ -16,11 +6,11 @@ require 'yaml'
 require_relative 'pagoda'
 require_relative 'common'
 
-class VerifyLinks
+class Verifier
   include Common
 
-  def initialize( dir, cache)
-    @pagoda   = Pagoda.release( dir, cache)
+  def initialize(pagoda)
+    @pagoda   = pagoda
   end
 
   def get_details( link, body, rec)
@@ -161,25 +151,4 @@ class VerifyLinks
     end
     @pagoda.end_transaction
   end
-end
-
-vl = VerifyLinks.new( ARGV[0], ARGV[2])
-if /^http/ =~ ARGV[1]
-  vl.verify_url( ARGV[1])
-  puts "... Verified #{ARGV[1]}"
-else
-  puts "... Verifying links"
-  vl.zap_old_links
-  count = 0
-  vl.to_verify(ARGV[1].to_i) do |link|
-    #puts "... Verifying #{link.url}"
-    count += 1
-    begin
-      vl.verify_page( link)
-    rescue
-      puts "*** Problem with #{link.url}"
-      raise
-    end
-  end
-  puts "... Verified #{count} links"
 end

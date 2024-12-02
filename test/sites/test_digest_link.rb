@@ -106,6 +106,11 @@ class TestDigestLink < Minitest::Test
     assert_equal ['Larian Studios'], info['publishers']
   end
 
+  def test_steam_porn
+    info = fire('Steam','https://store.steampowered.com/app/2154130')
+    assert_equal ["reject"], info['aspects']
+  end
+
   def test_steam_not_english
     info = fire('Steam','https://store.steampowered.com/app/1530760')
     assert info['unreleased']

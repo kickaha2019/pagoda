@@ -336,10 +336,21 @@ class Steam < DigestSite
 			begin
 				driver = browser_driver
 				driver.navigate.to response['location']
-				sleep 15
-				year_select = driver.find_element(id:'ageYear')
-				year_select.send_keys('1990')
-				button = driver.find_element(id:'view_product_page_btn')
+				sleep 10
+
+				begin
+					year_select = driver.find_element(id:'ageYear')
+					year_select.send_keys('1990')
+				rescue Selenium::WebDriver::Error::NoSuchElementError
+					return true, {'aspects' => ['reject']}
+				end
+
+				begin
+					button = driver.find_element(id:'view_product_page_btn')
+				rescue Selenium::WebDriver::Error::NoSuchElementError
+					return true, {'aspects' => ['reject']}
+				end
+
 				button.click
 				sleep 10
 				body = driver.execute_script('return document.documentElement.outerHTML;')

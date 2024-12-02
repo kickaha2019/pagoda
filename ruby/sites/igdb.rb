@@ -170,7 +170,7 @@ class Igdb < DigestSite
 			digest['description'] = info['summary'] || info['storyline']
 			digest['developers']  = get_json_companies(info,'developer')
 			digest['publishers']  = get_json_companies(info,'publisher')
-			digest['aspects']     = []
+			digest['aspects']     = ['accept']
 			get_aspects(pagoda, url, json) do |aspect|
 				digest['aspects'] << aspect
 			end

@@ -190,6 +190,7 @@ class PagodaLink < PagodaRecord
     @record[:valid]      = rec[:valid] ? 'Y' : 'N'
     @record[:comment]    = rec[:comment]
     @record[:year]       = rec[:year] ? rec[:year] : nil
+    @record[:unreleased] = rec[:unreleased] ? 'Y' : 'N'
 
     if rec[:url] && (rec[:url] != @record[:url])
       raise "*** verified changed URL"
