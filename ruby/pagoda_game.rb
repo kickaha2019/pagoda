@@ -206,12 +206,12 @@ class PagodaGame < PagodaRecord
       details[:year] = digest['year']
     end
 
-    if developer.nil? && digest['developer']
-      details[:developer] = digest['developer'].join(', ')
+    if developer.nil? && digest['developers']
+      details[:developer] = digest['developers'].join(', ')
     end
 
-    if publisher.nil? && digest['publisher']
-      details[:publisher] = digest['publisher'].join(', ')
+    if publisher.nil? && digest['publishers']
+      details[:publisher] = digest['publishers'].join(', ')
     end
 
     # site    = @owner.get_site_handler( link.site)

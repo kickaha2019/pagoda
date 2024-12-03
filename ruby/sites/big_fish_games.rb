@@ -1,6 +1,6 @@
-require_relative 'digest_site'
+require_relative 'default_site'
 
-class BigFishGames < DigestSite
+class BigFishGames < DefaultSite
 	def validate_page(url,digest)
 		if digest['title'] == 'Store'
 			'Deleted link'
@@ -37,14 +37,6 @@ class BigFishGames < DigestSite
 		end
 
 		added
-	end
-
-	def get_game_description( page)
-		unless page.is_a?(String)
-			return super
-		end
-
-		page
 	end
 
 	def name

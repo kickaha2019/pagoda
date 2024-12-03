@@ -1,6 +1,6 @@
-require_relative 'digest_site'
+require_relative 'default_site'
 
-class GoodOldGames < DigestSite
+class GoodOldGames < DefaultSite
   def initialize
     @info         = nil
   end
@@ -54,53 +54,6 @@ class GoodOldGames < DigestSite
 					url = nil
 				end
 			end
-		end
-	end
-
-	def get_aspects(pagoda, url, page)
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
-		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
-		tags  = @info['tags']
-
-		get_tags( page).each do |tag|
-			actions = tags[tag]
-			actions = [actions] if actions.is_a?( String)
-			actions.each do |aspect|
-				yield aspect unless ['accept','ignore','reject'].include?( aspect)
-			end
-		end
-	end
-
-	def get_derived_aspects( page)
-		yield 'GOG'
-
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
-		if info = extract_card_product( page)
-			info['supportedOperatingSystems'].each do |opsys|
-				name = opsys['operatingSystem']['name']
-				yield 'Windows' if name == 'windows'
-				yield 'Mac'     if name == 'osx'
-			end
-		end
-	end
-
-	def get_game_description( page)
-		if page.is_a?(String)
-			if info = extract_card_product( page)
-				info['description']
-			else
-				''
-			end
-		else
-			super
 		end
 	end
 

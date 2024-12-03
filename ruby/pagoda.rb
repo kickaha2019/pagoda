@@ -504,10 +504,7 @@ class Pagoda
       ignore = true if digest['aspects'].include?('reject')
 
       if ignore
-        if link.collation
-          rec[:comment] = "Was bound to #{link.collation.name}"
-        end
-        link.bind( -1)
+        link.bind( -1) unless link.bound?
       end
     end
 

@@ -1,6 +1,10 @@
 require_relative 'default_site'
 
 class Hotu < DefaultSite
+	def initialize
+		@info         = nil
+	end
+
 	def coerce_url( url)
 		if m = /^http:(.*)$/.match( url)
 			return 'https:' + m[1]
@@ -63,28 +67,6 @@ class Hotu < DefaultSite
 		end
 	end
 
-	def get_game_description( page)
-		Nodes.parse( page).css( 'td.bodycopy') do |cell|
-			return cell.text
-		end
-		''
-	end
-
-	def get_game_details( url, page, game)
-		publisher, developer, year = false, false, false
-		page.split("\n").each do |line|
-			if m = />([a-z0-9 ]*)<\/a>/i.match( line)
-				game[:publisher] = m[1] if publisher
-				game[:developer] = m[1] if developer
-				game[:year]      = m[1].to_i if year
-			end
-			publisher, developer, year = false, false, false
-			publisher = true if />Publisher:</.match( line )
-			developer = true if />Developer:</.match( line )
-			year = true if />Year:</.match( line )
-		end
-	end
-
 	def link_title( * titles)
 		('Home of the Underdogs' == titles[0]) ? titles[1] : titles[0]
 	end
@@ -95,5 +77,58 @@ class Hotu < DefaultSite
 
 	def year_tolerance
 		3
+	end
+
+	def post_load(pagoda, url, page)
+		@info    = pagoda.get_yaml( 'hotu.yaml') if @info.nil?
+		tag_info = @info['tags']
+		nodes    = Nodes.parse( page)
+
+		{}.tap do |digest|
+			nodes.css( 'td.bodycopy') do |cell|
+				digest['description'] = cell.text
+			end
+
+			nodes.css( 'big b') do |cell|
+				digest['title'] = cell.text
+			end
+
+			get_anchors( nodes, 'Year:') do |year|
+				digest['year'] = year.to_i
+			end
+			digest['developers']  = get_companies(nodes,'Developer:')
+			digest['publishers']  = get_companies(nodes,'Publisher:')
+
+			aspects = ['accept']
+			get_anchors( nodes, 'Theme:') do |tag|
+				action = tag_info[tag.strip]
+				if action.nil?
+					aspects << "HOTU: #{tag.strip}"
+				elsif action.is_a?(String)
+					aspects << action
+				else
+					action.each {|a| aspects << a}
+				end
+			end
+			digest['aspects'] = aspects.uniq
+		end
+	end
+
+	def get_companies(nodes, type)
+		[].tap do |companies|
+			get_anchors( nodes, type) do |anchor|
+				companies << anchor
+			end
+		end
+	end
+
+	def get_anchors(nodes, type)
+		nodes.css('td.infoboxLeft') do |title|
+			[title.text.strip]
+		end.parent.css('td.infoboxRight a') do |anchor, header|
+			if header == type
+				yield anchor.text.strip
+			end
+		end
 	end
 end

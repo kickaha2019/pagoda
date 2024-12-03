@@ -266,7 +266,7 @@ class Steam < DigestSite
 			digest['publishers']  = get_companies_steamdb(nodes,'Publisher:')
 			aspects               = []
 
-			if /This content requires the base game/ =~ page
+			if /This content requires the base (game|application)/ =~ page
 				aspects << "reject"
 			end
 

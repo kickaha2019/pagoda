@@ -44,6 +44,16 @@ class TestDigestLink < Minitest::Test
     assert_equal ["accept", "RPG", "Open world"], info['aspects']
   end
 
+  def test_hotu
+    info = fire('HOTU','https://www.homeoftheunderdogs.net/game.php?id=114')
+    assert_equal 'Beneath a Steel Sky', info['title']
+    assert /Lure of The Temptress/ =~ info['description']
+    assert_equal 1994, info['year']
+    assert_equal ['Revolution'], info['developers']
+    assert_equal ['Freeware'], info['publishers']
+    assert_equal ["accept", "Futuristic"], info['aspects']
+  end
+
   def test_igdb_data
     info = fire('IGDB','https://www.igdb.com/games/a-fork-in-the-tale')
     assert_equal 'A Fork in the Tale', info['title']
