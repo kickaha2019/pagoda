@@ -80,7 +80,7 @@ class Verifier
 
     links = must
     (0...n).each do
-      (0..2).each do
+      (0..1).each do
         links << bound.pop unless bound.empty?
       end
       links << loose.pop unless loose.empty?

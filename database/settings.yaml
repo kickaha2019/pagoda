@@ -58,6 +58,12 @@ full:
 - site:   HOTU
   type:   Reference
   method: find
+- site:   Just Adventure
+  type:   Review
+  method: find_reviews
+- site:   Just Adventure
+  type:   Walkthrough
+  method: find_walkthroughs
 - site:   Nice Game Hints
   type:   Walkthrough
   method: find

@@ -1,6 +1,6 @@
-require_relative 'digest_site'
+require_relative 'default_site'
 
-class Igdb < DigestSite
+class Igdb < DefaultSite
 	def initialize
 		@info         = nil
 		@access_token = nil
@@ -19,11 +19,6 @@ class Igdb < DigestSite
 	end
 
 	def get_aspects(pagoda, url, page)
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
 		begin
 			info = get_json(page)
 			tag_to_aspects(pagoda, info, 'game_modes')          {|aspect| yield aspect}
@@ -36,73 +31,9 @@ class Igdb < DigestSite
 		end
 	end
 
-	def get_game_description(page)
-		unless page.is_a?(String)
-			return super
-		end
-
-		begin
-			get_json(page)['summary']
-		rescue StandardError => e
-			puts e.backtrace.join("\n")
-			puts "*** #{url}: #{e.message}"
-			''
-		end
-	end
-
-	def get_game_details( url, page, game)
-		unless page.is_a?(String)
-			super
-			return
-		end
-
-		begin
-			info = get_json(page)
-
-			if frd = info['first_release_date']
-				game[:year] = Time.at(frd).year
-			elsif rd = info['release_dates']
-				game[:year] = rd.first['y']
-				rd[1..-1].each do |date|
-					game[:year] = date['y'] if date['y'] < game[:year]
-				end
-			end
-
-			if companies = info['involved_companies']
-				developers = companies.select {|c| c['developer']}
-				unless developers.empty?
-					game[:developer] = developers.collect {|c| c['company']['name']}.join(',')
-				end
-
-				publishers = companies.select {|c| c['publisher']}
-				unless publishers.empty?
-					game[:publisher] = publishers.collect {|c| c['company']['name']}.join(',')
-				end
-			end
-
-		rescue StandardError => e
-			puts e.backtrace.join("\n")
-			puts "*** #{url}: #{e.message}"
-		end
-	end
-
 	def get_json(page)
 		json = JSON.parse(page)
 		json.empty? ? [] : json[0]
-	end
-
-	def get_title(url, page, defval)
-		unless page.is_a?(String)
-			return super
-		end
-
-		begin
-			get_json(page)['name']
-		rescue StandardError => e
-			puts e.backtrace.join("\n")
-			puts "*** #{url}: #{e.message}"
-			defval
-		end
 	end
 
 	def tag_to_aspects(pagoda, data, key)

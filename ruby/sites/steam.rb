@@ -48,11 +48,6 @@ class Steam < DigestSite
 	end
 
 	def get_aspects(pagoda, url, page)
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
 		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
 		tags  = @info['tags']
 
@@ -65,22 +60,6 @@ class Steam < DigestSite
 		end
 	end
 
-	def get_derived_aspects( page)
-		yield 'Steam'
-
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
-		if /data-os="win"/m =~ page
-			yield 'Windows'
-		end
-		if /data-os="mac"/m =~ page
-			yield 'Mac'
-		end
-	end
-
 	def get_game_description( page)
 		if page.is_a?(String)
 			''
@@ -90,11 +69,6 @@ class Steam < DigestSite
 	end
 
 	def get_game_details( url, page, game)
-		unless page.is_a?(String)
-			super
-			return
-		end
-
 		publisher, developer, release = false, false, false
 		page.split("<div").each do |line|
 			if />Publisher:<\/div/ =~ line

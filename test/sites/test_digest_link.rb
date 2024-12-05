@@ -61,11 +61,17 @@ class TestDigestLink < Minitest::Test
     assert /^Developed as/ =~ info['description']
     assert_equal ['Advance Reality Interactive'], info['developers']
     assert_equal ['Any River Entertainment'], info['publishers']
-    assert_equal ['Adventure', 'Fantasy', 'Comedy'], info['aspects']
+    assert_equal ["accept", 'Adventure', 'Fantasy', 'Comedy'], info['aspects']
   end
 
   def test_igdb_nodata
     fire('IGDB','https://www.igdb.com/games/three-sisters-story')
+  end
+
+  def test_just_adventure
+    info = fire('Just Adventure',
+                'https://www.justadventure.com/2012/08/25/agatha-christie-evil-under-the-sun-review-2-of-22/')
+    p info
   end
 
   def test_moby_games1
@@ -75,7 +81,7 @@ class TestDigestLink < Minitest::Test
     assert /Professor Samuel Hunt/ =~ info['description']
     assert_equal ['Private Moon Studios'], info['developers']
     assert_equal ['Private Moon Studios'], info['publishers']
-    assert_equal ["Adventure", "1st person"], info['aspects']
+    assert_equal ["accept", "Adventure", "1st person"], info['aspects']
   end
 
   def test_moby_games2

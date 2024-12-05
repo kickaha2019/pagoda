@@ -24,6 +24,12 @@ class Nodes
     Nodes.new( results)
   end
 
+  def each
+    @set.each do |node|
+      yield node
+    end
+  end
+
   def next_element
     results = []
     @set.each do |node|

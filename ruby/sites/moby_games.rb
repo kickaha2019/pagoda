@@ -21,11 +21,6 @@ class MobyGames < DigestSite
 	end
 
 	def get_aspects(pagoda, url, page)
-		unless page.is_a?(String)
-			super {|aspect| yield aspect}
-			return
-		end
-
 		Nodes.parse( page).css('div.info-genres dl.metadata a') do |a|
 			tag_to_aspects(pagoda, a.text).each do |aspect|
 				yield aspect
@@ -45,11 +40,6 @@ class MobyGames < DigestSite
 	end
 
 	def get_game_details( url, page, game)
-		unless page.is_a?(String)
-			super
-			return
-		end
-
 		publisher, developer = false, false
 
 		if year = get_link_year( page)

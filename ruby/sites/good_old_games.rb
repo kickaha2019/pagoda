@@ -35,6 +35,8 @@ class GoodOldGames < DefaultSite
 			stats['count'] = seen.size
 			scanner.put_scan_stats( name, 'Store', stats)
 		end
+
+		scanner.purge_lost_urls
 	end
 
 	def find_on_page( scanner, raw, seen)
@@ -58,11 +60,6 @@ class GoodOldGames < DefaultSite
 	end
 
 	def get_game_details( url, page, game)
-		unless page.is_a?(String)
-			super
-			return
-		end
-
 		if info = extract_card_product( page)
 			game[:name]      = info['title']
 			game[:publisher] = info['publisher']

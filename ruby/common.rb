@@ -68,6 +68,21 @@ module Common
 		Rack::Utils.escape_html(text)
 	end
 
+	def html_anchors( url, delay=10)
+		throttle( url, delay)
+		page = http_get( url)
+		page.force_encoding( 'UTF-8')
+		page.encode!( 'US-ASCII',
+									:invalid => :replace, :undef => :replace, :universal_newline => true)
+		added = 0
+
+		Nodes.parse(page).css('a') do |a|
+			added += (yield a['href'], a.text.strip)
+		end
+
+		added
+	end
+
 	def html_links( url, delay=10)
 		throttle( url, delay)
 		page = http_get( url)
