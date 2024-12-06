@@ -1,23 +1,16 @@
 require_relative 'default_site'
 
 class Uhs < DefaultSite
-	def filter( pagoda, link, page, rec)
-		title = rec[:title].strip
+	def reduce_title(title)
+		title = title.strip
 
 		if m = /^(.*)Hints from UHS/.match( title)
-			rec[:title] = m[1].strip
-			true
+			m[1].strip
 		elsif m1 = /^UHS:\s+(.*)\s+Review$/.match( title)
-			rec[:title] = m1[1].strip
-			true
+			m1[1].strip
 		else
-			rec[:valid] = false
-			false
+			title
 		end
-	end
-
-	def get_game_description( page)
-		''
 	end
 
 	def name

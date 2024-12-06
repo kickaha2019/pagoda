@@ -1,13 +1,11 @@
 require_relative 'default_site'
 
 class TapRepeatedly < DefaultSite
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*)Review - Tap-Repeatedly/.match( rec[:title].strip)
-			rec[:title] = m[1].strip
-			true
+	def reduce_title(title)
+		if m = /^(.*)Review - Tap-Repeatedly/.match( title.strip)
+			m[1].strip
 		else
-			rec[:valid] = false
-			false
+			title
 		end
 	end
 

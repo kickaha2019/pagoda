@@ -1,10 +1,6 @@
 require_relative 'default_site'
 
 class MysteryManor < DefaultSite
-	def filter( pagoda, link, page, rec)
-		rec[:title] = reduce_title( rec[:title])
-	end
-
 	def find_reviews( scanner)
 		scanner.html_links( 'https://mysterymanor.net/conservatory.htm') do |link|
 			if /^review/ =~ link
@@ -23,10 +19,6 @@ class MysteryManor < DefaultSite
 				0
 			end
 		end
-	end
-
-	def get_game_description( page)
-		page
 	end
 
 	def name

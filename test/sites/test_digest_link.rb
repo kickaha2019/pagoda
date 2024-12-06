@@ -71,6 +71,18 @@ class TestDigestLink < Minitest::Test
   def test_just_adventure
     info = fire('Just Adventure',
                 'https://www.justadventure.com/2012/08/25/agatha-christie-evil-under-the-sun-review-2-of-22/')
+    assert_equal 'Agatha Christie: Evil Under the Sun', info['title']
+    assert_equal 2012, info['link_year']
+  end
+
+  def test_metacritic
+    info = fire('Metacritic',
+                'https://www.metacritic.com/game/puzzle-quest-2/')
+    assert_equal 'Puzzle Quest 2', info['title']
+    assert_equal 2010, info['year']
+    assert /demon Gorgon/ =~ info['description']
+    assert_equal ["Infinite Interactive"], info['developers']
+    assert_equal ["D3Publisher"], info['publishers']
     p info
   end
 

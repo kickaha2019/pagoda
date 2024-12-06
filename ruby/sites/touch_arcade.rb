@@ -1,13 +1,6 @@
 require_relative 'default_site'
 
 class TouchArcade < DefaultSite
-	def filter( pagoda, link, page, rec)
-		if m = /^&#8216;(.*)$/.match( rec[:title].strip)
-			rec[:title] = m[1].split( '&#8217;')[0]
-		end
-		true
-	end
-
 	def find( scanner)
 		path = scanner.cache + "/touch_arcade.json"
 
@@ -41,20 +34,6 @@ class TouchArcade < DefaultSite
 		JSON.parse( IO.read( path)).each_pair do |url, name|
 			scanner.add_link( name, url)
 		end
-	end
-
-	def get_game_description( page)
-		text, inside = [], false
-		page.split( "\n").each do |line|
-			if /class="entry-content"/ =~ line
-				inside = true
-			elsif /data-wpusb-component="buttons-section"/ =~ line
-				inside = false
-			elsif inside
-				text << line.chomp
-			end
-		end
-		text.join( ' ')
 	end
 
 	def incremental( scanner)

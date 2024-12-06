@@ -15,10 +15,6 @@ class NiceGameHints < DefaultSite
 		count
 	end
 
-	def get_game_description( page)
-		elide_script_blocks page
-	end
-
 	def name
 		'Nice Game Hints'
 	end

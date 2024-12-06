@@ -1,6 +1,6 @@
-require_relative 'digest_site'
+require_relative 'default_site'
 
-class Steam < DigestSite
+class Steam < DefaultSite
 	def initialize
 		@info         = nil
 	end
@@ -47,67 +47,6 @@ class Steam < DigestSite
 		scanner.purge_lost_urls
 	end
 
-	def get_aspects(pagoda, url, page)
-		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-		tags  = @info['tags']
-
-		get_tags( page).each do |tag|
-			action = tags[tag]
-			action = [action] unless action.is_a?(Array)
-			action.each do |aspect|
-				yield aspect unless ['accept','reject','ignore'].include?( aspect)
-			end
-		end
-	end
-
-	def get_game_description( page)
-		if page.is_a?(String)
-			''
-		else
-			super
-		end
-	end
-
-	def get_game_details( url, page, game)
-		publisher, developer, release = false, false, false
-		page.split("<div").each do |line|
-			if />Publisher:<\/div/ =~ line
-				#p ['get_game_details1', line]
-				publisher = true
-			elsif />Developer:<\/div/ =~ line
-				#p ['get_game_details2', line]
-				developer = true
-			elsif />Release Date:<\/div/ =~ line
-				#p ['get_game_details3', line]
-				release = true
-			elsif m = />([^<]+)<\//.match( line)
-				text = m[1].gsub( '&nbsp;', ' ')
-				#p ['get_game_details4', text]
-				if publisher
-					game[:publisher] = text
-				elsif developer
-					game[:developer] = text
-				elsif release
-					if m2 = /(\d\d) (\w\w\w), (\d\d\d\d)$/m.match( text)
-						if (month = decode_month( m2[2])) > 0
-							d = Time.new( m2[3].to_i, month, m2[1].to_i)
-							game[:year] = d.year if d <= Time.now
-						end
-					end
-				end
-				publisher, developer, release = false, false, false
-			end
-		end
-	end
-
-	def get_tags( page)
-		tags = []
-		page.scan( /<a\s+href="https:\/\/store.steampowered.com\/tags\/en\/[^>]*>([^<]*)</) do |tag|
-			tags << tag[0].strip
-		end
-		tags
-	end
-
 	def incremental( scanner)
 		path  = scanner.cache + '/steam.json'
 		raw   = JSON.parse( IO.read( path))['applist']['apps']
@@ -130,13 +69,6 @@ class Steam < DigestSite
 
 	def name
 		'Steam'
-	end
-
-	def override_verify_url( url)
-		if /\/agecheck\// =~ url
-			return true, true, nil, 'Age check'
-		end
-		return false, false, nil, ''
 	end
 
 	def post_load(pagoda, url, page)
@@ -189,66 +121,6 @@ class Steam < DigestSite
 				action = tag_info[tag.text.strip]
 				if action.nil?
 					aspects << "Steam: #{tag.text.strip}"
-				elsif action.is_a?(String)
-					aspects << action
-				else
-					action.each {|a| aspects << a }
-				end
-			end
-			digest['aspects'] = aspects.uniq
-		end
-	end
-
-	def post_load_steamdb(pagoda, url, page)
-		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-		tag_info = @info['tags']
-
-		{}.tap do |digest|
-			nodes = Nodes.parse(page)
-
-			platforms = []
-			nodes.css('td.os-icons svg') do |platform|
-				if m = /octicon-(windows|macos)/.match(platform['class'])
-					platforms << {'windows' => 'Windows', 'macos' => 'Mac'}[m[1]]
-				end
-			end
-			digest['platforms'] = platforms.uniq
-
-			nodes.css('h1') do |h1|
-				digest['title'] = h1.text if h1['itemprop'] == 'name'
-			end
-
-			nodes.css('td') { |td1| td1.text}.next_element do |label, td2|
-				if label == 'Release Date'
-					begin
-						t = Date.parse(td2.text).to_time
-						if t <= Time.now
-							digest['year'] = t.year
-						end
-					rescue StandardError
-						digest['year'] = nil
-					end
-				end
-			end
-
-			digest['unreleased'] = true unless digest['year']
-
-			nodes.css('p.header-description') do |game_description|
-				digest['description'] = game_description.text.strip
-			end
-			digest['developers']  = get_companies_steamdb(nodes,'Developer:')
-			digest['publishers']  = get_companies_steamdb(nodes,'Publisher:')
-			aspects               = []
-
-			if /This content requires the base (game|application)/ =~ page
-				aspects << "reject"
-			end
-
-			nodes.css('a.btn') do |tag|
-				next unless /^\/tag\/\d+\/$/ =~ tag['href']
-				action = tag_info[tag.text.strip]
-				if action.nil?
-					aspects << "Steamdb: #{tag.text.strip}"
 				elsif action.is_a?(String)
 					aspects << action
 				else

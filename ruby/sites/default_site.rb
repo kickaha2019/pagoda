@@ -35,10 +35,6 @@ class DefaultSite
     'Website'
   end
 
-  def override_verify_url( url)
-    return false, false, '', ''
-  end
-
   def post_load(pagoda, url, page)
     if m = /<title[^>]*>([^<]*)<\/title>/im.match( page)
       title = m[1].gsub( /\s/, ' ')
@@ -55,9 +51,6 @@ class DefaultSite
 
   def static?
     false
-  end
-
-  def terminate( pagoda)
   end
 
   def validate_page(url,page)

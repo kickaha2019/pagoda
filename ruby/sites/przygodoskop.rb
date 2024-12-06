@@ -1,13 +1,11 @@
 require_relative 'default_site'
 
 class Przygodoskop < DefaultSite
-	def filter( pagoda, link, page, rec)
-		if m = /^(.*) - (recenzja|solucja) -/.match( rec[:title].strip)
-			rec[:title] = m[1]
-			true
+	def reduce_title(title)
+		if m = /^(.*) - (recenzja|solucja) -/.match( title.strip)
+			m[1]
 		else
-			rec[:valid] = false
-			false
+			title
 		end
 	end
 

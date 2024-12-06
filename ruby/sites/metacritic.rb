@@ -20,42 +20,6 @@ class Metacritic < DefaultSite
 		end
 	end
 
-	def get_game_details( url, page, game)
-		nodes = Nodes.parse( page)
-
-		nodes.css( 'span.u-block') do |span|
-			if span.text == 'Initial Release Date:'
-				[]
-			else
-				nil
-			end
-		end.parent( 1).css( 'span.g-color-gray70') do |span1|
-			if m = /(\d\d\d\d)$/.match( span1.text)
-				game[:year] = m[1].to_i
-			end
-		end
-
-		nodes.css( 'span.u-block') do |span|
-			if span.text == 'Developer:'
-				[]
-			else
-				nil
-			end
-		end.parent( 1).css( 'li.u-inline-block') do |li|
-			game[:developer] = li.text
-		end
-
-		nodes.css( 'span.u-block') do |span|
-			if span.text == 'Publisher:'
-				[]
-			else
-				nil
-			end
-		end.parent( 1).css( 'span.g-color-gray70') do |span1|
-			game[:publisher] = span1.text
-		end
-	end
-
 	def incremental( scanner)
 		path  = scanner.cache + "/metacritic.json"
 		found = File.exist?( path) ? JSON.parse( IO.read( path)) : {}
@@ -93,4 +57,47 @@ class Metacritic < DefaultSite
 	def name
 		'Metacritic'
   end
+
+	def post_load(pagoda, url, page)
+		{}.tap do |digest|
+			nodes = Nodes.parse(page)
+
+			nodes.css('div.c-productHero_title h1') do |title|
+				digest['title'] = title.text
+			end
+
+			nodes.css('span.c-productionDetailsGame_description') do |desc|
+				digest['description'] = desc.text
+			end
+
+			get_info(nodes,'Initial Release Date:') do |date|
+				if m = /(\d\d\d\d)$/.match( date )
+					digest['year'] = m[1].to_i
+				end
+			end
+
+			digest['developers']  = get_companies(nodes,'Developer:')
+			digest['publishers']  = get_companies(nodes,'Publisher:')
+		end
+	end
+
+	def get_companies(nodes, type)
+		[].tap do |companies|
+			get_info(nodes, type) do |name|
+				companies << name
+			end
+		end
+	end
+
+	def get_info(nodes, type)
+		nodes.css( 'span.u-block') do |span|
+			if span.text == type
+				[]
+			else
+				nil
+			end
+		end.parent( 1).css( '.g-color-gray70') do |span1|
+			yield span1.text.strip
+		end
+	end
 end
