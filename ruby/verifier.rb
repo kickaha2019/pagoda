@@ -99,7 +99,14 @@ class Verifier
     end
 
     site = @pagoda.get_site_handler( link.site)
-    status, body = site.digest_link(@pagoda, link.url)
+    status, delete, body = site.digest_link(@pagoda, link.url)
+    p ['verify_page2', status, delete] if debug
+
+    if delete
+      link.delete
+      return
+    end
+
     body = status ? force_ascii(body) : body
 
     if status && (comment = site.validate_page(link.url, body))

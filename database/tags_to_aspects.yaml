@@ -1,0 +1,289 @@
+---
+all:
+  2D: []
+  4X: reject
+  4X (explore, expand, exploit, and exterminate): []
+  Action: []
+  Adventure:
+  - accept
+  - Adventure
+  Amazon Luna: []
+  Arcade: reject
+  Artbook: []
+  Atmospheric: []
+  Auditory: []
+  Auto Battler: reject
+  Base Building: []
+  Beat 'em up: reject
+  Bird view / Isometric: 3rd person
+  Board Game: []
+  Building: []
+  building: []
+  Bullet Hell: reject
+  Card & Board Game: []
+  CRPG:
+  - accept
+  - RPG
+  Card Game:
+  - Cards
+  Cartoon: []
+  Cartoony: []
+  Casual: []
+  Cats: []
+  Chess: reject
+  Choices Matter: []
+  Choose Your Own Adventure:
+  - accept
+  City builder: reject
+  Classic: []
+  Combat: reject
+  Comedy:
+  - Comedy
+  Coming of age: []
+  Cooking: reject
+  Co-operative: []
+  Cozy: []
+  Crafting: []
+  Crime: []
+  Crossplay: []
+  crossplay: []
+  Cyberpunk:
+  - Futuristic
+  Dark: []
+  Dark Comedy: []
+  Dating Sim: []
+  Deckbuilding: []
+  Demo: []
+  Detective-mystery:
+  - Investigation
+  Difficult: []
+  Dinosaurs: []
+  Dog: []
+  Drama: []
+  Dungeon Crawler:
+  - accept
+  - Roguelike
+  Dystopian: []
+  Economic: []
+  Education: Edutainment
+  Educational: Edutainment
+  Emotional: []
+  Erotic: []
+  Escape Room:
+  - accept
+  - Escape
+  Espionage: []
+  Exploration: []
+  FMV:
+  - FMV
+  FPP:
+  - 1st person
+  FPS: reject
+  Family Friendly: []
+  Fantasy:
+  - Fantasy
+  Farming: reject
+  Female Protagonist: []
+  Fighting: reject
+  First-Person:
+  - 1st person
+  Fishing: reject
+  Flight: reject
+  Football: reject
+  Free Game: []
+  Funny: []
+  Good Old Game: []
+  Gore: []
+  Grand Adventure: []
+  Grand Strategy: []
+  Great Soundtrack: []
+  Hack and Slash: []
+  Hack and slash/Beat 'em up: Action
+  Hentai: reject
+  Hidden Object:
+  - accept
+  - HOG
+  Historical: []
+  Horror:
+  - Horror
+  Humorous: []
+  Indie: []
+  Investigation:
+  - Investigation
+  Isometric: []
+  JRPG:
+  - accept
+  - RPG
+  - JRPG
+  Kids: []
+  LGBTQ+:
+  - LGBTQ+
+  LevelEditor: []
+  Licensed: []
+  LifeSim: []
+  Local Co-Op: []
+  Local Multiplayer: []
+  Logic: accept
+  Looter Shooter: reject
+  Lovecraftian: []
+  Magic: []
+  Management: []
+  Managerial: []
+  Massively Multiplayer Online (MMO): []
+  Martial Arts: reject
+  Match3: reject
+  Mature: []
+  Medieval: []
+  Metroidvania: []
+  Military:
+  - War
+  Modern: []
+  Movie: reject
+  Multiplayer: []
+  Multiple Endings: []
+  Music: []
+  Mystery: []
+  Mythology: []
+  NSFW: []
+  Narrative: []
+  Nature: []
+  Naval: []
+  Ninja: []
+  Noir: []
+  Non Violent: []
+  Nudity: []
+  OST: reject
+  Off-road: []
+  Online-only: reject
+  Only On GOG: []
+  Open World:
+  - Open world
+  Organized Forces: []
+  Parody: []
+  Party Game: []
+  Perma Death: []
+  Petting Dogs: []
+  Philosophical: []
+  Physics: reject
+  Pinball: reject
+  Pirates:
+  - Pirates
+  Pixel Graphics:
+  - Retro
+  Platform: Action
+  Platformer: reject
+  Point&Click: []
+  Point-and-click: []
+  Political: []
+  Politics: []
+  Post-apocalyptic: []
+  Procedural Generation: []
+  Programming: []
+  Psychological: []
+  Psychological Horror:
+  - Horror
+  Puzzle:
+  - accept
+  - Puzzle
+  Puzzle Platformer: reject
+  Quiz/Trivia: []
+  RTS: reject
+  Racing: reject
+  Rally: reject
+  Real-Time: []
+  Real-time: []
+  Realistic: []
+  Relaxing: []
+  Remake: []
+  Resource Management: reject
+  Retro: Retro
+  Rhythm: []
+  Robots: []
+  Roguelike: []
+  Roguelite:
+  - accept
+  - Roguelike
+  Role-playing:
+  - accept
+  - RPG
+  Role-playing (RPG): RPG
+  Romance: []
+  Sandbox: []
+  Sci-fi: []
+  Science: []
+  Science Fiction:  Futuristic
+  Sexual Content: []
+  Shoot 'em Up: reject
+  Shoot'EmUp: reject
+  Shooter: reject
+  Short: []
+  Side view: 3rd person
+  Simulation: []
+  Simulator: []
+  Single player: []
+  Sniper: reject
+  Soccer: reject
+  Souls-like: []
+  Space:
+  - Futuristic
+  Split Screen: []
+  Sports: reject
+  Stealth: []
+  Steampunk: []
+  Story Rich: []
+  Strategy: []
+  Superhero: []
+  Supernatural: []
+  Surreal: []
+  Survival: []
+  Survival Horror:
+  - Horror
+  TPP:
+  - 3rd person
+  Tabletop: []
+  Tactical: []
+  Tactical RPG:
+  - accept
+  - RPG
+  Tanks: []
+  Team sport: reject
+  Text: 3rd person
+  Text-Based: reject
+  Third Person:
+  - 3rd person
+  Thriller: []
+  Time Manipulation: []
+  Top-Down: []
+  Touring: []
+  Tower Defense: reject
+  Trading: []
+  Trains: []
+  Transportation: []
+  Turn-Based: []
+  Turn-based: []
+  Turn-based strategy (TBS): RPG
+  Twin Stick Shooter: reject
+  Typing: []
+  Underground: []
+  Underwater: []
+  Unique: []
+  VR:
+  - VR
+  Vampire: []
+  Vikings: []
+  Violent: []
+  Virtual life: reject
+  Visual Novel:
+  - Visual novel
+  Walking Simulator:
+  - Walking simulator
+  War:
+  - War
+  Warfare: []
+  Werewolves: []
+  Western:
+  - Wild West
+  World War I: War
+  World War II:
+  - War
+  Zombies: []

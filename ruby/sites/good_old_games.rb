@@ -157,4 +157,8 @@ class GoodOldGames < DefaultSite
 	def digest_link(pagoda, url)
 		super(pagoda, url.sub('/www.gog.com/game/','/www.gog.com/en/game/'))
 	end
+
+	def delete_redirects
+		true
+	end
 end

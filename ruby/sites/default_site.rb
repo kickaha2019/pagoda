@@ -65,17 +65,21 @@ class DefaultSite
     status, response = http_get_threaded(url)
 
     unless status
-      return status, response
+      return status, false, response
     end
 
     if response.is_a? Net::HTTPRedirection
-      return false, "Redirected to #{response['location']}"
+      return false, delete_redirects, "Redirected to #{response['location']}"
     end
 
     unless response.is_a? Net::HTTPSuccess
-      return false, response.message
+      return false, false, response.message
     end
 
-    return true, post_load(pagoda, url, response.body)
+    return true, false, post_load(pagoda, url, response.body)
+  end
+
+  def delete_redirects
+    false
   end
 end

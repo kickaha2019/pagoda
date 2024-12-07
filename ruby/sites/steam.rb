@@ -115,6 +115,8 @@ class Steam < DefaultSite
 
 			if /This content requires the base game/ =~ page
 				aspects << "reject"
+			elsif /but does not include the base game/ =~ page
+				aspects << "reject"
 			end
 
 			nodes.css('div.popular_tags a.app_tag') do |tag|
@@ -170,11 +172,11 @@ class Steam < DefaultSite
 		status, response = http_get_threaded(url)
 
 		unless status
-			return status, response
+			return status, false, response
 		end
 
 		if response.is_a? Net::HTTPSuccess
-			return status, post_load(pagoda, url, response.body)
+			return status, false, post_load(pagoda, url, response.body)
 		end
 
 		if (response.is_a? Net::HTTPRedirection) &&
@@ -188,29 +190,28 @@ class Steam < DefaultSite
 					year_select = driver.find_element(id:'ageYear')
 					year_select.send_keys('1990')
 				rescue Selenium::WebDriver::Error::NoSuchElementError
-					return true, {'aspects' => ['reject']}
+					return true, false, {'aspects' => ['reject']}
 				end
 
 				begin
 					button = driver.find_element(id:'view_product_page_btn')
 				rescue Selenium::WebDriver::Error::NoSuchElementError
-					return true, {'aspects' => ['reject']}
+					return true, false, {'aspects' => ['reject']}
 				end
 
 				button.click
 				sleep 10
 				body = driver.execute_script('return document.documentElement.outerHTML;')
-				return true, post_load(pagoda, url, body)
+				return true, false, post_load(pagoda, url, body)
 			rescue StandardError => bang
-				return false, bang.message
+				return false, false, bang.message
 			end
-			# return true, {'aspects' => ['accept']}
 		end
 
 		if response.is_a? Net::HTTPRedirection
-			return false, "Redirected to #{response['location']}"
+			return false, true, "Redirected to #{response['location']}"
 		end
 
-		return false, response.message
+		return false, false, response.message
 	end
 end

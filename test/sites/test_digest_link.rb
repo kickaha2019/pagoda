@@ -158,8 +158,9 @@ class TestDigestLink < Minitest::Test
   end
 
   def fire(site,url)
-    status, result = @pagoda.get_site_handler(site).digest_link(@pagoda, url)
+    status, delete, result = @pagoda.get_site_handler(site).digest_link(@pagoda, url)
     assert status, result
+    assert( delete === false)
     force_ascii result
   end
 
