@@ -72,9 +72,6 @@ class Steam < DefaultSite
 	end
 
 	def post_load(pagoda, url, page)
-		@info = pagoda.get_yaml( 'steam.yaml') if @info.nil?
-		tag_info = @info['tags']
-
 		{}.tap do |digest|
 			nodes = Nodes.parse(page)
 
@@ -104,6 +101,10 @@ class Steam < DefaultSite
 
 			if /English language not supported/ =~ page
 				digest['unreleased'] = true
+			elsif /This content requires the base game/ =~ page
+				digest['unreleased'] = true
+			elsif /but does not include the base game/ =~ page
+				digest['unreleased'] = true
 			end
 
 			nodes.css('div.game_description_snippet') do |game_description|
@@ -113,23 +114,10 @@ class Steam < DefaultSite
 			digest['publishers']  = get_companies(nodes,'Publisher:')
 			aspects               = []
 
-			if /This content requires the base game/ =~ page
-				aspects << "reject"
-			elsif /but does not include the base game/ =~ page
-				aspects << "reject"
-			end
-
 			nodes.css('div.popular_tags a.app_tag') do |tag|
-				action = tag_info[tag.text.strip]
-				if action.nil?
-					aspects << "Steam: #{tag.text.strip}"
-				elsif action.is_a?(String)
-					aspects << action
-				else
-					action.each {|a| aspects << a }
-				end
+				aspects << tag.text.strip
 			end
-			digest['aspects'] = aspects.uniq
+			digest['tags'] = aspects.uniq
 		end
 	end
 
@@ -190,13 +178,13 @@ class Steam < DefaultSite
 					year_select = driver.find_element(id:'ageYear')
 					year_select.send_keys('1990')
 				rescue Selenium::WebDriver::Error::NoSuchElementError
-					return true, false, {'aspects' => ['reject']}
+					return true, false, {'unreleased' => true}
 				end
 
 				begin
 					button = driver.find_element(id:'view_product_page_btn')
 				rescue Selenium::WebDriver::Error::NoSuchElementError
-					return true, false, {'aspects' => ['reject']}
+					return true, false, {'unreleased' => true}
 				end
 
 				button.click

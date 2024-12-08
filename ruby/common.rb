@@ -22,6 +22,12 @@ module Common
 		driver.execute_script('return document.documentElement.outerHTML;')
 	end
 
+	def browser_close
+		if defined?( @@driver)
+			@@driver.quit
+		end
+	end
+
 	def complete_url( base, url)
 		return url if /^http(s|):/ =~ url
 		raise "Unable to complete #{url} for #{base}" unless /^\// =~ url
@@ -211,6 +217,15 @@ module Common
 	def load_old_redirects( path)
 		if File.exist?( path)
 			@@old_redirects = YAML.load( IO.read( path))
+		end
+	end
+
+	def redirect(old_location, new_location)
+		if /^\// =~ new_location
+			m = /^([^\/]*\/\/[^\/]*)($|\/)/.match(old_location)
+			m[1] + new_location
+		else
+			new_location
 		end
 	end
 

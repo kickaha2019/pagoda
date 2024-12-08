@@ -1,9 +1,7 @@
 # frozen_string_literal: true
-require 'minitest/autorun'
-require_relative '../../ruby/common'
-require_relative '../../ruby/pagoda'
+require_relative '../test_base'
 
-class TestDigestLink < Minitest::Test
+class TestDigestLink < TestBase
   include Common
 
   def test_adventure_classic_gaming
@@ -41,7 +39,7 @@ class TestDigestLink < Minitest::Test
     assert_equal ['AtomTeam'], info['developers']
     assert_equal ['AtomTeam'], info['publishers']
     assert_equal ["GOG", "Windows", "Mac"], info['platforms']
-    assert_equal ["accept", "RPG", "Open world"], info['aspects']
+    assert info['tags'].include?('Post-apocalyptic')
   end
 
   def test_hotu
@@ -51,7 +49,16 @@ class TestDigestLink < Minitest::Test
     assert_equal 1994, info['year']
     assert_equal ['Revolution'], info['developers']
     assert_equal ['Freeware'], info['publishers']
-    assert_equal ["accept", "Futuristic"], info['aspects']
+    assert_equal ["Cyberpunk", "Cartoon"], info['tags']
+  end
+
+  def test_itchio
+    info = fire('itch.io','https://moonmuse.itch.io/tmos')
+    assert_equal 'The Manse on Soracca by MoonMuse', info['title']
+    assert /Herbert Castaigne/ =~ info['description']
+    assert info['tags'].include?('Lovecraftian Horror')
+    assert_equal ['MoonMuse'], info['developers']
+    assert_equal ['MoonMuse'], info['publishers']
   end
 
   def test_igdb_data
@@ -61,7 +68,7 @@ class TestDigestLink < Minitest::Test
     assert /^Developed as/ =~ info['description']
     assert_equal ['Advance Reality Interactive'], info['developers']
     assert_equal ['Any River Entertainment'], info['publishers']
-    assert_equal ["accept", 'Adventure', 'Fantasy', 'Comedy'], info['aspects']
+    assert info['tags'].include?('Comedy')
   end
 
   def test_igdb_nodata
@@ -83,17 +90,17 @@ class TestDigestLink < Minitest::Test
     assert /demon Gorgon/ =~ info['description']
     assert_equal ["Infinite Interactive"], info['developers']
     assert_equal ["D3Publisher"], info['publishers']
-    p info
   end
 
   def test_moby_games1
     info = fire('MobyGames','https://www.mobygames.com/game/20148/agon-episode-1-london-scene/')
+    p info
     assert_equal 'AGON: Episode 1 - London Scene (2003)', info['title']
     assert_equal 2003, info['year']
     assert /Professor Samuel Hunt/ =~ info['description']
     assert_equal ['Private Moon Studios'], info['developers']
     assert_equal ['Private Moon Studios'], info['publishers']
-    assert_equal ["accept", "Adventure", "1st person"], info['aspects']
+    assert info['tags'].include?('Puzzle elements')
   end
 
   def test_moby_games2
@@ -109,7 +116,7 @@ class TestDigestLink < Minitest::Test
     assert /Phantom Thieves of Hearts/ =~ info['description']
     assert_equal ["ATLUS"], info['developers']
     assert_equal ['SEGA'], info['publishers']
-    assert_equal ["accept", "RPG", "JRPG", "Visual novel", "Adventure", "Investigation"], info['aspects']
+    assert info['tags'].include?('Colorful')
     assert_nil info['unreleased']
   end
 
@@ -120,12 +127,12 @@ class TestDigestLink < Minitest::Test
 
   def test_steam_addon
     info = fire('Steam','https://store.steampowered.com/app/2156236')
-    assert info['aspects'].include?('reject')
+    assert info['unreleased']
   end
 
   def test_steam_agecheck
     info = fire('Steam','https://store.steampowered.com/app/1086940')
-    assert_equal ["accept", "RPG", "Fantasy", "Adventure"], info['aspects']
+    assert info['tags'].include?('Turn-Based Combat')
     assert_equal ["Steam", "Windows", "Mac"], info['platforms']
     assert_equal "Baldur's Gate 3", info['title']
     assert_equal 2023, info['year']
@@ -136,7 +143,7 @@ class TestDigestLink < Minitest::Test
 
   def test_steam_porn
     info = fire('Steam','https://store.steampowered.com/app/2154130')
-    assert_equal ["reject"], info['aspects']
+    assert info['unreleased']
   end
 
   def test_steam_not_english
@@ -144,30 +151,11 @@ class TestDigestLink < Minitest::Test
     assert info['unreleased']
   end
 
-  def setup
-    super
-
-    metadata, cache = '/Users/peter/Pagoda/database', '/tmp/Pagoda_cache'
-    mkdir cache
-    mkdir cache + '/verified'
-    (0..9).each do |i|
-      mkdir cache + '/verified/' + i.to_s
-    end
-
-    @pagoda = Pagoda.testing(metadata,cache)
-  end
-
   def fire(site,url)
     status, delete, result = @pagoda.get_site_handler(site).digest_link(@pagoda, url)
     assert status, result
     assert( delete === false)
     force_ascii result
-  end
-
-  def mkdir(path)
-    unless Dir.exist? path
-      Dir.mkdir path
-    end
   end
 end
 

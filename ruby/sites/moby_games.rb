@@ -33,8 +33,6 @@ class MobyGames < DefaultSite
 	end
 
 	def post_load(pagoda, url, page)
-		@info    = pagoda.get_yaml( 'mobygames.yaml') if @info.nil?
-		tag_info = @info['tags']
 		nodes    = Nodes.parse( page)
 
 		{}.tap do |digest|
@@ -65,18 +63,11 @@ class MobyGames < DefaultSite
 				end
 			end
 
-			aspects = {'accept' => true}
+			tags = []
 			nodes.css('div.info-genres dl.metadata a') do |tag|
-				action = tag_info[tag.text.strip]
-				if action.nil?
-					aspects["MobyGames: #{tag.text.strip}"] = true
-				elsif action.is_a?(String)
-					aspects[action] = true
-				else
-					action.each {|a| aspects[a] = true}
-				end
+				tags << tag.text.strip
 			end
-			digest['aspects'] = aspects.keys
+			digest['tags'] = tags.uniq
 		end
 	end
 end

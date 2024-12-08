@@ -59,18 +59,6 @@ class GoodOldGames < DefaultSite
 		end
 	end
 
-	def get_game_details( url, page, game)
-		if info = extract_card_product( page)
-			game[:name]      = info['title']
-			game[:publisher] = info['publisher']
-			game[:developer] = info['developers'].collect {|d| d['name']}.join(', ') if info['developers']
-			if m = /^(\d+)-(\d+)-(\d+)T/.match( info['globalReleaseDate'])
-				t = Time.new( m[1].to_i, m[2].to_i, m[3].to_i)
-				game[:year] = t.year if t <= Time.now
-			end
-		end
-	end
-
 	def get_tags( page)
 		found = ''
 
@@ -109,9 +97,6 @@ class GoodOldGames < DefaultSite
 	end
 
 	def post_load(pagoda, url, page)
-		@info = pagoda.get_yaml( 'gog.yaml') if @info.nil?
-		tag_info = @info['tags']
-
 		{}.tap do |digest|
 			if info = extract_card_product( page)
 				digest['title']       = info['title']
@@ -135,18 +120,11 @@ class GoodOldGames < DefaultSite
 				end
 			end
 
-			aspects = {}
+			tags = []
 			get_tags(page).each do |tag|
-				action = tag_info[tag]
-				if action.nil?
-					aspects["GOG: #{tag.text.strip}"] = true
-				elsif action.is_a?(String)
-					aspects[action] = true
-				else
-					action.each {|a| aspects[a] = a}
-				end
+				tags << tag
 			end
-			digest['aspects'] = aspects.keys
+			digest['tags'] = tags.uniq
 		end
 	end
 

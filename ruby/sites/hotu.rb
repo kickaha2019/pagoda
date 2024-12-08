@@ -80,8 +80,6 @@ class Hotu < DefaultSite
 	end
 
 	def post_load(pagoda, url, page)
-		@info    = pagoda.get_yaml( 'hotu.yaml') if @info.nil?
-		tag_info = @info['tags']
 		nodes    = Nodes.parse( page)
 
 		{}.tap do |digest|
@@ -99,18 +97,11 @@ class Hotu < DefaultSite
 			digest['developers']  = get_companies(nodes,'Developer:')
 			digest['publishers']  = get_companies(nodes,'Publisher:')
 
-			aspects = ['accept']
+			tags = []
 			get_anchors( nodes, 'Theme:') do |tag|
-				action = tag_info[tag.strip]
-				if action.nil?
-					aspects << "HOTU: #{tag.strip}"
-				elsif action.is_a?(String)
-					aspects << action
-				else
-					action.each {|a| aspects << a}
-				end
+				tags << tag.strip
 			end
-			digest['aspects'] = aspects.uniq
+			digest['tags'] = tags.uniq
 		end
 	end
 

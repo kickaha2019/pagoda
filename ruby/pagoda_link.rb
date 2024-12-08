@@ -59,18 +59,15 @@ class PagodaLink < PagodaRecord
   end
 
   def link_aspects
-    #    begin
-      digest = @owner.cached_digest(timestamp)
-      (digest['aspects'] || []).uniq.join(' ')
-    #   sh = @owner.get_site_handler(site)
-    #   found = []
-    #   sh.get_aspects(@owner,url,@owner.cache_read( timestamp)) do |aspect|
-    #     found << aspect
-    #   end
-    #   found.uniq.join(' ')
-    # rescue StandardError => e
-    #   puts e.to_s
-    # end
+    digest = @owner.cached_digest(timestamp)
+    aspects = []
+
+    @owner.digest_aspects(link,digest) do |aspect|
+      next if ['accept','reject'].include?(aspect)
+      aspects << aspect
+    end
+
+    aspects.join(' ')
   end
 
   def link_date

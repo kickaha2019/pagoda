@@ -7,7 +7,7 @@ class Igdb < DefaultSite
 	end
 
 	def coerce_url( url)
-		url.split('/?')[0]
+		url.split('?')[0]
 	end
 
 	def correlate_url( url)
@@ -18,13 +18,12 @@ class Igdb < DefaultSite
 		end
 	end
 
-	def get_aspects(pagoda, url, page)
+	def get_tags(url, info, tags)
 		begin
-			info = get_json(page)
-			tag_to_aspects(pagoda, info, 'game_modes')          {|aspect| yield aspect}
-			tag_to_aspects(pagoda, info, 'genres')              {|aspect| yield aspect}
-			tag_to_aspects(pagoda, info, 'player_perspectives') {|aspect| yield aspect}
-			tag_to_aspects(pagoda, info, 'themes')              {|aspect| yield aspect}
+			get_tags_from(info, 'game_modes', tags)
+			get_tags_from(info, 'genres', tags)
+			get_tags_from(info, 'player_perspectives', tags)
+			get_tags_from(info, 'themes', tags)
 		rescue StandardError => e
 			puts e.backtrace.join("\n")
 			puts "*** #{url}: #{e.message}"
@@ -36,24 +35,31 @@ class Igdb < DefaultSite
 		json.empty? ? [] : json[0]
 	end
 
-	def tag_to_aspects(pagoda, data, key)
+	def get_tags_from(data, key, tags)
 		return if data[key].nil?
-		@info = pagoda.get_yaml( 'igdb.yaml') if @info.nil?
 
 		data[key].each do |item|
-			aspects = @info['tags'][item['name']]
-			if aspects.nil?
-				yield "IGDB unhandled: #{item['name']}"
-			elsif aspects.is_a? Array
-				aspects.each {|aspect| yield aspect}
-			else
-				yield aspects
-			end
+			tags << item['name']
 		end
 	end
 
 	def name
 		'IGDB'
+	end
+
+	def digest_link(pagoda, url)
+		status, response = http_get_threaded(url)
+		if status
+			return true, false, post_load(pagoda, url, response.body)
+		end
+
+		begin
+			browser_close
+			body = browser_get( url)
+			return true, false, post_load(pagoda, url, body)
+		rescue StandardError => bang
+			return false, false, bang.message
+		end
 	end
 
 	def post_load(pagoda, url, page)
@@ -101,9 +107,8 @@ class Igdb < DefaultSite
 			digest['description'] = info['summary'] || info['storyline']
 			digest['developers']  = get_json_companies(info,'developer')
 			digest['publishers']  = get_json_companies(info,'publisher')
-			digest['aspects']     = ['accept']
-			get_aspects(pagoda, url, json) do |aspect|
-				digest['aspects'] << aspect
+			digest['tags']        = [].tap do |tags|
+				get_tags(url, info, tags)
 			end
 		end
 	end

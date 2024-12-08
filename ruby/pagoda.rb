@@ -12,13 +12,14 @@ class Pagoda
   attr_reader :settings
 
   def initialize( database, metadata, cache=nil)
-    @dir       = metadata
-    @database  = database
-    @settings  = YAML.load( IO.read( @dir + '/settings.yaml'))
+    @dir         = metadata
+    @database    = database
+    @settings    = YAML.load( IO.read( @dir + '/settings.yaml'))
     log 'Loaded database'
-    @names     = Names.new
-    @possibles = nil
-    @cache     = cache
+    @names       = Names.new
+    @possibles   = nil
+    @cache       = cache
+    @tag2aspects = YAML.load( IO.read( @dir + '/tags_to_aspects.yaml'))
 
     @database.declare_integer( 'alias',          :id)
     @database.declare_integer( 'aspect',         :id)
@@ -101,32 +102,6 @@ class Pagoda
     @cache + "/verified/#{slice}/#{timestamp}.#{extension}"
   end
 
-  # def cache_read( timestamp)
-  #   slice = (timestamp / (24 * 60 * 60)) % 10
-  #   path = @cache + "/verified/#{slice}/#{timestamp}.html"
-  #   if File.exist?( path)
-  #     IO.read(path)
-  #   else
-  #     path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
-  #     if File.exist?( path)
-  #       YAML.load(IO.read(path))
-  #     else
-  #       ''
-  #     end
-  #   end
-  # end
-
-  # def cache_timestamps
-  #   Dir.entries(@cache + '/verified').each do |slice|
-  #     next unless /^\d+$/ =~ slice
-  #     Dir.entries(@cache + '/verified/' + slice).each do |f|
-  #       if m = /^(\d+)\./.match(f)
-  #         yield m[1].to_i
-  #       end
-  #     end
-  #   end
-  # end
-
   def cached_digest( timestamp)
     slice = (timestamp / (24 * 60 * 60)) % 10
     path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
@@ -200,6 +175,52 @@ class Pagoda
     recs = get( 'game', :id, id.to_i)
     return nil if recs.size <= 0
     PagodaGame.new( self, recs[0])
+  end
+
+  def digest_aspects(link, digest)
+    if digest['aspects']
+      digest['aspects'].uniq.each do |aspect|
+        if ['accept','reject'].include?(aspect)
+          yield aspect
+        elsif aspect?(aspect)
+          yield aspect
+        else
+          link.complain "Unknown aspect: #{aspect}"
+        end
+      end
+    elsif digest['tags']
+      aspects = []
+
+      digest['tags'].each do |tag|
+        action = nil
+
+        if @tag2aspects[link.site]
+          action = @tag2aspects[link.site][tag]
+        end
+
+        if action.nil?
+          action = @tag2aspects['All'][tag]
+        end
+
+        if action.nil?
+          link.complain "Unknown tag: '#{tag}'"
+        elsif action.is_a?(String)
+          aspects << action
+        else
+          action.each {|a| aspects << a }
+        end
+      end
+
+      aspects.uniq.each do |aspect|
+        if ['accept','reject'].include?(aspect)
+          yield aspect
+        elsif aspect?(aspect)
+          yield aspect
+        else
+          link.complain "Unknown aspect: '#{aspect}'"
+        end
+      end
+    end
   end
 
   def games
@@ -499,17 +520,25 @@ class Pagoda
     # Unbind unreleased links
     if rec[:unreleased]
       link.unbind
-    elsif digest['aspects']
-      ignore = ! digest['aspects'].include?('accept')
-      ignore = true if digest['aspects'].include?('reject')
-
-      if ignore
-        link.bind( -1) unless link.bound?
-      end
+    elsif ignore_link(link, digest)
+      link.bind( -1) unless link.bound?
     end
 
     link.verified( rec)
     refresh_link link.url
+  end
+
+  def ignore_link(link, digest)
+    has_aspects = digest['aspects'] || digest['tags']
+
+    digest_aspects(link, digest) do |aspect|
+      has_aspects = true
+      return true if aspect == 'reject'
+    end
+    digest_aspects(link, digest) do |aspect|
+      return false if aspect == 'accept'
+    end
+    has_aspects
   end
 
   def visited_key( key)

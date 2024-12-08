@@ -214,48 +214,18 @@ class PagodaGame < PagodaRecord
       details[:publisher] = digest['publishers'].join(', ')
     end
 
-    # site    = @owner.get_site_handler( link.site)
-    # page    = ''
-    #
-    # begin
-    #   page = @owner.cache_read( link.timestamp)
-    #   site.get_game_details( link.url, page, details)
-    # rescue Exception => bang
-    #   link.complain bang.message
-    # end
-    #
-    # [:year, :developer, :publisher].each do |field|
-    #   details.delete(field) unless send(field).nil?
-    # end
-
     unless details.empty?
       update_details( details)
     end
 
     cache_aspects = aspects
-    # cache_types = {}
-    # cache_aspects.each do |aspect, flag|
-    #   type = @owner.get_aspect_type(aspect)
-    #   if type && flag
-    #     cache_types[aspect] = true
-    #   end
-    # end
 
-    (digest['aspects'] || []).each do |aspect|
+    @owner.digest_aspects(link,digest) do |aspect|
       next if ['accept','reject'].include?(aspect)
-      if @owner.aspect?(aspect)
-        unless cache_aspects.has_key?(aspect)
-          # type = @owner.get_aspect_type(aspect)
-          # if type && cache_types[type]
-          #   link.complain "Multiple type aspect: #{aspect}"
-          # else
-          @owner.start_transaction
-          @owner.insert( 'aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
-          @owner.end_transaction
-          #              end
-        end
-      else
-        link.complain "Unknown aspect: #{aspect}"
+      unless cache_aspects.has_key?(aspect)
+        @owner.start_transaction
+        @owner.insert( 'aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
+        @owner.end_transaction
       end
     end
   end
