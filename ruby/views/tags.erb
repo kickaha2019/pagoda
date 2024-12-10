@@ -1,0 +1,55 @@
+<%= erb :header, :locals => {:page => 'scan'} %>
+
+<div class="combos control">
+  <%=
+    html = []
+    @chosen_aspect = tags_aspect_combo( 'tags', 'aspect', aspect, html)
+    html.join( "&nbsp;&nbsp;\n")
+  %>
+</div>
+
+<div class="search control">
+  <button onclick="search_input( '<%= "/tags?aspect=#{e(aspect)}&page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/tags?aspect=#{e(aspect)}&search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'tag',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [@chosen_aspect, search]}
+  %>&nbsp;&nbsp;
+</div>
+
+  <div id="list"><table class="scan list">
+<tr><th>Tag</th><th>Aspects</th></tr>
+  <%=
+    records = tag_records( aspect, search)
+    html = []
+
+    total_pages  = (records.size + 99) /  100
+    current_page = page.to_i
+    current_page = 1 if total_pages < current_page
+
+    records.sort_by! {|rec| rec[0]}
+
+row = 0
+records[(100*(current_page-1))...(100*current_page)].each do |rec|
+  row += 1
+  html << "<tr><td><a target=\"_blank\" href=\"/tag/#{e(e(rec[0]))}\">#{h(rec[0])}</a></td><td>"
+  unless rec[1].empty?
+    html << rec[1].collect do |aspect|
+      if aspect == 'Unknown'
+        aspect
+      else
+        "<a href=\"/games?aspect=#{e(aspect)}\">#{aspect}</a>"
+      end
+    end.join(', ')
+  end
+  html << '</td></tr>'
+end
+
+html.join( "\n")
+%>
+  </table></div>
+</body>
+</html>

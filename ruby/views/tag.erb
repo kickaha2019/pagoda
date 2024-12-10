@@ -1,0 +1,42 @@
+<%= erb :header, :locals => {:page => 'tag'} %>
+
+<%
+  @tag     = tag
+  @aspects = tag_aspects(tag)
+  while @aspects.size < 5
+    @aspects << ''
+  end
+%>
+
+<form action="/tag">
+  <table class="game">
+  <tr><th>Tag:</th><td><%= input_element( 'tag', 20, @tag, 'readonly id="tag"') %></td></tr>
+    <tr><td height="20"></td></tr>
+      <tr><th>Aspects:</th><td>
+        <table class="small list">
+          <%=
+            index, html = 0, []
+            @aspects.each do |a|
+              html << '<tr><td>' +
+                tag_aspect_element( index, a) +
+                '</td></tr>'
+              index += 1
+            end
+            html.join( "\n")
+          %>
+        </table>
+      </td></tr>
+
+    </table>
+
+  <table class="buttons">
+    <tr>
+      <td>
+        <button formmethod="post" type="submit">Update</button>
+      </td>
+    </tr>
+  </table>
+</form>
+
+</body>
+</html>

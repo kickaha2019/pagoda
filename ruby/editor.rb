@@ -214,6 +214,19 @@ get '/summary' do
                                        :static      => false)
 end
 
+get '/tag/:tag' do
+  erb :tag, :locals => {:tag => params[:tag]}
+end
+
+post '/tag' do
+  update_tag( params)
+  erb :tag, :locals => {:tag => params[:tag]}
+end
+
+get '/tags' do
+  erb :tags, :locals => get_locals( params, :search => '', :page => 1, :aspect => 'All')
+end
+
 post '/unbind/:url' do
   unbind_link( d(params[:url]))
 end

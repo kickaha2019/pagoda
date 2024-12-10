@@ -699,6 +699,63 @@ OLDEST_LINK
       text.gsub( /["'<>&]/, ' ')
     end
 
+    def tag_aspect_element( index, aspect)
+      values = ['','Unknown'] + $pagoda.aspect_info.keys.sort
+      defn = []
+      defn << "<select name=\"aspect#{index}\">"
+      values.each do |value|
+        selected = (aspect == value) ? 'selected' : ''
+        defn << "<option value=\"#{e(value.gsub('?',''))}\"#{selected}>#{h(value)}</option>"
+      end
+      defn << '</select>'
+      defn.join('')
+    end
+
+    def tag_aspects(tag)
+      [].tap do |aspects|
+        $pagoda.get('tag_aspects',:tag, tag).each do |rec|
+          aspects << rec[:aspect] unless rec[:aspect].nil?
+        end
+      end
+    end
+
+    def tags_aspect_combo( view, combo_name, current_aspect, html)
+      values = ['All','None','Unknown'] + $pagoda.aspect_info.keys.sort
+      unless values.index( current_aspect)
+        current_aspect = 'All'
+      end
+      base_url = "/#{view}?aspect="
+      combo_box( combo_name, values, current_aspect, base_url, html)
+      current_aspect
+    end
+
+    def tag_records(aspect, search)
+      map = Hash.new {|h,k| h[k] = []}
+      $pagoda.select('tag_aspects') do |rec|
+        map[rec[:tag]] << rec[:aspect]
+      end
+      tags = []
+      map.keys.sort.each do |tag|
+        aspects = map[tag]
+        aspects = [] if aspects[0].nil?
+        accept  = false
+
+        if aspect == 'None'
+          accept = aspects.empty?
+        elsif (aspect == 'All') || aspects.include?(aspect)
+          accept = true
+        end
+
+        if accept
+          if search.empty? || tag.include?(search)
+            tags << [tag, aspects]
+          end
+        end
+      end
+
+      tags
+    end
+
     def unbind_link( link_url)
       link_rec = $pagoda.link( link_url)
       return '' if ! link_rec.bound?
@@ -733,6 +790,24 @@ OLDEST_LINK
         $pagoda.create_game( params)
         set_selected_game( params[:id])
       end
+    end
+
+    def update_tag( params)
+      p params
+      $pagoda.start_transaction
+      $pagoda.delete('tag_aspects',:tag,params[:tag])
+      no_aspects = true
+      (0..9).each do |i|
+        aspect = params["aspect#{i}".to_sym]
+        unless aspect.nil? || aspect.empty?
+          no_aspects = false
+          $pagoda.insert( 'tag_aspects', {:tag => params[:tag], :aspect => aspect})
+        end
+      end
+      if no_aspects
+        $pagoda.insert( 'tag_aspects', {:tag => params[:tag], :aspect => ''})
+      end
+      $pagoda.end_transaction
     end
 
     def visited_key( key)

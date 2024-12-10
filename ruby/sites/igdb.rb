@@ -53,13 +53,10 @@ class Igdb < DefaultSite
 			return true, false, post_load(pagoda, url, response.body)
 		end
 
-		begin
-			browser_close
-			body = browser_get( url)
-			return true, false, post_load(pagoda, url, body)
-		rescue StandardError => bang
-			return false, false, bang.message
+		File.open( '/Users/peter/Caches/Pagoda/igdb.html', 'w') do |io|
+			io.print response.body
 		end
+		return false, false, response.message
 	end
 
 	def post_load(pagoda, url, page)

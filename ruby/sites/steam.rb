@@ -144,18 +144,6 @@ class Steam < DefaultSite
 		end
 	end
 
-	def get_companies_steamdb(nodes, type)
-		[].tap do |companies|
-			nodes.css('td') do |title|
-				[title.text.strip]
-			end.parent.css('a') do |anchor, header|
-				if header == type
-					companies << anchor.text.strip
-				end
-			end
-		end
-	end
-
 	def digest_link(pagoda, url)
 		status, response = http_get_threaded(url)
 

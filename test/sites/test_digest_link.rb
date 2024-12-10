@@ -11,6 +11,16 @@ class TestDigestLink < TestBase
     assert_equal 2009, info['link_year']
   end
 
+  def test_adventure_game_hotspot_database
+    info = fire('Adventure Game Hotspot',
+                'https://adventuregamehotspot.com/game/46/brok-the-investigator')
+    assert_equal 'BROK the InvestiGator', info['title']
+    assert_equal 2022, info['year']
+    assert_equal ['COWCAT'], info['developers']
+    assert_equal ['COWCAT'], info['publishers']
+    assert info['tags'].include?('Stylized')
+  end
+
   def test_big_fish_games
     info = fire('Big Fish Games','https://www.bigfishgames.com/us/en/games/2866/undiscovered-world-incan-sun/')
     assert_equal 'Undiscovered World: The Incan Sun', info['title']

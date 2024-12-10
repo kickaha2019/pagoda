@@ -2,11 +2,6 @@ require_relative 'default_site'
 
 class AdventureGameHotspot < DefaultSite
 	BASE = 'https://adventuregamehotspot.com'
-	ASPECT_MAP = {
-		'Perspective' =>
-			{'First-Person' => '1st person',
-			 'Third-Person' => '3rd person'}
-	}.freeze
 
 	def find_database( scanner)
 		have_database = {}
@@ -65,51 +60,59 @@ class AdventureGameHotspot < DefaultSite
 		end
 	end
 
-	def get_aspects(pagoda, url, page)
-		Nodes.parse( page).css('div.game-details th') do |th|
-			if map = ASPECT_MAP[th.text]
-				th.parent.css('a').each do |value|
-					aspect = map[value.text] || "#{th.text}: #{value.text}"
-					yield aspect unless aspect.empty?
-				end
-			end
-		end
-	end
-
-	def get_game_details( url, page, game)
-		Nodes.parse( page).css('div.game-details th') do |th|
-			if th.text == 'Developer'
-				game[:developer] = th.parent.css('a').first.text.strip
-			end
-			if th.text == 'Publisher'
-				game[:publisher] = th.parent.css('a').first.text.strip
-			end
-			if th.text == 'Release'
-				atime = th.parent.css('a time').first
-				if atime
-					time = atime['datetime']
-					if m = /^(\d\d\d\d)-/.match(time)
-						game[:year] = m[1].to_i
-					end
-				end
-			end
-		end
-	end
-
-	def get_game_description( page)
-		elide_nav_blocks( elide_script_blocks page)
-	end
-
-	def get_link_year( page)
-		if m = /"datePublished":"(\d\d\d\d)-\d\d-\d\d"/.match( page)
-			m[1]
-		else
-			nil
-		end
-	end
-
 	def name
 		'Adventure Game Hotspot'
+	end
+
+	def post_load(pagoda, url, page)
+		digest = super
+		return digest unless %r{\.com/game/\d+/} =~ url
+
+		nodes = Nodes.parse( page)
+
+		digest['developers'] = []
+		get_anchors( nodes, 'Developer') do |anchor|
+			digest['developers'] << anchor.text.strip
+		end
+
+		digest['publishers'] = []
+		get_anchors( nodes, 'Publisher') do |anchor|
+			digest['publishers'] << anchor.text.strip
+		end
+
+		nodes.css('div.game-details time') do |time|
+			begin
+				t = Date.parse(time['datetime']).to_time
+				if t <= Time.now
+					if digest['year'].nil? || digest['year'] > t.year
+						digest['year'] = t.year
+					end
+				end
+			rescue StandardError
+			end
+		end
+
+		digest['unreleased'] = true unless digest['year']
+
+		digest['tags'] = ['Adventure']
+		['Genre','Presentation','Perspective','Graphic Style','Gameplay',
+		 'Control','Action'].each do |label|
+			get_anchors( nodes, label) do |anchor|
+				digest['tags'] << anchor.text.strip
+			end
+		end
+
+		digest
+	end
+
+	def get_anchors(nodes, type)
+		nodes.css('div.game-details th') do |title|
+			[title.text.strip]
+		end.parent.css('td a') do |anchor, header|
+			if header == type
+				yield anchor
+			end
+		end
 	end
 
 	def reduce_title( title)
