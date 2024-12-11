@@ -21,7 +21,7 @@
         info = collation( rec.url)
         html << "<td id=\"collation#{row}\">#{info[:link]}</td>"
         html << "<td id=\"collation_year#{row}\">#{info[:year]}</td>"
-        colour = link_lost?(rec) ? 'red' : (rec.comment ? 'cyan' : 'white')
+        colour = (rec.comment ? 'cyan' : 'white')
         html << "<td style=\"background: #{colour}\" id=\"status#{row}\">#{link_status(rec)}</td><td>"
         html << "#{rec.comment ? rec.comment[0...60] : ''}</td><td>"
         html << link_action( rec, 'ignore', row)

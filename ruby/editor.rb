@@ -215,7 +215,7 @@ get '/summary' do
 end
 
 get '/tag/:tag' do
-  erb :tag, :locals => {:tag => params[:tag]}
+  erb :tag, :locals => {:tag => d(params[:tag])}
 end
 
 post '/tag' do

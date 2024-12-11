@@ -19,7 +19,6 @@ class Pagoda
     @names       = Names.new
     @possibles   = nil
     @cache       = cache
-    @tag2aspects = YAML.load( IO.read( @dir + '/tags_to_aspects.yaml'))
 
     @database.declare_integer( 'alias',          :id)
     @database.declare_integer( 'aspect',         :id)
@@ -192,22 +191,20 @@ class Pagoda
       aspects = []
 
       digest['tags'].each do |tag|
-        action = nil
+        found = false
 
-        if @tag2aspects[link.site]
-          action = @tag2aspects[link.site][tag]
+        get('tag_aspects',:tag,tag).each do |rec|
+          found = true
+          unless rec[:aspect].nil?
+            aspects << rec[:aspect]
+          end
         end
 
-        if action.nil?
-          action = @tag2aspects['All'][tag]
-        end
-
-        if action.nil?
-          link.complain "Unknown tag: '#{tag}'"
-        elsif action.is_a?(String)
-          aspects << action
-        else
-          action.each {|a| aspects << a }
+        unless found
+          start_transaction
+          insert('tag_aspects', {tag:tag, aspect:'Unknown'})
+          end_transaction
+          aspects << 'Unknown'
         end
       end
 
@@ -217,7 +214,7 @@ class Pagoda
         elsif aspect?(aspect)
           yield aspect
         else
-          link.complain "Unknown aspect: '#{aspect}'"
+          link.complain "Unhandled tag for #{link.site}"
         end
       end
     end

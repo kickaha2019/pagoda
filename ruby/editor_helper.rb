@@ -407,7 +407,7 @@ SEARCH
     end
 
     def link_flagged?( rec)
-      link_lost?(rec) || rec.comment
+      rec.comment
     end
 
     def link_records( site, type, status, search)
@@ -425,14 +425,6 @@ SEARCH
         end
         chosen
       end
-    end
-
-    def link_lost?( rec)
-      false
-      # return false if link_status(rec) == 'Ignored'
-      # return false if rec.static?
-      # return false if rec.timestamp < 101
-      # ! @@timestamps[rec.timestamp]
     end
 
     def link_site_combo( view, combo_name, current_site, current_type, current_status, html)
@@ -700,7 +692,7 @@ OLDEST_LINK
     end
 
     def tag_aspect_element( index, aspect)
-      values = ['','Unknown'] + $pagoda.aspect_info.keys.sort
+      values = ['','accept','reject','Unknown'] + $pagoda.aspect_info.keys.sort
       defn = []
       defn << "<select name=\"aspect#{index}\">"
       values.each do |value|

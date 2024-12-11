@@ -5,7 +5,7 @@ pagoda   = Pagoda.release( ARGV[0], ARGV[2])
 vl = Verifier.new(pagoda)
 
 free = pagoda.links do |link|
-  link.status == 'Invalid'
+  link.comment
 end
 
 free.each do |link|
