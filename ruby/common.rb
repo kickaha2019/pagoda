@@ -220,7 +220,7 @@ module Common
 		end
 	end
 
-	def redirect(old_location, new_location)
+	def redirected_url(old_location, new_location)
 		if /^\// =~ new_location
 			m = /^([^\/]*\/\/[^\/]*)($|\/)/.match(old_location)
 			m[1] + new_location

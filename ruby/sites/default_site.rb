@@ -69,7 +69,7 @@ class DefaultSite
     end
 
     if response.is_a? Net::HTTPRedirection
-      return false, delete_redirects, "Redirected to #{redirect(url,response['location'])}"
+      return false, delete_redirects, "Redirected to #{redirected_url(url,response['location'])}"
     end
 
     unless response.is_a? Net::HTTPSuccess

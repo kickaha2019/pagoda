@@ -17,25 +17,30 @@ class PagodaTest < TestBase
   end
 
   def test_ignore
+    insert_tag_aspect('Adventure','Adventure')
+    insert_tag_aspect('Adventure','accept')
+    insert_tag_aspect('2D Fighter','reject')
     link = TestLink.new('IGDB')
 
     digest = {}
-    assert ! @pagoda.ignore_link( link, digest)
+    assert ! @pagoda.reject_link?( link, digest)
     digest = {'aspects' => ['accept']}
-    assert ! @pagoda.ignore_link(link, digest)
+    assert ! @pagoda.reject_link?(link, digest)
     digest = {'aspects' => ['accept','reject']}
-    assert @pagoda.ignore_link(link, digest)
+    assert @pagoda.reject_link?(link, digest)
     digest = {'aspects' => []}
-    assert @pagoda.ignore_link(link, digest)
+    assert @pagoda.reject_link?(link, digest)
     digest = {'tags' => ['Adventure']}
-    assert ! @pagoda.ignore_link(link, digest)
+    assert ! @pagoda.reject_link?(link, digest)
     digest = {'tags' => ['Adventure','2D Fighter']}
-    assert @pagoda.ignore_link(link, digest)
+    assert @pagoda.reject_link?(link, digest)
     digest = {'tags' => []}
-    assert @pagoda.ignore_link(link, digest)
+    assert @pagoda.reject_link?(link, digest)
   end
 
   def test_digest_aspects
+    insert_tag_aspect('Adventure','Adventure')
+    insert_tag_aspect('Adventure','accept')
     link = TestLink.new('IGDB')
     assert_equal [], digest_aspects(link,{})
     assert_equal ["Adventure", "accept", "reject"],
@@ -43,7 +48,7 @@ class PagodaTest < TestBase
     assert_equal 'Unknown aspect: xxx', digest_aspects_complaint(link,{'aspects' => ['xxx']})
     assert_equal ["Adventure", "accept"],
                  digest_aspects(link,{'tags' => ['Adventure']})
-    assert_equal "Unknown tag: 'reject'", digest_aspects_complaint(link,{'tags' => ['reject']})
+    assert_equal "Unhandled tag for IGDB", digest_aspects_complaint(link,{'tags' => ['reject']})
   end
 
   def digest_aspects(link,digest)

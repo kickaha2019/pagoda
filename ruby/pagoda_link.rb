@@ -108,16 +108,14 @@ class PagodaLink < PagodaRecord
   def status
     if ! valid?
       if bound? && collation.nil?
-        'Ignored'
+        rejected? ? 'Rejected' : 'Ignored'
       else
         'Invalid'
       end
-    elsif unreleased?
-      'Unreleased'
     elsif bound?
-      collation ? 'Bound' : 'Ignored'
+      collation ? 'Bound' : (rejected? ? 'Rejected' : 'Ignored')
     else
-      'Free'
+      rejected? ? 'Rejected' : 'Free'
     end
   end
 
@@ -147,8 +145,8 @@ class PagodaLink < PagodaRecord
     @bound_game = nil
   end
 
-  def unreleased?
-    @record[:unreleased] == 'Y'
+  def rejected?
+    @record[:reject] == 'Y'
   end
 
   def valid?
@@ -164,7 +162,7 @@ class PagodaLink < PagodaRecord
     @record[:valid]      = rec[:valid] ? 'Y' : 'N'
     @record[:comment]    = rec[:comment]
     @record[:year]       = rec[:year] ? rec[:year] : nil
-    @record[:unreleased] = rec[:unreleased] ? 'Y' : 'N'
+    @record[:reject]     = rec[:reject] ? 'Y' : 'N'
 
     if rec[:url] && (rec[:url] != @record[:url])
       raise "*** verified changed URL"

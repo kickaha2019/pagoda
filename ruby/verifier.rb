@@ -55,7 +55,7 @@ class Verifier
         loose << link
       elsif link.status == 'Ignored'
         loose << link
-      elsif link.unreleased?
+      elsif link.status == 'Rejected'
         loose << link
       else
         bound << link
@@ -116,7 +116,7 @@ class Verifier
 
     rec = {title:'',
            timestamp:Time.now.to_i,
-           unreleased:(body['unreleased'] ? true : false),
+           reject:(body['unreleased'] ? true : false),
            valid:true,
            changed: false}
 

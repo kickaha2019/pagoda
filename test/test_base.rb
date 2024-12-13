@@ -22,4 +22,8 @@ class TestBase < Minitest::Test
       Dir.mkdir path
     end
   end
+
+  def insert_tag_aspect(tag, aspect)
+    @pagoda.insert('tag_aspects',{tag:tag,aspect:aspect})
+  end
 end

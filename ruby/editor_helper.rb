@@ -668,7 +668,7 @@ OLDEST_LINK
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged', 'Unreleased'].each do |status|
+      ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged', 'Rejected'].each do |status|
         c = counts[status]
         colour = (status == 'Free') ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0

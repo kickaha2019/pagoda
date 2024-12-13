@@ -52,6 +52,11 @@ class TestDigestLink < TestBase
     assert info['tags'].include?('Post-apocalyptic')
   end
 
+  def test_good_old_games_addon
+    info = fire('GOG','https://www.gog.com/en/game/chained_echoes_ashes_of_elrant')
+    assert info['tags'].include?('reject')
+  end
+
   def test_hotu
     info = fire('HOTU','https://www.homeoftheunderdogs.net/game.php?id=114')
     assert_equal 'Beneath a Steel Sky', info['title']

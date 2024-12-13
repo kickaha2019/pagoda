@@ -60,6 +60,7 @@ class Pagoda
     database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
     database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
     database.add_table(Table.new('old_links',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
+    database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
     database.add_table(Table.new('visited',[:key,:timestamp],[]))
     Pagoda.new(database, metadata, cache)
   end
@@ -191,6 +192,11 @@ class Pagoda
       aspects = []
 
       digest['tags'].each do |tag|
+        if ['accept','reject'].include?(aspect)
+          aspects << tag
+          next
+        end
+
         found = false
 
         get('tag_aspects',:tag,tag).each do |rec|
@@ -403,12 +409,19 @@ class Pagoda
 
   def clean_cache
     deleted = 0
+    timestamps = {}
+    @database.select('link') do |rec|
+      timestamps[rec[:timestamp]] = true unless rec[:timestamp].nil?
+    end
+    @database.select('old_links') do |rec|
+      timestamps[rec[:timestamp]] = true unless rec[:timestamp].nil?
+    end
+
     Dir.entries( @cache + '/verified').each do |section|
       next if /^[._]/ =~ section
       Dir.entries( @cache + '/verified/' + section).each do |f|
         /^(\d+)\.html$/.match( f) do |m|
-          unless @database.has?( 'link', :timestamp, m[1].to_i) ||
-                 @database.has?( 'old_links', :timestamp, m[1].to_i)
+          unless timestamps[m[1].to_i]
             path = @cache + '/verified/' + section + '/' + f
             File.delete path
             deleted += 1
@@ -514,18 +527,18 @@ class Pagoda
     File.open( new_path, 'w') {|io| io.print digest.to_yaml}
     p ['update_link5', new_path] if debug
 
-    # Unbind unreleased links
-    if rec[:unreleased]
-      link.unbind
-    elsif ignore_link(link, digest)
-      link.bind( -1) unless link.bound?
+    # Unbind rejected links
+    rec[:reject] = true if reject_link?(link, digest)
+
+    if rec[:reject]
+      link.unbind if link.bound? && link.collation.nil?
     end
 
     link.verified( rec)
     refresh_link link.url
   end
 
-  def ignore_link(link, digest)
+  def reject_link?(link, digest)
     has_aspects = digest['aspects'] || digest['tags']
 
     digest_aspects(link, digest) do |aspect|

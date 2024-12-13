@@ -121,6 +121,12 @@ class GoodOldGames < DefaultSite
 			end
 
 			tags = []
+			tags << 'reject' unless digest['year']
+
+			if /To play this game you also need/ =~ page
+				tags << 'reject'
+			end
+
 			get_tags(page).each do |tag|
 				tags << tag
 			end
