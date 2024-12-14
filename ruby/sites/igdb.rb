@@ -47,6 +47,10 @@ class Igdb < DefaultSite
 		'IGDB'
 	end
 
+	def search_site
+		'igdb.com'
+	end
+
 	def digest_link(pagoda, url)
 		status, response = http_get_threaded(url)
 		if status

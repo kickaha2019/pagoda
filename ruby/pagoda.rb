@@ -192,7 +192,7 @@ class Pagoda
       aspects = []
 
       digest['tags'].each do |tag|
-        if ['accept','reject'].include?(aspect)
+        if ['accept','reject'].include?(tag)
           aspects << tag
           next
         end

@@ -13,7 +13,7 @@ before do
 end
 
 get '/' do
-  erb :tables
+  erb :work
 end
 
 post '/add_game_from_link/:url' do

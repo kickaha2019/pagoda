@@ -1,0 +1,29 @@
+<%= erb :header, :locals => {:page => 'work'} %>
+
+  <table class="summary list">
+    <tr><th>To check</th><th>Day 0</th><th>Day -1</th><th>Day -2</th><th>Day -3</th><th>Day -4</th></tr>
+    <%=
+      html   = []
+
+      work_records do |label, status, link, values|
+        colour = (status == 'normal') ? 'white' : ((status == 'warning') ? 'cyan' : 'red')
+        html << "<tr><td>#{label}</td><td align=\"right\" style=\"background: #{colour}\">"
+        if link
+          html << "<a target=\"_blank\" href=\"#{link}\">"
+        end
+        html << values[0]
+        if link
+          html << "</a>"
+        end
+        (1..4).each do |i|
+          html << "</td><td align=\"right\">#{values[i]}"
+        end
+        values << '</td></tr>'
+      end
+
+      html.join( "\n")
+    %>
+    </table>
+
+</body>
+</html>

@@ -598,6 +598,29 @@ OLDEST_LINK
       $pagoda.scan_stats_records {|site, section, count, date| yield site, section, count, date}
     end
 
+    def search_sites_keywords(id, name, year)
+      [].tap do |keywords|
+        keywords << name
+        keywords << year if year
+        sites = {'GOG' => true,
+                 'HOTU' => true,
+                 'IGDB' => true,
+                 'MobyGames' => true,
+                 'Steam' => true
+        }
+        $pagoda.get('bind',:id,id) do |rec|
+          $pagoda.get('link',:url,rec[:url]) do |rec1|
+            sites[rec1[:site]] = false
+          end
+        end
+        sites.each_pair do |site, flag|
+          if flag
+            keywords << "site:#{$pagoda.get_site_handler(site).search_site}"
+          end
+        end
+      end
+    end
+
     def selected_game
       games = $pagoda.get( 'game', :id, @@selected_game.to_i)
       games.empty? ? ' ' : games[0][:name]
@@ -804,6 +827,12 @@ OLDEST_LINK
 
     def visited_key( key)
       $pagoda.visited_key( key)
+    end
+
+    def work_records
+      YAML.load(IO.read(ARGV[0] + '/work.yaml')).each_pair do |k,v|
+        yield k, v['status'], v['link'], v['values']
+      end
     end
   end
 

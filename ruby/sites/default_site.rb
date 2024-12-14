@@ -49,6 +49,10 @@ class DefaultSite
     title
   end
 
+  def search_site
+    'com'
+  end
+
   def static?
     false
   end

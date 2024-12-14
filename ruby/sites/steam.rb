@@ -71,6 +71,10 @@ class Steam < DefaultSite
 		'Steam'
 	end
 
+	def search_site
+		'steampowered.com'
+	end
+
 	def post_load(pagoda, url, page)
 		{}.tap do |digest|
 			nodes = Nodes.parse(page)
