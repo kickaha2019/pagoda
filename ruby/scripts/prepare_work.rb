@@ -14,13 +14,16 @@ class PrepareWork
     @work = {}
   end
 
-  def add(label,value,status,link)
+  def add(label,value,status,link,hide=false)
     values = [value]
     if @old_work[label]
       values += @old_work[label]['values']
       values = values[0..4]
     end
-    @work[label] = {'values' => values, 'status'=> status, 'link' => link}
+    @work[label] = {'values' => values,
+                    'status' => status,
+                    'link'   => link,
+                    'hide'   => hide}
   end
 
   def cache_size
@@ -32,9 +35,66 @@ class PrepareWork
     add('Cache size',size,status,nil)
   end
 
+  def free_links
+    count = 0
+    @pagoda.links.each do |link|
+      count += 1 if link.status == 'Free'
+    end
+    add('Free links',count,'warning','/links?status=Free',count == 0)
+  end
+
+  def flagged_links
+    count = 0
+    @pagoda.links do |link|
+      count += 1 if link.comment
+    end
+    add('Flagged links',count,'warning','/links?status=Flagged',count == 0)
+  end
+
+  def missing_aspect_type(type)
+    aspect_info = @pagoda.aspect_info
+    count       = 0
+
+    @pagoda.games do |game|
+      next if game.group?
+
+      selected = ! game.aspects['Lost']
+      game.aspects.each_pair do |a, flag|
+        if flag && (aspect_info[a]['type'] == type)
+          selected = false
+        end
+      end
+
+      count += 1 if selected
+    end
+
+    add("Games with no #{type}",count,'error',"/games?no_aspect_type=#{type}&sort_by=id",count == 0)
+  end
+
+  def no_genre
+    missing_aspect_type('genre')
+  end
+
+  def no_perspective
+    missing_aspect_type('perspective')
+  end
+
+  def no_year
+    count = 0
+    @pagoda.games do |game|
+      count += 1 unless game.year
+    end
+    add('Games with no year',count,'error',nil,count == 0)
+  end
+
   def run
     cache_size
     unknown_tags
+    free_links
+    flagged_links
+    no_year
+    no_genre
+    no_perspective
   end
 
   def save

@@ -62,7 +62,7 @@ class PagodaLink < PagodaRecord
     digest = @owner.cached_digest(timestamp)
     aspects = []
 
-    @owner.digest_aspects(link,digest) do |aspect|
+    @owner.digest_aspects(self,digest) do |aspect|
       next if ['accept','reject'].include?(aspect)
       aspects << aspect
     end

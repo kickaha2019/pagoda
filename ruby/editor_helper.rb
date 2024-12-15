@@ -831,7 +831,7 @@ OLDEST_LINK
 
     def work_records
       YAML.load(IO.read(ARGV[0] + '/work.yaml')).each_pair do |k,v|
-        yield k, v['status'], v['link'], v['values']
+        yield k, v['status'], v['link'], v['values'] unless v['hide']
       end
     end
   end
