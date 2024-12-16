@@ -552,41 +552,6 @@ SEARCH
       ''
     end
 
-    def oldest_bound_link
-      oldest_link(true)
-    end
-
-    def oldest_ignored_link
-      oldest_link(false)
-    end
-
-    def oldest_link(bound)
-      oldest = nil
-      $pagoda.links do |link|
-        next if link.static?
-        if link.bound? && (link.collation.nil? != bound)
-          if oldest.nil? || (link.timestamp < oldest.timestamp)
-            oldest = link
-          end
-        end
-      end
-
-      count = 0
-      $pagoda.links do |link|
-        next if link.static? || oldest.nil?
-        if link.bound? && (link.collation.nil? != bound)
-          if link.timestamp < (oldest.timestamp + 60 * 60 * 24)
-            count += 1
-          end
-        end
-      end
-
-      return '' if oldest.nil?
-      <<OLDEST_LINK
-<a target="_blank" href="/link/#{e(e(oldest.url))}">#{Time.at(oldest.timestamp).strftime('%Y-%m-%d')}</a> (#{count})
-OLDEST_LINK
-    end
-
     def refresh_metadata
     end
 
@@ -810,17 +775,18 @@ OLDEST_LINK
     def update_tag( params)
       p params
       $pagoda.start_transaction
-      $pagoda.delete('tag_aspects',:tag,params[:tag])
+      tag = d(params[:tag])
+      $pagoda.delete('tag_aspects',:tag,tag)
       no_aspects = true
       (0..9).each do |i|
         aspect = params["aspect#{i}".to_sym]
         unless aspect.nil? || aspect.empty?
           no_aspects = false
-          $pagoda.insert( 'tag_aspects', {:tag => params[:tag], :aspect => aspect})
+          $pagoda.insert( 'tag_aspects', {:tag => tag, :aspect => d(aspect)})
         end
       end
       if no_aspects
-        $pagoda.insert( 'tag_aspects', {:tag => params[:tag], :aspect => ''})
+        $pagoda.insert( 'tag_aspects', {:tag => tag, :aspect => ''})
       end
       $pagoda.end_transaction
     end

@@ -118,7 +118,7 @@ class Verifier
            timestamp:Time.now.to_i,
            reject:(body['unreleased'] ? true : false),
            valid:true,
-           changed: false}
+           comment: nil}
 
     # Get year if possible for link
     if status && body['year']

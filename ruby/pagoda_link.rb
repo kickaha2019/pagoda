@@ -7,6 +7,28 @@ class PagodaLink < PagodaRecord
     @bound_game = nil
   end
 
+  def bad_tags
+    digest = @owner.cached_digest(timestamp)
+    if digest['tags']
+      digest['tags'].each do |tag|
+        next if ['accept','reject'].include?(tag)
+        found = false
+
+        @owner.get('tag_aspects',:tag,tag).each do |rec|
+          found = true
+          next if ['accept','reject'].include?(rec[:aspect])
+          unless rec[:aspect].nil?
+            yield tag unless @owner.aspect?(rec[:aspect])
+          end
+        end
+
+        unless found
+          yield tag
+        end
+      end
+    end
+  end
+
   def bind( id)
     _bind(id)
     @owner.start_transaction

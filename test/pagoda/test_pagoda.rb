@@ -48,7 +48,7 @@ class PagodaTest < TestBase
     assert_equal 'Unknown aspect: xxx', digest_aspects_complaint(link,{'aspects' => ['xxx']})
     assert_equal ["Adventure", "accept"],
                  digest_aspects(link,{'tags' => ['Adventure']})
-    assert_equal "Unhandled tag for IGDB", digest_aspects_complaint(link,{'tags' => ['reject']})
+    assert_equal "Unhandled tag for IGDB", digest_aspects_complaint(link,{'tags' => ['xxx']})
   end
 
   def digest_aspects(link,digest)

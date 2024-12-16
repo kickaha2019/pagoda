@@ -28,11 +28,11 @@ class PrepareWork
 
   def cache_size
     size, status = '???', 'error'
-    if system("du -ch -d 0 #{@cache} >/tmp/du.txt")
+    if system("du -cm -d 0 #{@cache} >/tmp/du.txt")
       size   = IO.readlines('/tmp/du.txt')[-1].strip.split(/\s+/)[0]
       status = 'normal'
     end
-    add('Cache size',size,status,nil)
+    add('Cache size (MB)',size,status,nil)
   end
 
   def free_links
@@ -87,8 +87,18 @@ class PrepareWork
     add('Games with no year',count,'error',nil,count == 0)
   end
 
+  def oldest_link
+    oldest = Time.now.to_i
+    @pagoda.links do |link|
+      next if link.timestamp <= 100
+      oldest = link.timestamp if link.timestamp < oldest
+    end
+    add('Oldest link in days',(Time.now.to_i - oldest) / (24 * 60 * 60),'normal',nil)
+  end
+
   def run
     cache_size
+    oldest_link
     unknown_tags
     free_links
     flagged_links
@@ -108,7 +118,7 @@ class PrepareWork
     @pagoda.select('tag_aspects') do |rec|
       count += 1 if rec[:aspect] == 'Unknown'
     end
-    add('Unknown tags',count,(count > 0) ? 'error' : 'normal','/tags?aspect=Unknown')
+    add('Unknown tags',count,(count > 0) ? 'error' : 'normal','/tags?aspect=Unknown',count == 0)
   end
 end
 

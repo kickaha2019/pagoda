@@ -220,7 +220,7 @@ end
 
 post '/tag' do
   update_tag( params)
-  erb :tag, :locals => {:tag => params[:tag]}
+  erb :tag, :locals => {:tag => d(params[:tag])}
 end
 
 get '/tags' do
