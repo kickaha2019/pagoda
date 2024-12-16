@@ -1,14 +1,14 @@
-<%= erb :header, :locals => {:page => 'games', :aspect => aspect, :no_aspect_type => no_aspect_type, :sort_by => sort_by} %>
+<%= erb :header, :locals => {:page => 'games', :context => context} %>
 
 <div class="search control">
-  <button onclick="search_input( '<%= "/games?page=1&sort_by=#{sort_by}&aspect=#{aspect}&no_aspect_type=#{no_aspect_type}" %>')">Search</button>
+  <button onclick="search_input( '<%= "/games?page=1&context=#{context}" %>')">Search</button>
   <input type="text" id="search" maxlength="40" value="<%= search %>">
   <%=
-      url = "/games?search=#{e(search)}&sort_by=#{sort_by}&aspect=#{e(aspect)}&no_aspect_type=#{e(no_aspect_type)}"
+      url = "/games?search=#{e(search)}&context=#{context}"
       erb :page_control, :locals => {:view => 'games',
                                      :page => page,
                                      :url  => url,
-                                     :args => [aspect,no_aspect_type,search]}
+                                     :args => [context,search]}
   %>&nbsp;&nbsp;
 </div>
 
@@ -17,14 +17,12 @@
   <%=
     html = []
 
-    records       = games_records( aspect, no_aspect_type, search)
+    records       = games_records( context, search)
     current_page  = page
     total_pages   = (records.size + 99) /  100
     current_page  = 1 if total_pages < current_page
     selected_game = selected_game_id( selected)
-    records.sort_by! do |rec|
-      (sort_by == 'id') ? rec.id : rec.name.to_s
-    end
+    records       = get_context(context).sort_games(records)
 
     records[(100*(current_page-1))...(100*current_page)].each do |rec|
       year = (rec.year.nil? || (rec.year < 1)) ? '' : rec.year
@@ -36,7 +34,7 @@
       end
       html << "<tr #{style}>"
       html << "<td>#{rec.id}</td>"
-      html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}/#{no_aspect_type}\">#{h(rec.name)}</a></td>"
+      html << "<td><a target=\"_blank\" href=\"/game/#{rec.id}/#{context}\">#{h(rec.name)}</a></td>"
       html << [:year, :group_name].collect {|f| "<td>#{rec.send(f)}</td>"}.join( "\n")
       html << "<td><input type=\"checkbox\" onclick=\"select_checkbox('#{rec.id}')\" #{checked}></td>"
       html << '</tr>'
@@ -52,7 +50,7 @@
     function select_checkbox( id) {
         var x = window.pageXOffset;
         var y = window.pageYOffset;
-        window.location = '/games?aspect=<%= aspect %>&page=<%= page %>&search=' +
+        window.location = '/games?context=<%= context %>&page=<%= page %>&search=' +
             encodeURIComponent( document.getElementById( 'search').value) +
             "&selected=" + id +
             "&x=" + x + "&y=" + y;

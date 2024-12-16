@@ -84,7 +84,7 @@ class PrepareWork
     @pagoda.games do |game|
       count += 1 unless game.year
     end
-    add('Games with no year',count,'error',nil,count == 0)
+    add('Games with no year',count,'error',"/games?year=&sort_by=id",count == 0)
   end
 
   def oldest_link

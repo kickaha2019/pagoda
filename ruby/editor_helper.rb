@@ -6,8 +6,85 @@ module Sinatra
   module EditorHelper
     include Common
 
+    class DefaultContext
+      def initialize(sort_by='name')
+        @sort_by = sort_by
+      end
+
+      def select_game?(pagoda,game)
+        true
+      end
+
+      def show_aspect_type(type)
+        true
+      end
+
+      def sort_games(games)
+        games.sort_by do |rec|
+          (@sort_by == 'id') ? rec.id : rec.name.to_s
+        end
+      end
+    end
+
+    class AspectContext < DefaultContext
+      def initialize(aspect,sort_by)
+        super(sort_by)
+        @aspect = aspect
+      end
+
+      def select_game?(pagoda,game)
+        return false if game.group?
+
+        if @aspect == 'None'
+          game.aspects.size == 0
+        else
+          game.aspects[aspect]
+        end
+      end
+    end
+
+    class NoAspectTypeContext < DefaultContext
+      def initialize(type,sort_by)
+        super(sort_by)
+        @type = type
+      end
+
+      def select_game?(pagoda,game)
+        return false if game.group?
+        aspects     = game.aspects
+        return false if aspects['Lost']
+
+        aspect_info = $pagoda.aspect_info
+        game.aspects.each_pair do |a, flag|
+          return false if flag && (aspect_info[a]['type'] == @type)
+        end
+
+        true
+      end
+
+      def show_aspect_type(type)
+        type == @type
+      end
+    end
+
+    class YearContext < DefaultContext
+      def initialize(year,sort_by)
+        super(sort_by)
+        @year = year
+      end
+
+      def select_game?(pagoda,game)
+        if @year.is_a?(Integer)
+          game.year == @year
+        else
+          game.year.nil?
+        end
+      end
+    end
+
     @@selected_game = -1
     @@timestamps    = {}
+    @@contexts      = {0 => DefaultContext.new}
 
     def add_game_from_link( link_url)
       link_rec = $pagoda.link( link_url)
@@ -41,8 +118,8 @@ module Sinatra
       checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : true)
     end
 
-    def aliases_records( aspect, search)
-      games_records( aspect, '', search).select {|g| g.aliases.size > 0}
+    def aliases_records( context, search)
+      games_records( context, search).select {|g| g.aliases.size > 0}
     end
 
     def aspect_element( name, value, show)
@@ -88,7 +165,7 @@ HIDDEN_ASPECT_ELEMENT
       end
 
       types.select {|type| type}.uniq.sort.collect do |type|
-        [type, games_records('', type, '').size]
+        [type, games_records(new_no_aspect_type_context(type,'name'), '').size]
       end
     end
 
@@ -273,32 +350,13 @@ HIDDEN_ASPECT_ELEMENT
       recs.sort_by {|rec| rec.id}
     end
 
-    def games_records( aspect, no_aspect_type, search)
-      aspect_info = $pagoda.aspect_info
+    def games_records( context, search)
       $pagoda.games do |game|
-        next if game.group? and (no_aspect_type != '')
-        next if game.group? and (aspect != '')
+        next unless get_context(context).select_game?($pagoda,game)
 
         selected = $pagoda.contains_string( game.name, search)
         game.aliases.each do |a|
           selected = true if $pagoda.contains_string( a.name, search)
-        end
-
-        if selected && (aspect != '')
-          if aspect == 'None'
-            selected = (game.aspects.size == 0)
-          else
-            selected = game.aspects[aspect]
-          end
-        end
-
-        if selected && (no_aspect_type != '')
-          selected = ! game.aspects['Lost']
-          game.aspects.each_pair do |a, flag|
-            if flag && (aspect_info[a]['type'] == no_aspect_type)
-              selected = false
-            end
-          end
         end
 
         selected
@@ -337,9 +395,9 @@ HIDDEN_ASPECT_ELEMENT
       end
     end
 
-    # def get_cache( timestamp)
-    #   $pagoda.cache_read( timestamp)
-    # end
+    def get_context(index)
+      @@contexts[index]
+    end
 
     def get_locals( params, defs)
       locals = {}
@@ -508,6 +566,24 @@ SEARCH
       end
 
       unvisited.sort_by {|rec| rec.id}
+    end
+
+    def new_aspect_context(aspect,sort_by)
+      (@@contexts.size+1).tap do |context|
+        @@contexts[context] = AspectContext.new(aspect,sort_by)
+      end
+    end
+
+    def new_no_aspect_type_context(type, sort_by)
+      (@@contexts.size+1).tap do |context|
+        @@contexts[context] = NoAspectTypeContext.new(type,sort_by)
+      end
+    end
+
+    def new_year_context(sort_by)
+      (@@contexts.size+1).tap do |context|
+        @@contexts[context] = YearContext.new(sort_by)
+      end
     end
 
     def pardon_link( link_url)

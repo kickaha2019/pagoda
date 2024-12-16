@@ -110,6 +110,7 @@
 %>
 
 <form action="/game">
+    <input type="hidden" name="context" value="<%= context %>" />
     <table class="game">
       <tr><th>Id:</th><td><%= input_element( 'id', 6, @id, 'readonly id="id"') %></td></tr>
 
@@ -144,7 +145,7 @@
             $pagoda.aspect_name_and_types do |aspect, type|
               html << aspect_element( "#{aspect}",
                                       @aspects[aspect],
-                                      aspect_type.nil? || (aspect_type == type))
+                                      get_context(context).show_aspect_type(type))
             end
             html.join( "\n")
           %>

@@ -73,35 +73,39 @@ post '/forget/:url' do
   delete_link( d(params[:url]))
 end
 
-get '/game/:id' do
-  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
-end
-
 get '/game/:id/' do
-  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
+  erb :game, :locals => {:id => params[:id].to_i, :context => 0}
 end
 
-get '/game/:id/:aspect_type' do
-  type = params[:aspect_type].empty? ? nil : params[:aspect_type]
-  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => type}
+get '/game/:id/:context' do
+  erb :game, :locals => {:id => params[:id].to_i, :context => params[:context].to_i}
 end
 
 post '/game' do
   update_game( params)
-  erb :game, :locals => {:id => params[:id].to_i, :aspect_type => nil}
+  erb :game, :locals => {:id => params[:id].to_i, :context => params[:context].to_i}
 end
 
 get '/games' do
+  if params[:year]
+    context = new_year_context(params[:year],params[:sort_by])
+  elsif params[:aspect]
+    context = new_aspect_context(d(params[:aspect]),params[:sort_by])
+  elsif params[:no_aspect_type]
+    context = new_no_aspect_type_context(params[:no_aspect_type],params[:sort_by])
+  elsif params[:context]
+    context = params[:context].to_i
+  else
+    context = 0
+  end
   erb :games,
       :locals => get_locals( params,
-                             :aspect => '',
-                             :no_aspect_type => '',
+                             :context => context,
                              :search => '',
                              :page => 1,
                              :selected => 0,
                              :x => 0,
-                             :y => 0,
-                             :sort_by => 'name')
+                             :y => 0)
 end
 
 get '/games_check_inventory_aspect' do
