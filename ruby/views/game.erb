@@ -130,7 +130,6 @@
 
       <tr><th>Search:</th><td>
         <%= google_search( 'Search all', @id, [@name, @developer, @publisher]) %>
-        <%= google_search( 'Search sites', @id, search_sites_keywords(@id, @name, @year)) %>
         <%= google_search( 'IGDB', @id, [@name, 'IGDB']) %>
         <%= google_search( 'MobyGames', @id, [@name, 'MobyGames']) %>
         <%= google_search( 'Metacritic', @id, [@name, 'Metacritic']) %>

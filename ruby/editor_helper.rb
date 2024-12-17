@@ -74,11 +74,16 @@ module Sinatra
       end
 
       def select_game?(pagoda,game)
+        return false if game.group?
         if @year.is_a?(Integer)
           game.year == @year
         else
           game.year.nil?
         end
+      end
+
+      def show_aspect_type(type)
+        false
       end
     end
 
@@ -283,7 +288,7 @@ HIDDEN_ASPECT_ELEMENT
     def game_link( id)
       game_rec = $pagoda.game( id)
       return '' if game_rec.nil?
-      "<a href=\"/game/#{id}\">#{h(game_rec.name)}</a>"
+      "<a href=\"/game/#{id}/\">#{h(game_rec.name)}</a>"
     end
 
     def games_by_aspect_records(aspect_type)
@@ -412,7 +417,7 @@ HIDDEN_ASPECT_ELEMENT
     end
 
     def google_search( label, game_id, texts)
-      text = texts.join( ' ').downcase.gsub( /[^0-9a-z]/, ' ').gsub( ' ', '+')
+      text = texts.join( ' ').downcase.gsub( /["\/?]/, ' ').gsub( ' ', '+')
       <<SEARCH
 <a target="_blank" 
 onclick="write_id_to_grabbed(#{game_id})"
@@ -580,9 +585,9 @@ SEARCH
       end
     end
 
-    def new_year_context(sort_by)
+    def new_year_context(year,sort_by)
       (@@contexts.size+1).tap do |context|
-        @@contexts[context] = YearContext.new(sort_by)
+        @@contexts[context] = YearContext.new(year,sort_by)
       end
     end
 

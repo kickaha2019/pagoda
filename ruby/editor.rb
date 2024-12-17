@@ -149,7 +149,7 @@ get '/multiple_genre' do
 end
 
 get '/new_game' do
-  erb :game, :locals => {:id => -1, :aspect_type => nil}
+  erb :game, :locals => {:id => -1, :context => 0}
 end
 
 post '/pardon/:url' do

@@ -70,7 +70,7 @@
     <%=
       html = []
       @rec.suggest do |game, freq|
-        html << "<tr><td><a href=\"/game/#{game.id}\">#{h(game.name)}</a></td>"
+        html << "<tr><td><a href=\"/game/#{game.id}/\">#{h(game.name)}</a></td>"
         html << "<td>#{game.developer}</td>"
         html << "<td>#{game.publisher}</td>"
         html << "<td>#{game.year}</td>"
