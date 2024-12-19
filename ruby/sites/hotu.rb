@@ -75,10 +75,6 @@ class Hotu < DefaultSite
 		'HOTU'
   end
 
-	def search_site
-		'homeoftheunderdogs.net'
-	end
-
 	def year_tolerance
 		3
 	end

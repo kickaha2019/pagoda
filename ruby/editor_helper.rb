@@ -94,7 +94,7 @@ module Sinatra
     def add_game_from_link( link_url)
       link_rec = $pagoda.link( link_url)
       if collated = link_rec.collation
-        return "/game/#{collated.id}"
+        return "/game/#{collated.id}/"
       end
 
       if link_rec.timestamp <= 1000
@@ -110,7 +110,7 @@ module Sinatra
         game = $pagoda.create_game( g)
         link_rec.bind( g[:id])
         game.update_from_link(link_rec)
-        "/game/#{g[:id]}"
+        "/game/#{g[:id]}/"
       rescue Exception => bang
         puts( bang.message + "\n" + bang.backtrace.join( "\n"))
         ''
@@ -128,7 +128,6 @@ module Sinatra
     end
 
     def aspect_element( name, value, show)
-      html = []
       colour, setting = 'white', '?'
       if value == false
         colour, setting = 'red', 'N'
@@ -313,48 +312,6 @@ HIDDEN_ASPECT_ELEMENT
       end + (aspect_type.empty? ? [['None', '', map['None']]] : [])
     end
 
-    def games_check_aspects_records( group, aspects, skip_if_set=false, limit=15)
-      unvisited, today, unset, now = [], [], [], Time.now.to_i
-
-      $pagoda.games do |game|
-        set_aspects = game.aspects
-        next if set_aspects['Lost']
-        some_set    = (aspects.size == 1) ? set_aspects.has_key?( aspects[0])
-                                          : aspects.inject(false) {|r,a| r | set_aspects[a]}
-
-        visited = $pagoda.get( 'visited', :key, "#{group}:#{game.id}")
-        unless visited.empty?
-          if some_set
-            if (now - visited[0][:timestamp]) < 12 * 60 * 60
-              today << game
-            end
-          else
-            unset << game
-          end
-        else
-          unvisited << game unless some_set && skip_if_set
-        end
-      end
-
-      if unset.empty?
-        if today.empty?
-          recs = unvisited[0...limit]
-          $pagoda.start_transaction
-          recs.each do |game|
-            $pagoda.insert( 'visited', {key: "#{group}:#{game.id}",
-                                                         timestamp: now})
-          end
-          $pagoda.end_transaction
-        else
-          recs = today
-        end
-      else
-        recs = unset
-      end
-
-      recs.sort_by {|rec| rec.id}
-    end
-
     def games_records( context, search)
       $pagoda.games do |game|
         next unless get_context(context).select_game?($pagoda,game)
@@ -365,38 +322,6 @@ HIDDEN_ASPECT_ELEMENT
         end
 
         selected
-      end
-    end
-
-    def games_to_check_aspects_records
-      recs = []
-
-      $pagoda.games do |game|
-        aspects = game.aspects
-        next if aspects['1st person'] || aspects['3rd person']
-        next if aspects.has_key?('1st person') && aspects.has_key?('3rd person')
-        next if $pagoda.has?( 'visited', :key, "games_to_check_aspects:#{game.id}")
-        recs << game
-      end
-
-      recs.sort_by {|rec| rec.id}
-    end
-
-    def gather( game_id, gather_url)
-      site, type, url = $pagoda.correlate_site( gather_url)
-      return "No site found for url" unless site
-
-      game = $pagoda.game( game_id)
-      if $pagoda.link(url).nil?
-        $pagoda.add_link( site, type, game.title, url)
-      end
-
-      link = $pagoda.link( url)
-      if link.bound?
-        'URL already bound'
-      else
-        link.bind( game_id)
-        ''
       end
     end
 
@@ -417,7 +342,7 @@ HIDDEN_ASPECT_ELEMENT
     end
 
     def google_search( label, game_id, texts)
-      text = texts.join( ' ').downcase.gsub( /["\/?]/, ' ').gsub( ' ', '+')
+      text = texts.join( ' ').downcase.gsub( /[^0-9a-z]/, ' ').gsub( ' ', '+')
       <<SEARCH
 <a target="_blank" 
 onclick="write_id_to_grabbed(#{game_id})"
@@ -433,6 +358,7 @@ SEARCH
 
     def ignore_link( link_url)
       link_rec = $pagoda.link( link_url)
+      return '' if link_rec.rejected?
       return '' if bind_id( link_rec) == -1
       link_rec.bind( -1)
       'Ignored'
@@ -606,12 +532,6 @@ SEARCH
       end
     end
 
-    def problem_link_records( search)
-      $pagoda.links do |rec|
-        link_flagged?(rec)
-      end
-    end
-
     def redirect_link( link_url)
       link_rec = $pagoda.link( link_url)
       if link_rec
@@ -636,35 +556,8 @@ SEARCH
     def refresh_metadata
     end
 
-    def reverify( url)
-      $pagoda.reverify( url)
-    end
-
     def scan_stats_records
       $pagoda.scan_stats_records {|site, section, count, date| yield site, section, count, date}
-    end
-
-    def search_sites_keywords(id, name, year)
-      [].tap do |keywords|
-        keywords << name
-        keywords << year if year
-        sites = {'GOG' => true,
-                 'HOTU' => true,
-                 'IGDB' => true,
-                 'MobyGames' => true,
-                 'Steam' => true
-        }
-        $pagoda.get('bind',:id,id) do |rec|
-          $pagoda.get('link',:url,rec[:url]) do |rec1|
-            sites[rec1[:site]] = false
-          end
-        end
-        sites.each_pair do |site, flag|
-          if flag
-            keywords << "site:#{$pagoda.get_site_handler(site).search_site}"
-          end
-        end
-      end
     end
 
     def selected_game
@@ -854,7 +747,7 @@ SEARCH
     end
 
     def update_tag( params)
-      p params
+      #p params
       $pagoda.start_transaction
       tag = d(params[:tag])
       $pagoda.delete('tag_aspects',:tag,tag)

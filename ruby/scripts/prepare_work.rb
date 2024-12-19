@@ -2,6 +2,8 @@ require_relative '../database'
 require_relative '../pagoda'
 
 class PrepareWork
+  include Common
+
   def initialize(dir,cache)
     @pagoda = Pagoda.release(dir,cache)
     @cache  = cache
@@ -88,12 +90,17 @@ class PrepareWork
   end
 
   def oldest_link
-    oldest = Time.now.to_i
+    oldest = nil
     @pagoda.links do |link|
       next if link.timestamp <= 100
-      oldest = link.timestamp if link.timestamp < oldest
+      oldest = link if oldest.nil? || (link.timestamp < oldest.timestamp)
     end
-    add('Oldest link in days',(Time.now.to_i - oldest) / (24 * 60 * 60),'normal',nil)
+    if oldest.nil?
+      add('Oldest link', '','normal',nil)
+    else
+      add('Oldest link', Time.at(oldest.timestamp).strftime('%Y-%m-%d'),'normal',
+          "/link/#{e(e(link.url))}")
+    end
   end
 
   def run

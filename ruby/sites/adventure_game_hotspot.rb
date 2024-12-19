@@ -33,12 +33,12 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def findReviews( scanner)
-		scanner.html_links( BASE + '/reviews/') do |link|
+		scanner.html_anchors(BASE + '/reviews/') do |link, label|
 			if /^\/review\/\d+\// =~ link
 				if /#/ =~ link
 					0
 				else
-					scanner.add_link( '', BASE+ link)
+					scanner.add_link( label, BASE+ link)
 				end
 			else
 				0
@@ -47,12 +47,12 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def findWalkthroughs( scanner)
-		scanner.html_links( BASE + '/walkthroughs/') do |link|
+		scanner.html_anchors(BASE + '/walkthroughs/') do |link, label|
 			if /^\/walkthrough\/\d+\// =~ link
 				if /#/ =~ link
 					0
 				else
-					scanner.add_link( '', BASE+ link)
+					scanner.add_link( label, BASE+ link)
 				end
 			else
 				0

@@ -154,6 +154,14 @@ class Spider
 		add_suggested
 	end
 
+	def game_title(id)
+		if g = @pagoda.game(id)
+			g.name
+		else
+			'Unknown'
+		end
+	end
+
 	def get_links
 		get_links_for(@site,@type) do |link|
 			yield link.title, link.url

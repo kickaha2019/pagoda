@@ -120,10 +120,6 @@ get '/games_check_resolution_aspects' do
   erb :games_check_resolution_aspects
 end
 
-post '/gather/:game/:url' do
-  gather( params[:game], d(params[:url]))
-end
-
 post '/ignore/:url' do
   ignore_link( d(params[:url]))
 end
@@ -166,10 +162,6 @@ end
 
 get '/reports' do
   erb :reports
-end
-
-put '/reverify/:url' do
-  reverify( d(params[:url]))
 end
 
 get '/scan_stats' do

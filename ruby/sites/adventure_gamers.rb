@@ -4,12 +4,19 @@ require_relative 'default_site'
 class AdventureGamers < DefaultSite
 	include Common
 
+	def correlate_url( url) # https://adventuregamers.com/games/view/23987
+		if m = %r{^(https://adventuregamers.com/games/view/\d+)$}.match( url)
+			return "Adventure Gamers", "Database", m[1]
+		end
+		return nil, nil, nil
+	end
+
 	def find( scanner)
-		scanner.html_links( 'https://adventuregamers.com/articles/reviews') do |link|
+		scanner.html_anchors( 'https://adventuregamers.com/articles/reviews') do |link, label|
 			if /^https:\/\/adventuregamers\.com\/articles\/view\/.*$/ =~ link
-				scanner.add_link( '', link.split('?')[0])
+				scanner.add_link( label, link.split('?')[0])
 			elsif /^\/articles\/view\/.*$/ =~ link
-				scanner.add_link( '', 'https://adventuregamers.com' + link.split('?')[0])
+				scanner.add_link( label, 'https://adventuregamers.com' + link.split('?')[0])
 			else
 				0
 			end

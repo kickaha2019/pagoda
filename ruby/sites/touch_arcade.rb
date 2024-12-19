@@ -37,10 +37,10 @@ class TouchArcade < DefaultSite
 	end
 
 	def incremental( scanner)
-		scanner.html_links( 'https://toucharcade.com/category/reviews/') do |link|
+		scanner.html_anchors( 'https://toucharcade.com/category/reviews/') do |link, label|
 			if /^https:\/\/toucharcade\.com\/.*-review(-|\/)/ =~ link
 				link = link.split('?')[0]
-				scanner.add_link( link, link)
+				scanner.add_link( label, link)
 			else
 				0
 			end

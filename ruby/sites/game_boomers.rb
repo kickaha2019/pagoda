@@ -2,9 +2,9 @@ require_relative 'default_site'
 
 class GameBoomers < DefaultSite
 	def findReviews( scanner)
-		scanner.html_links( 'https://www.gameboomers.com/reviews.html') do |link|
+		scanner.html_anchors( 'https://www.gameboomers.com/reviews.html') do |link, label|
 			if /^http(|s):\/\/(www\.|)gameboomers\.com\/reviews\/.*$/ =~ link
-				scanner.add_link( '', link.sub( /^https/, 'http').gsub( /\s/, ''))
+				scanner.add_link( label, link.sub( /^https/, 'http').gsub( /\s/, ''))
 			else
 				0
 			end
@@ -12,12 +12,12 @@ class GameBoomers < DefaultSite
 	end
 
 	def findWalkthroughs( scanner)
-		scanner.html_links( 'https://www.gameboomers.com/walkthroughs.html') do |link|
+		scanner.html_anchors( 'https://www.gameboomers.com/walkthroughs.html') do |link, _|
       added = 0
 			if /Walkthroughs\/.*walkthroughs\.html$/ =~ link
-				added += scanner.html_links( link) do |link2|
+				added += scanner.html_anchors( link) do |link2, label2|
 					if /^http(|s):\/\/(www\.|)gameboomers\.com\/wtcheats\/.*$/ =~ link2
-						scanner.add_link( '', link2.sub( /^https/, 'http').gsub( /\s/, ''))
+						scanner.add_link( label2, link2.sub( /^https/, 'http').gsub( /\s/, ''))
 					else
 						0
 					end

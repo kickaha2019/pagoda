@@ -80,10 +80,10 @@ class Verifier
 
     links = must
     (0...n).each do
-      (0..1).each do
-        links << bound.pop unless bound.empty?
+      links << bound.pop unless bound.empty?
+      (0..1).each do |_|
+        links << loose.pop unless loose.empty?
       end
-      links << loose.pop unless loose.empty?
     end
 
     links = links[0...n] if links.size > n

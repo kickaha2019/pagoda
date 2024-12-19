@@ -32,10 +32,6 @@ class MobyGames < DefaultSite
 		'MobyGames'
 	end
 
-	def search_site
-		'mobygames.com'
-	end
-
 	def post_load(pagoda, url, page)
 		nodes    = Nodes.parse( page)
 

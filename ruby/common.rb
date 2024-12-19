@@ -89,23 +89,6 @@ module Common
 		added
 	end
 
-	def html_links( url, delay=10)
-		throttle( url, delay)
-		page = http_get( url)
-		page.force_encoding( 'UTF-8')
-		page.encode!( 'US-ASCII',
-									:invalid => :replace, :undef => :replace, :universal_newline => true)
-		added = 0
-
-		page.scan( /href\s*=\s*"([^"]*)"/mi) do |found|
-			added += (yield found[0].strip)
-		end
-		# page.gsub( /"http(s|):\/\/[^"]*"/mi) do |found|
-		# 	added += (yield found[1..-2])
-		# end
-		added
-	end
-
 	def http_get( url, delay = 10, headers = {})
 		response = http_get_response( url, delay, headers)
 		begin

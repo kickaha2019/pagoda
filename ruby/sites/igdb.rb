@@ -47,12 +47,11 @@ class Igdb < DefaultSite
 		'IGDB'
 	end
 
-	def search_site
-		'igdb.com'
-	end
-
 	def digest_link(pagoda, url)
 		status, response = http_get_threaded(url)
+		File.open( '/Users/peter/Caches/Pagoda/igdb.html', 'w') do |io|
+			io.print response.body
+		end
 		if status
 			return true, false, post_load(pagoda, url, response.body)
 		end

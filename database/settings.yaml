@@ -70,6 +70,9 @@ full:
 - site:   Steam
   type:   Store
   method: find
+- site:   Turn Based Lovers
+  type:   Review
+  method: findReviews
 rebase:
 - site:   TouchArcade
   type:   Review
@@ -78,6 +81,9 @@ test_full:
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
+- site:   Turn Based Lovers
+  type:   Review
+  method: findReviews
 test_incremental:
 - site:   Mystery Manor
   type:   Walkthrough

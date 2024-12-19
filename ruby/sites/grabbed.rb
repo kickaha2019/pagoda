@@ -20,6 +20,8 @@ class Grabbed < DefaultSite
 				raw   = scanner.http_get url
 				if m = /<title>([^<]*)<\/title>/mi.match( raw)
 					title = m[1].strip
+				elsif game > 0
+					title = scanner.game_title(game)
 				end
 			rescue
 			end

@@ -26,10 +26,10 @@ class BigFishGames < DefaultSite
 		while last_found < found
 			last_found =  found
 			page       += 1
-			added      += scanner.html_links( url + page.to_s) do |link|
+			added      += scanner.html_anchors( url + page.to_s) do |link, label|
 				if match =~ link
 					found += 1
-					scanner.add_link( '', link.split('?')[0])
+					scanner.add_link( label, link.split('?')[0])
 				else
 					0
 				end

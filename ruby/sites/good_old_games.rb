@@ -92,10 +92,6 @@ class GoodOldGames < DefaultSite
 		'GOG'
   end
 
-	def search_site
-		'gog.com'
-	end
-
 	def year_tolerance
 		1
 	end
