@@ -266,10 +266,6 @@ HIDDEN_ASPECT_ELEMENT
       new_id
     end
 
-    def e( text)
-      CGI.escape( text)
-    end
-
     def form_combo_box( combo_name, values, current_value)
       defn = ["<select name=\"#{combo_name}\">"]
       values.each do |value|

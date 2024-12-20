@@ -210,6 +210,10 @@ get '/summary' do
                                        :static      => false)
 end
 
+get '/tables' do
+  erb :tables
+end
+
 get '/tag/:tag' do
   erb :tag, :locals => {:tag => d(params[:tag])}
 end

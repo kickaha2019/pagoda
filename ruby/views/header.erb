@@ -56,7 +56,7 @@
       ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified', 'reports'].collect do |item|
         if (item == page) && ((item != 'Games') || (aspect == ''))
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
-        elsif item == 'tables'
+        elsif item == 'work'
           "<a href=\"/\">#{item.capitalize}</a>"
         else
           "<a href=\"/#{item}\">#{item.capitalize.gsub('_', ' ')}</a>"

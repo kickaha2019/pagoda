@@ -37,6 +37,10 @@ module Common
 		raise "Unable to complete #{url} for #{base}"
 	end
 
+	def e( text)
+		CGI.escape( text)
+	end
+
 	def force_ascii(data)
 		if data.is_a? String
 			# Try converting odd characters

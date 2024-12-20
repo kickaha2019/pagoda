@@ -1,3 +1,4 @@
+require_relative '../common'
 require_relative '../database'
 require_relative '../pagoda'
 
@@ -93,13 +94,14 @@ class PrepareWork
     oldest = nil
     @pagoda.links do |link|
       next if link.timestamp <= 100
+      next if link.static?
       oldest = link if oldest.nil? || (link.timestamp < oldest.timestamp)
     end
     if oldest.nil?
       add('Oldest link', '','normal',nil)
     else
       add('Oldest link', Time.at(oldest.timestamp).strftime('%Y-%m-%d'),'normal',
-          "/link/#{e(e(link.url))}")
+          "/link/#{e(e(oldest.url))}")
     end
   end
 

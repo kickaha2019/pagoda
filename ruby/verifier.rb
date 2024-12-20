@@ -153,9 +153,12 @@ class Verifier
 
   def zap_old_links
     @pagoda.start_transaction
+    to_delete = []
     @pagoda.select( 'old_links') do |rec|
-      @pagoda.delete( 'old_links', :url, rec[:url])
+      to_delete << rec[:url]
     end
+    to_delete.each {|url| @pagoda.delete( 'old_links', :url, url)}
     @pagoda.end_transaction
+    puts "... Zapped #{to_delete.size} old links"
   end
 end
