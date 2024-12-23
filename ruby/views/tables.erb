@@ -4,7 +4,7 @@
     <tr><th>Table</th><th>Records</th></tr>
     <%=
       html = []
-      ['alias', 'aspect', 'bind', 'company', 'company_alias', 'game', 'link', 'old_links'].each do |name|
+      ['alias', 'aspect', 'bind', 'company', 'company_alias', 'game', 'link'].each do |name|
         html << "<tr><td>#{name}</td><td>#{$pagoda.count(name)}</td></tr>"
       end
       html.join( "\n")

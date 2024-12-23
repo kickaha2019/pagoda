@@ -59,7 +59,6 @@ class Pagoda
     database.add_table(Table.new('company',[:name],[]))
     database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
     database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
-    database.add_table(Table.new('old_links',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
     database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
     database.add_table(Table.new('visited',[:key,:timestamp],[]))
     Pagoda.new(database, metadata, cache)
@@ -413,9 +412,6 @@ class Pagoda
     @database.select('link') do |rec|
       timestamps[rec[:timestamp]] = true unless rec[:timestamp].nil?
     end
-    @database.select('old_links') do |rec|
-      timestamps[rec[:timestamp]] = true unless rec[:timestamp].nil?
-    end
 
     Dir.entries( @cache + '/verified').each do |section|
       next if /^[._]/ =~ section
@@ -490,7 +486,7 @@ class Pagoda
 
   def select( table_name)
     @database.select( table_name) do |rec|
-      yield rec
+      block_given? ? (yield rec) : true
     end
   end
 
@@ -513,12 +509,6 @@ class Pagoda
   end
 
   def update_link(link, rec, digest, debug=false)
-
-    # Save old link to old_links table
-    start_transaction
-    delete('old_links',:url, link.url)
-    insert('old_links',link.record)
-    end_transaction
 
     # Save the digest
     sleep 1

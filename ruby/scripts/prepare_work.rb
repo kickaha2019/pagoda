@@ -85,7 +85,7 @@ class PrepareWork
   def no_year
     count = 0
     @pagoda.games do |game|
-      count += 1 unless game.year
+      count += 1 unless game.year || game.group?
     end
     add('Games with no year',count,'error',"/games?year=&sort_by=id",count == 0)
   end

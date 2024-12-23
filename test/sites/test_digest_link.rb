@@ -21,6 +21,14 @@ class TestDigestLink < TestBase
     assert info['tags'].include?('Stylized')
   end
 
+  def test_adventure_gamers_database
+    info = fire('Adventure Gamers',
+                'https://adventuregamers.com/games/view/21418')
+    assert_equal '1954: Alcatraz (2014)', info['title']
+    assert info['tags'].include?('Stylized art')
+    assert_equal 2014, info['year']
+  end
+
   def test_big_fish_games
     info = fire('Big Fish Games','https://www.bigfishgames.com/us/en/games/2866/undiscovered-world-incan-sun/')
     assert_equal 'Undiscovered World: The Incan Sun', info['title']
@@ -121,6 +129,16 @@ class TestDigestLink < TestBase
   def test_moby_games2
     info = fire('MobyGames','https://www.mobygames.com/game/194984/mystical-riddles-behind-dolls-eyes-collectors-edition/')
     assert_equal 'Mystical Riddles: Behind Doll s Eyes (Collector&#39;s Edition) (2022)', info['title']
+  end
+
+  def test_rawg
+    info = fire('rawg.io','https://rawg.io/games/memento-mori')
+    assert_equal 'Memento Mori', info['title']
+    assert_equal 2012, info['year']
+    assert info['tags'].include?('Adventure')
+    assert info['tags'].include?('First-Person')
+    assert info['developers'].include?('Shea Kelly')
+    assert info['publishers'].include?('WolfWare Studios')
   end
 
   def test_steam_released

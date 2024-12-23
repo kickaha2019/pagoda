@@ -4,30 +4,27 @@ class AdventureGameHotspot < DefaultSite
 	BASE = 'https://adventuregamehotspot.com'
 
 	def find_database( scanner)
-		have_database = {}
-		scanner.get_links_for(name,'Database') do |link|
-			if collation = link.collation
-				have_database[collation.id] = true
-			end
-		end
-
-		to_add = []
-		scanner.get_links_for(name,'Review') do |link|
-			if (collation = link.collation) && (! have_database[collation.id])
-				to_add << link
-			end
-		end
-
 		added = 0
-		# to_add.each do |link|
-		# 	page = scanner.read_cached_page link
-		# 	if m = /<a href="(\/game\/[^"]*)">View in Database</.match(page)
-		# 		if scanner.add_link('', BASE + m[1]) > 0
-		# 			scanner.bind(BASE + m[1], link.collation.id)
-		# 			added += 1
-		# 		end
-		# 	end
-		# end
+		page  = 1
+		url   = BASE + '/database'
+
+		while page
+			last, page = page, nil
+			added += scanner.html_anchors(url) do |href, label|
+				if m = %r{^\?p=(\d+)$}.match(href)
+					if m[1].to_i == (last+1)
+						page = m[1].to_i
+						url = BASE + '/database' + href
+					end
+				end
+
+				if (m = %r{^(/game/.*$)}.match(href)) && (! (/^</ =~ label))
+					scanner.add_link( label, BASE + m[1])
+				else
+					0
+				end
+			end
+		end
 
 		added
 	end

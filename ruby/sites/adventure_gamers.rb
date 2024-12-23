@@ -54,57 +54,66 @@ class AdventureGamers < DefaultSite
 
 	def reduce_title(title)
 		title = title.strip
-		if m1 = /^(.*)(-|) review \| Adventure Gamers/.match( title)
-			m1[1].strip
-		elsif m = /^(.*)(-|) \| Adventure Gamers/.match( title)
+
+		if m = /^(.*) \| Adventure Gamers$/.match( title)
+			title = m[1].strip
+		end
+
+		if m1 = /^(.*) review$/.match( title)
+			title = m1[1].strip
+		elsif m = /^(.*) Game details$/.match( title)
+			title = m[1].strip
+		end
+
+		if m = /^(.*)-$/.match( title)
 			m[1].strip
 		else
 			title
 		end
 	end
 
-	def get_game_description( page)
-		inside, text = false, []
-		page.split( "\n").each do |line|
-			if m = /"reviewBody": "(.*)$/.match( line.chomp)
-				#p ['get_game_description1', m[1]]
-				inside, text = true, [m[1]]
-			elsif inside && (m1 = /^([^"]*)"/.match( line))
-				text << m1[1]
-				return text.join( ' ')
-			elsif inside
-				text << line.chomp
-			end
-		end
-		text.join( ' ')
-	end
-
-	def get_game_details1( url, page, game)
-		begin
-			if after_developer = page.split('Developer:')[1]
-				if span = after_developer.split( '<span>')[1]
-					game[:developer] = span.split('<')[0]
-				end
-				if after_release = after_developer.split( 'Releases:')[1]
-					spans = after_release.split( '</span>')
-					if m2 = /(\d\d\d\d)$/m.match( spans[0])
-						game[:year] = m2[1]
-					end
-					if spans[1]
-						if m3 = /by ([^<]*)$/.match( spans[1])
-							game[:publisher] = m3[1].strip
-						end
-					end
-				end
-			end
-		rescue Exception => bang
-			puts "*** #{url}: #{bang.message}"
-		end
-	end
-
   def name
     'Adventure Gamers'
   end
+
+	def post_load(pagoda, url, page)
+		digest = super
+		return digest unless %r{\.com/games/view/\d+$} =~ url
+
+		nodes = Nodes.parse( page)
+
+		nodes.css('strong') do |header|
+			[header.text.strip]
+		end.parent.css('span.cat_label_item span') do |release, header|
+			if header == 'Releases:'
+				if m = / (\d\d\d\d)$/.match(release.text.strip)
+					digest['year'] = m[1].to_i
+				end
+			end
+		end
+
+		digest['unreleased'] = true unless digest['year'].nil?
+
+		digest['tags'] = ['Adventure']
+		['Genre','Presentation','Perspective','Graphic Style','Gameplay',
+		 'Control','Theme'].each do |label|
+			get_anchors( nodes, label) do |anchor|
+				digest['tags'] << anchor.text.strip
+			end
+		end
+
+		digest
+	end
+
+	def get_anchors(nodes, type)
+		nodes.css('table.game_info_table td strong') do |title|
+			[title.text.strip]
+		end.parent(2).css('td:nth-child(2)') do |field, header|
+			if header == type
+				yield field
+			end
+		end
+	end
 
 	def year_tolerance
 		1
