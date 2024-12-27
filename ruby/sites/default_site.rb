@@ -49,10 +49,6 @@ class DefaultSite
     title
   end
 
-  def static?
-    false
-  end
-
   def validate_page(url,page)
     nil
   end

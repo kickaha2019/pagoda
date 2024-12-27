@@ -14,25 +14,19 @@ class Verifier
   end
 
   def get_details( link, body, rec)
-    # site   = @pagoda.get_site_handler( link.site)
-    # rec[:title] = site.get_title( link.url, body, link.type)
-    rec[:title] = body.is_a?(String) ? nil : body['title']
+    rec[:title] = body['title']
 
     # 404 errors
     if /^IIS.*404.*Not Found$/ =~ rec[:title]
-      rec[:valid]   = false
-      rec[:comment] = 'Not found'
-      return false
+      return rec[:title]
     end
 
     # Server errors
     if /Internal Server Error/i =~ rec[:title]
-      rec[:valid]   = false
-      rec[:comment] = 'Server error'
-      return false
+      return rec[:title]
     end
 
-    true
+    nil
   end
 
   def to_verify(n)
@@ -107,11 +101,15 @@ class Verifier
       return
     end
 
-    body = status ? force_ascii(body) : body
+    unless status
+      link.complain body
+      return
+    end
 
-    if status && (comment = site.validate_page(link.url, body))
-      status = false
-      body   = comment
+    body = force_ascii(body)
+    if comment = site.validate_page(link.url, body)
+      link.complain comment
+      return
     end
 
     rec = {title:'',
@@ -121,23 +119,18 @@ class Verifier
            comment: nil}
 
     # Get year if possible for link
-    if status && body['year']
-      rec[:year] = body['year']
-    end
+    rec[:year] = body['year'] if status && body['year']
 
     # Get details
-    if status
-      p ['verify_page3', status, rec] if debug
-      status = get_details( link, body, rec)
-      p ['verify_page4', status, rec] if debug
-    else
-      rec[:valid]   = false
-      rec[:title]   = link.title
-      rec[:comment] = body
+    p ['verify_page3', status, rec] if debug
+    if comment = get_details( link, body, rec)
+      link.complain comment
+      return
     end
+    p ['verify_page4', status, rec] if debug
 
     @pagoda.update_link(link, rec, body, debug)
-    if status && (game = link.collation)
+    if game = link.collation
       game.update_from_link(link)
     end
   end

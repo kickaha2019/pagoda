@@ -162,6 +162,10 @@ class Spider
 		end
 	end
 
+	def get_link(url)
+		@pagoda.link(url)
+	end
+
 	def get_links
 		get_links_for(@site,@type) do |link|
 			yield link.title, link.url

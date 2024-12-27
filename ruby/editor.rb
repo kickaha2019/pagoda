@@ -188,26 +188,14 @@ put '/set_variable/:name/:value' do
   set_variable( params[:name], params[:value])
 end
 
-get '/static_summary' do
-  erb :summary, :locals => get_locals( params,
-                                       :database    => true,
-                                       :official    => true,
-                                       :reference   => true,
-                                       :review      => true,
-                                       :store       => true,
-                                       :walkthrough => true,
-                                       :static      => true)
-end
-
-get '/summary' do
-  erb :summary, :locals => get_locals( params,
-                                       :database    => true,
-                                       :official    => true,
-                                       :reference   => true,
-                                       :review      => true,
-                                       :store       => true,
-                                       :walkthrough => true,
-                                       :static      => false)
+get '/sites' do
+  erb :sites, :locals => get_locals( params,
+                                     :database    => true,
+                                     :official    => true,
+                                     :reference   => true,
+                                     :review      => true,
+                                     :store       => true,
+                                     :walkthrough => true,)
 end
 
 get '/tables' do

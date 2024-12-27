@@ -15,7 +15,7 @@ class Grabbed < DefaultSite
 				next
 			end
 
-			title = 'Unknown'
+			title, error = 'Unknown', nil
 			begin
 				raw   = scanner.http_get url
 				if m = /<title>([^<]*)<\/title>/mi.match( raw)
@@ -23,7 +23,8 @@ class Grabbed < DefaultSite
 				elsif game > 0
 					title = scanner.game_title(game)
 				end
-			rescue
+			rescue StandardError => e
+				error = e.message
 			end
 			
 			site, type, link = * scanner.correlate_site( url)
@@ -33,10 +34,12 @@ class Grabbed < DefaultSite
 					scanner.add_bind(link, game) if game >= 0
 					game = -1
 				end
-				false
 			else
 				added += scanner.add_link( title, url)
-				true
+			end
+
+			if error && (link = scanner.get_link(url))
+				link.complain(error)
 			end
 		end
 

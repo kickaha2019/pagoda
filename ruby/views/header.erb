@@ -53,7 +53,7 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['tables', 'summary', 'links', 'games', 'new_game', 'aliases', 'verified', 'reports'].collect do |item|
+      ['work', 'sites', 'links', 'games', 'new_game', 'aliases', 'verified', 'tables', 'reports'].collect do |item|
         if (item == page) && ((item != 'Games') || (aspect == ''))
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
         elsif item == 'work'

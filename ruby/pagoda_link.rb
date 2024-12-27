@@ -122,9 +122,8 @@ class PagodaLink < PagodaRecord
   end
 
   def static?
-    @owner.get_site_handler( @record[:site]).static?
-    # return false unless @record[:static]
-    # @record[:static] == 'Y'
+    return false unless @record[:static]
+    @record[:static] == 'Y'
   end
 
   def status

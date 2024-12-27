@@ -12,7 +12,7 @@ class Igdb < DefaultSite
 
 	def correlate_url( url)
 		if %r{^https://www\.igdb\.com/games/} =~ url
-			return 'IGDB', 'Reference', url
+			return 'IGDB', 'Reference', url.split('?').first
 		else
 			return nil, nil, nil
 		end
@@ -49,9 +49,6 @@ class Igdb < DefaultSite
 
 	def digest_link(pagoda, url)
 		status, response = http_get_threaded(url)
-		File.open( '/Users/peter/Caches/Pagoda/igdb.html', 'w') do |io|
-			io.print response.body
-		end
 		if status
 			return true, false, post_load(pagoda, url, response.body)
 		end
