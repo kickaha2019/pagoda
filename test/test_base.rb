@@ -7,18 +7,25 @@ class TestBase < Minitest::Test
   def setup
     super
 
-    metadata, cache = '/Users/peter/Pagoda/database', '/tmp/Pagoda_cache'
-    mkdir cache
-    mkdir cache + '/verified'
+    @metadata, @cache = '/Users/peter/Pagoda/database', '/tmp/Pagoda_cache'
+    mkdir @cache
+    mkdir @cache + '/verified'
     (0..9).each do |i|
-      mkdir cache + '/verified/' + i.to_s
+      mkdir @cache + '/verified/' + i.to_s
     end
 
-    @pagoda = Pagoda.testing(metadata,cache)
+    @pagoda = Pagoda.testing(@metadata,@cache)
   end
 
   def mkdir(path)
-    unless Dir.exist? path
+    if Dir.exist? path
+      Dir.entries(path).each do |f|
+        path1 = path + '/' + f
+        unless File.directory? path1
+          File.unlink path1
+        end
+      end
+    else
       Dir.mkdir path
     end
   end

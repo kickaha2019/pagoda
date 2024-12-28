@@ -42,7 +42,7 @@ full:
   method: find_database
 - site:   Adventure Game Hotspot
   type:   Review
-  method: findReviews
+  method: find_reviews
 - site:   Adventure Gamers
   type:   Database
   method: find_database

@@ -38,10 +38,6 @@ class Hotu < DefaultSite
 		urls.each_pair do |url, name|
 			scanner.suggest_link( name, url)
 		end
-
-		stats = scanner.get_scan_stats( name, 'Reference')
-		stats['count'] = urls.size
-		scanner.put_scan_stats( name, 'Reference', stats)
 	end
 
 	def find_from( scanner, base, urls)

@@ -23,11 +23,6 @@ class Spider
 		@pagoda          = Pagoda.release( dir, cache)
 		@suggested       = []
 		@suggested_links = {}
-		if File.exist?( dir + '/scan_stats.yaml')
-			@scan_stats = YAML.load( IO.read( @dir + '/scan_stats.yaml'))
-		else
-			@scan_stats = {}
-		end
 		set_not_game_words
 	end
 
@@ -184,11 +179,6 @@ class Spider
 		end
 	end
 
-	def get_scan_stats( site, section)
-		return {} unless @scan_stats[site] && @scan_stats[site][section]
-		@scan_stats[site][section]
-	end
-
 	def http_get_wrapped( url)
 		response = http_get_response( url)
 		if response.code == '404'
@@ -263,38 +253,8 @@ class Spider
 	end
 
 	def purge_lost_urls
-		@pagoda.links do |link|
-			next if link.collation
-			if (link.site == @site) && (link.type == @type)
-				unless @suggested_links[link.url]
-					puts "... Purging #{link.url}"
-					link.delete
-				end
-			end
-		end
+		@pagoda.purge_lost_urls(@site, @type, @suggested_links)
 	end
-
-	def put_scan_stats( site, section, stats)
-		if stats['count']
-			if stats['max_count'].nil? || (stats['count'] > stats['max_count'])
-				stats['max_count'] = stats['count']
-				stats['max_date']  = Time.now.to_i
-			end
-		end
-		@scan_stats[site] = {} unless @scan_stats[site]
-		@scan_stats[site][section] = stats
-		File.open( @dir + '/scan_stats.yaml', 'w') do |io|
-			io.print @scan_stats.to_yaml
-		end
-	end
-
-	# def read_cached_page(link)
-	# 	page = @pagoda.cache_read( link.timestamp)
-	# 	if page == ''
-	# 		puts "*** Link file missing: #{link.url}"
-	# 	end
-	# 	page
-	# end
 
 	def rebase( site, type)
 		unless @rebases[site][type]

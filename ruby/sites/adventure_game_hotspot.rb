@@ -3,10 +3,10 @@ require_relative 'default_site'
 class AdventureGameHotspot < DefaultSite
 	BASE = 'https://adventuregamehotspot.com'
 
-	def find_database( scanner)
+	def find( scanner, section, pattern)
 		added = 0
 		page  = 1
-		url   = BASE + '/database'
+		url   = BASE + section
 
 		while page
 			last, page = page, nil
@@ -14,11 +14,11 @@ class AdventureGameHotspot < DefaultSite
 				if m = %r{^\?p=(\d+)$}.match(href)
 					if m[1].to_i == (last+1)
 						page = m[1].to_i
-						url = BASE + '/database' + href
+						url = BASE + section + href
 					end
 				end
 
-				if (m = %r{^(/game/.*$)}.match(href)) && (! (/^</ =~ label))
+				if (m = pattern.match(href)) && (! (/^</ =~ label))
 					scanner.add_link( label, BASE + m[1])
 				else
 					0
@@ -29,32 +29,12 @@ class AdventureGameHotspot < DefaultSite
 		added
 	end
 
-	def findReviews( scanner)
-		scanner.html_anchors(BASE + '/reviews/') do |link, label|
-			if /^\/review\/\d+\// =~ link
-				if /#/ =~ link
-					0
-				else
-					scanner.add_link( label, BASE+ link)
-				end
-			else
-				0
-			end
-		end
+	def find_database( scanner)
+		find(scanner, '/database', %r{^(/game/.*$)})
 	end
 
-	def findWalkthroughs( scanner)
-		scanner.html_anchors(BASE + '/walkthroughs/') do |link, label|
-			if /^\/walkthrough\/\d+\// =~ link
-				if /#/ =~ link
-					0
-				else
-					scanner.add_link( label, BASE+ link)
-				end
-			else
-				0
-			end
-		end
+	def find_reviews( scanner)
+		find(scanner, '/reviews', %r{^(/review/.*$)})
 	end
 
 	def name

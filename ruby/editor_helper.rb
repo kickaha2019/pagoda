@@ -552,10 +552,6 @@ SEARCH
     def refresh_metadata
     end
 
-    def scan_stats_records
-      $pagoda.scan_stats_records {|site, section, count, date| yield site, section, count, date}
-    end
-
     def selected_game
       games = $pagoda.get( 'game', :id, @@selected_game.to_i)
       games.empty? ? ' ' : games[0][:name]

@@ -304,19 +304,6 @@ class Pagoda
     File.open( @dir + '/' + f, 'w') {|io| io.print data.to_yaml}
   end
 
-  def scan_stats_records
-    path = @dir + "/scan_stats.yaml"
-    if File.exist?( path)
-      info = YAML.load( IO.read( path))
-      info.keys.sort.each do |site|
-        info[site].keys.sort.each do |section|
-          ss = info[site][section]
-          yield site, section, ss['max_count'], Time.at( ss['max_date'])
-        end
-      end
-    end
-  end
-
   def string_combos( name)
     @names.string_combos( name) {|combo, weight| yield combo}
   end
@@ -465,6 +452,18 @@ class Pagoda
 
   def next_value( table_name, column_name)
     @database.next_value( table_name, column_name)
+  end
+
+  def purge_lost_urls(site, type, suggested)
+    links do |link|
+      next if link.collation
+      if (link.site == site) && (link.type == type)
+        unless suggested[link.url]
+          puts "... Purging #{link.url}"
+          link.delete
+        end
+      end
+    end
   end
 
   def rarity( name)

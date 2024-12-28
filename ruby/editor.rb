@@ -164,10 +164,6 @@ get '/reports' do
   erb :reports
 end
 
-get '/scan_stats' do
-  erb :scan_stats
-end
-
 get '/selected_game' do
   selected_game
 end

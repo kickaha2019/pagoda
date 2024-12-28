@@ -15,7 +15,8 @@ class GoodOldGames < DefaultSite
 	end
 
 	def find( scanner)
-		path = scanner.cache + "/gog.json"
+		path  = scanner.cache + "/gog.json"
+		added = 0
 
 		unless File.exist?( path) && (File.mtime( path) > (Time.now - 6 * 24 * 60 * 60))
 			page, seen, old_seen = 0, {}, -1
@@ -26,21 +27,20 @@ class GoodOldGames < DefaultSite
 				#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
 				#raw = IO.read( '/Users/peter/temp/gog.html')
 
-				find_on_page( scanner, raw, seen)
+				added += find_on_page( scanner, raw, seen)
 				page += 1
 			end
 
 			File.open( path, 'w') {|io| io.print JSON.generate( seen)}
-			stats = scanner.get_scan_stats( name, 'Store')
-			stats['count'] = seen.size
-			scanner.put_scan_stats( name, 'Store', stats)
 		end
 
 		scanner.purge_lost_urls
+		added
 	end
 
 	def find_on_page( scanner, raw, seen)
-		url = nil
+		url, added = nil, 0
+
 		raw.split( '<').each do |line|
 			if m = /href="(https:\/\/www\.gog\.com\/en\/game\/[^"]*)"/.match( line)
 				url = m[1].gsub( '/en/', '/')
@@ -51,12 +51,14 @@ class GoodOldGames < DefaultSite
 					text.force_encoding( 'UTF-8')
 					text.encode!( 'US-ASCII',
 												:invalid => :replace, :undef => :replace, :universal_newline => true)
-					scanner.add_link( text, url)
+					added += scanner.add_link( text, url)
 					seen[url] = text
 					url = nil
 				end
 			end
 		end
+
+		added
 	end
 
 	def get_tags( page)
