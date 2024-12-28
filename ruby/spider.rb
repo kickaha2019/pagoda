@@ -162,6 +162,10 @@ class Spider
 		end
 	end
 
+	def get_game(id)
+		@pagoda.game(id)
+	end
+
 	def get_link(url)
 		@pagoda.link(url)
 	end
@@ -260,6 +264,7 @@ class Spider
 
 	def purge_lost_urls
 		@pagoda.links do |link|
+			next if link.collation
 			if (link.site == @site) && (link.type == @type)
 				unless @suggested_links[link.url]
 					puts "... Purging #{link.url}"

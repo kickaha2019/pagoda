@@ -96,7 +96,7 @@ class Verifier
     status, delete, body = site.digest_link(@pagoda, link.url)
     p ['verify_page2', status, delete] if debug
 
-    if delete
+    if delete && link.collation.nil?
       link.delete
       return
     end

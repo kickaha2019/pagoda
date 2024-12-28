@@ -15,19 +15,9 @@ class Grabbed < DefaultSite
 				next
 			end
 
-			title, error = 'Unknown', nil
-			begin
-				raw   = scanner.http_get url
-				if m = /<title>([^<]*)<\/title>/mi.match( raw)
-					title = m[1].strip
-				elsif game > 0
-					title = scanner.game_title(game)
-				end
-			rescue StandardError => e
-				error = e.message
-			end
-			
+			title = (game > 0) ? scanner.game_title(game) : 'Unknown'
 			site, type, link = * scanner.correlate_site( url)
+
 			if site
 				if scanner.add_or_replace_link( title, link, site, type) > 0
 					added += 1
@@ -37,22 +27,11 @@ class Grabbed < DefaultSite
 			else
 				added += scanner.add_link( title, url)
 			end
-
-			if error && (link = scanner.get_link(url))
-				link.complain(error)
-			end
 		end
 
 		File.open( path, 'w') do |io|
 			io.print left.join( '')
 		end
-
-		# scanner.get_links do |title, url|
-		# 	site, type, link = * scanner.correlate_site( url)
-		# 	if site
-		# 		scanner.update_new_link(url, site, type, title, link)
-		# 	end
-		# end
 
 		added
 	end
