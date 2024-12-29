@@ -53,10 +53,10 @@
 <table class="menu">
   <tr><td>
     <%=
-      ['work', 'sites', 'links', 'games', 'new_game', 'aliases', 'verified', 'tables', 'reports'].collect do |item|
+      ['status', 'sites', 'links', 'games', 'new_game', 'aliases', 'verified', 'tables', 'reports'].collect do |item|
         if (item == page) && ((item != 'Games') || (aspect == ''))
           "<span>#{item.capitalize.gsub('_', ' ')}</span>"
-        elsif item == 'work'
+        elsif item == 'status'
           "<a href=\"/\">#{item.capitalize}</a>"
         else
           "<a href=\"/#{item}\">#{item.capitalize.gsub('_', ' ')}</a>"

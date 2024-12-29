@@ -62,6 +62,20 @@ class TestFind < TestBase
     assert %r{^https://adventuregamehotspot.com/review/\d+/} =~ adds.keys[0]
   end
 
+  def test_adventure_gamers_database
+    adds, _, limit = scan( 'Adventure Gamers', 'Database', :find_database, 2)
+    assert_equal 0, limit
+    assert adds.size > 40
+    assert %r{^https://adventuregamers.com/games/view/\d+$} =~ adds.keys[0]
+  end
+
+  def test_adventure_gamers_reviews
+    adds, _, limit = scan( 'Adventure Gamers', 'Review', :find_reviews, 2)
+    assert_equal 0, limit
+    assert adds.size > 25
+    assert %r{^https://adventuregamers.com/articles/view/} =~ adds.keys[0]
+  end
+
   def test_gog
     @pagoda.insert('link',{:url => 'https://www.gog.com/en/game/test_lost1',
                            :site => 'GOG',

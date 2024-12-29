@@ -38,6 +38,14 @@ class PrepareWork
     add('Cache size (MB)',size,status,nil)
   end
 
+  def collations
+    count = 0
+    @pagoda.links do |link|
+      count += 1 if link.collation
+    end
+    add('Collations',count,'normal',nil)
+  end
+
   def free_links
     count = 0
     @pagoda.links.each do |link|
@@ -106,6 +114,7 @@ class PrepareWork
   end
 
   def run
+    collations
     cache_size
     oldest_link
     unknown_tags

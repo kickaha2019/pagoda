@@ -12,21 +12,9 @@ not_game_words:
 - soundtrack
 - trailer
 incremental:
-- site:   Adventure Gamers
-  type:   Review
-  method: find
-- site:   Metacritic
-  type:   Reference
-  method: incremental
 - site:   Grabbed
   type:   Reference
   method: incremental
-- site:   Mystery Manor
-  type:   Review
-  method: find_reviews
-- site:   Mystery Manor
-  type:   Walkthrough
-  method: find_walkthroughs
 - site:   Steam
   type:   Store
   method: incremental
@@ -34,9 +22,9 @@ incremental:
   type:   Review
   method: incremental
 full:
-- site:   GOG
-  type:   Store
-  method: find
+- site:   Adventure Gamers
+  type:   Review
+  method: find_reviews
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
@@ -55,6 +43,9 @@ full:
 - site:   GameBoomers
   type:   Walkthrough
   method: findWalkthroughs
+- site:   GOG
+  type:   Store
+  method: find
 - site:   HOTU
   type:   Reference
   method: find
@@ -62,6 +53,12 @@ full:
   type:   Review
   method: find_reviews
 - site:   Just Adventure
+  type:   Walkthrough
+  method: find_walkthroughs
+- site:   Mystery Manor
+  type:   Review
+  method: find_reviews
+- site:   Mystery Manor
   type:   Walkthrough
   method: find_walkthroughs
 - site:   Nice Game Hints

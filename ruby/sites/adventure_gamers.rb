@@ -3,6 +3,7 @@ require_relative 'default_site'
 
 class AdventureGamers < DefaultSite
 	include Common
+	BASE = 'https://adventuregamers.com'
 
 	def correlate_url( url) # https://adventuregamers.com/games/view/23987
 		if m = %r{^(https://adventuregamers.com/games/view/\d+)$}.match( url)
@@ -11,43 +12,54 @@ class AdventureGamers < DefaultSite
 		return nil, nil, nil
 	end
 
-	def find( scanner)
-		scanner.html_anchors( 'https://adventuregamers.com/articles/reviews') do |link, label|
-			if /^https:\/\/adventuregamers\.com\/articles\/view\/.*$/ =~ link
-				scanner.add_link( label, link.split('?')[0])
-			elsif /^\/articles\/view\/.*$/ =~ link
-				scanner.add_link( label, 'https://adventuregamers.com' + link.split('?')[0])
-			else
-				0
+	def find_database( scanner)
+		added = 0
+		page  = 1
+		url   = BASE + '/games/adventure/all'
+
+		while page
+			last, page = page, nil
+			added += scanner.html_anchors(url) do |href, label|
+				if label == (last+1).to_s
+					page = last + 1
+					url  = BASE + href
+					0
+				elsif /^ / =~ label
+					0
+				elsif /\t/ =~ label
+					0
+				elsif m = %r{^(/games/view/\d+)$}.match(href)
+					scanner.add_link( label, BASE + m[1])
+				else
+					0
+				end
 			end
 		end
+
+		added
 	end
 
-	def find_database( scanner)
-		have_database = {}
-		scanner.get_links_for(name,'Database') do |link|
-			if collation = link.collation
-				have_database[collation.id] = true
-			end
-		end
-
-		to_add = []
-		scanner.get_links_for(name,'Review') do |link|
-			if (collation = link.collation) && (! have_database[collation.id])
-				to_add << link
-			end
-		end
-
+	def find_reviews( scanner)
 		added = 0
-		# to_add.each do |link|
-		# 	page = scanner.read_cached_page link
-		# 	if m = /<a href="(\/games\/[^"]*)"[^>]*>Full Game Details</.match(page)
-		# 		if scanner.add_link('', BASE + m[1]) > 0
-		# 			scanner.bind(BASE + m[1], link.collation.id)
-		# 			added += 1
-		# 		end
-		# 	end
-		# end
+		page  = 1
+		url   = BASE + '/articles/reviews'
+
+		while page
+			last, page = page, nil
+			added += scanner.html_anchors(url) do |href, label|
+				if label == (last+1).to_s
+					page = last + 1
+					url  = href
+					0
+				elsif ['','Genre Introduction','Top 100 All-Time'].include? label
+					0
+				elsif m = %r{^(/articles/view/.*)$}.match(href)
+					scanner.add_link( label, BASE + m[1].split('?')[0])
+				else
+					0
+				end
+			end
+		end
 
 		added
 	end
