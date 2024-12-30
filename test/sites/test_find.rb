@@ -70,10 +70,31 @@ class TestFind < TestBase
   end
 
   def test_adventure_gamers_reviews
-    adds, _, limit = scan( 'Adventure Gamers', 'Review', :find_reviews, 2)
+    adds, _, limit = scan( 'Adventure Gamers', 'Review', :find_reviews, 3)
     assert_equal 0, limit
     assert adds.size > 25
     assert %r{^https://adventuregamers.com/articles/view/} =~ adds.keys[0]
+  end
+
+  def test_big_fish_games
+    adds, _, limit = scan( 'Big Fish Games', 'Store', :full, 2)
+    assert_equal 0, limit
+    assert adds.size > 75
+    assert %r{^https://www.bigfishgames.com/us/en/games/\d+/} =~ adds.keys[0]
+  end
+
+  def test_game_boomers_reviews
+    adds, _, limit = scan( 'GameBoomers', 'Review', :findReviews, 1)
+    assert_equal 0, limit
+    assert adds.size > 850
+    assert %r{^http(s|)://www.gameboomers.com/reviews/} =~ adds.keys[0]
+  end
+
+  def test_game_boomers_walkthroughs
+    adds, _, limit = scan( 'GameBoomers', 'Walkthrough', :findWalkthroughs, 3)
+    assert_equal 0, limit
+    assert adds.size > 100
+    assert %r{^http(s|)://www.gameboomers.com/(wtcheats|Walkthroughs)/} =~ adds.keys[0]
   end
 
   def test_gog

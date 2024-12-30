@@ -77,7 +77,7 @@ class PagodaLink < PagodaRecord
   end
 
   def label
-    orig_title
+    title
   end
 
   def link_aspects
@@ -102,15 +102,6 @@ class PagodaLink < PagodaRecord
 
   def orig_title
     (@record[:orig_title] && (@record[:orig_title].strip != '')) ? @record[:orig_title] : '???'
-  end
-
-  def patch_orig_title( title)
-    @owner.start_transaction
-    @owner.delete( 'link', :url, @record[:url])
-    @record[:orig_title] = title
-    @owner.insert( 'link', @record)
-    @owner.end_transaction
-    @owner.refresh_link(@record[:url])
   end
 
   def set_checked

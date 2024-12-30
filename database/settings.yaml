@@ -23,17 +23,17 @@ incremental:
   method: incremental
 full:
 - site:   Adventure Gamers
-  type:   Review
-  method: find_reviews
-- site:   Adventure Game Hotspot
   type:   Database
   method: find_database
-- site:   Adventure Game Hotspot
-  type:   Review
-  method: find_reviews
 - site:   Adventure Gamers
+  type:   Review
+  method: find_reviews
+- site:   Adventure Game Hotspot
   type:   Database
   method: find_database
+- site:   Adventure Game Hotspot
+  type:   Review
+  method: find_reviews
 - site:   Big Fish Games
   type:   Store
   method: full

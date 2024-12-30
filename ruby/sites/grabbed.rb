@@ -5,8 +5,9 @@ class Grabbed < DefaultSite
 		path  = scanner.cache + "/grabbed.txt"
 		added = 0
 		game  = -1
+		left  = []
 
-		left = IO.readlines( path).select do |line|
+		IO.readlines( path).each do |line|
 			url = line.strip
 			next if url == ''
 
@@ -26,6 +27,7 @@ class Grabbed < DefaultSite
 				end
 			else
 				added += scanner.add_link( title, url)
+				left << url
 			end
 		end
 
