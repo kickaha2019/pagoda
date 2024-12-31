@@ -39,11 +39,21 @@ class PrepareWork
   end
 
   def collations
+    label = 'Collated links'
     count = 0
+    last  = @old_work[label] ? @old_work[label]['values'][0] : 1000000
     @pagoda.links do |link|
       count += 1 if link.collation
     end
-    add('Collations',count,'normal',nil)
+    add(label,count,(count >= last) ? 'normal' : 'error',nil)
+  end
+
+  def flagged_links
+    count = 0
+    @pagoda.links do |link|
+      count += 1 if link.comment
+    end
+    add('Flagged links',count,'error','/links?status=Flagged',count == 0)
   end
 
   def free_links
@@ -52,14 +62,6 @@ class PrepareWork
       count += 1 if link.status == 'Free'
     end
     add('Free links',count,'warning','/links?status=Free',count == 0)
-  end
-
-  def flagged_links
-    count = 0
-    @pagoda.links do |link|
-      count += 1 if link.comment
-    end
-    add('Flagged links',count,'warning','/links?status=Flagged',count == 0)
   end
 
   def missing_aspect_type(type)

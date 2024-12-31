@@ -454,18 +454,6 @@ class Pagoda
     @database.next_value( table_name, column_name)
   end
 
-  def purge_lost_urls(site, type, suggested)
-    links do |link|
-      next if link.collation
-      if (link.site == site) && (link.type == type)
-        unless suggested[link.url]
-          puts "... Purging #{link.url}"
-          link.delete
-        end
-      end
-    end
-  end
-
   def rarity( name)
     @names.rarity( name)
   end

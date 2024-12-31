@@ -43,20 +43,17 @@ class Hotu < DefaultSite
 	def find_from( scanner, base, urls)
 		offset, old_count = 0, -1
 
-		while (old_count < urls.size)
+		while old_count < urls.size
 			old_count = urls.size
 
-			raw = scanner.http_get "#{base}&offset=#{offset}"
-			#File.open( '/Users/peter/temp/hotu.html', 'w') {|io| io.print raw}
-			#raw = IO.read( '/Users/peter/temp/hotu.html')
-
-			raw.scan( /href='game.php\?id=(\d+)'>([^<]*)</i) do |m|
-				text = m[1]
-				text.force_encoding( 'UTF-8')
-				text.encode!( 'US-ASCII',
-											:invalid => :replace, :undef => :replace, :universal_newline => true)
-				text = text.sub( /\?$/, '')
-				urls['https://www.homeoftheunderdogs.net/game.php?id=' + m[0]] = text
+			scanner.html_anchors("#{base}&offset=#{offset}") do |link, label|
+				return 0 unless /game.php\?id=/ =~ link
+				label.force_encoding( 'UTF-8')
+				label.encode!( 'US-ASCII',
+											 :invalid => :replace, :undef => :replace, :universal_newline => true)
+				label = label.sub( /\?$/, '')
+				urls['https://www.homeoftheunderdogs.net/' + link] = label
+				1
 			end
 
 			offset += 40

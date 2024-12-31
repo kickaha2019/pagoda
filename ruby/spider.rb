@@ -16,11 +16,10 @@ class Spider
 	include Common
 	attr_reader :cache
 
-	def initialize( dir, cache)
-		@dir             = dir
+	def initialize( pagoda, cache)
 		@cache           = cache
 		@errors          = 0
-		@pagoda          = Pagoda.release( dir, cache)
+		@pagoda          = pagoda
 		@suggested       = []
 		@suggested_links = {}
 		set_not_game_words
@@ -57,12 +56,11 @@ class Spider
 		1
 	end
 
-	def add_suggested
+	def add_suggested(limit=@pagoda.settings['suggested_limit'])
 		site_suggests = Hash.new {|h,k| h[k] = 0}
 		site_adds     = Hash.new {|h,k| h[k] = 0}
 		site_dups     = Hash.new {|h,k| h[k] = 0}
 		site_nones    = Hash.new {|h,k| h[k] = 0}
-		limit         = @pagoda.settings['suggested_limit']
 		list          = []
 
 		@suggested.each do |link|
@@ -247,7 +245,15 @@ class Spider
 	end
 
 	def purge_lost_urls
-		@pagoda.purge_lost_urls(@site, @type, @suggested_links)
+		@pagoda.links do |link|
+			next if link.collation
+			if (link.site == @site) && (link.type == @type)
+				unless @suggested_links[link.url]
+					puts "... Purging #{link.url}"
+					link.delete
+				end
+			end
+		end
 	end
 
 	def rebase( site, type)
@@ -377,8 +383,3 @@ class Spider
 		STDIN.gets
 	end
 end
-
-spider = Spider.new( ARGV[0], ARGV[1])
-spider.browser_driver
-spider.send( ARGV[2].to_sym, ARGV[3], ARGV[4])
-spider.report

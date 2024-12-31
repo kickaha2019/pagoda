@@ -9,7 +9,7 @@ setenv PATH $PAGODA/ruby:$PATH
 
 # Scan for new links on some sites
 date
-ruby ruby/spider.rb database ~/Caches/Pagoda incremental All All
+ruby ruby/scripts/run_spider.rb database ~/Caches/Pagoda incremental All All
 if ($status != 0) exit 1
 
 # Verify the links starting with the oldest verified
