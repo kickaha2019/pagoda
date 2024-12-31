@@ -33,6 +33,15 @@ class TestFind < TestBase
         super
       end
     end
+
+    def http_get(url)
+      if @limit == 0
+        '<html><body></body></html>'
+      else
+        @limit -= 1
+        super
+      end
+    end
   end
 
   def test_adventure_game_hotspot_database
@@ -93,11 +102,11 @@ class TestFind < TestBase
     assert_link_count 60
   end
 
-  # def test_hotu
-  #   scan( 'HOTU', 'Reference', :find, 2)
-  #   assert_link_count 60
-  #   assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php?id=\d+$}
-  # end
+  def test_hotu
+    scan( 'HOTU', 'Reference', :find, 2)
+    assert_link_count 60
+    assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
+  end
 
   def assert_link_count(min)
     assert min <= @pagoda.count('link')

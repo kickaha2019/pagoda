@@ -78,9 +78,8 @@ module Common
 		Rack::Utils.escape_html(text)
 	end
 
-	def html_anchors( url, delay=10)
-		throttle( url, delay)
-		page = http_get( url)
+	def html_anchors( url, delay=10, headers = {})
+		page = http_get( url, delay, headers)
 		page.force_encoding( 'UTF-8')
 		page.encode!( 'US-ASCII',
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
@@ -103,18 +102,6 @@ module Common
 		end
 		response.body
 	end
-
-	# def http_get_cached( cache_dir, url, lifespan)
-	# 	cache_file = cache_dir + '/' + url.gsub( /[\/:]/, '_')
-	# 	if File.exist?( cache_file) &&
-	# 		 ((File.mtime( cache_file) + lifespan) >= Time.now)
-	# 		return IO.read( cache_file), cache_file
-	# 	else
-	# 		text = http_get( url)
-	# 		File.open( cache_file, 'w') {|io| io.print text}
-	# 		return text, cache_file
-	# 	end
-	# end
 
 	def http_get_response( url, delay = 10, headers = {})
 		throttle( url, delay)
