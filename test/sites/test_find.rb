@@ -25,18 +25,9 @@ class TestFind < TestBase
       end
     end
 
-    def html_anchors(url, delay = 10)
+    def http_get(url,delay=10,headers={})
       if @limit == 0
-        0
-      else
-        @limit -= 1
-        super
-      end
-    end
-
-    def http_get(url)
-      if @limit == 0
-        '<html><body></body></html>'
+        '<html><body></body></html>'.dup
       else
         @limit -= 1
         super
@@ -106,6 +97,36 @@ class TestFind < TestBase
     scan( 'HOTU', 'Reference', :find, 2)
     assert_link_count 60
     assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
+  end
+
+  def test_just_adventure_reviews
+    scan( 'Just Adventure', 'Review', :find_reviews, 2)
+    assert_link_count 60
+    assert_links_match %r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/}
+  end
+
+  def test_just_adventure_walkthroughs
+    scan( 'Just Adventure', 'Walkthrough', :find_walkthroughs, 2)
+    assert_link_count 54
+    assert_links_match %r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/}
+  end
+
+  def test_mystery_manor_reviews
+    scan( 'Mystery Manor', 'Review', :find_reviews, 1)
+    assert_link_count 60
+    assert_links_match %r{^https://mysterymanor.net/review}
+  end
+
+  def test_mystery_manor_walkthroughs
+    scan( 'Mystery Manor', 'Walkthrough', :find_walkthroughs, 1)
+    assert_link_count 50
+    assert_links_match %r{^https://mysterymanor.net/walkthroughs/}
+  end
+
+  def test_nice_game_hints_walkthroughs
+    scan( 'Nice Game Hints', 'Walkthrough', :find, 1)
+    assert_link_count 100
+    assert_links_match %r{^https://www.nicegamehints.com/guide/}
   end
 
   def assert_link_count(min)

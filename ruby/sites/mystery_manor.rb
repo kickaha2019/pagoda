@@ -13,7 +13,7 @@ class MysteryManor < DefaultSite
 
 	def find_walkthroughs( scanner)
 		scanner.html_anchors( 'https://mysterymanor.net/walkthroughs.htm') do |link, label|
-			if /^walkthroughs/ =~ link
+			if /^walkthroughs\// =~ link
 				scanner.add_link( label, 'https://mysterymanor.net/' + link)
 			else
 				0
