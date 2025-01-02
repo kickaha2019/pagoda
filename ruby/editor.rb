@@ -59,6 +59,18 @@ get '/collation/:url' do
   collation( d(params[:url])).to_json
 end
 
+get '/company/:company' do
+  erb :company, :locals => params
+end
+
+post '/company_add/:company' do
+  company_add( d(params[:company]))
+end
+
+post '/company_delete/:company' do
+  company_delete( d(params[:company]))
+end
+
 post '/delete_game' do
   delete_game( params[:id].to_i)
   redirect '/new_game'

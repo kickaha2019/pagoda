@@ -1,0 +1,29 @@
+<%= erb :header, :locals => {:page => 'company'} %>
+
+<script>
+    function company_add_action( name) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/company_add/" + name, false);
+        xhttp.send();
+        window.location.reload();
+    }
+
+    function company_delete_action( name) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/company_delete/" + name, false);
+        xhttp.send();
+        window.location.reload();
+    }
+</script>
+
+<table>
+  <tr>
+    <td>Company:</td>
+    <th><%= h(company) %></th>
+    <td>&nbsp;</td>
+    <td><%= company_exists?(company) ? company_delete_action(company) : company_add_action(company) %></td>
+  </tr>
+</table>
+
+</body>
+</html>

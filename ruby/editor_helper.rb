@@ -232,6 +232,32 @@ HIDDEN_ASPECT_ELEMENT
       html << defn.join('')
     end
 
+    def company_add(company)
+      $pagoda.start_transaction
+      $pagoda.insert('company',{:name => company})
+      $pagoda.end_transaction
+    end
+
+    def company_delete(company)
+      $pagoda.start_transaction
+      $pagoda.delete('company',:name,company)
+      $pagoda.delete('company_alias',:alias,company)
+      $pagoda.end_transaction
+    end
+
+    def company_add_action(company)
+      "<button onclick=\"company_add_action( '#{e(e(company))}');\">Add</button>"
+    end
+
+    def company_delete_action(company)
+      "<button onclick=\"company_delete_action( '#{e(e(company))}');\">Delete</button>"
+    end
+
+    def company_exists?(company)
+      $pagoda.has?('company',:name,company) ||
+      $pagoda.has?('company_alias',:alias,company)
+    end
+
     def d( text)
       CGI.unescape( text)
     end

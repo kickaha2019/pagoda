@@ -129,6 +129,18 @@ class TestFind < TestBase
     assert_links_match %r{^https://www.nicegamehints.com/guide/}
   end
 
+  def test_steam
+    scan( 'Steam', 'Store', :find, 0)
+    assert_link_count 100
+    assert_links_match %r{^https://store.steampowered.com/app/\d+$}
+  end
+
+  def test_turn_based_lovers
+    scan( 'Turn Based Lovers', 'Review', :findReviews, 2)
+    assert_link_count 15
+    assert_links_match %r{^https://turnbasedlovers.com/review/}
+  end
+
   def assert_link_count(min)
     assert min <= @pagoda.count('link')
   end
