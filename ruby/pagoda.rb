@@ -500,6 +500,13 @@ class Pagoda
 
   def update_link(link, rec, digest, debug=false)
 
+    # Clean the digest
+    ['developers','publishers'].each do |key|
+      if digest[key]
+        digest[key] = digest[key].collect {|name| name.strip}.select {|name| ! ['','-'].include? name}
+      end
+    end
+
     # Save the digest
     sleep 1
     rec[:timestamp] = Time.now.to_i

@@ -8,6 +8,13 @@
         window.location.reload();
     }
 
+    function company_alias_action( name,aka) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/company_alias/" + name + "/" + aka, false);
+        xhttp.send();
+        window.location.reload();
+    }
+
     function company_delete_action( name) {
         var xhttp = new XMLHttpRequest();
         xhttp.open( "POST", "/company_delete/" + name, false);
@@ -18,11 +25,31 @@
 
 <table>
   <tr>
-    <td>Company:</td>
+    <td align>Company:</td>
     <th><%= h(company) %></th>
     <td>&nbsp;</td>
     <td><%= company_exists?(company) ? company_delete_action(company) : company_add_action(company) %></td>
   </tr>
+  <%=
+    if company_alias?(company)
+      "<tr><td align=\"left\">Alias of:&nbsp;</td><td><a href=\"/company/#{e(e(company_dereference(company)))}\">#{h(company_dereference(company))}</a></td></td>"
+    elsif company_exists?(company)
+      html = ['<table class="list"><tr><th>Alias</th></tr>']
+      company_aliases(company).each do |name|
+        html << "<tr><td><a href=\"/company/#{e(e(name))}\">#{h(name)}</a></td></tr>"
+      end
+      html << '</table>'
+      html.join("\n")
+    else
+      html = ['<table class="list"><tr><th>Suggested</th><th>Action</th></tr>']
+      company_suggestions(company).each do |name|
+        html << "<tr><td><a href=\"/company/#{e(e(name))}\">#{h(name)}</a></td>"
+        html << '<td>' + company_alias_action(name,company) + '</td></tr>'
+      end
+      html << '</table>'
+      html.join("\n")
+    end
+  %>
 </table>
 
 </body>

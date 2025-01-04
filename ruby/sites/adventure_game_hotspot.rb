@@ -5,25 +5,28 @@ class AdventureGameHotspot < DefaultSite
 
 	def find( scanner, section, pattern)
 		added = 0
-		page  = 1
-		url   = BASE + section
+		scanner.refresh('adventure_game_hotspot_'+ section) do |found|
+			page  = 1
+			url   = BASE + section
 
-		while page
-			last, page = page, nil
-			added += scanner.html_anchors(url) do |href, label|
-				if m = %r{^\?p=(\d+)$}.match(href)
-					if m[1].to_i == (last+1)
-						page = m[1].to_i
-						url = BASE + section + href
+			while page
+				last, page = page, nil
+				scanner.html_anchors(url) do |href, label|
+					if m = %r{^\?p=(\d+)$}.match(href)
+						if m[1].to_i == (last+1)
+							page = m[1].to_i
+							url  = BASE + section + href
+						end
 					end
-				end
 
-				if (m = pattern.match(href)) && (! (/^</ =~ label))
-					scanner.add_link( label, BASE + m[1])
-				else
+					if (m = pattern.match(href)) && (! (/^</ =~ label))
+						found[BASE + m[1]] = label
+					end
 					0
 				end
 			end
+		end.each_pair do |url, label|
+			added += scanner.add_link( label, url)
 		end
 
 		added

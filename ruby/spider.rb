@@ -276,6 +276,19 @@ class Spider
 		puts "... #{to_delete.size} deleted #{@pagoda.count( 'link') - before} added"
 	end
 
+	def refresh( stem)
+		path  = @cache + '/' + stem + '.yaml'
+
+		if File.exist?( path) && (File.mtime( path) > (Time.now - 15 * 24 * 60 * 60))
+			YAML.load(IO.read( path ))
+		end
+
+		{}.tap do |found|
+			yield found
+			File.open(path,'w') {|io| io.print found.to_yaml }
+		end
+	end
+
 	def report
 		if @errors > 0
 			puts "*** #{@errors} errors"

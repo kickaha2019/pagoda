@@ -14,54 +14,41 @@ class AdventureGamers < DefaultSite
 
 	def find_database( scanner)
 		added = 0
-		page  = 1
-		url   = BASE + '/games/adventure/all'
+		scanner.refresh('adventure_gamers_database') do |found|
+			page  = 1
+			url   = BASE + '/games/adventure/all'
 
-		while page
-			last, page = page, nil
-			added += scanner.html_anchors(url) do |href, label|
-				if label == (last+1).to_s
-					page = last + 1
-					url  = BASE + href
-					0
-				elsif /^ / =~ label
-					0
-				elsif /\t/ =~ label
-					0
-				elsif m = %r{^(/games/view/\d+)$}.match(href)
-					scanner.add_link( label, BASE + m[1])
-				else
+			while page
+				last, page = page, nil
+				scanner.html_anchors(url) do |href, label|
+					if label == (last+1).to_s
+						page = last + 1
+						url  = BASE + href
+					elsif /^ / =~ label
+					elsif /\t/ =~ label
+					elsif m = %r{^(/games/view/\d+)$}.match(href)
+						found[BASE + m[1]] = label
+					end
 					0
 				end
 			end
+		end.each_pair do |url, label|
+			added += scanner.add_link( label, url)
 		end
 
 		added
 	end
 
 	def find_reviews( scanner)
-		added = 0
-		page  = 1
-		url   = BASE + '/articles/reviews'
-
-		while page
-			last, page = page, nil
-			added += scanner.html_anchors(url) do |href, label|
-				if label == (last+1).to_s
-					page = last + 1
-					url  = href
-					0
-				elsif ['','Genre Introduction','Top 100 All-Time'].include? label
-					0
-				elsif m = %r{^(/articles/view/.*)$}.match(href)
-					scanner.add_link( label, BASE + m[1].split('?')[0])
-				else
-					0
-				end
+		scanner.html_anchors(BASE + '/articles/reviews') do |href, label|
+			if ['','Genre Introduction','Top 100 All-Time'].include? label
+				0
+			elsif m = %r{^(/articles/view/.*)$}.match(href)
+				scanner.add_link( label, BASE + m[1].split('?')[0])
+			else
+				0
 			end
 		end
-
-		added
 	end
 
 	def reduce_title(title)
@@ -104,25 +91,27 @@ class AdventureGamers < DefaultSite
 			end
 		end
 
-		digest['unreleased'] = true unless digest['year'].nil?
+		digest['unreleased'] = true if digest['year'].nil?
 
 		digest['tags'] = ['Adventure']
 		['Genre','Presentation','Perspective','Graphic Style','Gameplay',
 		 'Control','Theme'].each do |label|
-			get_anchors( nodes, label) do |anchor|
-				digest['tags'] << anchor.text.strip
+			get_tags(nodes, label) do |anchor|
+				digest['tags'] << anchor
 			end
 		end
 
 		digest
 	end
 
-	def get_anchors(nodes, type)
+	def get_tags(nodes, type)
 		nodes.css('table.game_info_table td strong') do |title|
 			[title.text.strip]
 		end.parent(2).css('td:nth-child(2)') do |field, header|
 			if header == type
-				yield field
+				field.text.split(',').collect {|t| t.strip}.each do |tag|
+					yield tag unless tag.empty? || (tag == '-')
+				end
 			end
 		end
 	end

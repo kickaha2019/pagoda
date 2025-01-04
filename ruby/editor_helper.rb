@@ -238,9 +238,24 @@ HIDDEN_ASPECT_ELEMENT
       $pagoda.end_transaction
     end
 
+    def company_add_alias(company,aka)
+      return unless company_exists?(company)
+      $pagoda.start_transaction
+      $pagoda.delete('company',:name,aka)
+      old = $pagoda.get('company_alias',:name,aka)
+      $pagoda.delete('company_alias',:name,aka)
+      $pagoda.delete('company_alias',:alias,aka)
+      $pagoda.insert('company_alias',{:name => company, :alias => aka})
+      old.each do |rec|
+        $pagoda.insert('company_alias',{:name => company, :alias => rec[:alias]})
+      end
+      $pagoda.end_transaction
+    end
+
     def company_delete(company)
       $pagoda.start_transaction
       $pagoda.delete('company',:name,company)
+      $pagoda.delete('company_alias',:name,company)
       $pagoda.delete('company_alias',:alias,company)
       $pagoda.end_transaction
     end
@@ -249,13 +264,62 @@ HIDDEN_ASPECT_ELEMENT
       "<button onclick=\"company_add_action( '#{e(e(company))}');\">Add</button>"
     end
 
+    def company_alias?(company)
+      $pagoda.has?('company_alias',:alias,company)
+    end
+
+    def company_alias_action(company,aka)
+      "<button onclick=\"company_alias_action( '#{e(e(company))}', '#{e(e(aka))}');\">Alias</button>"
+    end
+
+    def company_aliases(company)
+      $pagoda.get('company_alias',:name,company).collect do |rec|
+        rec[:alias]
+      end.sort
+    end
+
     def company_delete_action(company)
       "<button onclick=\"company_delete_action( '#{e(e(company))}');\">Delete</button>"
+    end
+
+    def company_dereference(company)
+      $pagoda.get('company_alias',:alias,company)[0][:name]
     end
 
     def company_exists?(company)
       $pagoda.has?('company',:name,company) ||
       $pagoda.has?('company_alias',:alias,company)
+    end
+
+    def company_suggestions(name)
+      extant = Hash.new {|h,k| h[k] = []}
+
+      $pagoda.select('company') do |rec|
+        rec[:name].gsub(/\W/,' ').split(' ').each do |word|
+          extant[word.downcase] << rec[:name] unless word.empty?
+        end
+      end
+
+      candidates = {}
+      name.gsub(/\W/,' ').split(' ').uniq.collect do |word|
+        extant[word.downcase]
+      end.sort_by {|list|list.size}.each do |list|
+        list.each do |candidate|
+          candidates[candidate] = true unless candidates[candidate]
+        end
+      end
+
+      candidates.keys
+    end
+
+    def companies_records(known,search)
+      if known == 'Y'
+        $pagoda.select('company') do |company|
+          search.strip.empty? ? true : company[:name].downcase.include?(search.strip)
+        end.collect {|rec| rec[:name]}
+      else
+        IO.readlines(ARGV[1]+'/unknown_companies.txt').collect {|name| name.strip}
+      end
     end
 
     def d( text)

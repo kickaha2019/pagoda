@@ -1,0 +1,35 @@
+<%= erb :header, :locals => {:page => 'companies'} %>
+
+<div class="search control">
+  <button onclick="search_input( '<%= "/companies?page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/companies?search=#{e(search)}"
+      erb :page_control, :locals => {:view => 'companies',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [known, search]}
+  %>&nbsp;&nbsp;
+</div>
+
+  <div id="list"><table class="scan list">
+<tr><th>Company</th></tr>
+  <%=
+    names = companies_records( known, search).sort
+    html = []
+
+    total_pages  = (names.size + 99) /  100
+    current_page = page.to_i
+    current_page = 1 if total_pages < current_page
+
+row = 0
+names[(100*(current_page-1))...(100*current_page)].each do |name|
+  row += 1
+  html << "<tr><td><a target=\"_blank\" href=\"/company/#{e(e(name))}\">#{h(name)}</a></td></tr>"
+end
+
+html.join( "\n")
+%>
+  </table></div>
+</body>
+</html>

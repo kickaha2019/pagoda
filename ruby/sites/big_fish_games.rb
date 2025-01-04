@@ -23,17 +23,20 @@ class BigFishGames < DefaultSite
 		last_found = -1
 		added      = 0
 
-		while last_found < found
-			last_found =  found
-			page       += 1
-			added      += scanner.html_anchors( url + page.to_s) do |link, label|
-				if match =~ link
-					found += 1
-					scanner.add_link( label, link.split('?')[0])
-				else
+		scanner.refresh('big_fish_' + type) do |to_add|
+			while last_found < found
+				last_found =  found
+				page       += 1
+				scanner.html_anchors( url + page.to_s) do |link, label|
+					if match =~ link
+						found += 1
+						to_add[link.split('?')[0]] = label
+					end
 					0
 				end
 			end
+		end.each_pair do |link, label|
+			added += scanner.add_link( label, link)
 		end
 
 		added

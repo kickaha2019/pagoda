@@ -59,12 +59,20 @@ get '/collation/:url' do
   collation( d(params[:url])).to_json
 end
 
+get '/companies' do
+  erb :companies, :locals => get_locals( params, :search => '', :page => 1, :known => 'Y')
+end
+
 get '/company/:company' do
-  erb :company, :locals => params
+  erb :company, :locals => {:company => d(params['company'])}
 end
 
 post '/company_add/:company' do
   company_add( d(params[:company]))
+end
+
+post '/company_alias/:company/:alias' do
+  company_add_alias( d(params[:company]), d(params[:alias]))
 end
 
 post '/company_delete/:company' do

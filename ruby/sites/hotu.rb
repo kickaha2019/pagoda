@@ -18,24 +18,11 @@ class Hotu < DefaultSite
 	end
 
 	def find( scanner)
-		path = scanner.cache + "/hotu.json"
-
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 2 * 24 * 60 * 60))
-			offset, urls, old_count = 0, {}, -1
-
+		scanner.refresh('hotu') do |urls|
 			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=3', urls)
 			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=6', urls)
 			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=7', urls)
-
-			# if urls.size < 1000
-			# 	scanner.error( 'Not enough URLs found for ' + name)
-			# end
-
-			File.open( path, 'w') {|io| io.print JSON.generate( urls)}
-		end
-
-		urls = JSON.parse( IO.read( path))
-		urls.each_pair do |url, name|
+		end.each_pair do |url, name|
 			scanner.suggest_link( name, url)
 		end
 	end

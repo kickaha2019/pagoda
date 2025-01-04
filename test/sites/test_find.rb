@@ -54,8 +54,8 @@ class TestFind < TestBase
   end
 
   def test_adventure_gamers_reviews
-    scan( 'Adventure Gamers', 'Review', :find_reviews, 3)
-    assert_link_count 25
+    scan( 'Adventure Gamers', 'Review', :find_reviews, 1)
+    assert_link_count 15
     assert_links_match %r{^https://adventuregamers.com/articles/view/}
   end
 
@@ -66,13 +66,13 @@ class TestFind < TestBase
   end
 
   def test_game_boomers_reviews
-    scan( 'GameBoomers', 'Review', :findReviews, 1)
+    scan( 'GameBoomers', 'Review', :find_reviews, 1)
     assert_link_count 850
     assert_links_match %r{^http(s|)://(www.|)gameboomers.com/reviews/}
   end
 
   def test_game_boomers_walkthroughs
-    scan( 'GameBoomers', 'Walkthrough', :findWalkthroughs, 3)
+    scan( 'GameBoomers', 'Walkthrough', :find_walkthroughs, 3)
     assert_link_count 100
     assert_links_match %r{^http(s|)://(www.|)gameboomers.com/(wtcheats|Walkthroughs)/}
   end

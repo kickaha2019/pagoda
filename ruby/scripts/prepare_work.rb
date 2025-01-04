@@ -125,12 +125,44 @@ class PrepareWork
     no_year
     no_genre
     no_perspective
+    unknown_companies
   end
 
   def save
     File.open(@path, 'w') do |io|
       io.puts @work.to_yaml
     end
+  end
+
+  def unknown_companies
+    unknown, known = {}, {}
+    @pagoda.select('company') do |rec|
+      known[rec[:name]] = true
+    end
+    @pagoda.select('company_alias') do |rec|
+      known[rec[:alias]] = true
+    end
+
+    @pagoda.select('bind') do |bind|
+      next if bind[:id] < 0
+      @pagoda.get('link',:url,bind[:url]).each do |link|
+        digest = @pagoda.cached_digest(link[:timestamp])
+        ['developers','publishers'].each do |key|
+          (digest[key] || []).each do |company|
+            company = company.strip
+            next if company.empty? || ['-'].include?(company)
+            unknown[company] = true unless known[company]
+          end
+        end
+      end
+    end
+
+    File.open(ARGV[1] + '/unknown_companies.txt', 'w') do |io|
+      io.puts unknown.keys.sort.join("\n")
+    end
+
+    add('Unknown companies',unknown.size,'warning',
+        "/companies?known=N", unknown.empty?)
   end
 
   def unknown_tags

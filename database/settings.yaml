@@ -12,6 +12,9 @@ not_game_words:
 - soundtrack
 - trailer
 incremental:
+- site:   Adventure Gamers
+  type:   Review
+  method: find_reviews
 - site:   Grabbed
   type:   Reference
   method: incremental
@@ -25,9 +28,6 @@ full:
 - site:   Adventure Gamers
   type:   Database
   method: find_database
-- site:   Adventure Gamers
-  type:   Review
-  method: find_reviews
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
@@ -39,10 +39,10 @@ full:
   method: full
 - site:   GameBoomers
   type:   Review
-  method: findReviews
+  method: find_reviews
 - site:   GameBoomers
   type:   Walkthrough
-  method: findWalkthroughs
+  method: find_walkthroughs
 - site:   GOG
   type:   Store
   method: find
