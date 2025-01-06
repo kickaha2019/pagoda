@@ -86,7 +86,7 @@ end
 
 post '/duplicate_game' do
   new_id = duplicate_game( params[:id].to_i)
-  redirect "/game/#{new_id}"
+  redirect "/game/#{new_id}/"
 end
 
 post '/forget/:url' do

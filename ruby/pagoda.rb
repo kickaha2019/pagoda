@@ -309,6 +309,7 @@ class Pagoda
   end
 
   def suggest( name)
+    name = name.gsub(/\(\d\d\d\d\)/, ' ')
     @names.suggest( name, 20) do |game_id, freq|
       if g = game(game_id)
         yield g, freq

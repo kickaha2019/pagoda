@@ -7,7 +7,7 @@ class AdventureGameHotspot < DefaultSite
 		added = 0
 		scanner.refresh('adventure_game_hotspot_'+ section) do |found|
 			page  = 1
-			url   = BASE + section
+			url   = BASE + '/' + section
 
 			while page
 				last, page = page, nil
@@ -15,7 +15,7 @@ class AdventureGameHotspot < DefaultSite
 					if m = %r{^\?p=(\d+)$}.match(href)
 						if m[1].to_i == (last+1)
 							page = m[1].to_i
-							url  = BASE + section + href
+							url  = BASE + '/' + section + href
 						end
 					end
 
@@ -33,11 +33,11 @@ class AdventureGameHotspot < DefaultSite
 	end
 
 	def find_database( scanner)
-		find(scanner, '/database', %r{^(/game/.*$)})
+		find(scanner, 'database', %r{^(/game/.*$)})
 	end
 
 	def find_reviews( scanner)
-		find(scanner, '/reviews', %r{^(/review/.*$)})
+		find(scanner, 'reviews', %r{^(/review/.*$)})
 	end
 
 	def name
