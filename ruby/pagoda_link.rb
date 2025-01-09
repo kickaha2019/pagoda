@@ -32,8 +32,7 @@ class PagodaLink < PagodaRecord
   def bind( id)
     _bind(id)
     @owner.start_transaction
-    @owner.delete( 'bind', :url, @record[:url])
-    @owner.insert( 'bind', {
+    @owner.update( 'bind', :url, @record[:url], {
       url:@record[:url],
       id:id
     })
@@ -56,9 +55,8 @@ class PagodaLink < PagodaRecord
 
   def complain(msg)
     @owner.start_transaction
-    @owner.delete( 'link', :url, @record[:url])
-    @record[:comment]    = msg
-    @owner.insert( 'link', @record)
+    @record[:comment] = msg
+    @owner.update( 'link', :url, @record[:url], @record)
     @owner.end_transaction
     @owner.refresh_link(@record[:url])
   end
@@ -106,8 +104,7 @@ class PagodaLink < PagodaRecord
 
   def set_checked
     @owner.start_transaction
-    @owner.delete( 'link', :url, @record[:url])
-    @owner.insert( 'link', @record)
+    @owner.update( 'link', :url, @record[:url], @record)
     @owner.end_transaction
     @owner.refresh_link(@record[:url])
   end
@@ -183,8 +180,7 @@ class PagodaLink < PagodaRecord
       #@owner.insert_link(@record)
     else
       @owner.start_transaction
-      @owner.delete( 'link', :url, @record[:url])
-      @owner.insert( 'link', @record)
+      @owner.update( 'link', :url, @record[:url], @record)
       @owner.end_transaction
     end
   end

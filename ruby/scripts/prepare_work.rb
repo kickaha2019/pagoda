@@ -115,9 +115,27 @@ class PrepareWork
     end
   end
 
+  def redundant_ignores
+    count = 0
+
+    ignored = {}
+    @pagoda.select('bind') do |bind|
+      ignored[bind[:url]] = true if bind[:id] < 0
+    end
+
+    @pagoda.links do |link|
+      next unless ignored[link.url]
+      digest = @pagoda.cached_digest(link.timestamp)
+      count += 1 if @pagoda.reject_link?(link, digest)
+    end
+
+    add('Redundant ignores', count, 'warning', nil, count == 0)
+  end
+
   def run
     collations
     cache_size
+    redundant_ignores
     oldest_link
     unknown_tags
     free_links

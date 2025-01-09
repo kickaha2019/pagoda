@@ -85,8 +85,12 @@ class AdventureGamers < DefaultSite
 			[header.text.strip]
 		end.parent.css('span.cat_label_item span') do |release, header|
 			if header == 'Releases:'
-				if m = / (\d\d\d\d)$/.match(release.text.strip)
-					digest['year'] = m[1].to_i
+				begin
+					t = Date.parse(release.text.strip).to_time
+					if t <= pagoda.now
+						digest['year'] = t.year
+					end
+				rescue StandardError
 				end
 			end
 		end

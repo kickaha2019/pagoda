@@ -9,7 +9,7 @@ require_relative 'pagoda_game'
 require_relative 'pagoda_link'
 
 class Pagoda
-  attr_reader :settings
+  attr_reader :settings, :now
 
   def initialize( database, metadata, cache=nil)
     @dir         = metadata
@@ -19,9 +19,9 @@ class Pagoda
     @names       = Names.new
     @possibles   = nil
     @cache       = cache
+    @now         = Time.now
 
     @database.declare_integer( 'alias',          :id)
-    @database.declare_integer( 'aspect',         :id)
     @database.declare_integer( 'aspect_suggest', :game)
     @database.declare_integer( 'aspect_suggest', :cache)
     @database.declare_integer( 'aspect_suggest', :timestamp)
@@ -29,6 +29,7 @@ class Pagoda
     @database.declare_integer( 'game',           :id)
     @database.declare_integer( 'game',           :group_id)
     @database.declare_integer( 'game',           :year)
+    @database.declare_integer( 'game_aspect',    :id)
     @database.declare_integer( 'link',           :timestamp)
     @database.declare_integer( 'link',           :year)
     @database.declare_integer( 'visited',        :timestamp)
@@ -52,12 +53,12 @@ class Pagoda
   def self.testing(metadata, cache)
     database = Database.new
     database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
-    database.add_table(Table.new('aspect',[:id,:aspect,:flag],[]))
     database.add_table(Table.new('aspect_suggest',[:game,:aspect,:text,:cache,:visit,:timestamp,:site],[]))
     database.add_table(Table.new('bind',[:url,:id],[]))
     database.add_table(Table.new('company_alias',[:name,:alias],[]))
     database.add_table(Table.new('company',[:name],[]))
     database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
+    database.add_table(Table.new('game_aspect',[:id,:aspect,:flag],[]))
     database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
     database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
     database.add_table(Table.new('visited',[:key,:timestamp],[]))
@@ -360,7 +361,7 @@ class Pagoda
   def clean
     count = @database.clean_missing( 'alias', :id, 'game', :id).size
     puts "*** Deleted #{count} alias records" if count > 0
-    count = @database.clean_missing( 'aspect', :id, 'game', :id).size
+    count = @database.clean_missing( 'game_aspect', :id, 'game', :id).size
     puts "*** Deleted #{count} aspect records" if count > 0
     count = @database.clean_missing( 'aspect_suggest', :game, 'game', :id).size
     puts "*** Deleted #{count} aspect suggest records" if count > 0
@@ -370,7 +371,7 @@ class Pagoda
     puts "*** Deleted #{count} bind records no game" if count > 0
 
     aspects_lost = []
-    @database.select( 'aspect') do |rec|
+    @database.select( 'game_aspect') do |rec|
       unless aspect_info[rec[:aspect]]
         aspects_lost << rec[:aspect]
       end
@@ -378,7 +379,7 @@ class Pagoda
     start_transaction
     aspects_lost.uniq.each do |aspect|
       puts"... Deleting lost aspect #{aspect}"
-      @database.delete( 'aspect', :aspect, aspect)
+      @database.delete( 'game_aspect', :aspect, aspect)
     end
     end_transaction
     puts "*** Deleted #{aspects_lost.size} lost aspect records" if aspects_lost.size > 0
@@ -539,10 +540,17 @@ class Pagoda
     has_aspects
   end
 
+  def set_now(t)
+    @now = t
+  end
+
+  def update( table_name, column_name, value, record)
+    @database.update( table_name, column_name, value, record)
+  end
+
   def visited_key( key)
     start_transaction
-    @database.delete( 'visited', :key, key)
-    @database.insert( 'visited', {:key => key, :timestamp => Time.now.to_i})
+    @database.update( 'visited', :key, key, {:key => key, :timestamp => Time.now.to_i})
     end_transaction
   end
 end

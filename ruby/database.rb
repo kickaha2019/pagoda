@@ -114,4 +114,9 @@ class Database
   def unique( table_name, column_name)
     @tables[table_name].unique( column_name)
   end
+
+  def update( table_name, column_name, value, record)
+    delete( table_name, column_name, value) 
+    insert( table_name, record)
+  end
 end

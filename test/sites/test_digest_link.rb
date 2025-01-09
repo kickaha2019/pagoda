@@ -21,12 +21,18 @@ class TestDigestLink < TestBase
     assert info['tags'].include?('Stylized')
   end
 
-  def test_adventure_gamers_database
+  def test_adventure_gamers_database_released
     info = fire('Adventure Gamers',
                 'https://adventuregamers.com/games/view/21418')
     assert_equal '1954: Alcatraz (2014)', info['title']
     assert info['tags'].include?('Stylized art')
     assert_equal 2014, info['year']
+  end
+
+  def test_adventure_gamers_database_unreleased
+    info = fire('Adventure Gamers',
+                'https://adventuregamers.com/games/view/16888')
+    assert info['unreleased']
   end
 
   def test_big_fish_games

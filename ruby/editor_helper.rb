@@ -158,7 +158,7 @@ HIDDEN_ASPECT_ELEMENT
 
     def aspect_delete( aspect)
       $pagoda.start_transaction
-      $pagoda.delete( 'aspect', :aspect, aspect)
+      $pagoda.delete( 'game_aspect', :aspect, aspect)
       $pagoda.end_transaction
     end
 
@@ -347,10 +347,10 @@ HIDDEN_ASPECT_ELEMENT
       game_rec[:developer] = nil
       game_rec[:publisher] = nil
       $pagoda.insert( 'game', game_rec)
-      $pagoda.get( 'aspect', :id, id).each do |aspect|
+      $pagoda.get( 'game_aspect', :id, id).each do |aspect|
         aspect_rec = aspect.dup
         aspect_rec[:id] = new_id
-        $pagoda.insert( 'aspect', aspect_rec)
+        $pagoda.insert( 'game_aspect', aspect_rec)
       end
       $pagoda.end_transaction
       new_id
@@ -662,9 +662,9 @@ SEARCH
       aspects[aspect] = (flag != 'N')
 
       $pagoda.start_transaction
-      $pagoda.delete( 'aspect', :id, game_id)
+      $pagoda.delete( 'game_aspect', :id, game_id)
       aspects.each_pair do |a,f|
-        $pagoda.insert( 'aspect', {:id => game_id, :aspect => a, :flag => (f ? 'Y' : 'N')})
+        $pagoda.insert( 'game_aspect', {:id => game_id, :aspect => a, :flag => (f ? 'Y' : 'N')})
       end
       $pagoda.end_transaction
     end

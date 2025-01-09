@@ -27,8 +27,7 @@ class Spider
 
 	def add_bind(url, game_id)
 		@pagoda.start_transaction
-		@pagoda.delete( 'bind', :url, url)
-		@pagoda.insert('bind', {url:url, id:game_id})
+		@pagoda.update( 'bind', :url, url, {url:url, id:game_id})
 		@pagoda.end_transaction
 	end
 

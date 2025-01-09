@@ -16,7 +16,7 @@ class PagodaGame < PagodaRecord
 
   def aspects
     map = {}
-    @owner.get( 'aspect', :id, id).each do |rec|
+    @owner.get( 'game_aspect', :id, id).each do |rec|
       f, a = rec[:flag], rec[:aspect]
       if f == 'Y'
         map[a] = true
@@ -45,7 +45,7 @@ class PagodaGame < PagodaRecord
     @owner.delete( 'game',           :id,   id)
     @owner.delete( 'alias',          :id,   id)
     @owner.delete( 'bind',           :id,   id)
-    @owner.delete( 'aspect',         :id,   id)
+    @owner.delete( 'game_aspect',    :id,   id)
     @owner.delete( 'aspect_suggest', :game, id)
     @owner.end_transaction
 
@@ -133,9 +133,9 @@ class PagodaGame < PagodaRecord
     end
 
     @owner.start_transaction
-    @owner.delete( 'game',    :id, id)
-    @owner.delete( 'alias',   :id, id)
-    @owner.delete( 'aspect',  :id, id)
+    @owner.delete( 'game',        :id, id)
+    @owner.delete( 'alias',       :id, id)
+    @owner.delete( 'game_aspect', :id, id)
 
     rec = {}
     [:id, :name, :year, :is_group, :developer, :publisher].each do |field|
@@ -164,7 +164,7 @@ class PagodaGame < PagodaRecord
     @owner.aspect_name_and_types do |aspect, _|
       f = params["a_#{aspect}".to_sym]
       if ['Y','N'].include?( f)
-        $pagoda.insert( 'aspect', {:id => id, :aspect => aspect, :flag => f})
+        $pagoda.insert( 'game_aspect', {:id => id, :aspect => aspect, :flag => f})
       end
     end
 
@@ -224,7 +224,7 @@ class PagodaGame < PagodaRecord
       next if ['accept','reject'].include?(aspect)
       unless cache_aspects.has_key?(aspect)
         @owner.start_transaction
-        @owner.insert( 'aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
+        @owner.insert( 'game_aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
         @owner.end_transaction
       end
     end

@@ -86,7 +86,7 @@ class Steam < DefaultSite
 			nodes.css('div.release_date div.date') do |release_date|
 				begin
 					t = Date.parse(release_date).to_time
-					if t <= Time.now
+					if t <= pagoda.now
 						digest['year'] = t.year
 					end
 				rescue StandardError

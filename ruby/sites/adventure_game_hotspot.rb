@@ -63,7 +63,7 @@ class AdventureGameHotspot < DefaultSite
 		nodes.css('div.game-details time') do |time|
 			begin
 				t = Date.parse(time['datetime']).to_time
-				if t <= Time.now
+				if t <= pagoda.now
 					if digest['year'].nil? || digest['year'] > t.year
 						digest['year'] = t.year
 					end

@@ -111,7 +111,7 @@ class GoodOldGames < DefaultSite
 
 				if m = /^(\d+)-(\d+)-(\d+)T/.match( info['globalReleaseDate'])
 					t = Time.new( m[1].to_i, m[2].to_i, m[3].to_i)
-					digest['year'] = t.year if t <= Time.now
+					digest['year'] = t.year if t <= pagoda.now
 				end
 
 				digest['platforms'] = ['GOG']

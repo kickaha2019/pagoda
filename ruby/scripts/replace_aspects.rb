@@ -11,7 +11,7 @@ class ReplaceAspects
 
   def find_games_with_aspect(aspect)
     found = []
-    @pagoda.select( 'aspect') do |rec|
+    @pagoda.select( 'game_aspect') do |rec|
       if rec[:aspect] == aspect
         game = @pagoda.game(rec[:id])
         found << [game, (rec[:flag] == 'Y'), game.aspects]
@@ -25,9 +25,9 @@ class ReplaceAspects
 
   def replace_aspects(game,aspects)
     @pagoda.start_transaction
-    @pagoda.delete( 'aspect', :id, game.id)
+    @pagoda.delete( 'game_aspect', :id, game.id)
     aspects.each_pair do |aspect, flag|
-      @pagoda.insert( 'aspect',
+      @pagoda.insert( 'game_aspect',
                       {:id => game.id,
                                :aspect => aspect,
                                :flag => flag ? 'Y' : 'N'})
