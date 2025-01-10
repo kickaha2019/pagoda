@@ -2,10 +2,11 @@ class Table
   attr_reader :name
 
   def initialize(name, columns, data)
-    @name    = name
-    @columns = columns
-    @joins   = {}
-    @types   = Hash.new {|h,k| h[k] = :to_s}
+    @name      = name
+    @columns   = columns
+    @joins     = {}
+    @types     = Hash.new {|h,k| h[k] = :to_s}
+    @listeners = []
     initialize_indexes( data)
   end
 
@@ -27,6 +28,16 @@ class Table
         index[row[colind]] << row
       end
     end
+  end
+
+  def add_listener(listener)
+    @indexes[@columns[0]].each_value do |rows|
+      rows.each do |row|
+        rec = record( row)
+        listener.record_inserted @name, rec
+      end
+    end
+    @listeners << listener
   end
 
   def coerce( column_name, column_value)
@@ -64,6 +75,9 @@ class Table
     to_delete = []
     @indexes[column_name][column_value].each do |row|
       to_delete << row
+      @listeners.each do |listener|
+        listener.record_deleted(@name, record(row))
+      end
     end
 
     to_delete.each do |row|
@@ -109,6 +123,10 @@ class Table
   def insert( * row)
     @columns.each_index do |i|
       row[i] = coerce( @columns[i], row[i])
+    end
+
+    @listeners.each do |listener|
+      listener.record_inserted(@name, record(row))
     end
 
     @indexes.each_pair do |index_column, index|

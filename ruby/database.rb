@@ -6,6 +6,10 @@ class Database
     @tables = {}
   end
 
+  def add_listener(name, listener)
+    @tables[name].add_listener listener
+  end
+
   def add_table(table)
     raise "Duplicate table: #{table.name}" unless @tables[table.name].nil?
     @tables[table.name] = table
@@ -116,7 +120,7 @@ class Database
   end
 
   def update( table_name, column_name, value, record)
-    delete( table_name, column_name, value) 
+    delete( table_name, column_name, value)
     insert( table_name, record)
   end
 end

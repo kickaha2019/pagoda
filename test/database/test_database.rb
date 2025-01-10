@@ -2,6 +2,41 @@ require 'minitest/autorun'
 require_relative '../../ruby/file_database'
 
 class DatabaseTest < Minitest::Test
+  class TestListener
+    def initialize
+      @table  = nil
+      @action = nil
+      @value  = nil
+    end
+
+    def assert_equal( expected, got)
+      raise "Expected [#{expected}] got [#{got}]" unless expected == got
+    end
+
+    def expected(name, action, value)
+      assert_equal @table,  name
+      assert_equal @action, action
+      assert_equal @value,  value
+      @table  = nil
+      @action = nil
+      @value  = nil
+    end
+
+    def record_inserted(name, record)
+      raise 'Unexpected called' if @action
+      @table  = name
+      @action = 'insert'
+      @value  = record[:value]
+    end
+
+    def record_deleted(name, record)
+      raise 'Unexpected called' if @action
+      @table  = name
+      @action = 'delete'
+      @value  = record[:value]
+    end
+  end
+
   def ends_with( f, text)
     file_text = IO.read( @dir + '/' + f)
     assert_equal text, file_text.chomp[-text.size..-1]
@@ -175,6 +210,21 @@ class DatabaseTest < Minitest::Test
       ok = (/Unknown key/ =~ bang.message)
     end
     assert ok
+  end
+
+  def test_listener
+    write 'data.tsv', "id\tvalue"
+    listener = TestListener.new
+    db = load_database
+    db.start_transaction
+    db.insert( 'data', {id:1, value:'fred1'})
+    db.add_listener 'data', listener
+    listener.expected 'data', 'insert', 'fred1'
+    db.insert( 'data', {id:2, value:'fred2'})
+    listener.expected 'data', 'insert', 'fred2'
+    db.delete( 'data', :id, 1)
+    listener.expected 'data', 'delete', 'fred1'
+    db.end_transaction
   end
 
   def test_max_value
