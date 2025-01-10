@@ -217,11 +217,11 @@
     <tr><th>Combo</th><th>Hits</th></tr>
     <%=
       html = []
-      if @game
-        @game.suggest_analysis do |combo, ids|
-          html << "<tr><td>#{combo}</td><td>#{ids.collect {|id| id.to_s}.join( ' ')}</td></tr>"
-        end
-      end
+      # if @game
+      #   @game.suggest_analysis do |combo, ids|
+      #     html << "<tr><td>#{combo}</td><td>#{ids.collect {|id| id.to_s}.join( ' ')}</td></tr>"
+      #   end
+      # end
       html.join( "\n")
     %>
   </table>

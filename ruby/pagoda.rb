@@ -16,7 +16,6 @@ class Pagoda
     @database    = database
     @settings    = YAML.load( IO.read( @dir + '/settings.yaml'))
     log 'Loaded database'
-    @names       = Names.new
     @possibles   = nil
     @cache       = cache
     @now         = Time.now
@@ -114,7 +113,15 @@ class Pagoda
 
   def check_unique_name( name, id)
     return true if name.nil? or name == ''
-    @names.check_unique_name( name, id.to_i)
+    got = @database.get('game', :name, name)
+    if got.empty?
+      got = @database.get('alias', :name, name)
+    end
+    if got.empty?
+      true
+    else
+      got[0][:id] != id
+    end
   end
 
   def check_unique_names( params)
@@ -137,13 +144,6 @@ class Pagoda
     links.select {|s| s.generate?}.collect do |s|
       PagodaCollation.new( self, {id:s.collation.id, link:s.id})
     end
-  end
-
-  def contains_string( text, search)
-    text   = text.to_s
-    search = search.downcase
-    return true if text.downcase.index( search)
-    @names.reduce( text).index( search)
   end
 
   def correlate_site( url)
@@ -305,9 +305,9 @@ class Pagoda
     File.open( @dir + '/' + f, 'w') {|io| io.print data.to_yaml}
   end
 
-  def string_combos( name)
-    @names.string_combos( name) {|combo, weight| yield combo}
-  end
+  # def string_combos( name)
+  #   @names.string_combos( name) {|combo, weight| yield combo}
+  # end
 
   def suggest( name)
     name = name.gsub(/\(\d\d\d\d\)/, ' ')
@@ -320,9 +320,9 @@ class Pagoda
     end
   end
 
-  def suggest_analysis( name)
-    @names.suggest_analysis( name) {|combo, hits, weight| yield combo, hits}
-  end
+  # def suggest_analysis( name)
+  #   @names.suggest_analysis( name) {|combo, hits, weight| yield combo, hits}
+  # end
 
   # Wrapper methods for calls to database and names logic
   def add_link( site, type, title, url)
@@ -339,15 +339,15 @@ class Pagoda
     true
   end
 
+  def add_listener(table, listener)
+    @database.add_listener table, listener
+  end
+
   def insert_link( rec)
     start_transaction
     insert( 'link', rec)
     end_transaction
     refresh_link rec[:url]
-  end
-
-  def add_name( name, id)
-    @names.add(name, id)
   end
 
   def get_aspect_type(aspect)
@@ -428,10 +428,6 @@ class Pagoda
     @database.delete( table_name, column_name, column_value)
   end
 
-  def delete_name( name, id)
-    @names.remove( name, id)
-  end
-
   def end_transaction
     @database.end_transaction
   end
@@ -448,16 +444,12 @@ class Pagoda
     @database.insert( table_name, table_rec)
   end
 
-  def keys( id)
-    @names.keys(id)
-  end
+  # def keys( id)
+  #   @names.keys(id)
+  # end
 
   def next_value( table_name, column_name)
     @database.next_value( table_name, column_name)
-  end
-
-  def rarity( name)
-    @names.rarity( name)
   end
 
   def rebuild
@@ -482,19 +474,19 @@ class Pagoda
     end
   end
 
-  def sort_name( name)
-    name = @names.simplify(name)
-    if m = /^(a|an|the) (.*)$/.match( name)
-      name = m[2]
-    end
-
-    name = name.strip.upcase
-    if /^\d/ =~ name
-      '#' + name
-    else
-      name
-    end
-  end
+  # def sort_name( name)
+  #   name = @names.simplify(name)
+  #   if m = /^(a|an|the) (.*)$/.match( name)
+  #     name = m[2]
+  #   end
+  #
+  #   name = name.strip.upcase
+  #   if /^\d/ =~ name
+  #     '#' + name
+  #   else
+  #     name
+  #   end
+  # end
 
   def start_transaction
     @database.start_transaction

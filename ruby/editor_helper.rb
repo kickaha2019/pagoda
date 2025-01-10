@@ -322,6 +322,13 @@ HIDDEN_ASPECT_ELEMENT
       end
     end
 
+    def contains_string( text, search)
+      text   = text.to_s
+      search = search.downcase
+      return true if text.downcase.index( search)
+      $game_names.reduce( text).index( search)
+    end
+
     def d( text)
       CGI.unescape( text)
     end
@@ -402,9 +409,9 @@ HIDDEN_ASPECT_ELEMENT
       $pagoda.games do |game|
         next unless get_context(context).select_game?($pagoda,game)
 
-        selected = $pagoda.contains_string( game.name, search)
+        selected = contains_string( game.name, search)
         game.aliases.each do |a|
-          selected = true if $pagoda.contains_string( a.name, search)
+          selected = true if contains_string( a.name, search)
         end
 
         selected
@@ -694,6 +701,9 @@ SEARCH
         $debug = true if /^debug=true$/i =~ arg
       end
 
+      $game_names = Names.new
+      $game_names.listen( $pagoda, 'game', :name, :id)
+      $game_names.listen( $pagoda, 'alias', :name, :id)
       # $pagoda.cache_timestamps do |t|
       #   @@timestamps[t] = true
       # end
@@ -705,6 +715,12 @@ SEARCH
         m[2]
       else
         name
+      end
+    end
+
+    def suggest_games(link_title)
+      $game_names.suggest(link_title,100) do |name, key|
+        yield name, $pagoda.game(key)
       end
     end
 

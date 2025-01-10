@@ -1,15 +1,5 @@
 # frozen_string_literal: true
 class PagodaGame < PagodaRecord
-  def initialize( owner, rec)
-    super
-
-    owner.add_name( name, id)
-
-    aliases.each do |arec|
-      owner.add_name( arec.name, id)
-    end
-  end
-
   def aliases
     @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
   end
@@ -32,13 +22,6 @@ class PagodaGame < PagodaRecord
   end
 
   def delete
-    @owner.delete_name( name, id)
-    aliases.each do |a|
-      @owner.delete_name( a.name, id)
-    end
-    links do |l|
-      @owner.delete_name( l.title, id)
-    end
     binds = @owner.get('bind',:id,id)
 
     @owner.start_transaction
@@ -111,27 +94,22 @@ class PagodaGame < PagodaRecord
     'N'
   end
 
-  def sort_name
-    @owner.sort_name( name)
-  end
+  # def sort_name
+  #   @owner.sort_name( name)
+  # end
 
-  def suggest_analysis
-    @owner.suggest_analysis( name) {|combo, hits| yield combo, hits}
-    aliases.each do |a|
-      @owner.suggest_analysis( a.name) {|combo, hits| yield combo, hits}
-    end
-  end
+  # def suggest_analysis
+  #   @owner.suggest_analysis( name) {|combo, hits| yield combo, hits}
+  #   aliases.each do |a|
+  #     @owner.suggest_analysis( a.name) {|combo, hits| yield combo, hits}
+  #   end
+  # end
 
   def tablet
     'N'
   end
 
   def update( params)
-    @owner.delete_name( name, id)
-    aliases.each do |a|
-      @owner.delete_name( a.name, id)
-    end
-
     @owner.start_transaction
     @owner.delete( 'game',        :id, id)
     @owner.delete( 'alias',       :id, id)
@@ -148,7 +126,6 @@ class PagodaGame < PagodaRecord
     end
 
     @record = @owner.insert( 'game', rec)
-    @owner.add_name( rec[:name], id)
     names_seen = {rec[:name].downcase => true}
 
     (0..20).each do |index|
@@ -157,7 +134,6 @@ class PagodaGame < PagodaRecord
       next if names_seen[name.downcase]
       rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
       @owner.insert( 'alias', rec)
-      @owner.add_name( rec[:name], id)
       names_seen[name.downcase] = true
     end
 

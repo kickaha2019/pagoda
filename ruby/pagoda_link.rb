@@ -133,10 +133,10 @@ class PagodaLink < PagodaRecord
     @owner.suggest( sh.reduce_title( sh.link_title( title, orig_title))) {|game, freq| yield game, freq}
   end
 
-  def suggest_analysis
-    sh = @owner.get_site_handler( site)
-    @owner.suggest_analysis( sh.link_title( title, orig_title)) {|combo, hits| yield combo, hits}
-  end
+  # def suggest_analysis
+  #   sh = @owner.get_site_handler( site)
+  #   @owner.suggest_analysis( sh.link_title( title, orig_title)) {|combo, hits| yield combo, hits}
+  # end
 
   def timestamp
     @record[:timestamp] ? @record[:timestamp].to_i : 0

@@ -68,7 +68,7 @@ class Spider
 			if @pagoda.has?( 'link', :url, link[:url])
 				site_dups[ link[:site]] += 1
 			else
-				freq = lowest_frequency( link[:title])
+				freq = 1 # lowest_frequency( link[:title])
 				list << [freq, link]
 			end
 		end
@@ -226,10 +226,6 @@ class Spider
 		@pagoda.links do |link|
 			yield link if link.site == site
 		end
-	end
-
-	def lowest_frequency( name)
-    @pagoda.rarity( name)
 	end
 
 	def not_a_game( name)

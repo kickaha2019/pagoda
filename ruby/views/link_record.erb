@@ -68,8 +68,8 @@
     <tr><th>Game</th><th>Developer</th><th>Publisher</th><th>Year</th><th>Actions</th></tr>
     <%=
       html = []
-      @rec.suggest do |game, freq|
-        html << "<tr><td><a href=\"/game/#{game.id}/\">#{h(game.name)}</a></td>"
+      suggest_games(@rec.title) do |name, game|
+        html << "<tr><td><a href=\"/game/#{game.id}/\">#{h(name)}</a></td>"
         html << "<td>#{game.developer}</td>"
         html << "<td>#{game.publisher}</td>"
         html << "<td>#{game.year}</td>"
@@ -83,9 +83,9 @@
     <tr><th>Combo</th><th>Hits</th></tr>
     <%=
       html = []
-      @rec.suggest_analysis do |combo, ids|
-        html << "<tr><td>#{combo}</td><td>#{ids.collect {|id| id.to_s}.join( ' ')}</td></tr>"
-      end
+      # @rec.suggest_analysis do |combo, ids|
+      #   html << "<tr><td>#{combo}</td><td>#{ids.collect {|id| id.to_s}.join( ' ')}</td></tr>"
+      # end
       html.join( "\n")
     %>
   </table>

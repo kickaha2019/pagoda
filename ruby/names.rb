@@ -1,9 +1,8 @@
 class Names
   def initialize
     @cache       = {}
-    @combo2ids   = Hash.new {|h,k| h[k] = {}}
-    @id2names    = Hash.new {|h,k| h[k] = []}
-    @names2ids   = {}
+    @combo2data  = Hash.new {|h,k| h[k] = []}
+    @tables      = {}
 
     # HTML entity codes
     @entities = {
@@ -126,48 +125,36 @@ class Names
     ]
   end
 
-  def add( name, id)
-    name = name.to_s.downcase
-    id   = id.to_i
-    unless @names2ids[name]
-      @names2ids[name] =  id
-      @id2names[id]    << name
+  def listen( database, table, name, key)
+    @tables[table] = [name, key]
+    database.add_listener(table, self)
+  end
 
-      string_combos( name) do |combo, weight|
-        @combo2ids[combo][id] = weight
+  def record_deleted( table, record)
+    info = @tables[table]
+    raise "Unknown table #{table}" unless info
+    name = record[info[0]]
+    key  = record[info[1]]
+
+    string_combos( name) do |combo|
+      entries = @combo2data[combo].select {|data| (data[0] != name) || (data[1] != key)}
+      if entries.empty?
+        @combo2data.delete(combo)
+      else
+        @combo2data[combo] = entries
       end
-    end
+   end
   end
 
-  def check_unique_name( name, id)
-    name = name.to_s.downcase
-    id   = id.to_i
-    if @names2ids[name] && (@names2ids[name] != id)
-      false
-    else
-      true
+  def record_inserted( table, record)
+    info = @tables[table]
+    raise "Unknown table #{table}" unless info
+    name = record[info[0]]
+    key  = record[info[1]]
+
+    string_combos( name) do |combo|
+      @combo2data[combo] << [name, key]
     end
-  end
-
-  def poison( name)
-    name = name.to_s.downcase
-    id   = - (1 + @combo2ids.size)
-
-    string_combos( name) do |combo, weight|
-      @combo2ids[combo][id] = weight
-#        p ['poison', name, combo, id]
-    end
-  end
-
-  def rarity( name)
-    freq = 1000000
-
-    string_combos( name) do |combo, weight|
-      ids  = @combo2ids[combo].keys
-      freq = (ids.size * weight) if ((ids.size * weight) < freq) && (ids.size > 0)
-    end
-
-    freq
   end
 
   def reduce( name)
@@ -175,7 +162,7 @@ class Names
     return cached if cached
 
     # Lower case and decode HTML entities
-    reduced = simplify( name)
+    reduced = simplify( name.gsub(/\(\d\d\d\d\)/, ' '))
 
     # Apply substitutions and eliminations
     was = nil
@@ -196,18 +183,6 @@ class Names
     reduced = reduced.gsub( /[ ]+/, ' ').strip
 
     @cache[name] = reduced
-  end
-
-  def remove( name, id)
-    name = name.to_s.downcase
-    id = id.to_i
-
-    string_combos( name) do |combo, weight|
-      @combo2ids[combo].delete( id)
-    end
-
-    @names2ids.delete( name)
-    @id2names.delete(id)
   end
 
   def simplify( name)
@@ -238,41 +213,49 @@ class Names
 
   def string_combos( name)
     words = reduce( name).split( ' ')
-    yield words.join( ' '), 1
+    yield words.join(' ')
 
-    words.each {|word| yield word, 100}
-
-    (0..(words.size-2)).each do |i|
-      yield words[i..(i+1)].join(' '), 100
+    if words.size > 1
+      words.each {|word| yield word}
     end
 
-    (0..(words.size-3)).each do |i|
-      yield words[i..(i+2)].join(' '), 100
+    if words.size > 2
+      (0..(words.size-2)).each do |i|
+        yield words[i..(i+1)].join(' ')
+      end
     end
 
-    (0..(words.size-4)).each do |i|
-      yield words[i..(i+3)].join(' '), 100
+    if words.size > 3
+      (0..(words.size-3)).each do |i|
+        yield words[i..(i+2)].join(' ')
+      end
+    end
+
+    if words.size > 4
+      (0..(words.size-4)).each do |i|
+        yield words[i..(i+3)].join(' ')
+      end
     end
   end
 
   def suggest( name, limit)
-    id2size = Hash.new {|h,k| h[k] = 1000000}
-    string_combos( name) do |combo, weight|
-      ids = @combo2ids[combo].keys
-      ids.each do |id|
-        next if id < 0
-        id2size[id] = (ids.size * weight) if id2size[id] > (ids.size * weight)
+    id2size = Hash.new {|h,k| h[k] = [1000000, '']}
+    string_combos( name) do |combo|
+      found = @combo2data[combo]
+      found.each do |data|
+        text, key = * data
+        id2size[key] = [found.size, text] if id2size[key][0] > found.size
       end
     end
 
-    found = id2size.keys.sort_by {|id| id2size[id]}
-    found[0...limit].each {|id| yield id, id2size[id]}
+    found = id2size.keys.sort_by {|id| id2size[id][0]}
+    found[0...limit].each {|id| yield id2size[id][1], id}
   end
 
-  def suggest_analysis( name)
-    string_combos( name) do |combo, weight|
-      ids = @combo2ids[combo].keys.select {|id| id >= 0}
-      yield combo, ids, weight if ids.size > 0
-    end
-  end
+  # def suggest_analysis( name)
+  #   string_combos( name) do |combo|
+  #     ids = @combo2data[combo].collect {|data| data[1]}
+  #     yield combo, ids if ids.size > 0
+  #   end
+  # end
 end
