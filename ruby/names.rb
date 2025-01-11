@@ -248,7 +248,7 @@ class Names
       end
     end
 
-    found = id2size.keys.sort_by {|id| id2size[id][0]}
+    found = id2size.keys.sort_by {|id| [id2size[id][0], id2size[id][1].size]}
     found[0...limit].each {|id| yield id2size[id][1], id}
   end
 

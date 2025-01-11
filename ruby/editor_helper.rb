@@ -292,24 +292,9 @@ HIDDEN_ASPECT_ELEMENT
     end
 
     def company_suggestions(name)
-      extant = Hash.new {|h,k| h[k] = []}
-
-      $pagoda.select('company') do |rec|
-        rec[:name].gsub(/\W/,' ').split(' ').each do |word|
-          extant[word.downcase] << rec[:name] unless word.empty?
-        end
+      $company_names.suggest(name,50) do |name, _|
+        yield name
       end
-
-      candidates = {}
-      name.gsub(/\W/,' ').split(' ').uniq.collect do |word|
-        extant[word.downcase]
-      end.sort_by {|list|list.size}.each do |list|
-        list.each do |candidate|
-          candidates[candidate] = true unless candidates[candidate]
-        end
-      end
-
-      candidates.keys
     end
 
     def companies_records(known,search)
@@ -704,9 +689,9 @@ SEARCH
       $game_names = Names.new
       $game_names.listen( $pagoda, 'game', :name, :id)
       $game_names.listen( $pagoda, 'alias', :name, :id)
-      # $pagoda.cache_timestamps do |t|
-      #   @@timestamps[t] = true
-      # end
+
+      $company_names = Names.new
+      $company_names.listen( $pagoda, 'company', :name, :name)
     end
 
     def sort_name( name)

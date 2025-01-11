@@ -78,16 +78,5 @@
       html.join( "\n")
     %>
   </table>
-
-  <table class="list" <%= $debug ? '' : 'style="display: none"' %> >
-    <tr><th>Combo</th><th>Hits</th></tr>
-    <%=
-      html = []
-      # @rec.suggest_analysis do |combo, ids|
-      #   html << "<tr><td>#{combo}</td><td>#{ids.collect {|id| id.to_s}.join( ' ')}</td></tr>"
-      # end
-      html.join( "\n")
-    %>
-  </table>
 </body>
 </html>

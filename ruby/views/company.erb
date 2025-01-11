@@ -42,7 +42,7 @@
       html.join("\n")
     else
       html = ['<table class="list"><tr><th>Suggested</th><th>Action</th></tr>']
-      company_suggestions(company).each do |name|
+      company_suggestions(company) do |name|
         html << "<tr><td><a href=\"/company/#{e(e(name))}\">#{h(name)}</a></td>"
         html << '<td>' + company_alias_action(name,company) + '</td></tr>'
       end
