@@ -9,11 +9,12 @@ class TestFind < TestBase
     include Common
     attr_reader :adds, :suggests, :limit, :cache
 
-    def initialize(pagoda, cache, site, type, limit)
+    def initialize(pagoda, cache, site, type, limit, yday)
       super(pagoda,cache)
-      @site     = site
-      @type     = type
-      @limit    = limit
+      @site  = site
+      @type  = type
+      @limit = limit
+      @yday  = yday
     end
 
     def browser_get(url)
@@ -32,6 +33,10 @@ class TestFind < TestBase
         @limit -= 1
         super
       end
+    end
+
+    def yday
+      @yday
     end
   end
 
@@ -72,7 +77,7 @@ class TestFind < TestBase
   end
 
   def test_game_boomers_walkthroughs
-    scan( 'GameBoomers', 'Walkthrough', :find_walkthroughs, 3)
+    scan( 'GameBoomers', 'Walkthrough', :find_walkthroughs, 2, 3)
     assert_link_count 100
     assert_links_match %r{^http(s|)://(www.|)gameboomers.com/(wtcheats|Walkthroughs)/}
   end
@@ -130,8 +135,8 @@ class TestFind < TestBase
   end
 
   def test_steam
-    scan( 'Steam', 'Store', :find, 0)
-    assert_link_count 100
+    scan( 'Steam', 'Store', :incremental, 0)
+    assert_suggest_count 100
     assert_links_match %r{^https://store.steampowered.com/app/\d+$}
   end
 
@@ -150,6 +155,10 @@ class TestFind < TestBase
       p link unless pattern =~ link[:url]
       assert pattern =~ link[:url]
     end
+  end
+
+  def assert_suggest_count(min)
+    assert min <= @pagoda.count('suggest')
   end
 
   def assert_has_link(pattern)
@@ -174,10 +183,9 @@ class TestFind < TestBase
     end
   end
 
-  def scan(site,type,method,limit)
-    scanner = TestSpider.new(@pagoda, @cache, site, type, limit)
+  def scan(site,type,method,limit,yday=0)
+    scanner = TestSpider.new(@pagoda, @cache, site, type, limit, yday)
     @pagoda.get_site_handler(site).send(method,scanner)
-    scanner.add_suggested(1000)
     assert_equal 0, scanner.limit
   end
 end

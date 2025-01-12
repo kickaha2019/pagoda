@@ -2,38 +2,30 @@ require_relative 'default_site'
 
 class GameBoomers < DefaultSite
 	def find_reviews( scanner)
-		added  = 0
-		scanner.refresh('game_boomers_reviews') do |found|
+		scanner.refresh do
 			scanner.html_anchors( 'https://www.gameboomers.com/reviews.html') do |link, label|
 				if /^http(|s):\/\/(www\.|)gameboomers\.com\/reviews\/.*$/ =~ link
-					found[link.sub( /^https/, 'http').gsub( /\s/, '')] = label
+					scanner.add_link( label, link.sub( /^https/, 'http').gsub( /\s/, ''))
 				end
-				0
 			end
-		end.each_pair do |url, label|
-			added += scanner.add_link( label, url)
 		end
-		added
 	end
 
 	def find_walkthroughs( scanner)
-		added  = 0
-		scanner.refresh('game_boomers_walkthroughs') do |found|
+		scanner.refresh(yday = scanner.yday) do
+			pages = []
 			scanner.html_anchors( 'https://www.gameboomers.com/walkthroughs.html') do |link, _|
 				if /Walkthroughs\/.*walkthroughs\.html$/ =~ link
-					scanner.html_anchors( link) do |link2, label2|
-						if /^http(|s):\/\/(www\.|)gameboomers\.com\/wtcheats\/.*$/ =~ link2
-							found[link2.sub( /^https/, 'http').gsub( /\s/, '')] = label2
-						end
-						0
-					end
+					pages << link
 				end
-				0
 			end
-		end.each_pair do |url, label|
-			added += scanner.add_link( label, url)
+
+			scanner.html_anchors( pages[ yday % pages.size]) do |link2, label2|
+				if /^http(|s):\/\/(www\.|)gameboomers\.com\/wtcheats\/.*$/ =~ link2
+					scanner.add_link( label2, link2.sub( /^https/, 'http').gsub( /\s/, ''))
+				end
+			end
 		end
-		added
 	end
 
 	def name

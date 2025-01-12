@@ -40,13 +40,12 @@ class AdventureGamers < DefaultSite
 	end
 
 	def find_reviews( scanner)
-		scanner.html_anchors(BASE + '/articles/reviews') do |href, label|
-			if ['','Genre Introduction','Top 100 All-Time'].include? label
-				0
-			elsif m = %r{^(/articles/view/.*)$}.match(href)
-				scanner.add_link( label, BASE + m[1].split('?')[0])
-			else
-				0
+		scanner.refresh do
+			scanner.html_anchors(BASE + '/articles/reviews') do |href, label|
+				if ['','Genre Introduction','Top 100 All-Time'].include? label
+				elsif m = %r{^(/articles/view/.*)$}.match(href)
+					scanner.add_link( label, BASE + m[1].split('?')[0])
+				end
 			end
 		end
 	end

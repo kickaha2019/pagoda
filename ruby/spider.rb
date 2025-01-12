@@ -23,6 +23,11 @@ class Spider
 		@suggested       = []
 		@suggested_links = {}
 		set_not_game_words
+
+		@old_suggested_links = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = Hash.new {|h2,k2| h2[k2] = []}}}
+		@pagoda.select('suggest') do |rec|
+			@old_suggested_links[rec[:site]][rec[:type]][rec[:group]] << rec[:url]
+		end
 	end
 
 	def add_bind(url, game_id)
@@ -33,7 +38,7 @@ class Spider
 
 	def add_link( title, url, site=@site, type=@type)
 		url = @pagoda.get_site_handler( site).coerce_url( url.strip)
-		@suggested_links[url] = true
+		#@suggested_links[url] = true
 
 		if @pagoda.has?( 'link', :url, url)
 			0
@@ -204,13 +209,12 @@ class Spider
 			puts "*** Incremental scan for site: #{@site} type: #{@type}"
 			start = Time.now.to_i
 			begin
-				added = @pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
-				puts "... #{added} links added" if added > 0
+				@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
 				puts "... Time taken #{Time.now.to_i - start} seconds"
 				STDOUT.flush
 			rescue Exception => bang
 				error( "Site: " + @site + ": " + bang.message)
-				raise unless site == 'All'
+				raise #unless site == 'All'
 			end
 		end
 
@@ -271,16 +275,51 @@ class Spider
 		puts "... #{to_delete.size} deleted #{@pagoda.count( 'link') - before} added"
 	end
 
-	def refresh( stem)
-		path  = @cache + '/' + stem + '.yaml'
+	def refresh( group='All')
+		to_delete, last_run = [], 0
+		@pagoda.select('history') do |rec|
+			if rec[:timestamp] < (@pagoda.now.to_i - 365 * 24 * 60 * 60)
+				to_delete << rec[:timestamp]
+			end
 
-		if File.exist?( path) && (File.mtime( path) > (Time.now - 15 * 24 * 60 * 60))
-			YAML.load(IO.read( path ))
+			if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:group] == group.to_s)
+				last_run = rec[:timestamp]
+			end
 		end
 
-		{}.tap do |found|
-			yield found
-			File.open(path,'w') {|io| io.print found.to_yaml }
+		unless to_delete.empty?
+			@pagoda.start_transaction
+			to_delete.each do |timestamp|
+				@pagoda.delete('history',:timestamp, timestamp)
+			end
+			@pagoda.end_transaction
+		end
+
+		if last_run < (@pagoda.now.to_i - 12 * 60 * 60)
+			count_links    = @pagoda.count('link')
+			count_suggests = @pagoda.count('suggest')
+
+			yield
+
+			if count_links < @pagoda.count('link')
+				puts "... #{@pagoda.count('link') - count_links} links added"
+			end
+
+			if count_suggests < @pagoda.count('suggest')
+				puts "... #{@pagoda.count('suggest') - count_suggests} suggests added"
+			end
+
+			@pagoda.start_transaction
+			@old_suggested_links[@site][@type][group].each do |url|
+				unless @suggested_links[url]
+					@pagoda.delete('suggest',:url, url)
+				end
+			end
+
+			@pagoda.delete('history',:timestamp, last_run) if last_run > 0
+			@pagoda.insert('history',
+										 {site:@site, type:@type, group:group.to_s, timestamp:@pagoda.now.to_i})
+			@pagoda.end_transaction
 		end
 	end
 
@@ -351,9 +390,15 @@ class Spider
 		end
 	end
 
-	def suggest_link( title, url)
+	def suggest_link( group, title, url)
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
-		@suggested << {:site => @site, :type => @type, :title => title, :url => url, :orig_title => title}
+		return if @pagoda.has?('link',:url, url)
+		unless @pagoda.has?('suggest',:url, url)
+			@pagoda.start_transaction
+			@pagoda.insert('suggest',
+										 {site:@site, type:@type, title:title, url:url, group:group})
+			@pagoda.end_transaction
+		end
 		@suggested_links[url] = true
 	end
 
@@ -389,5 +434,9 @@ class Spider
 	def wait_return
 		puts "*** Press carriage return to continue"
 		STDIN.gets
+	end
+
+	def yday
+		@pagoda.now.yday
 	end
 end

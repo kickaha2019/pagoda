@@ -15,9 +15,24 @@ incremental:
 - site:   Adventure Gamers
   type:   Review
   method: find_reviews
+- site:   GameBoomers
+  type:   Review
+  method: find_reviews
+- site:   GameBoomers
+  type:   Walkthrough
+  method: find_walkthroughs
 - site:   Grabbed
   type:   Reference
   method: incremental
+- site:   Mystery Manor
+  type:   Review
+  method: find_reviews
+- site:   Mystery Manor
+  type:   Walkthrough
+  method: find_walkthroughs
+- site:   Nice Game Hints
+  type:   Walkthrough
+  method: find
 - site:   Steam
   type:   Store
   method: incremental
@@ -37,12 +52,6 @@ full:
 - site:   Big Fish Games
   type:   Store
   method: full
-- site:   GameBoomers
-  type:   Review
-  method: find_reviews
-- site:   GameBoomers
-  type:   Walkthrough
-  method: find_walkthroughs
 - site:   GOG
   type:   Store
   method: find
@@ -55,15 +64,6 @@ full:
 - site:   Just Adventure
   type:   Walkthrough
   method: find_walkthroughs
-- site:   Mystery Manor
-  type:   Review
-  method: find_reviews
-- site:   Mystery Manor
-  type:   Walkthrough
-  method: find_walkthroughs
-- site:   Nice Game Hints
-  type:   Walkthrough
-  method: find
 - site:   Steam
   type:   Store
   method: find

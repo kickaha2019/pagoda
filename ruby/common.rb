@@ -83,13 +83,12 @@ module Common
 		page.force_encoding( 'UTF-8')
 		page.encode!( 'US-ASCII',
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
-		added = 0
 
 		Nodes.parse(page).css('a') do |a|
-			added += (yield a['href'], a.text.strip)
+			yield( a['href'], a.text.strip)
 		end
 
-		added
+		0
 	end
 
 	def http_get( url, delay = 10, headers = {})

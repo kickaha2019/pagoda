@@ -44,23 +44,24 @@ class Steam < DefaultSite
 	end
 
 	def incremental( scanner)
-		path  = scanner.cache + '/steam.json'
-		raw   = JSON.parse( IO.read( path))['applist']['apps']
-		count = 0
+		return unless (scanner.yday % 10) == 0
 
-		raw.each do |record|
-			text = record['name']
-			text.force_encoding( 'UTF-8')
-			text.encode!( 'US-ASCII',
-										:invalid => :replace, :undef => :replace, :universal_newline => true)
-			url = "https://store.steampowered.com/app/#{record['appid']}"
-			scanner.debug_hook( 'Steam:urls', text, url)
-			count += scanner.add_link( text, url)
+		scanner.refresh( group = 'All') do
+			path  = scanner.cache + '/steam.json'
+			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
+				raise 'Error retrieving steam data'
+			end
 
-			break if count >= 100
+			raw   = JSON.parse( IO.read( path))['applist']['apps']
+			raw.each do |record|
+				text = record['name']
+				text.force_encoding( 'UTF-8')
+				text.encode!( 'US-ASCII',
+											:invalid => :replace, :undef => :replace, :universal_newline => true)
+				url = "https://store.steampowered.com/app/#{record['appid']}"
+				scanner.suggest_link(group, text, url)
+			end
 		end
-
-		count
 	end
 
 	def name
