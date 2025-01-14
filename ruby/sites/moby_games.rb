@@ -13,6 +13,61 @@ class MobyGames < DefaultSite
 		end
 	end
 
+	def find(scanner)
+		now_year = Time.now.year
+		run_year = scanner.yday % (now_year - 1979) + 1980
+
+		scanner.refresh(run_year) do
+			find_genre(scanner, run_year, 'adventure')
+			#find_genre(scanner, run_year, 'puzzle')
+			#find_genre(scanner, run_year, 'role-playing-rpg')
+			#find_genre(scanner, run_year, 'educational')
+		end
+	end
+
+	def find_genre(scanner, run_year, genre)
+		page  = 1
+		url   = find_url(run_year, genre, page)
+		group = genre + ':' + run_year.to_s
+
+		while url
+			old_url, url = url, nil
+
+			raw = scanner.http_get(old_url)
+			raw.force_encoding( 'UTF-8')
+			raw.encode!( 'US-ASCII',
+										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			File.open('/tmp/moby.html','w') do |io|
+				io.write(raw)
+			end
+
+			raw.split("\n").each do |line|
+				if m = /^\s*:initial-values='(.*)'\s*$/.match( line)
+					data = JSON.parse(m[1])
+					suggested = ! scanner.has_suggests?(group)
+
+					data['games'].each do |game|
+						p [game['title'], game['internal_url']]
+						suggested |= scanner.suggest_link( group, game['title'], game['internal_url'])
+					end
+
+					if suggested && (data['page'] < data['maxPages'])
+						page += 1
+						url  = find_url(run_year, genre, page)
+					end
+					break
+				end
+			end
+		end
+	end
+
+	def find_url(year, genre, page)
+		url = <<"HTML"
+https://www.mobygames.com/game/from:#{year}/genre:#{genre}/until:#{year}/sort:added/page:#{page}/
+HTML
+		url.strip
+	end
+	
 	def reduce_title( title)
 		if m = /^(.+)- MobyGames/.match( title)
 			title = m[1]

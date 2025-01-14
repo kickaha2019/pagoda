@@ -1,128 +1,129 @@
 class Names
+
+  # HTML entity codes
+  @@entities = {
+    '&aacute;' => 'a',
+    '&amp;'    => '&',
+    '&bull;'   => '.',
+    '&ccedil;' => 'c',
+    '&eacute;' => 'e',
+    '&egrave;' => 'e',
+    '&gt;'     => '>',
+    '&hellip;' => '...',
+    '&iacute;' => 'i',
+    '&igrave;' => 'i',
+    '&iquest;' => '?',
+    '&iuml;'   => 'i',
+    '&laquo;'  => '"',
+    '&lt;'     => '<',
+    '&mdash;'  => '-',
+    '&nbsp;'   => ' ',
+    '&ndash;'  => '-',
+    '&ocirc;'  => 'o',
+    '&omacr;'  => 'o',
+    '&oslash;' => 'o',
+    '&ouml;'   => 'o',
+    '&quot;'   => '"',
+    '&raquo;'  => '"',
+    '&reg;'    => ' ',
+    '&rsaquo;' => ' ',
+    '&trade;'  => ' ',
+    '&uacute;' => 'u',
+    '&ucirc;'  => 'u',
+    '&uuml;'   => 'u',
+    '&#xa1;'   => ' ',
+    '&#xb0;'   => ' ',
+    '&#xbd;'   => ' ',
+    '&#xbe;'   => ' ',
+    '&#xce;'   => 'l',
+    '&#xda;'   => 'u',
+    '&#xdf;'   => 's',
+    '&#xea;'   => 'e',
+    '&#xef;'   => 'l',
+    '&#xe0;'   => 'a',
+    '&#xe1;'   => 'a',
+    '&#xE8;'   => 'e',
+    '&#xE9;'   => 'e',
+    '&#xeb;'   => 'e',
+    '&#xec;'   => 'i',
+    '&#xed;'   => 'i',
+    '&#xfa;'   => 'u',
+    '&#xfb;'   => 'u',
+    '&#xfc;'   => 'u',
+    '&#xfd;'   => 'y',
+    '&#xff;'   => 'y',
+    '&#xFF;'   => 'y',
+    '&#xff0a;' => ' ',
+    '&#xff1c;' => ' ',
+    '&#xff1e;' => ' ',
+    '&#xf1;'   => 'n',
+    '&#x1ce;'  => 'a',
+    '&#x101;'  => 'a',
+    '&#x14D;'  => 'o',
+    '&#x1d0;'  => 'l',
+    '&#x22;'   => '"',
+    '&#x26;'   => "&",
+    '&#x27;'   => "'",
+    '&#x2022;' => " ",
+    '&#039;'   => "'",
+    '&#39;'    => "'",
+    '&#8211;'  => "-",
+    '&#8216;'  => "'",
+    '&#8217;'  => "'",
+    '&#8220;'  => '"',
+    '&#8221;'  => '"'
+  }.freeze
+
+  # List of substitutions to make which includes ignoring certain words
+  @@substitutions = {
+    'a'           => '',
+    'center'      => 'centre',
+    'eight'       => '8',
+    'four'        => '4',
+    'five'        => '5',
+    'i'           => '1',
+    'ii'          => '2',
+    'iii'         => '3',
+    'in'          => '',
+    'iv'          => '4',
+    'ix'          => '9',
+    'license'     => 'licence',
+    'nine'        => '9',
+    'one'         => '1',
+    'redux'       => '',
+    'remastered'  => '',
+    'review'      => '',
+    'seven'       => '7',
+    'six'         => '6',
+    'the'         => '',
+    'three'       => '3',
+    'two'         => '2',
+    'v'           => '5',
+    'vi'          => '6',
+    'vii'         => '7',
+    'viii'        => '8',
+    'vs'          => 'versus',
+    'walkthrough' => ''
+  }.freeze
+
+  # List of words to ignore if they come before numbers
+  @@ordinals = [
+    'act',
+    'book',
+    'case',
+    'chapter',
+    'episode',
+    'issue',
+    'mystery',
+    'part',
+    'vol',
+    'volume'
+  ].freeze
+
   def initialize
     @cache       = {}
     @combo2data  = Hash.new {|h,k| h[k] = []}
     @tables      = {}
-
-    # HTML entity codes
-    @entities = {
-        '&aacute;' => 'a',
-        '&amp;'    => '&',
-        '&bull;'   => '.',
-        '&ccedil;' => 'c',
-        '&eacute;' => 'e',
-        '&egrave;' => 'e',
-        '&gt;'     => '>',
-        '&hellip;' => '...',
-        '&iacute;' => 'i',
-        '&igrave;' => 'i',
-        '&iquest;' => '?',
-        '&iuml;'   => 'i',
-        '&laquo;'  => '"',
-        '&lt;'     => '<',
-        '&mdash;'  => '-',
-        '&nbsp;'   => ' ',
-        '&ndash;'  => '-',
-        '&ocirc;'  => 'o',
-        '&omacr;'  => 'o',
-        '&oslash;' => 'o',
-        '&ouml;'   => 'o',
-        '&quot;'   => '"',
-        '&raquo;'  => '"',
-        '&reg;'    => ' ',
-        '&rsaquo;' => ' ',
-        '&trade;'  => ' ',
-        '&uacute;' => 'u',
-        '&ucirc;'  => 'u',
-        '&uuml;'   => 'u',
-        '&#xa1;'   => ' ',
-        '&#xb0;'   => ' ',
-        '&#xbd;'   => ' ',
-        '&#xbe;'   => ' ',
-        '&#xce;'   => 'l',
-        '&#xda;'   => 'u',
-        '&#xdf;'   => 's',
-        '&#xea;'   => 'e',
-        '&#xef;'   => 'l',
-        '&#xe0;'   => 'a',
-        '&#xe1;'   => 'a',
-        '&#xE8;'   => 'e',
-        '&#xE9;'   => 'e',
-        '&#xeb;'   => 'e',
-        '&#xec;'   => 'i',
-        '&#xed;'   => 'i',
-        '&#xfa;'   => 'u',
-        '&#xfb;'   => 'u',
-        '&#xfc;'   => 'u',
-        '&#xfd;'   => 'y',
-        '&#xff;'   => 'y',
-        '&#xFF;'   => 'y',
-        '&#xff0a;' => ' ',
-        '&#xff1c;' => ' ',
-        '&#xff1e;' => ' ',
-        '&#xf1;'   => 'n',
-        '&#x1ce;'  => 'a',
-        '&#x101;'  => 'a',
-        '&#x14D;'  => 'o',
-        '&#x1d0;'  => 'l',
-        '&#x22;'   => '"',
-        '&#x26;'   => "&",
-        '&#x27;'   => "'",
-        '&#x2022;' => " ",
-        '&#039;'   => "'",
-        '&#39;'    => "'",
-        '&#8211;'  => "-",
-        '&#8216;'  => "'",
-        '&#8217;'  => "'",
-        '&#8220;'  => '"',
-        '&#8221;'  => '"'
-    }
-
-    # List of substitutions to make which includes ignoring certain words
-    @substitutions = {
-        'a'           => '',
-        'center'      => 'centre',
-        'eight'       => '8',
-        'four'        => '4',
-        'five'        => '5',
-        'i'           => '1',
-        'ii'          => '2',
-        'iii'         => '3',
-        'in'          => '',
-        'iv'          => '4',
-        'ix'          => '9',
-        'license'     => 'licence',
-        'nine'        => '9',
-        'one'         => '1',
-        'redux'       => '',
-        'remastered'  => '',
-        'review'      => '',
-        'seven'       => '7',
-        'six'         => '6',
-        'the'         => '',
-        'three'       => '3',
-        'two'         => '2',
-        'v'           => '5',
-        'vi'          => '6',
-        'vii'         => '7',
-        'viii'        => '8',
-        'vs'          => 'versus',
-        'walkthrough' => ''
-    }
-
-    # List of words to ignore if they come before numbers
-    @ordinals = [
-        'act',
-        'book',
-        'case',
-        'chapter',
-        'episode',
-        'issue',
-        'mystery',
-        'part',
-        'vol',
-        'volume'
-    ]
   end
 
   def listen( database, table, name, key)
@@ -162,17 +163,17 @@ class Names
     return cached if cached
 
     # Lower case and decode HTML entities
-    reduced = simplify( name.gsub(/\(\d\d\d\d\)/, ' '))
+    reduced = Names.simplify( name.gsub(/\(\d\d\d\d\)/, ' '))
 
     # Apply substitutions and eliminations
     was = nil
     while was != reduced
       was = reduced
-      @substitutions.each_pair do |from, to|
+      @@substitutions.each_pair do |from, to|
         reduced = reduced.gsub( /(^| )#{from}( |$)/, " #{to} ").strip
       end
 
-      @ordinals.each do |ordinal|
+      @@ordinals.each do |ordinal|
         if m = /^(.*) #{ordinal}\s+(\d+.*)$/.match( reduced)
           reduced = m[1] + ' ' + m[2]
         end
@@ -185,17 +186,17 @@ class Names
     @cache[name] = reduced
   end
 
-  def simplify( name)
+  def self.simplify( name)
 
     # Lower case and decode HTML entities
     reduced = name.to_s
-    @entities.each_pair do |from, to|
+    @@entities.each_pair do |from, to|
       reduced = reduced.gsub( from, to)
     end
     reduced = reduced.downcase
 
     # Again for luck
-    @entities.each_pair do |from, to|
+    @@entities.each_pair do |from, to|
       reduced = reduced.gsub( from, to)
     end
 

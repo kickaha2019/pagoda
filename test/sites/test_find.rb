@@ -83,18 +83,8 @@ class TestFind < TestBase
   end
 
   def test_gog
-    @pagoda.add_link('GOG','Store','Test lost 1',
-                     'https://www.gog.com/game/test_lost1')
-    @pagoda.add_link('GOG','Store','Test lost 2',
-                     'https://www.gog.com/game/test_lost2')
-    @pagoda.create_game( {:name=>'Test game 2',:id => 100})
-    @pagoda.link('https://www.gog.com/game/test_lost2').bind(100)
     scan( 'GOG', 'Store',:find, 2)
     assert_links_match %r{^https://www.gog.com/game/}
-    assert_no_such_link 'test_lost1'
-    assert_has_link 'test_lost2'
-    found = JSON.parse(IO.read(@cache + '/gog.json'))
-    assert found.size > 60
     assert_link_count 60
   end
 
@@ -114,6 +104,12 @@ class TestFind < TestBase
     scan( 'Just Adventure', 'Walkthrough', :find_walkthroughs, 2)
     assert_link_count 54
     assert_links_match %r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/}
+  end
+
+  def test_moby_games
+    scan( 'MobyGames', 'Reference', :find, 2)
+    assert_suggest_count 24
+    assert_links_match %r{^https://www.mobygames.com/game/235829/$}
   end
 
   def test_mystery_manor_reviews

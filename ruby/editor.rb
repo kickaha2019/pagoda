@@ -109,6 +109,8 @@ end
 get '/games' do
   if params[:year]
     context = new_year_context(params[:year],params[:sort_by])
+  elsif params[:company]
+    context = new_company_context(d(params[:company]),params[:sort_by])
   elsif params[:aspect]
     context = new_aspect_context(d(params[:aspect]),params[:sort_by])
   elsif params[:no_aspect_type]

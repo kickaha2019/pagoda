@@ -1,6 +1,11 @@
 require_relative '../common'
 require_relative '../database'
 require_relative '../pagoda'
+require_relative '../contexts/default_context'
+require_relative '../contexts/aspect_context'
+require_relative '../contexts/no_aspect_type_context'
+require_relative '../contexts/year_context'
+require_relative '../contexts/company_context'
 
 class PrepareWork
   include Common
@@ -48,6 +53,16 @@ class PrepareWork
     add(label,count,(count >= last) ? 'normal' : 'error',nil)
   end
 
+  def context_find(context, label, url)
+    count       = 0
+
+    @pagoda.games do |game|
+      count += 1 if context.select_game?(@pagoda, game)
+    end
+
+    add(label, count, 'error', url, count == 0)
+  end
+
   def flagged_links
     count = 0
     @pagoda.links do |link|
@@ -65,23 +80,15 @@ class PrepareWork
   end
 
   def missing_aspect_type(type)
-    aspect_info = @pagoda.aspect_info
-    count       = 0
+    context_find( NoAspectTypeContext.new(type,:id),
+                  "Games with no #{type}",
+                  "/games?no_aspect_type=#{type}&sort_by=id")
+  end
 
-    @pagoda.games do |game|
-      next if game.group?
-
-      selected = ! game.aspects['Lost']
-      game.aspects.each_pair do |a, flag|
-        if flag && (aspect_info[a]['type'] == type)
-          selected = false
-        end
-      end
-
-      count += 1 if selected
-    end
-
-    add("Games with no #{type}",count,'error',"/games?no_aspect_type=#{type}&sort_by=id",count == 0)
+  def no_company
+    context_find( CompanyContext.new(nil,:id),
+                  "Games with no company",
+                  "/games?company=&sort_by=id")
   end
 
   def no_genre
@@ -93,11 +100,9 @@ class PrepareWork
   end
 
   def no_year
-    count = 0
-    @pagoda.games do |game|
-      count += 1 unless game.year || game.group?
-    end
-    add('Games with no year',count,'error',"/games?year=&sort_by=id",count == 0)
+    context_find( YearContext.new(nil,:id),
+                  "Games with no year",
+                  "/games?year=&sort_by=id")
   end
 
   def oldest_link
@@ -141,6 +146,7 @@ class PrepareWork
     free_links
     flagged_links
     no_year
+    no_company
     no_genre
     no_perspective
     unknown_companies

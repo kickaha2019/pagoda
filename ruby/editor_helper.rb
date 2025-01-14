@@ -1,91 +1,15 @@
 require 'sinatra/base'
 require_relative 'pagoda'
 require_relative 'common'
+require_relative 'contexts/default_context'
+require_relative 'contexts/aspect_context'
+require_relative 'contexts/no_aspect_type_context'
+require_relative 'contexts/year_context'
+require_relative 'contexts/company_context'
 
 module Sinatra
   module EditorHelper
     include Common
-
-    class DefaultContext
-      def initialize(sort_by='name')
-        @sort_by = sort_by
-      end
-
-      def select_game?(pagoda,game)
-        true
-      end
-
-      def show_aspect_type(type)
-        true
-      end
-
-      def sort_games(games)
-        games.sort_by do |rec|
-          (@sort_by == 'id') ? rec.id : rec.name.to_s
-        end
-      end
-    end
-
-    class AspectContext < DefaultContext
-      def initialize(aspect,sort_by)
-        super(sort_by)
-        @aspect = aspect
-      end
-
-      def select_game?(pagoda,game)
-        return false if game.group?
-
-        if @aspect == 'None'
-          game.aspects.size == 0
-        else
-          game.aspects[aspect]
-        end
-      end
-    end
-
-    class NoAspectTypeContext < DefaultContext
-      def initialize(type,sort_by)
-        super(sort_by)
-        @type = type
-      end
-
-      def select_game?(pagoda,game)
-        return false if game.group?
-        aspects     = game.aspects
-        return false if aspects['Lost']
-
-        aspect_info = $pagoda.aspect_info
-        game.aspects.each_pair do |a, flag|
-          return false if flag && (aspect_info[a]['type'] == @type)
-        end
-
-        true
-      end
-
-      def show_aspect_type(type)
-        type == @type
-      end
-    end
-
-    class YearContext < DefaultContext
-      def initialize(year,sort_by)
-        super(sort_by)
-        @year = year
-      end
-
-      def select_game?(pagoda,game)
-        return false if game.group?
-        if @year.is_a?(Integer)
-          game.year == @year
-        else
-          game.year.nil?
-        end
-      end
-
-      def show_aspect_type(type)
-        false
-      end
-    end
 
     @@selected_game = -1
     @@timestamps    = {}
@@ -241,8 +165,8 @@ HIDDEN_ASPECT_ELEMENT
     def company_add_alias(company,aka)
       return unless company_exists?(company)
       $pagoda.start_transaction
-      $pagoda.delete('company',:name,aka)
       old = $pagoda.get('company_alias',:name,aka)
+      $pagoda.delete('company',:name,aka)
       $pagoda.delete('company_alias',:name,aka)
       $pagoda.delete('company_alias',:alias,aka)
       $pagoda.insert('company_alias',{:name => company, :alias => aka})
@@ -580,6 +504,12 @@ SEARCH
     def new_aspect_context(aspect,sort_by)
       (@@contexts.size+1).tap do |context|
         @@contexts[context] = AspectContext.new(aspect,sort_by)
+      end
+    end
+
+    def new_company_context(company,sort_by)
+      (@@contexts.size+1).tap do |context|
+        @@contexts[context] = CompanyContext.new(company,sort_by)
       end
     end
 

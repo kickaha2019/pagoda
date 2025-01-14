@@ -40,7 +40,7 @@ class Pagoda
     end
     log 'Populate names repository'
 
-    @aspect_info_timestamp = 0
+    @aspect_info_timestamp = Time.utc(1970)
     load_site_handlers
     @pagoda_links = load_links
     log 'Pagoda opened'
@@ -86,6 +86,10 @@ class Pagoda
   end
 
   def aspect_info
+    if (@aspect_info_timestamp + 2) > Time.now
+      return @aspect_info
+    end
+
     unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
       @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
       @aspect_info = YAML.load( IO.read( @dir + '/aspects.yaml'))
@@ -477,19 +481,19 @@ class Pagoda
     end
   end
 
-  # def sort_name( name)
-  #   name = @names.simplify(name)
-  #   if m = /^(a|an|the) (.*)$/.match( name)
-  #     name = m[2]
-  #   end
-  #
-  #   name = name.strip.upcase
-  #   if /^\d/ =~ name
-  #     '#' + name
-  #   else
-  #     name
-  #   end
-  # end
+  def sort_name( name)
+    name = Names.simplify(name)
+    if m = /^(a|an|the) (.*)$/.match( name)
+      name = m[2]
+    end
+
+    name = name.strip.upcase
+    if /^\d/ =~ name
+      '#' + name
+    else
+      name
+    end
+  end
 
   def start_transaction
     @database.start_transaction

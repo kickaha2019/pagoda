@@ -181,6 +181,10 @@ class Spider
 		end
 	end
 
+	def has_suggests?(group)
+		! @old_suggested_links[@site][@type][group].empty?
+	end
+
 	def http_get_wrapped( url)
 		response = http_get_response( url)
 		if response.code == '404'
@@ -393,13 +397,16 @@ class Spider
 	def suggest_link( group, title, url)
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		return if @pagoda.has?('link',:url, url)
-		unless @pagoda.has?('suggest',:url, url)
+		@suggested_links[url] = true
+		if @pagoda.has?('suggest',:url, url)
+			false
+		else
 			@pagoda.start_transaction
 			@pagoda.insert('suggest',
-										 {site:@site, type:@type, title:title, url:url, group:group})
+										 {site:@site, type:@type, title:title, url:url, group:group.to_s})
 			@pagoda.end_transaction
+			true
 		end
-		@suggested_links[url] = true
 	end
 
 	def test_full( site, type)

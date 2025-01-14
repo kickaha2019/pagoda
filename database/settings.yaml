@@ -21,9 +21,15 @@ incremental:
 - site:   GameBoomers
   type:   Walkthrough
   method: find_walkthroughs
+- site:   GOG
+  type:   Store
+  method: find
 - site:   Grabbed
   type:   Reference
   method: incremental
+- site:   MobyGames
+  type:   Reference
+  method: find
 - site:   Mystery Manor
   type:   Review
   method: find_reviews
@@ -52,9 +58,6 @@ full:
 - site:   Big Fish Games
   type:   Store
   method: full
-- site:   GOG
-  type:   Store
-  method: find
 - site:   HOTU
   type:   Reference
   method: find

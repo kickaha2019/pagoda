@@ -15,30 +15,20 @@ class GoodOldGames < DefaultSite
 	end
 
 	def find( scanner)
-		path  = scanner.cache + "/gog.json"
-		added = 0
-
-		unless File.exist?( path) && (File.mtime( path) > (Time.now - 6 * 24 * 60 * 60))
-			page, seen, old_seen = 0, {}, -1
-
-			while (seen.size > old_seen) && (page < 1000)
-				old_seen = seen.size
-				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=asc:releaseDate"
+		scanner.refresh do
+			page, added, old_added = 0, 0, -1
+			while (added > old_added) && (page < 1000)
+				old_added = added
+				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=desc:releaseDate"
 				#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
 				#raw = IO.read( '/Users/peter/temp/gog.html')
-
-				added += find_on_page( scanner, raw, seen)
+				added += find_on_page( scanner, raw)
 				page += 1
 			end
-
-			File.open( path, 'w') {|io| io.print JSON.generate( seen)}
 		end
-
-		scanner.purge_lost_urls
-		added
 	end
 
-	def find_on_page( scanner, raw, seen)
+	def find_on_page( scanner, raw)
 		url, added = nil, 0
 
 		raw.split( '<').each do |line|
@@ -52,7 +42,6 @@ class GoodOldGames < DefaultSite
 					text.encode!( 'US-ASCII',
 												:invalid => :replace, :undef => :replace, :universal_newline => true)
 					added += scanner.add_link( text, url)
-					seen[url] = text
 					url = nil
 				end
 			end
@@ -79,15 +68,6 @@ class GoodOldGames < DefaultSite
 		end
 
 		tags
-	end
-
-	def incremental( scanner)
-    raw   = scanner.browser_get "https://www.gog.com/games?order=desc:releaseDate"
-		# File.open( '/tmp/gog.html', 'w') {|io| io.print raw}
-    seen  = {}
-		added = find_on_page( scanner, raw, seen)
-		scanner.error( 'Unable to find recent GOG game') unless seen.size > 0
-    added
 	end
 
 	def name

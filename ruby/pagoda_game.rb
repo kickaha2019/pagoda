@@ -94,9 +94,9 @@ class PagodaGame < PagodaRecord
     'N'
   end
 
-  # def sort_name
-  #   @owner.sort_name( name)
-  # end
+  def sort_name
+    @owner.sort_name( name)
+  end
 
   # def suggest_analysis
   #   @owner.suggest_analysis( name) {|combo, hits| yield combo, hits}
