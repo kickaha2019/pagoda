@@ -13,6 +13,9 @@ not_game_words:
 - trailer
 incremental:
 - site:   Adventure Gamers
+  type:   Database
+  method: find_database
+- site:   Adventure Gamers
   type:   Review
   method: find_reviews
 - site:   GameBoomers
@@ -27,6 +30,9 @@ incremental:
 - site:   Grabbed
   type:   Reference
   method: incremental
+- site:   IGDB
+  type:   Reference
+  method: find
 - site:   MobyGames
   type:   Reference
   method: find
@@ -46,9 +52,6 @@ incremental:
   type:   Review
   method: incremental
 full:
-- site:   Adventure Gamers
-  type:   Database
-  method: find_database
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database

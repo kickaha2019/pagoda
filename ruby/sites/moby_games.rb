@@ -47,7 +47,6 @@ class MobyGames < DefaultSite
 					suggested = ! scanner.has_suggests?(group)
 
 					data['games'].each do |game|
-						p [game['title'], game['internal_url']]
 						suggested |= scanner.suggest_link( group, game['title'], game['internal_url'])
 					end
 

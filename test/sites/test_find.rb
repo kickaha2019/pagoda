@@ -35,6 +35,15 @@ class TestFind < TestBase
       end
     end
 
+    def http_post( url, delay = 10, headers = {}, body = nil)
+      if @limit == 0
+        nil
+      else
+        @limit -= 1
+        super
+      end
+    end
+
     def yday
       @yday
     end
@@ -53,7 +62,7 @@ class TestFind < TestBase
   end
 
   def test_adventure_gamers_database
-    scan( 'Adventure Gamers', 'Database', :find_database, 2)
+    scan( 'Adventure Gamers', 'Database', :find_database, 3)
     assert_link_count 40
     assert_links_match %r{^https://adventuregamers.com/games/view/\d+$}
   end
@@ -92,6 +101,12 @@ class TestFind < TestBase
     scan( 'HOTU', 'Reference', :find, 2)
     assert_link_count 60
     assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
+  end
+
+  def test_igdb
+    scan( 'IGDB', 'Reference',:find, 2)
+    assert_suggest_count 1000
+    assert_links_match %r{^https://www.igdb.com/games/}
   end
 
   def test_just_adventure_reviews

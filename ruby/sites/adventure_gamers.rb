@@ -13,10 +13,15 @@ class AdventureGamers < DefaultSite
 	end
 
 	def find_database( scanner)
-		added = 0
-		scanner.refresh('adventure_gamers_database') do |found|
+		scanner.refresh do
+			raw = scanner.http_get(BASE + '/games/adventure/all')
+			sections = []
+			Nodes.parse( raw).css( 'div.letter a') do |anchor|
+				sections << anchor['href']
+			end
+
 			page  = 1
-			url   = BASE + '/games/adventure/all'
+			url   = BASE + sections[scanner.yday % sections.size]
 
 			while page
 				last, page = page, nil
@@ -27,16 +32,11 @@ class AdventureGamers < DefaultSite
 					elsif /^ / =~ label
 					elsif /\t/ =~ label
 					elsif m = %r{^(/games/view/\d+)$}.match(href)
-						found[BASE + m[1]] = label
+						scanner.add_link(label, BASE + m[1])
 					end
-					0
 				end
 			end
-		end.each_pair do |url, label|
-			added += scanner.add_link( label, url)
 		end
-
-		added
 	end
 
 	def find_reviews( scanner)
