@@ -2,8 +2,8 @@ require_relative 'default_site'
 
 class JustAdventure < DefaultSite
 	def find_reviews( scanner)
-		added = 0
-		scanner.refresh('just_adventure_reviews') do |found|
+		return unless (scanner.yday % 30) == 1
+		scanner.refresh do
 			page  = 1
 			url   = 'https://www.justadventure.com/category/reviews/'
 
@@ -19,16 +19,11 @@ class JustAdventure < DefaultSite
 
 					if (%r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/} =~ href) &&
 						(/Review/ =~ label)
-						found[href] = label
+						scanner.add_link( label, href)
 					end
-					0
 				end
 			end
-		end.each_pair do |url, label|
-			added += scanner.add_link( label, url)
 		end
-
-		added
 	end
 
 	def find_walkthroughs( scanner)
@@ -40,6 +35,7 @@ class JustAdventure < DefaultSite
 			while page
 				last, page = page, nil
 				raw = scanner.http_get(url)
+				return if raw.nil?
 				nodes = Nodes.parse(raw)
 
 				nodes.css('div.post-pagination a.inactive') do |anchor|

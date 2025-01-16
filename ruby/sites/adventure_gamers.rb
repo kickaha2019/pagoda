@@ -15,6 +15,7 @@ class AdventureGamers < DefaultSite
 	def find_database( scanner)
 		scanner.refresh do
 			raw = scanner.http_get(BASE + '/games/adventure/all')
+			return if raw.nil?
 			sections = []
 			Nodes.parse( raw).css( 'div.letter a') do |anchor|
 				sections << anchor['href']

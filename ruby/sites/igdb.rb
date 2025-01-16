@@ -85,10 +85,7 @@ class Igdb < DefaultSite
 			return true, false, post_load(pagoda, url, response.body)
 		end
 
-		File.open( '/Users/peter/Caches/Pagoda/igdb.html', 'w') do |io|
-			io.print response.body
-		end
-		return false, false, response.message
+		return false, false, response
 	end
 
 	def post_load(pagoda, url, page)

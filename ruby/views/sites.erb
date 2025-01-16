@@ -48,10 +48,12 @@ CHECKBOX
   </div>
 
   <table class="summary list">
-    <tr><th>Site</th><th>Type</th><th>Invalid</th><th>Free</th><th>Ignored</th><th>Bound</th><th>Flagged</th><th>Rejected</th></tr>
+    <tr><th>Site</th><th>Type</th><th>Invalid</th><th>Free</th><th>Ignored</th><th>Bound</th><th>Flagged</th><th>Rejected</th><th>Suggested</th></tr>
     <%=
       html   = []
       totals = Hash.new {|h,k| h[k] = [0,0,0]}
+
+      suggested = suggested_by_site_and_type
 
       links_by_site_and_type do |site, type, links|
         next unless @types_to_list.include?( type)
@@ -70,6 +72,8 @@ CHECKBOX
           end
         end
 
+        c = counts['Suggested']
+        c[0] += suggested[site][type]
         summary_line( site, type, counts, totals, html)
       end
 

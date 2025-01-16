@@ -11,6 +11,7 @@ class TouchArcade < DefaultSite
 				old_count = urls.size
 				begin
 					raw = scanner.http_get "https://toucharcade.com/category/reviews/page/#{page+1}"
+					return if raw.nil?
 				rescue Exception => bang
 					break
 				end

@@ -26,7 +26,7 @@ class Spider
 
 		@old_suggested_links = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = Hash.new {|h2,k2| h2[k2] = []}}}
 		@pagoda.select('suggest') do |rec|
-			@old_suggested_links[rec[:site]][rec[:type]][rec[:group]] << rec[:url]
+			@old_suggested_links[rec[:site]][rec[:type]][rec[:group]] << rec
 		end
 	end
 
@@ -173,7 +173,7 @@ class Spider
 			next unless (type == @type) || (type == 'All')
 			found = true
 
-			puts "*** Incremental scan for site: #{@site} type: #{@type}"
+			puts "*** Scan for #{@site} / #{@type} / #{scan['method']}"
 			start = Time.now.to_i
 			begin
 				@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
@@ -277,9 +277,9 @@ class Spider
 			end
 
 			@pagoda.start_transaction
-			@old_suggested_links[@site][@type][group].each do |url|
-				unless @suggested_links[url]
-					@pagoda.delete('suggest',:url, url)
+			@old_suggested_links[@site][@type][group].each do |rec|
+				unless @suggested_links[rec[:url]]
+					@pagoda.delete('suggest',:url, rec[:url])
 				end
 			end
 
@@ -363,7 +363,7 @@ class Spider
 
 	def suggest_link( group, title, url)
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
-		return if @pagoda.has?('link',:url, url)
+		#return if @pagoda.has?('link',:url, url)
 		@suggested_links[url] = true
 		if @pagoda.has?('suggest',:url, url)
 			false

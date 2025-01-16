@@ -33,6 +33,7 @@ class Metacritic < DefaultSite
 		(1..100).each do |page|
 			found_new = false
 			raw     = scanner.http_get( base_url + page.to_s)
+			return if raw.nil?
 			File.open( '/Users/peter/temp/metacritic.html', 'w') {|io| io.print raw}
 			#raw = IO.read( '/Users/peter/temp/rock_paper_shotgun.html')
 

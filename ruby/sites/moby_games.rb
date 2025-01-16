@@ -34,6 +34,7 @@ class MobyGames < DefaultSite
 			old_url, url = url, nil
 
 			raw = scanner.http_get(old_url)
+			return if raw.nil?
 			raw.force_encoding( 'UTF-8')
 			raw.encode!( 'US-ASCII',
 										:invalid => :replace, :undef => :replace, :universal_newline => true)

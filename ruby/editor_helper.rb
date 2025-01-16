@@ -639,18 +639,43 @@ SEARCH
       end
     end
 
+    def suggest_groups_records( site, type)
+      map = Hash.new {|h,k| h[k] = 0}
+      $pagoda.select('suggest') do |rec|
+        if rec[:site] == site && rec[:type] == type
+          map[rec[:group]] += 1
+        end
+      end
+
+      map.keys.collect do |group|
+        [group, map[group]]
+      end
+    end
+
+    def suggested_by_site_and_type
+      map = Hash.new {|h,k| h[k] = Hash.new{|h1,k1| h1[k1] = 0}}
+      $pagoda.select('suggest') do |rec|
+        map[rec[:site]][rec[:type]] += 1
+      end
+      map
+    end
+
     def summary_line( site, type, counts, totals, html)
       return if site == ''
       html << "<tr><td>#{h(site)}</td><td>#{type}</td>"
 
-      ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged', 'Rejected'].each do |status|
+      ['Invalid', 'Free', 'Ignored', 'Bound', 'Flagged', 'Rejected', 'Suggested'].each do |status|
         c = counts[status]
         colour = (status == 'Free') ? 'lime' : 'white'
         colour = 'cyan' if c[2] > 0
         colour = 'red' if c[1] > 0
 
         if c[0] > 0
-          url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=&page=1"
+          if status == 'Suggested'
+            url = "/suggest_groups?site=#{e(site)}&type=#{type}&search=&page=1"
+          else
+            url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=&page=1"
+          end
           html << "<td style=\"background: #{colour}\"><a target=\"_blank\" href=\"#{url}\">#{c[0]}</a></td>"
           totals[status] = [0,0,0] if ! totals.has_key?( status)
           c.each_index {|i| totals[status][i] += c[i]}

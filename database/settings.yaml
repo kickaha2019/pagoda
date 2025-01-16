@@ -12,6 +12,9 @@ not_game_words:
 - soundtrack
 - trailer
 incremental:
+- site:   Adventure Game Hotspot
+  type:   Review
+  method: find_reviews
 - site:   Adventure Gamers
   type:   Database
   method: find_database
@@ -33,6 +36,9 @@ incremental:
 - site:   IGDB
   type:   Reference
   method: find
+- site:   Just Adventure
+  type:   Review
+  method: find_reviews
 - site:   MobyGames
   type:   Reference
   method: find
@@ -45,6 +51,9 @@ incremental:
 - site:   Nice Game Hints
   type:   Walkthrough
   method: find
+- site:   rawg.io
+  type:   Reference
+  method: find
 - site:   Steam
   type:   Store
   method: incremental
@@ -55,18 +64,12 @@ full:
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
-- site:   Adventure Game Hotspot
-  type:   Review
-  method: find_reviews
 - site:   Big Fish Games
   type:   Store
   method: full
 - site:   HOTU
   type:   Reference
   method: find
-- site:   Just Adventure
-  type:   Review
-  method: find_reviews
 - site:   Just Adventure
   type:   Walkthrough
   method: find_walkthroughs

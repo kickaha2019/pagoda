@@ -47,13 +47,9 @@ class Steam < DefaultSite
 		return unless (scanner.yday % 10) == 0
 
 		scanner.refresh( group = 'All') do
-			path  = scanner.cache + '/steam.json'
-			if ! system( "curl -o #{path} https://api.steampowered.com/ISteamApps/GetAppList/v2/")
-				raise 'Error retrieving steam data'
-			end
+			raw = scanner.curl('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
 
-			raw   = JSON.parse( IO.read( path))['applist']['apps']
-			raw.each do |record|
+			JSON.parse(raw)['applist']['apps'].each do |record|
 				text = record['name']
 				text.force_encoding( 'UTF-8')
 				text.encode!( 'US-ASCII',

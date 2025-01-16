@@ -36,6 +36,7 @@ class Hotu < DefaultSite
 			old_count = urls.size
 
 			raw = scanner.http_get "#{base}&offset=#{offset}"
+			return if raw.nil?
 			#File.open( '/Users/peter/temp/hotu.html', 'w') {|io| io.print raw}
 			#raw = IO.read( '/Users/peter/temp/hotu.html')
 

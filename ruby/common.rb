@@ -37,6 +37,14 @@ module Common
 		raise "Unable to complete #{url} for #{base}"
 	end
 
+	def curl(url, delay=10)
+		throttle( url, delay)
+		if ! system( "curl -s -o /tmp/curl.out \"#{url}\"")
+			raise 'Error running curl'
+		end
+		IO.read('/tmp/curl.out')
+	end
+
 	def e( text)
 		CGI.escape( text)
 	end
@@ -80,6 +88,7 @@ module Common
 
 	def html_anchors( url, delay=10, headers = {})
 		page = http_get( url, delay, headers)
+		return if page.nil?
 		page.force_encoding( 'UTF-8')
 		page.encode!( 'US-ASCII',
 									:invalid => :replace, :undef => :replace, :universal_newline => true)
@@ -93,6 +102,10 @@ module Common
 
 	def http_get( url, delay = 10, headers = {})
 		response = http_get_response( url, delay, headers)
+		if response.is_a?( Net::HTTPBadGateway) || response.is_a?( Net::HTTPGatewayTimeOut)
+			sleep 60
+			response = http_get_response( url, delay, headers)
+		end
 		begin
 			response.value
 		rescue

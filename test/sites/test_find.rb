@@ -26,9 +26,18 @@ class TestFind < TestBase
       end
     end
 
+    def curl(url)
+      if @limit == 0
+        nil
+      else
+        @limit -= 1
+        super
+      end
+    end
+
     def http_get(url,delay=10,headers={})
       if @limit == 0
-        '<html><body></body></html>'.dup
+        nil
       else
         @limit -= 1
         super
@@ -106,11 +115,11 @@ class TestFind < TestBase
   def test_igdb
     scan( 'IGDB', 'Reference',:find, 2)
     assert_suggest_count 1000
-    assert_links_match %r{^https://www.igdb.com/games/}
+    assert_suggests_match %r{^https://www.igdb.com/games/}
   end
 
   def test_just_adventure_reviews
-    scan( 'Just Adventure', 'Review', :find_reviews, 2)
+    scan( 'Just Adventure', 'Review', :find_reviews, 2, 1)
     assert_link_count 60
     assert_links_match %r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/}
   end
@@ -124,7 +133,7 @@ class TestFind < TestBase
   def test_moby_games
     scan( 'MobyGames', 'Reference', :find, 2)
     assert_suggest_count 24
-    assert_links_match %r{^https://www.mobygames.com/game/235829/$}
+    assert_suggests_match %r{^https://www.mobygames.com/game/235829/$}
   end
 
   def test_mystery_manor_reviews
@@ -145,10 +154,16 @@ class TestFind < TestBase
     assert_links_match %r{^https://www.nicegamehints.com/guide/}
   end
 
+  def test_rawg
+    scan( 'rawg.io', 'Reference', :find, 2)
+    assert_suggest_count 80
+    assert_suggests_match %r{^https://rawg\.io/games/}
+  end
+
   def test_steam
-    scan( 'Steam', 'Store', :incremental, 0)
+    scan( 'Steam', 'Store', :incremental, 1)
     assert_suggest_count 100
-    assert_links_match %r{^https://store.steampowered.com/app/\d+$}
+    assert_suggests_match %r{^https://store\.steampowered\.com/app/\d+$}
   end
 
   def test_turn_based_lovers
@@ -170,6 +185,13 @@ class TestFind < TestBase
 
   def assert_suggest_count(min)
     assert min <= @pagoda.count('suggest')
+  end
+
+  def assert_suggests_match(pattern)
+    @pagoda.select('suggest') do |link|
+      p link unless pattern =~ link[:url]
+      assert pattern =~ link[:url]
+    end
   end
 
   def assert_has_link(pattern)
