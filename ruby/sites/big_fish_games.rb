@@ -9,37 +9,40 @@ class BigFishGames < DefaultSite
 		end
 	end
 
-	def full( scanner)
-		full1( scanner, 'pc-adventure-games') +
-		full1( scanner, 'pc-hidden-object-adventure-games')
+	def find_adventures(scanner,_)
+		find( scanner, 'pc-adventure-games')
 	end
 
-	def full1( scanner, type)
+	def find_hogs(scanner,_)
+		find( scanner, 'pc-hidden-object-games')
+	end
+
+	def find_hopa(scanner,_)
+		find( scanner, 'pc-hidden-object-adventure-games')
+	end
+
+	def find_puzzles(scanner,_)
+		find( scanner, 'pc-puzzle-games')
+	end
+
+	def find( scanner, type)
 		base       = 'https://www.bigfishgames.com/us/en/games/'
 		match      = Regexp.new( '^' + base + '\d+/')
 		url        = base + "genres/#{type}.html?page="
 		found      = 0
 		page       = 0
 		last_found = -1
-		added      = 0
 
-		scanner.refresh('big_fish_' + type) do |to_add|
-			while last_found < found
-				last_found =  found
-				page       += 1
-				scanner.html_anchors( url + page.to_s) do |link, label|
-					if match =~ link
-						found += 1
-						to_add[link.split('?')[0]] = label
-					end
-					0
+		while last_found < found
+			last_found =  found
+			page       += 1
+			scanner.html_anchors( url + page.to_s) do |link, label|
+				if match =~ link
+					found += 1
+					scanner.add_link(label, link.split('?')[0])
 				end
 			end
-		end.each_pair do |link, label|
-			added += scanner.add_link( label, link)
 		end
-
-		added
 	end
 
 	def name

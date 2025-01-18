@@ -13,15 +13,44 @@ class MobyGames < DefaultSite
 		end
 	end
 
-	def find(scanner)
-		now_year = Time.now.year
-		run_year = scanner.yday % (now_year - 1979) + 1980
+	def find_scan(scanner,endpoint,offset)
+		url = <<"URL"
+https://api.mobygames.com/v1
+#{endpoint}?format=brief&offset=#{offset}&
+api_key=#{scanner.settings['MobyGames']}
+URL
+		url = url.gsub( /\s/, '')
+		raw = scanner.http_get(url)
+		return 0 if raw.nil?
+		json = JSON.parse(raw)
 
-		scanner.refresh(run_year) do
-			find_genre(scanner, run_year, 'adventure')
-			#find_genre(scanner, run_year, 'puzzle')
-			#find_genre(scanner, run_year, 'role-playing-rpg')
-			#find_genre(scanner, run_year, 'educational')
+		json['games'].each_index do |i|
+			game = json['games'][i]
+			yield offset+i, game['title'], game['moby_url']
+			#scanner.suggest_link('Recent',game['title'],game['moby_url'])
+		end
+		json['games'].size
+	end
+	
+	def find(scanner, _)
+		offset, check_first_known, known = 0, false, {}
+		scanner.already_suggested do |record|
+			if m = /^offset:(\d+)$/.match(record[:group])
+				offset            = m[1].to_i
+				check_first_known = true
+			end
+			known[record[:url]] = true
+		end
+
+		offset -= 4 if offset > 4
+		find_scan( scanner,'/games', offset) do |offset1, label, url|
+			if check_first_known
+				check_first_known = false
+				unless known[url]
+					raise "Games order corrupted"
+				end
+			end
+			scanner.suggest_link("offset:#{offset1}", label, url)
 		end
 	end
 

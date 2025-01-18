@@ -83,7 +83,7 @@ class TestFind < TestBase
   end
 
   def test_big_fish_games
-    scan( 'Big Fish Games', 'Store', :full, 2)
+    scan( 'Big Fish Games', 'Store', :find_adventures, 2)
     assert_link_count 75
     assert_links_match %r{^https://www.bigfishgames.com/us/en/games/\d+/}
   end
@@ -131,9 +131,9 @@ class TestFind < TestBase
   end
 
   def test_moby_games
-    scan( 'MobyGames', 'Reference', :find, 2)
-    assert_suggest_count 24
-    assert_suggests_match %r{^https://www.mobygames.com/game/235829/$}
+    scan( 'MobyGames', 'Reference', :find, 1)
+    assert_suggest_count 100
+    assert_suggests_match %r{^https://www.mobygames.com/game/\d+/}
   end
 
   def test_mystery_manor_reviews
@@ -218,7 +218,7 @@ class TestFind < TestBase
 
   def scan(site,type,method,limit,yday=0)
     scanner = TestSpider.new(@pagoda, @cache, site, type, limit, yday)
-    @pagoda.get_site_handler(site).send(method,scanner)
+    @pagoda.get_site_handler(site).send(method,scanner,yday)
     assert_equal 0, scanner.limit
   end
 end

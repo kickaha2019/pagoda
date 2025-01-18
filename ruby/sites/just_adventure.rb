@@ -1,59 +1,49 @@
 require_relative 'default_site'
 
 class JustAdventure < DefaultSite
-	def find_reviews( scanner)
-		return unless (scanner.yday % 30) == 1
-		scanner.refresh do
-			page  = 1
-			url   = 'https://www.justadventure.com/category/reviews/'
+	def find_reviews( scanner, _)
+		page  = 1
+		url   = 'https://www.justadventure.com/category/reviews/'
 
-			while page
-				last, page = page, nil
-				scanner.html_anchors(url) do |href, label|
-					if m = %r{^https://www.justadventure.com/category/reviews/page/(\d+)/}.match(href)
-						if m[1].to_i == (last+1)
-							page = m[1].to_i
-							url = "https://www.justadventure.com/category/reviews/page/#{page}/"
-						end
+		while page
+			last, page = page, nil
+			scanner.html_anchors(url) do |href, label|
+				if m = %r{^https://www.justadventure.com/category/reviews/page/(\d+)/}.match(href)
+					if m[1].to_i == (last+1)
+						page = m[1].to_i
+						url = "https://www.justadventure.com/category/reviews/page/#{page}/"
 					end
+				end
 
-					if (%r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/} =~ href) &&
-						(/Review/ =~ label)
-						scanner.add_link( label, href)
-					end
+				if (%r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/} =~ href) &&
+					(/Review/ =~ label)
+					scanner.add_link( label, href)
 				end
 			end
 		end
 	end
 
-	def find_walkthroughs( scanner)
-		added = 0
-		scanner.refresh('just_adventure_walkthroughs') do |found|
-			page  = 1
-			url   = 'https://www.justadventure.com/category/walkthrough/'
+	def find_walkthroughs( scanner, _)
+		page  = 1
+		url   = 'https://www.justadventure.com/category/walkthrough/'
 
-			while page
-				last, page = page, nil
-				raw = scanner.http_get(url)
-				return if raw.nil?
-				nodes = Nodes.parse(raw)
+		while page
+			last, page = page, nil
+			raw = scanner.http_get(url)
+			return if raw.nil?
+			nodes = Nodes.parse(raw)
 
-				nodes.css('div.post-pagination a.inactive') do |anchor|
-					if anchor.text.to_i == (last+1)
-						page = anchor.text.to_i
-						url  = "https://www.justadventure.com/category/walkthrough/page/#{page}/"
-					end
-				end
-
-				nodes.css('div.entry h3 a') do |anchor|
-					found[anchor['href']] = anchor.text
+			nodes.css('div.post-pagination a.inactive') do |anchor|
+				if anchor.text.to_i == (last+1)
+					page = anchor.text.to_i
+					url  = "https://www.justadventure.com/category/walkthrough/page/#{page}/"
 				end
 			end
-		end.each_pair do |url, label|
-			added += scanner.add_link( label, url)
-		end
 
-		added
+			nodes.css('div.entry h3 a') do |anchor|
+				scanner.add_link( anchor.text, anchor['href'])
+			end
+		end
 	end
 
 	def reduce_title(title)

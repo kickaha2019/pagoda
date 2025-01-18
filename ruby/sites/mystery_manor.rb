@@ -1,22 +1,18 @@
 require_relative 'default_site'
 
 class MysteryManor < DefaultSite
-	def find_reviews( scanner)
-		scanner.refresh do
-			scanner.html_anchors( 'https://mysterymanor.net/conservatory.htm') do |link, label|
-				if /^review/ =~ link
-					scanner.add_link( label, 'https://mysterymanor.net/' + link)
-				end
+	def find_reviews( scanner, _)
+		scanner.html_anchors( 'https://mysterymanor.net/conservatory.htm') do |link, label|
+			if /^review/ =~ link
+				scanner.add_link( label, 'https://mysterymanor.net/' + link)
 			end
 		end
 	end
 
-	def find_walkthroughs( scanner)
-		scanner.refresh do
-			scanner.html_anchors( 'https://mysterymanor.net/walkthroughs.htm') do |link, label|
-				if /^walkthroughs\// =~ link
-					scanner.add_link( label, 'https://mysterymanor.net/' + link)
-				end
+	def find_walkthroughs( scanner, _)
+		scanner.html_anchors( 'https://mysterymanor.net/walkthroughs.htm') do |link, label|
+			if /^walkthroughs\// =~ link
+				scanner.add_link( label, 'https://mysterymanor.net/' + link)
 			end
 		end
 	end

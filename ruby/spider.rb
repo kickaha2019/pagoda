@@ -16,6 +16,71 @@ class Spider
 	include Common
 	attr_reader :cache
 
+	class Scan
+		attr_reader :every
+
+		def initialize(pagoda,defn)
+			@site      = defn['site']
+			@type      = defn['type']
+			@method    = defn['method']
+			@every     = defn['every'] ? defn['every'].to_i : 1
+			@timestamp = 0
+			@runs      = 0
+
+			forgotten = []
+			pagoda.select('history') do |rec|
+				if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:method] == @method)
+					@timestamp = rec[:timestamp]
+					@runs      = rec[:runs]
+				end
+			end
+
+			forgotten.each do |timestamp|
+				pagoda.delete('history',:timestamp,timestamp)
+			end
+		end
+
+		def cost_per_day
+			(@every > 1) ? (1.0 / @every) : 0
+		end
+
+		def overdue
+			((Time.now.to_i - @timestamp + (60 * 60 * 12)) / (60 * 60 * 24)) - (@every - 1)
+		end
+
+		def run(scanner,pagoda)
+			puts "*** Run for #{@site} / #{@type} / #{@method}"
+			scanner.set_site_type(@site, @type)
+
+			start = Time.now.to_i
+			begin
+				count_links    = pagoda.count('link')
+				count_suggests = pagoda.count('suggest')
+				pagoda.get_site_handler( @site).send( @method.to_sym, scanner, @runs)
+
+				if count_links < pagoda.count('link')
+					puts "... #{pagoda.count('link') - count_links} links added"
+				end
+
+				if count_suggests < pagoda.count('suggest')
+					puts "... #{pagoda.count('suggest') - count_suggests} suggests added"
+				end
+
+				pagoda.start_transaction
+				pagoda.delete('history',:timestamp, @timestamp) if @timestamp > 0
+				now = Time.now.to_i
+				pagoda.insert('history',
+											 {site:@site, type:@type, method:@method, timestamp:now, runs:(@runs+1)})
+				pagoda.end_transaction
+				puts "... Time taken #{now - start} seconds"
+				STDOUT.flush
+			rescue Exception => bang
+				scanner.error( "Site: " + @site + ": " + bang.message)
+				raise #unless site == 'All'
+			end
+		end
+	end
+
 	def initialize( pagoda, cache)
 		@cache           = cache
 		@errors          = 0
@@ -82,37 +147,43 @@ class Spider
 		# end
 	end
 
+	def delete_suggest(url)
+		@pagoda.start_transaction
+		@pagoda.delete( 'suggest', :url, url)
+		@pagoda.end_transaction
+	end
+
 	def error( msg)
 		puts "*** #{msg}"
 		@errors += 1
 	end
 
-	def full( site, type, section='full')
-		found = false
-
-		@pagoda.settings[section].each do |scan|
-			@site = scan['site']
-			@type = scan['type']
-			next unless (site == @site) || (site == 'All')
-			next unless (type == @type) || (type == 'All')
-			found = true
-
-			puts "*** Full scan for site: #{@site} type: #{@type}"
-			before = @pagoda.count( 'link')
-			start = Time.now.to_i
-			@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
-			added = @pagoda.count( 'link') - before
-			puts "... #{added} links added" if added > 0
-			puts "... Time taken #{Time.now.to_i - start} seconds"
-		end
-
-		unless found
-			error( "No full scan for #{site}/#{type}")
-			return
-		end
-
-		#add_suggested
-	end
+	# def full( site, type, section='full')
+	# 	found = false
+	#
+	# 	@pagoda.settings[section].each do |scan|
+	# 		@site = scan['site']
+	# 		@type = scan['type']
+	# 		next unless (site == @site) || (site == 'All')
+	# 		next unless (type == @type) || (type == 'All')
+	# 		found = true
+	#
+	# 		puts "*** Full scan for site: #{@site} type: #{@type}"
+	# 		before = @pagoda.count( 'link')
+	# 		start = Time.now.to_i
+	# 		@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
+	# 		added = @pagoda.count( 'link') - before
+	# 		puts "... #{added} links added" if added > 0
+	# 		puts "... Time taken #{Time.now.to_i - start} seconds"
+	# 	end
+	#
+	# 	unless found
+	# 		error( "No full scan for #{site}/#{type}")
+	# 		return
+	# 	end
+	#
+	# 	#add_suggested
+	# end
 
 	def game_title(id)
 		if g = @pagoda.game(id)
@@ -162,36 +233,36 @@ class Spider
 		end
 	end
 
-	def incremental( site, type, section='incremental')
-		found = false
-    load_old_redirects( @cache + '/redirects.yaml')
-
-		@pagoda.settings[section].each do |scan|
-			@site = scan['site']
-			@type = scan['type']
-			next unless (site == @site) || (site == 'All')
-			next unless (type == @type) || (type == 'All')
-			found = true
-
-			puts "*** Scan for #{@site} / #{@type} / #{scan['method']}"
-			start = Time.now.to_i
-			begin
-				@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
-				puts "... Time taken #{Time.now.to_i - start} seconds"
-				STDOUT.flush
-			rescue Exception => bang
-				error( "Site: " + @site + ": " + bang.message)
-				raise #unless site == 'All'
-			end
-		end
-
-		unless found
-			error( "No incremental scan for #{site}/#{type}")
-			return
-    end
-
-    save_new_redirects( @cache + '/redirects.yaml')
-	end
+	# def incremental( site, type, section='incremental')
+	# 	found = false
+  #   load_old_redirects( @cache + '/redirects.yaml')
+	#
+	# 	@pagoda.settings[section].each do |scan|
+	# 		@site = scan['site']
+	# 		@type = scan['type']
+	# 		next unless (site == @site) || (site == 'All')
+	# 		next unless (type == @type) || (type == 'All')
+	# 		found = true
+	#
+	# 		puts "*** Scan for #{@site} / #{@type} / #{scan['method']}"
+	# 		start = Time.now.to_i
+	# 		begin
+	# 			@pagoda.get_site_handler( @site).send( scan['method'].to_sym, self)
+	# 			puts "... Time taken #{Time.now.to_i - start} seconds"
+	# 			STDOUT.flush
+	# 		rescue Exception => bang
+	# 			error( "Site: " + @site + ": " + bang.message)
+	# 			raise #unless site == 'All'
+	# 		end
+	# 	end
+	#
+	# 	unless found
+	# 		error( "No incremental scan for #{site}/#{type}")
+	# 		return
+  #   end
+	#
+  #   save_new_redirects( @cache + '/redirects.yaml')
+	# end
 
 	def links_for_site( site)
 		@pagoda.links do |link|
@@ -242,58 +313,83 @@ class Spider
 		puts "... #{to_delete.size} deleted #{@pagoda.count( 'link') - before} added"
 	end
 
-	def refresh( group='All')
-		to_delete, last_run = [], 0
-		@pagoda.select('history') do |rec|
-			if rec[:timestamp] < (@pagoda.now.to_i - 365 * 24 * 60 * 60)
-				to_delete << rec[:timestamp]
-			end
-
-			if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:group] == group.to_s)
-				last_run = rec[:timestamp]
-			end
-		end
-
-		unless to_delete.empty?
-			@pagoda.start_transaction
-			to_delete.each do |timestamp|
-				@pagoda.delete('history',:timestamp, timestamp)
-			end
-			@pagoda.end_transaction
-		end
-
-		if last_run < (@pagoda.now.to_i - 12 * 60 * 60)
-			count_links    = @pagoda.count('link')
-			count_suggests = @pagoda.count('suggest')
-
-			yield
-
-			if count_links < @pagoda.count('link')
-				puts "... #{@pagoda.count('link') - count_links} links added"
-			end
-
-			if count_suggests < @pagoda.count('suggest')
-				puts "... #{@pagoda.count('suggest') - count_suggests} suggests added"
-			end
-
-			@pagoda.start_transaction
-			@old_suggested_links[@site][@type][group].each do |rec|
-				unless @suggested_links[rec[:url]]
-					@pagoda.delete('suggest',:url, rec[:url])
-				end
-			end
-
-			@pagoda.delete('history',:timestamp, last_run) if last_run > 0
-			@pagoda.insert('history',
-										 {site:@site, type:@type, group:group.to_s, timestamp:@pagoda.now.to_i})
-			@pagoda.end_transaction
-		end
-	end
+	# def refresh( group='All')
+	# 	to_delete, last_run = [], 0
+	# 	@pagoda.select('history') do |rec|
+	# 		if rec[:timestamp] < (@pagoda.now.to_i - 365 * 24 * 60 * 60)
+	# 			to_delete << rec[:timestamp]
+	# 		end
+	#
+	# 		if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:group] == group.to_s)
+	# 			last_run = rec[:timestamp]
+	# 		end
+	# 	end
+	#
+	# 	unless to_delete.empty?
+	# 		@pagoda.start_transaction
+	# 		to_delete.each do |timestamp|
+	# 			@pagoda.delete('history',:timestamp, timestamp)
+	# 		end
+	# 		@pagoda.end_transaction
+	# 	end
+	#
+	# 	if last_run < (@pagoda.now.to_i - 12 * 60 * 60)
+	# 		count_links    = @pagoda.count('link')
+	# 		count_suggests = @pagoda.count('suggest')
+	#
+	# 		yield
+	#
+	# 		if count_links < @pagoda.count('link')
+	# 			puts "... #{@pagoda.count('link') - count_links} links added"
+	# 		end
+	#
+	# 		if count_suggests < @pagoda.count('suggest')
+	# 			puts "... #{@pagoda.count('suggest') - count_suggests} suggests added"
+	# 		end
+	#
+	# 		@pagoda.start_transaction
+	# 		@old_suggested_links[@site][@type][group].each do |rec|
+	# 			unless @suggested_links[rec[:url]]
+	# 				@pagoda.delete('suggest',:url, rec[:url])
+	# 			end
+	# 		end
+	#
+	# 		@pagoda.delete('history',:timestamp, last_run) if last_run > 0
+	# 		@pagoda.insert('history',
+	# 									 {site:@site, type:@type, group:group.to_s, timestamp:@pagoda.now.to_i})
+	# 		@pagoda.end_transaction
+	# 	end
+	# end
 
 	def report
 		if @errors > 0
 			puts "*** #{@errors} errors"
 			exit 1
+		end
+	end
+
+	def run( section)
+		scans = @pagoda.settings[section].collect {|defn| Scan.new(@pagoda, defn)}
+
+		# How many scans to run each time which are not every day?
+		sum_cost_per_day = scans.inject(0) {|sum, scan| sum + scan.cost_per_day}
+		to_run = sum_cost_per_day.to_i + 1
+
+		# Sort scans by how overdue
+		scans.sort_by! {|scan| [-scan.overdue,scan.every]}
+
+		# Run as many scans as we can
+		scans.each do |scan|
+			next if scan.overdue < 1
+
+			if scan.every < 2
+				scan.run(self,@pagoda)
+			else
+				if to_run > 0
+					scan.run(self,@pagoda)
+					to_run -= 1
+				end
+			end
 		end
 	end
 
@@ -357,6 +453,11 @@ class Spider
 		end
 	end
 
+	def set_site_type(site, type)
+		@site = site
+		@type = type
+	end
+
 	def settings
 		@pagoda.settings
 	end
@@ -376,13 +477,13 @@ class Spider
 		end
 	end
 
-	def test_full( site, type)
-		full( site, type, 'test_full')
-	end
-
-	def test_incremental( site, type)
-		incremental( site, type, 'test_incremental')
-	end
+	# def test_full( site, type)
+	# 	full( site, type, 'test_full')
+	# end
+	#
+	# def test_incremental( site, type)
+	# 	incremental( site, type, 'test_incremental')
+	# end
 
 	# def update_link(link, rec, body, ext, debug=false)
 	# 	@pagoda.update_link(link, rec, body, ext, debug)
@@ -408,9 +509,5 @@ class Spider
 	def wait_return
 		puts "*** Press carriage return to continue"
 		STDIN.gets
-	end
-
-	def yday
-		@pagoda.now.yday
 	end
 end

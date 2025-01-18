@@ -5,22 +5,48 @@
   client_id: kvnfu73c7dp7iz2c5i9tq456jl4f0z
   client_secret: ebx8hrxjwyfes0dkg8m0ojxk1x2n1d
 "rawg.io":  58f66f75d8124171bb55205683cd79ec
+MobyGames:  moby_BfnnHhYCrJYeUpdL94e3WQQm8ql
 suggested_limit:  10
 not_game_words:
 - demo
 - OST
 - soundtrack
 - trailer
-incremental:
+problem:
+- site:   rawg.io
+  type:   Reference
+  method: find
+- site:   IGDB
+  type:   Reference
+  method: find
+train: []
+overnight:
 - site:   Adventure Game Hotspot
+  type:   Review
+  method: find_reviews
+- site:   Adventure Gamers
   type:   Review
   method: find_reviews
 - site:   Adventure Gamers
   type:   Database
   method: find_database
-- site:   Adventure Gamers
-  type:   Review
-  method: find_reviews
+  every:  30
+- site:   Big Fish Games
+  type:   Store
+  method: find_adventures
+  every:  30
+- site:   Big Fish Games
+  type:   Store
+  method: find_hogs
+  every:  30
+- site:   Big Fish Games
+  type:   Store
+  method: find_hopa
+  every:  30
+- site:   Big Fish Games
+  type:   Store
+  method: find_puzzles
+  every:  30
 - site:   GameBoomers
   type:   Review
   method: find_reviews
@@ -33,12 +59,26 @@ incremental:
 - site:   Grabbed
   type:   Reference
   method: incremental
-- site:   IGDB
+- site:   HOTU
   type:   Reference
-  method: find
+  method: find_adventure
+  every:  30
+- site:   HOTU
+  type:   Reference
+  method: find_puzzle
+  every:  30
+- site:   HOTU
+  type:   Reference
+  method: find_rpg
+  every:  30
 - site:   Just Adventure
   type:   Review
   method: find_reviews
+  every:  30
+- site:   Just Adventure
+  type:   Walkthrough
+  method: find_walkthroughs
+  every:  30
 - site:   MobyGames
   type:   Reference
   method: find
@@ -51,12 +91,23 @@ incremental:
 - site:   Nice Game Hints
   type:   Walkthrough
   method: find
-- site:   rawg.io
-  type:   Reference
-  method: find
 - site:   Steam
   type:   Store
   method: incremental
+  every:  10
+test:
+- site:   Test
+  type:   Test
+  method: find1
+- site:   Test
+  type:   Test
+  method: find2
+  every:  5
+- site:   Test
+  type:   Test
+  method: find3
+  every:  2
+incremental:
 - site:   TouchArcade
   type:   Review
   method: incremental
@@ -64,18 +115,6 @@ full:
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
-- site:   Big Fish Games
-  type:   Store
-  method: full
-- site:   HOTU
-  type:   Reference
-  method: find
-- site:   Just Adventure
-  type:   Walkthrough
-  method: find_walkthroughs
-- site:   Steam
-  type:   Store
-  method: find
 - site:   Turn Based Lovers
   type:   Review
   method: findReviews

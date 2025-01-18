@@ -2,6 +2,7 @@
 require 'minitest/autorun'
 require_relative '../ruby/common'
 require_relative '../ruby/pagoda'
+require_relative '../ruby/spider'
 
 class TestBase < Minitest::Test
   def setup
@@ -15,6 +16,7 @@ class TestBase < Minitest::Test
     end
 
     @pagoda = Pagoda.testing(@metadata,@cache)
+    @spider = Spider.new(@pagoda, @cache)
   end
 
   def mkdir(path)
@@ -32,5 +34,9 @@ class TestBase < Minitest::Test
 
   def insert_tag_aspect(tag, aspect)
     @pagoda.insert('tag_aspects',{tag:tag,aspect:aspect})
+  end
+
+  def insert_history(site,type,method,timestamp,runs)
+    @pagoda.insert('history',{site:site,type:type,method:method,timestamp:timestamp,runs:runs})
   end
 end

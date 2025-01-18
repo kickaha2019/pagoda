@@ -15,32 +15,30 @@ class Rawg < DefaultSite
 		end
 	end
 
-	def find(scanner)
-		scanner.refresh do
-			page = 1
-			scanner.already_suggested do |rec|
-				page = rec[:group].to_i if rec[:group].to_i > page
-			end
+	def find(scanner, _)
+		page = 1
+		scanner.already_suggested do |rec|
+			page = rec[:group].to_i if rec[:group].to_i > page
+		end
 
-			loops = 50
-			url = <<"RAWG"
+		loops = 50
+		url = <<"RAWG"
 https://api.rawg.io/api/games?key=#{scanner.settings['rawg.io']}&genres=3,5,7,17,34,40&page=#{page}&page_size=40&ordering=created
 RAWG
-			url = url.strip
+		url = url.strip
 
-			while (loops > 0) && url
-				raw = scanner.http_get(url,10,'Accept' => 'application/json')
-				#raw = scanner.curl url
-				break if raw.nil?
+		while (loops > 0) && url
+			raw = scanner.http_get(url,10,'Accept' => 'application/json')
+			#raw = scanner.curl url
+			break if raw.nil?
 
-				data = JSON.parse(raw)
-				data['results'].each do |game|
-					scanner.suggest_link(page,game['name'], BASE + '/games/' + game['slug'])
-				end
-				url = data['next']
-				loops -= 1
-				page += 1
+			data = JSON.parse(raw)
+			data['results'].each do |game|
+				scanner.suggest_link(page,game['name'], BASE + '/games/' + game['slug'])
 			end
+			url = data['next']
+			loops -= 1
+			page += 1
 		end
 	end
 

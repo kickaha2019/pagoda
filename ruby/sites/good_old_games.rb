@@ -14,17 +14,15 @@ class GoodOldGames < DefaultSite
 		false
 	end
 
-	def find( scanner)
-		scanner.refresh do
-			page, added, old_added = 0, 0, -1
-			while (added > old_added) && (page < 1000)
-				old_added = added
-				raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=desc:releaseDate"
-				#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
-				#raw = IO.read( '/Users/peter/temp/gog.html')
-				added += find_on_page( scanner, raw)
-				page += 1
-			end
+	def find( scanner, _)
+		page, added, old_added = 0, 0, -1
+		while (added > old_added) && (page < 1000)
+			old_added = added
+			raw = scanner.browser_get "https://www.gog.com/games?page=#{page+1}&order=desc:releaseDate"
+			#File.open( '/Users/peter/temp/gog.html', 'w') {|io| io.print raw}
+			#raw = IO.read( '/Users/peter/temp/gog.html')
+			added += find_on_page( scanner, raw)
+			page += 1
 		end
 	end
 

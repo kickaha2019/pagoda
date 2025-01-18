@@ -18,35 +18,33 @@ class Igdb < DefaultSite
 		end
 	end
 
-	def find(scanner)
-		scanner.refresh do
-			max_id = -1
-			scanner.already_suggested do |rec|
-				max_id = rec[:group].to_i if rec[:group].to_i > max_id
+	def find(scanner, _)
+		max_id = -1
+		scanner.already_suggested do |rec|
+			max_id = rec[:group].to_i if rec[:group].to_i > max_id
+		end
+
+		twitch = scanner.settings['Twitch']
+		refresh_access_token(scanner)
+
+		loop, loops, limit = true, 0, 500
+		while loop
+			json = scanner.http_post(
+				'https://api.igdb.com/v4/games',
+				10,
+				{'Client-ID'    =>  twitch['client_id'],
+				'Authorization' => "Bearer #{@access_token}"},
+				"fields id,name,url; where id > #{max_id}; limit #{limit}; sort id asc;")
+			return if json.nil?
+			found = JSON.parse(json)
+
+			found.each do |game|
+				max_id = game['id'] if game['id'] > max_id
+				scanner.suggest_link(game['id'], game['name'], game['url'])
 			end
 
-			twitch = scanner.settings['Twitch']
-			refresh_access_token(scanner)
-
-			loop, loops, limit = true, 0, 500
-			while loop
-				json = scanner.http_post(
-					'https://api.igdb.com/v4/games',
-					10,
-					{'Client-ID'    =>  twitch['client_id'],
-					'Authorization' => "Bearer #{@access_token}"},
-					"fields id,name,url; where id > #{max_id}; limit #{limit}; sort id asc;")
-				return if json.nil?
-				found = JSON.parse(json)
-
-				found.each do |game|
-					max_id = game['id'] if game['id'] > max_id
-					scanner.suggest_link(game['id'], game['name'], game['url'])
-				end
-
-				loops	+= 1
-				loop = (loops < 10) && (found.length >= limit)
-			end
+			loops	+= 1
+			loop = (loops < 10) && (found.length >= limit)
 		end
 	end
 

@@ -44,19 +44,21 @@ class Steam < DefaultSite
 	end
 
 	def incremental( scanner)
-		return unless (scanner.yday % 10) == 0
+		raw = scanner.curl('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
+		suggested = {}
 
-		scanner.refresh( group = 'All') do
-			raw = scanner.curl('https://api.steampowered.com/ISteamApps/GetAppList/v2/')
+		JSON.parse(raw)['applist']['apps'].each do |record|
+			text = record['name']
+			text.force_encoding( 'UTF-8')
+			text.encode!( 'US-ASCII',
+										:invalid => :replace, :undef => :replace, :universal_newline => true)
+			url = "https://store.steampowered.com/app/#{record['appid']}"
+			suggested[url] = true
+			scanner.suggest_link('All', text, url)
+		end
 
-			JSON.parse(raw)['applist']['apps'].each do |record|
-				text = record['name']
-				text.force_encoding( 'UTF-8')
-				text.encode!( 'US-ASCII',
-											:invalid => :replace, :undef => :replace, :universal_newline => true)
-				url = "https://store.steampowered.com/app/#{record['appid']}"
-				scanner.suggest_link(group, text, url)
-			end
+		scanner.already_suggested['All'].each do |url|
+			scanner.delete_suggest(url) unless suggested[url]
 		end
 	end
 

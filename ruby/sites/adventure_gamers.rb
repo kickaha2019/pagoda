@@ -12,41 +12,37 @@ class AdventureGamers < DefaultSite
 		return nil, nil, nil
 	end
 
-	def find_database( scanner)
-		scanner.refresh do
-			raw = scanner.http_get(BASE + '/games/adventure/all')
-			return if raw.nil?
-			sections = []
-			Nodes.parse( raw).css( 'div.letter a') do |anchor|
-				sections << anchor['href']
-			end
+	def find_database( scanner, runs)
+		raw = scanner.http_get(BASE + '/games/adventure/all')
+		return if raw.nil?
+		sections = []
+		Nodes.parse( raw).css( 'div.letter a') do |anchor|
+			sections << anchor['href']
+		end
 
-			page  = 1
-			url   = BASE + sections[scanner.yday % sections.size]
+		page  = 1
+		url   = BASE + sections[runs % sections.size]
 
-			while page
-				last, page = page, nil
-				scanner.html_anchors(url) do |href, label|
-					if label == (last+1).to_s
-						page = last + 1
-						url  = BASE + href
-					elsif /^ / =~ label
-					elsif /\t/ =~ label
-					elsif m = %r{^(/games/view/\d+)$}.match(href)
-						scanner.add_link(label, BASE + m[1])
-					end
+		while page
+			last, page = page, nil
+			scanner.html_anchors(url) do |href, label|
+				if label == (last+1).to_s
+					page = last + 1
+					url  = BASE + href
+				elsif /^ / =~ label
+				elsif /\t/ =~ label
+				elsif m = %r{^(/games/view/\d+)$}.match(href)
+					scanner.add_link(label, BASE + m[1])
 				end
 			end
 		end
 	end
 
-	def find_reviews( scanner)
-		scanner.refresh do
-			scanner.html_anchors(BASE + '/articles/reviews') do |href, label|
-				if ['','Genre Introduction','Top 100 All-Time'].include? label
-				elsif m = %r{^(/articles/view/.*)$}.match(href)
-					scanner.add_link( label, BASE + m[1].split('?')[0])
-				end
+	def find_reviews( scanner, _)
+		scanner.html_anchors(BASE + '/articles/reviews') do |href, label|
+			if ['','Genre Introduction','Top 100 All-Time'].include? label
+			elsif m = %r{^(/articles/view/.*)$}.match(href)
+				scanner.add_link( label, BASE + m[1].split('?')[0])
 			end
 		end
 	end

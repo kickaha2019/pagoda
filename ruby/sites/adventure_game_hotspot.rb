@@ -5,33 +5,31 @@ class AdventureGameHotspot < DefaultSite
 
 	def find( scanner, section, pattern)
 		added = true
-		scanner.refresh(section) do
-			page  = 1
-			url   = BASE + '/' + section
+		page  = 1
+		url   = BASE + '/' + section
 
-			while added && page
-				last, page, added = page, nil, false
-				scanner.html_anchors(url) do |href, label|
-					if m = %r{^\?p=(\d+)$}.match(href)
-						if m[1].to_i == (last+1)
-							page = m[1].to_i
-							url  = BASE + '/' + section + href
-						end
+		while added && page
+			last, page, added = page, nil, false
+			scanner.html_anchors(url) do |href, label|
+				if m = %r{^\?p=(\d+)$}.match(href)
+					if m[1].to_i == (last+1)
+						page = m[1].to_i
+						url  = BASE + '/' + section + href
 					end
+				end
 
-					if (pattern =~ href) && (! (/^</ =~ label))
-						added = true if scanner.add_link( label, BASE + href)
-					end
+				if (pattern =~ href) && (! (/^</ =~ label))
+					added = true if scanner.add_link( label, BASE + href)
 				end
 			end
 		end
 	end
 
-	def find_database( scanner)
+	def find_database( scanner, _)
 		find(scanner, 'database', %r{^(/game/.*$)})
 	end
 
-	def find_reviews( scanner)
+	def find_reviews( scanner, _)
 		find(scanner, 'reviews', %r{^(/review/.*$)})
 	end
 

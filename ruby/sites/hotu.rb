@@ -17,23 +17,26 @@ class Hotu < DefaultSite
 		url
 	end
 
-	def find( scanner)
-		scanner.refresh('hotu') do |urls|
-			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=3', urls)
-			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=6', urls)
-			find_from( scanner, 'https://www.homeoftheunderdogs.net/genre.php?id=7', urls)
-		end.each_pair do |url, name|
-			scanner.suggest_link( name, url)
-		end
+	def find_adventure(scanner, _)
+		find_genre(scanner, 3)
 	end
 
-	def find_from( scanner, base, urls)
-		offset, old_count = 0, -1
+	def find_puzzle(scanner, _)
+		find_genre(scanner, 6)
+	end
+
+	def find_rpg(scanner, _)
+		find_genre(scanner, 7)
+	end
+
+	def find_genre( scanner, genre)
+		base = "https://www.homeoftheunderdogs.net/genre.php?id=#{genre}"
+		offset, old_count, count = 0, -1, 0
 		# headers = {'Host'           => 'homeoftheunderdogs.net',
 		# 					 'Referer'        => 'https://www.homeoftheunderdogs.net/',
 		# 					 'Sec-Fetch-Site' => 'same-origin'}
-		while old_count < urls.size
-			old_count = urls.size
+		while old_count < count
+			old_count = count
 
 			raw = scanner.http_get "#{base}&offset=#{offset}"
 			return if raw.nil?
@@ -46,8 +49,8 @@ class Hotu < DefaultSite
 				text.encode!( 'US-ASCII',
 											:invalid => :replace, :undef => :replace, :universal_newline => true)
 				text = text.sub( /\?$/, '')
-				urls['https://www.homeoftheunderdogs.net/game.php?id=' + m[0]] = text
-				1
+				count = count + 1
+				scanner.suggest_link('All', text, 'https://www.homeoftheunderdogs.net/game.php?id=' + m[0])
 			end
 
 			offset += 40

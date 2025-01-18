@@ -7,6 +7,7 @@ require "selenium-webdriver"
 
 module Common
 	@@throttling    = Hash.new {|h,k| h[k] = 0}
+	@@timeouts      = {}
 	@@old_redirects = {}
 	@@new_redirects = {}
 
@@ -137,6 +138,9 @@ module Common
 	end
 
 	def http_get_threaded( url)
+		if @@timeouts[url_host(url)]
+			return false, 'Timeout'
+		end
 		@http_get_threaded_url = url
 		@http_get_threaded_got = nil
 
@@ -164,7 +168,7 @@ module Common
 			end
 		end
 
-		sleep 300
+		@@timeouts[url_host(url)] = true
 		return false, "Timeout"
 	end
 
@@ -222,15 +226,12 @@ module Common
 	end
 
 	def throttle( url, delay=10)
-		if m = /\/\/([^\/]*)(\/|$)/.match( url)
-			t = Time.now.to_i
-			if t < delay + @@throttling[m[1]]
-				sleep delay
-			end
-			@@throttling[m[1]] = t
-		else
-			raise "Strange URL: #{url}"
+		host = url_host(url)
+		t = Time.now.to_i
+		if t < delay + @@throttling[host]
+			sleep delay
 		end
+		@@throttling[host] = t
 	end
 
 	def to_filename( clazz)
@@ -238,6 +239,14 @@ module Common
 			clazz = m[1] + '_' + m[2].downcase + m[3]
 		end
 		clazz.downcase
+	end
+
+	def url_host(url)
+		if m = /\/\/([^\/]*)(\/|$)/.match( url)
+			m[1]
+		else
+			raise "Strange URL: #{url}"
+		end
 	end
 
 	def twitter_feed_links( account, days=75)
