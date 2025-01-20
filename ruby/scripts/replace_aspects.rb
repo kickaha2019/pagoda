@@ -6,7 +6,6 @@ require_relative '../pagoda'
 class ReplaceAspects
   def initialize(database)
     @pagoda  = Pagoda.release(database)
-    @aspects = @pagoda.aspect_info
   end
 
   def find_games_with_aspect(aspect)
@@ -36,7 +35,7 @@ class ReplaceAspects
   end
 
   def validate_aspect(name)
-    unless @aspects.has_key?(name)
+    unless @pagoda.has?('aspect',:name, name)
       raise "Unknown aspect: #{name}"
     end
   end

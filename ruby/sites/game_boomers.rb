@@ -9,7 +9,8 @@ class GameBoomers < DefaultSite
 		end
 	end
 
-	def find_walkthroughs( scanner, runs)
+	def find_walkthroughs( scanner, state)
+		run = (/^\d+$/ =~ state) ? state.to_i : 0
 		pages = []
 		scanner.html_anchors( 'https://www.gameboomers.com/walkthroughs.html') do |link, _|
 			if /Walkthroughs\/.*walkthroughs\.html$/ =~ link
@@ -17,11 +18,13 @@ class GameBoomers < DefaultSite
 			end
 		end
 
-		scanner.html_anchors( pages[ runs % pages.size]) do |link2, label2|
+		scanner.html_anchors( pages[ run % pages.size]) do |link2, label2|
 			if /^http(|s):\/\/(www\.|)gameboomers\.com\/wtcheats\/.*$/ =~ link2
 				scanner.add_link( label2, link2.sub( /^https/, 'http').gsub( /\s/, ''))
 			end
 		end
+
+		run + 1
 	end
 
 	def name

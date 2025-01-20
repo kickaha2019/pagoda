@@ -13,10 +13,11 @@ class MobyGames < DefaultSite
 		end
 	end
 
-	def find_scan(scanner,endpoint,offset)
+	def find_scan(scanner,endpoint,offset,clause='')
 		url = <<"URL"
 https://api.mobygames.com/v1
 #{endpoint}?format=brief&offset=#{offset}&
+#{clause}
 api_key=#{scanner.settings['MobyGames']}
 URL
 		url = url.gsub( /\s/, '')
@@ -32,18 +33,41 @@ URL
 		json['games'].size
 	end
 	
-	def find(scanner, _)
+	# def find(scanner, _)
+	# 	offset, check_first_known, known = 0, false, {}
+	# 	scanner.already_suggested do |record|
+	# 		if m = /^offset:(\d+)$/.match(record[:group])
+	# 			offset            = m[1].to_i
+	# 			check_first_known = true
+	# 		end
+	# 		known[record[:url]] = true
+	# 	end
+	#
+	# 	offset -= 4 if offset > 4
+	# 	find_scan( scanner,'/games', offset) do |offset1, label, url|
+	# 		if check_first_known
+	# 			check_first_known = false
+	# 			unless known[url]
+	# 				raise "Games order corrupted"
+	# 			end
+	# 		end
+	# 		scanner.suggest_link("offset:#{offset1}", label, url)
+	# 	end
+	# end
+
+	def find_genre(scanner, genre, state)
 		offset, check_first_known, known = 0, false, {}
+		if /^\d+$/ =~ state
+			offset            = state.to_i
+			check_first_known = true
+		end
+
 		scanner.already_suggested do |record|
-			if m = /^offset:(\d+)$/.match(record[:group])
-				offset            = m[1].to_i
-				check_first_known = true
-			end
 			known[record[:url]] = true
 		end
 
 		offset -= 4 if offset > 4
-		find_scan( scanner,'/games', offset) do |offset1, label, url|
+		find_scan( scanner,'/games', offset, "genre=#{genre}&") do |offset1, label, url|
 			if check_first_known
 				check_first_known = false
 				unless known[url]
@@ -51,52 +75,39 @@ URL
 				end
 			end
 			scanner.suggest_link("offset:#{offset1}", label, url)
+			offset = offset1
 		end
+
+		offset
 	end
 
-	def find_genre(scanner, run_year, genre)
-		page  = 1
-		url   = find_url(run_year, genre, page)
-		group = genre + ':' + run_year.to_s
+# 	def find_url(year, genre, page)
+# 		url = <<"HTML"
+# https://www.mobygames.com/game/from:#{year}/genre:#{genre}/until:#{year}/sort:added/page:#{page}/
+# HTML
+# 		url.strip
+# 	end
 
-		while url
-			old_url, url = url, nil
-
-			raw = scanner.http_get(old_url)
-			return if raw.nil?
-			raw.force_encoding( 'UTF-8')
-			raw.encode!( 'US-ASCII',
-										:invalid => :replace, :undef => :replace, :universal_newline => true)
-			File.open('/tmp/moby.html','w') do |io|
-				io.write(raw)
-			end
-
-			raw.split("\n").each do |line|
-				if m = /^\s*:initial-values='(.*)'\s*$/.match( line)
-					data = JSON.parse(m[1])
-					suggested = ! scanner.has_suggests?(group)
-
-					data['games'].each do |game|
-						suggested |= scanner.suggest_link( group, game['title'], game['internal_url'])
-					end
-
-					if suggested && (data['page'] < data['maxPages'])
-						page += 1
-						url  = find_url(run_year, genre, page)
-					end
-					break
-				end
-			end
-		end
+	def find_adventures(scanner, state)
+		find_genre(scanner,2,state)
 	end
 
-	def find_url(year, genre, page)
-		url = <<"HTML"
-https://www.mobygames.com/game/from:#{year}/genre:#{genre}/until:#{year}/sort:added/page:#{page}/
-HTML
-		url.strip
+	def find_puzzles(scanner, state)
+		find_genre(scanner,118,state)
 	end
-	
+
+	def find_jrpgs(scanner, state)
+		find_genre(scanner,147,state)
+	end
+
+	def find_rpgs(scanner, state)
+		find_genre(scanner,50,state)
+	end
+
+	def find_visual_novels(scanner, state)
+		find_genre(scanner,111,state)
+	end
+
 	def reduce_title( title)
 		if m = /^(.+)- MobyGames/.match( title)
 			title = m[1]

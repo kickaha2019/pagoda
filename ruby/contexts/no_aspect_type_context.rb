@@ -11,9 +11,8 @@ class NoAspectTypeContext < DefaultContext
     aspects     = game.aspects
     return false if aspects['Lost']
 
-    aspect_info = pagoda.aspect_info
     game.aspects.each_pair do |a, flag|
-      return false if flag && (aspect_info[a]['type'] == @type)
+      return false if flag && (pagoda.get('aspect',:name,a)[0][:type] == @type)
     end
 
     true

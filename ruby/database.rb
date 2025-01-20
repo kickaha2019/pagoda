@@ -41,6 +41,10 @@ class Database
     @tables[table_name].size
   end
 
+  def declare_float( table_name, column_name)
+    @tables[table_name].declare_float( column_name)
+  end
+
   def declare_integer( table_name, column_name)
     @tables[table_name].declare_integer( column_name)
   end

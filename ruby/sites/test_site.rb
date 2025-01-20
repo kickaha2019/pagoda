@@ -14,15 +14,15 @@ class TestSite < DefaultSite
 		@ran[method.to_sym]
 	end
 
-	def find1(scanner, runs)
+	def find1(scanner, _)
 		@ran[:find1] = true
 	end
 
-	def find2(scanner, runs)
+	def find2(scanner, _)
 		@ran[:find2] = true
 	end
 
-	def find3(scanner, runs)
+	def find3(scanner, _)
 		@ran[:test3] = true
 	end
 end

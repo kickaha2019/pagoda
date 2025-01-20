@@ -88,8 +88,8 @@ HIDDEN_ASPECT_ELEMENT
 
     def aspect_type_records
       types = []
-      $pagoda.aspect_info.each_value do |info|
-        types << info['type']
+      $pagoda.select('aspect') do |info|
+        types << info[:type]
       end
 
       types.select {|type| type}.uniq.sort.collect do |type|
@@ -294,7 +294,6 @@ HIDDEN_ASPECT_ELEMENT
 
     def games_by_aspect_records(aspect_type)
       map = Hash.new {|h,k| h[k] = 0}
-      aspect_info = $pagoda.aspect_info
 
       $pagoda.games do |game|
         found = false
@@ -307,10 +306,15 @@ HIDDEN_ASPECT_ELEMENT
         end
       end
 
-      $pagoda.aspect_info.keys.select do |aspect|
-        aspect_type.empty? || (aspect_info[aspect]['type'] == aspect_type)
-      end.sort.collect do |aspect|
-        [aspect, $pagoda.aspect_info[aspect]['index'], map[aspect]]
+      aspects = []
+      $pagoda.select('aspect') do |record|
+        if record[:type].nil? || (record[:type] == aspect_type)
+          aspects << [record[:name], record[:index]]
+        end
+      end
+
+      aspects.sort.collect do |aspect|
+        [aspect[0], aspect[1], map[aspect[0]]]
       end + (aspect_type.empty? ? [['None', '', map['None']]] : [])
     end
 
@@ -483,8 +487,8 @@ SEARCH
       unvisited = []
 
       genre_aspects = {}
-      $pagoda.aspect_info.each_pair do |aspect, info|
-        genre_aspects[aspect] = true if info['type'] == 'genre'
+      $pagoda.select('aspect') do |record|
+        genre_aspects[record[:name]] = true if record[:type] == 'genre'
       end
 
       $pagoda.games do |game|
@@ -692,7 +696,10 @@ SEARCH
     end
 
     def tag_aspect_element( index, aspect)
-      values = ['','accept','reject','Unknown'] + $pagoda.aspect_info.keys.sort
+      values = ['','accept','reject','Unknown']
+      $pagoda.select('aspect') do |rec|
+        values << rec[:name]
+      end
       defn = []
       defn << "<select name=\"aspect#{index}\">"
       values.each do |value|
@@ -712,7 +719,10 @@ SEARCH
     end
 
     def tags_aspect_combo( view, combo_name, current_aspect, html)
-      values = ['All','None','Unknown'] + $pagoda.aspect_info.keys.sort
+      values = ['All','None','Unknown']
+      $pagoda.select('aspect') do |rec|
+        values << rec[:name]
+      end
       unless values.index( current_aspect)
         current_aspect = 'All'
       end

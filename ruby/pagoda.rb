@@ -30,7 +30,7 @@ class Pagoda
     @database.declare_integer( 'game',           :year)
     @database.declare_integer( 'game_aspect',    :id)
     @database.declare_integer( 'history',        :timestamp)
-    @database.declare_integer( 'history',        :runs)
+    @database.declare_float(   'history',        :elapsed)
     @database.declare_integer( 'link',           :timestamp)
     @database.declare_integer( 'link',           :year)
     @database.declare_integer( 'visited',        :timestamp)
@@ -41,7 +41,7 @@ class Pagoda
     end
     log 'Populate names repository'
 
-    @aspect_info_timestamp = Time.utc(1970)
+    #@aspect_info_timestamp = Time.utc(1970)
     load_site_handlers
     @pagoda_links = load_links
     log 'Pagoda opened'
@@ -60,7 +60,7 @@ class Pagoda
     database.add_table(Table.new('company',[:name],[]))
     database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
     database.add_table(Table.new('game_aspect',[:id,:aspect,:flag],[]))
-    database.add_table(Table.new('history',[:timestamp,:site,:type,:method,:runs],[]))
+    database.add_table(Table.new('history',[:timestamp,:site,:type,:method,:state,:elapsed],[]))
     database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
     database.add_table(Table.new('suggest',[:url,:site,:type,:group,:title],[]))
     database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
@@ -69,7 +69,8 @@ class Pagoda
   end
 
   def aspect?(name)
-    aspect_info[name]
+    @database.has?('aspect', :name, name)
+    #aspect_info[name]
   end
 
   def log( msg)
@@ -86,21 +87,21 @@ class Pagoda
     list
   end
 
-  def aspect_info
-    if (@aspect_info_timestamp + 2) > Time.now
-      return @aspect_info
-    end
-
-    unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
-      @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
-      @aspect_info = YAML.load( IO.read( @dir + '/aspects.yaml'))
-    end
-    @aspect_info
-  end
+  # def aspect_info
+  #   if (@aspect_info_timestamp + 2) > Time.now
+  #     return @aspect_info
+  #   end
+  #
+  #   unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
+  #     @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
+  #     @aspect_info = YAML.load( IO.read( @dir + '/aspects.yaml'))
+  #   end
+  #   @aspect_info
+  # end
 
   def aspect_name_and_types
-    aspect_info.each_pair do |name, info|
-      yield name,info['type'] if info['derive'].nil?
+    @database.select('aspect') do |record|
+      yield record[:name],record[:type] if record[:derive].nil?
     end
   end
 
@@ -359,11 +360,7 @@ class Pagoda
   end
 
   def get_aspect_type(aspect)
-    if info = aspect_info[aspect]
-      info['type']
-    else
-      nil
-    end
+    @database.get('aspect',:name,aspect)[0][:type]
   end
 
   def clean
@@ -380,7 +377,7 @@ class Pagoda
 
     aspects_lost = []
     @database.select( 'game_aspect') do |rec|
-      unless aspect_info[rec[:aspect]]
+      unless @database.has?("aspect",:name,rec[:aspect])
         aspects_lost << rec[:aspect]
       end
     end

@@ -19,7 +19,10 @@ problem:
 - site:   IGDB
   type:   Reference
   method: find
-train: []
+train:
+- site:   MobyGames
+  type:   Reference
+  method: find_rpgs
 overnight:
 - site:   Adventure Game Hotspot
   type:   Review
@@ -81,7 +84,19 @@ overnight:
   every:  30
 - site:   MobyGames
   type:   Reference
-  method: find
+  method: find_adventures
+- site:   MobyGames
+  type:   Reference
+  method: find_jrpgs
+- site:   MobyGames
+  type:   Reference
+  method: find_puzzles
+- site:   MobyGames
+  type:   Reference
+  method: find_rpgs
+- site:   MobyGames
+  type:   Reference
+  method: find_visual_novels
 - site:   Mystery Manor
   type:   Review
   method: find_reviews

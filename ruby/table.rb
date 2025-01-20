@@ -50,6 +50,21 @@ class Table
     @columns.index( column_name)
   end
 
+  def declare_float( column_name)
+    @types[column_name] = :to_f
+    colind = column_index( column_name)
+
+    all_rows = []
+    @indexes[@columns[0]].each_value do |rows|
+      rows.each do |row|
+        row[colind] = row[colind].to_f if row[colind]
+        all_rows << row
+      end
+    end
+
+    initialize_indexes( all_rows)
+  end
+
   def declare_integer( column_name)
     @types[column_name] = :to_i
     colind = column_index( column_name)

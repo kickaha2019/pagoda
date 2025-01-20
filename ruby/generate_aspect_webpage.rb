@@ -46,19 +46,20 @@ class WebsiteFiltersPage
     @dir       = dir
     @pagoda    = Pagoda.release( dir, cache)
     @cache     = cache
-    @aspects   = YAML.load( IO.read( dir + '/aspects.yaml'))
     @templates = templates
     @local     = local
 
     seen = {}
-    @aspects.each_pair do |name, info|
-      next unless info['index']
-      raise "Duplicate index for aspect #{name}" if seen[info['index'].to_i]
-      seen[info['index'].to_i] = true
+    @pagoda.select('aspect') do |record|
+      name, index = record[:name], record[:index]
+      next unless index
+      raise "Duplicate index for aspect #{name}" if seen[index]
+      seen[index] = true
     end
 
-    @aspects.each_pair do |name, info|
-      unless info['index']
+    @pagoda.select('aspect') do |record|
+      name, index = record[:name], record[:index]
+      unless index
         free = -1
         (0..100).each do |i|
           unless seen[i]
@@ -72,12 +73,12 @@ class WebsiteFiltersPage
   end
 
   def aspect_index( aspect)
-    @aspects[aspect]['index']
+    @pagoda.get('aspect',:name,aspect)[0][:index]
   end
 
   def aspect_name_indexes
-    @aspects.each_pair do |name, info|
-      yield name, info['index']
+    @pagoda.select('aspect') do |record|
+      yield record[:name], record[:index]
     end
   end
 
@@ -86,8 +87,6 @@ class WebsiteFiltersPage
   end
 
   def generate( output_dir)
-    aspects    = {}
-    @aspects.each_pair {|k,v| aspects[k] = v unless exclude?( k)}
     containers = ['include', 'unused', 'exclude']
     games      = list_games
     is_local   = @local

@@ -25,13 +25,13 @@ class Spider
 			@method    = defn['method']
 			@every     = defn['every'] ? defn['every'].to_i : 1
 			@timestamp = 0
-			@runs      = 0
+			@state     = nil
 
 			forgotten = []
 			pagoda.select('history') do |rec|
 				if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:method] == @method)
 					@timestamp = rec[:timestamp]
-					@runs      = rec[:runs]
+					@state     = rec[:state]
 				end
 			end
 
@@ -56,7 +56,13 @@ class Spider
 			begin
 				count_links    = pagoda.count('link')
 				count_suggests = pagoda.count('suggest')
-				pagoda.get_site_handler( @site).send( @method.to_sym, scanner, @runs)
+				new_state = pagoda.get_site_handler( @site).send( @method.to_sym, scanner, @state)
+
+				if new_state.is_a?( Integer) || new_state.is_a?( String)
+					new_state = new_state.to_s
+				else
+					new_state = nil
+				end
 
 				if count_links < pagoda.count('link')
 					puts "... #{pagoda.count('link') - count_links} links added"
@@ -70,7 +76,12 @@ class Spider
 				pagoda.delete('history',:timestamp, @timestamp) if @timestamp > 0
 				now = Time.now.to_i
 				pagoda.insert('history',
-											 {site:@site, type:@type, method:@method, timestamp:now, runs:(@runs+1)})
+											 {site:@site,
+												type:@type,
+												method:@method,
+												timestamp:now,
+												state:new_state,
+												elapsed:(now - start)})
 				pagoda.end_transaction
 				puts "... Time taken #{now - start} seconds"
 				STDOUT.flush

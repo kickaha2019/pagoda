@@ -12,7 +12,8 @@ class AdventureGamers < DefaultSite
 		return nil, nil, nil
 	end
 
-	def find_database( scanner, runs)
+	def find_database( scanner, state)
+		run = (/^\d+$/ =~ state) ? state.to_i : 0
 		raw = scanner.http_get(BASE + '/games/adventure/all')
 		return if raw.nil?
 		sections = []
@@ -21,7 +22,7 @@ class AdventureGamers < DefaultSite
 		end
 
 		page  = 1
-		url   = BASE + sections[runs % sections.size]
+		url   = BASE + sections[run % sections.size]
 
 		while page
 			last, page = page, nil
@@ -36,6 +37,8 @@ class AdventureGamers < DefaultSite
 				end
 			end
 		end
+
+		run + 1
 	end
 
 	def find_reviews( scanner, _)
