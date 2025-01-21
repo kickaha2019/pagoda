@@ -36,7 +36,7 @@ class TestBase < Minitest::Test
     @pagoda.insert('tag_aspects',{tag:tag,aspect:aspect})
   end
 
-  def insert_history(site,type,method,timestamp,runs)
-    @pagoda.insert('history',{site:site,type:type,method:method,timestamp:timestamp,runs:runs})
+  def insert_history(site,type,method,timestamp,state)
+    @pagoda.insert('history',{site:site,type:type,method:method,timestamp:timestamp,state:state})
   end
 end

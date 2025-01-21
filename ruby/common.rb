@@ -161,8 +161,8 @@ module Common
 			end
 		end
 
-		(0...600).each do
-			sleep 0.1
+		(0...300).each do
+			sleep 1
 			unless @http_get_threaded_got.nil?
 				return * @http_get_threaded_got
 			end

@@ -20,9 +20,9 @@ problem:
   type:   Reference
   method: find
 train:
-- site:   MobyGames
-  type:   Reference
-  method: find_rpgs
+- site:   Turn Based Lovers
+  type:   Review
+  method: find_reviews
 overnight:
 - site:   Adventure Game Hotspot
   type:   Review
@@ -74,6 +74,18 @@ overnight:
   type:   Reference
   method: find_rpg
   every:  30
+- site:   IGDB
+  type:   Reference
+  method: find_adventures
+- site:   IGDB
+  type:   Reference
+  method: find_puzzles
+- site:   IGDB
+  type:   Reference
+  method: find_rpgs
+- site:   IGDB
+  type:   Reference
+  method: find_visual_novels
 - site:   Just Adventure
   type:   Review
   method: find_reviews
@@ -110,6 +122,9 @@ overnight:
   type:   Store
   method: incremental
   every:  10
+- site:   Turn Based Lovers
+  type:   Review
+  method: find_reviews
 test:
 - site:   Test
   type:   Test
@@ -130,9 +145,6 @@ full:
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
-- site:   Turn Based Lovers
-  type:   Review
-  method: findReviews
 rebase:
 - site:   TouchArcade
   type:   Review
@@ -141,9 +153,6 @@ test_full:
 - site:   Adventure Game Hotspot
   type:   Database
   method: find_database
-- site:   Turn Based Lovers
-  type:   Review
-  method: findReviews
 test_incremental:
 - site:   Mystery Manor
   type:   Walkthrough

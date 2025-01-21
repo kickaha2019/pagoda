@@ -140,7 +140,7 @@ class PrepareWork
   def run
     collations
     cache_size
-    redundant_ignores
+    #redundant_ignores
     oldest_link
     unknown_tags
     free_links

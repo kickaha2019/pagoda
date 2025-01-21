@@ -1,11 +1,14 @@
 require_relative 'default_site'
 
 class TurnBasedLovers < DefaultSite
-	def findReviews( scanner)
-		page = 1
-		url  = 'https://turnbasedlovers.com/-/review/'
-		while page
-			last, page = page, nil
+	def find_reviews( scanner, _)
+		page  = 1
+		url   = 'https://turnbasedlovers.com/-/review/'
+		added = true
+
+		while page && added
+			last, page, added = page, nil, false
+
 			scanner.html_anchors(url) do |href, label|
 				if m = %r{^https://turnbasedlovers.com/-/review/page/(\d+)/}.match(href)
 					if m[1].to_i == (last+1)
@@ -16,9 +19,7 @@ class TurnBasedLovers < DefaultSite
 
 				if (%r{^https://turnbasedlovers.com/review/} =~ href) &&
 					(/ Review($|:)/ =~ label)
-					scanner.add_link( label, href)
-				else
-					0
+					added |= scanner.add_link( label, href)
 				end
 			end
 		end
@@ -40,6 +41,10 @@ class TurnBasedLovers < DefaultSite
 
 	def reduce_title( title)
 		if m = /^(.*) Review - Turn Based Lovers\s*$/.match(title)
+			title = m[1]
+		end
+
+		if m = /^(.*\S)\s*\? Review\s*$/.match(title)
 			title = m[1]
 		end
 

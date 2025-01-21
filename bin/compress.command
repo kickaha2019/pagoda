@@ -8,4 +8,4 @@ set PAGODA=`pwd`
 setenv PATH $PAGODA/ruby:$PATH
 
 # Compress the database for speed of opening editor
-ruby -Iruby ruby/compress_database.rb database ~/Caches/Pagoda
+caffeinate -i ruby -Iruby ruby/compress_database.rb database ~/Caches/Pagoda

@@ -23,6 +23,6 @@ class TestSite < DefaultSite
 	end
 
 	def find3(scanner, _)
-		@ran[:test3] = true
+		@ran[:find3] = true
 	end
 end

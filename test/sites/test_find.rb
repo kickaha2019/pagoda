@@ -9,12 +9,11 @@ class TestFind < TestBase
     include Common
     attr_reader :adds, :suggests, :limit, :cache
 
-    def initialize(pagoda, cache, site, type, limit, yday)
+    def initialize(pagoda, cache, site, type, limit)
       super(pagoda,cache)
       @site  = site
       @type  = type
       @limit = limit
-      @yday  = yday
     end
 
     def browser_get(url)
@@ -51,10 +50,6 @@ class TestFind < TestBase
         @limit -= 1
         super
       end
-    end
-
-    def yday
-      @yday
     end
   end
 
@@ -107,14 +102,14 @@ class TestFind < TestBase
   end
 
   def test_hotu
-    scan( 'HOTU', 'Reference', :find, 2)
+    scan( 'HOTU', 'Reference', :find_adventure, 2)
     assert_link_count 60
     assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
   end
 
   def test_igdb
-    scan( 'IGDB', 'Reference',:find, 2)
-    assert_suggest_count 1000
+    scan( 'IGDB', 'Reference',:find_adventures, 1)
+    assert_suggest_count 500
     assert_suggests_match %r{^https://www.igdb.com/games/}
   end
 
@@ -131,7 +126,7 @@ class TestFind < TestBase
   end
 
   def test_moby_games
-    scan( 'MobyGames', 'Reference', :find, 1)
+    scan( 'MobyGames', 'Reference', :find_adventures, 1)
     assert_suggest_count 100
     assert_suggests_match %r{^https://www.mobygames.com/game/\d+/}
   end
@@ -216,9 +211,9 @@ class TestFind < TestBase
     end
   end
 
-  def scan(site,type,method,limit,yday=0)
-    scanner = TestSpider.new(@pagoda, @cache, site, type, limit, yday)
-    @pagoda.get_site_handler(site).send(method,scanner,yday)
+  def scan(site,type,method,limit,state=nil)
+    scanner = TestSpider.new(@pagoda, @cache, site, type, limit)
+    @pagoda.get_site_handler(site).send(method,scanner,state)
     assert_equal 0, scanner.limit
   end
 end

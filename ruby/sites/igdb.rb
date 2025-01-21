@@ -18,12 +18,8 @@ class Igdb < DefaultSite
 		end
 	end
 
-	def find(scanner, _)
-		max_id = -1
-		scanner.already_suggested do |rec|
-			max_id = rec[:group].to_i if rec[:group].to_i > max_id
-		end
-
+	def find_genre(scanner, genre, state)
+		max_id = state.nil? ? -1  : state.to_i
 		twitch = scanner.settings['Twitch']
 		refresh_access_token(scanner)
 
@@ -34,7 +30,7 @@ class Igdb < DefaultSite
 				10,
 				{'Client-ID'    =>  twitch['client_id'],
 				'Authorization' => "Bearer #{@access_token}"},
-				"fields id,name,url; where id > #{max_id}; limit #{limit}; sort id asc;")
+				"fields id,name,url; where genres = #{genre} & id > #{max_id}; limit #{limit}; sort id asc;")
 			return if json.nil?
 			found = JSON.parse(json)
 
@@ -44,8 +40,26 @@ class Igdb < DefaultSite
 			end
 
 			loops	+= 1
-			loop = (loops < 10) && (found.length >= limit)
+			loop = (loops < 1) && (found.length >= limit)
 		end
+
+		max_id
+	end
+
+	def find_adventures(scanner, state)
+		find_genre(scanner, 31, state)
+	end
+
+	def find_puzzles(scanner, state)
+		find_genre(scanner, 9, state)
+	end
+
+	def find_rpg(scanner, state)
+		find_genre(scanner, 12, state)
+	end
+
+	def find_visual_novels(scanner, state)
+		find_genre(scanner, 34, state)
 	end
 
 	def get_tags(url, info, tags)
