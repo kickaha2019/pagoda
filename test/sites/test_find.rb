@@ -150,7 +150,7 @@ class TestFind < TestBase
   end
 
   def test_rawg
-    scan( 'rawg.io', 'Reference', :find, 2)
+    scan( 'rawg.io', 'Reference', :find_rpgs, 2)
     assert_suggest_count 80
     assert_suggests_match %r{^https://rawg\.io/games/}
   end

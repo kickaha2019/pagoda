@@ -26,12 +26,19 @@ class PrepareWork
     values = [value]
     if @old_work[label]
       values += @old_work[label]['values']
-      values = values[0..4]
+      values = values[0..30]
     end
     @work[label] = {'values' => values,
                     'status' => status,
                     'link'   => link,
                     'hide'   => hide}
+  end
+
+  def copy(label)
+    if @old_work[label]
+      @work[label] = @old_work[label]
+      @work[label]['hide'] = true
+    end
   end
 
   def cache_size
@@ -140,6 +147,7 @@ class PrepareWork
   def run
     collations
     cache_size
+    scans
     #redundant_ignores
     oldest_link
     unknown_tags
@@ -155,6 +163,31 @@ class PrepareWork
   def save
     File.open(@path, 'w') do |io|
       io.puts @work.to_yaml
+    end
+  end
+
+  def scans
+    @pagoda.settings['overnight'].each do |scan|
+      key = "Scan: #{scan['site']} / #{scan['type']} / #{scan['method']}"
+
+      run_last_night = false
+      @pagoda.select('history') do |history|
+        if (history[:site]   == scan['site']) &&
+           (history[:type]   == scan['type']) &&
+           (history[:method] == scan['method']) &&
+           ((Time.now.to_i - 18 * 60 * 60) < history[:timestamp])
+          run_last_night  = true
+          add(key,
+              history[:elapsed],
+              'warning',
+              nil,
+              history[:elapsed] / (scan['every'] ? scan['every'] : 1) < 60)
+        end
+      end
+
+      unless run_last_night
+        copy key
+      end
     end
   end
 

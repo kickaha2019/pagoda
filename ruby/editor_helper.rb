@@ -568,6 +568,27 @@ SEARCH
     def refresh_metadata
     end
 
+    def scan_records
+      work = YAML.load( IO.read( ARGV[0] + '/work.yaml' ))
+
+      $pagoda.settings['overnight'].each do |scan|
+        state, timestamp = nil,nil
+        $pagoda.select('history') do |history|
+          if (history[:site]   == scan['site']) &&
+             (history[:type]   == scan['type']) &&
+             (history[:method] == scan['method'])
+            state     = history[:state]
+            timestamp = history[:timestamp]
+          end
+        end
+        next unless timestamp
+
+        key = "Scan: #{scan['site']} / #{scan['type']} / #{scan['method']}"
+        next unless work[key]
+        yield scan['site'], scan['type'], scan['method'], timestamp, state, work[key]['values']
+      end
+    end
+
     def selected_game
       games = $pagoda.get( 'game', :id, @@selected_game.to_i)
       games.empty? ? ' ' : games[0][:name]

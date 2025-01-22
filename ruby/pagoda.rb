@@ -30,7 +30,7 @@ class Pagoda
     @database.declare_integer( 'game',           :year)
     @database.declare_integer( 'game_aspect',    :id)
     @database.declare_integer( 'history',        :timestamp)
-    @database.declare_float(   'history',        :elapsed)
+    @database.declare_integer( 'history',        :elapsed)
     @database.declare_integer( 'link',           :timestamp)
     @database.declare_integer( 'link',           :year)
     @database.declare_integer( 'visited',        :timestamp)

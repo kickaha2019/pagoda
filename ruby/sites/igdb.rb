@@ -54,7 +54,7 @@ class Igdb < DefaultSite
 		find_genre(scanner, 9, state)
 	end
 
-	def find_rpg(scanner, state)
+	def find_rpgs(scanner, state)
 		find_genre(scanner, 12, state)
 	end
 

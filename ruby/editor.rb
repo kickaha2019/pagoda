@@ -186,6 +186,10 @@ get '/reports' do
   erb :reports
 end
 
+get '/scans' do
+  erb :scans
+end
+
 get '/selected_game' do
   selected_game
 end

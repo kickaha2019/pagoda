@@ -1,0 +1,24 @@
+<%= erb :header, :locals => {:page => 'scans'} %>
+
+  <table class="list">
+    <tr><th>Site</th><th>Type</th><th>Method</th><th>Last ran</th><th>State</th><th colspan="10">Elapsed</th></tr>
+    <% scan_records do |site, type, method, timestamp, state, elapsed| %>
+      <tr>
+        <td><%= site %></td>
+        <td><%= type %></td>
+        <td><%= method %></td>
+        <td><%= Time.at(timestamp).strftime( '%Y-%m-%d') %></td>
+        <td><%= state %></td>
+        <%=
+          html = []
+          (0..9).each do |i|
+            html << "<td align=\"right\">#{elapsed[i]}</td>"
+          end
+          html.join("\n")
+        %>
+      </tr>
+    <% end  %>
+  </table>
+
+</body>
+</html>

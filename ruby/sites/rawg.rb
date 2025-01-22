@@ -15,15 +15,12 @@ class Rawg < DefaultSite
 		end
 	end
 
-	def find(scanner, _)
-		page = 1
-		scanner.already_suggested do |rec|
-			page = rec[:group].to_i if rec[:group].to_i > page
-		end
+	def find_genre(scanner, genre, state)
+		page = state.nil? ? 1 : state.to_i
+		loops, limit = 5, 40
 
-		loops = 50
 		url = <<"RAWG"
-https://api.rawg.io/api/games?key=#{scanner.settings['rawg.io']}&genres=3,5,7,17,34,40&page=#{page}&page_size=40&ordering=created
+https://api.rawg.io/api/games?key=#{scanner.settings['rawg.io']}&genres=#{genre}&page=#{page}&page_size=#{limit}&ordering=created
 RAWG
 		url = url.strip
 
@@ -33,13 +30,33 @@ RAWG
 			break if raw.nil?
 
 			data = JSON.parse(raw)
+			puts "... Count = #{data["count"]}"
 			data['results'].each do |game|
 				scanner.suggest_link(page,game['name'], BASE + '/games/' + game['slug'])
 			end
-			url = data['next']
-			loops -= 1
-			page += 1
+
+			if data['results'].size >= limit
+				url   =  data['next']
+				loops -= 1
+				page  += 1
+			else
+				break
+			end
 		end
+
+		page
+	end
+
+	def find_adventures(scanner, state)
+		find_genre(scanner,3,state)
+	end
+
+	def find_puzzles(scanner, state)
+		find_genre(scanner,7,state)
+	end
+
+	def find_rpgs(scanner, state)
+		find_genre(scanner,5,state)
 	end
 
 	def reduce_title( title)
