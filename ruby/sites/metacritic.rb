@@ -10,49 +10,51 @@ class Metacritic < DefaultSite
 		end
 	end
 
-	def find( scanner)
-		path = scanner.cache + "/metacritic.json"
+	def find_genre(scanner,genre,state)
+		year,page = 1980,1
+		if m = /^(\d+) (\d+)$/.match(state)
+			year, page = m[1].to_i, m[2].to_i
+		end
 
-		if File.exist?( path)
-			JSON.parse( IO.read( path)).each_pair do |url, name|
-				scanner.suggest_link( name, url)
+		loops = 2
+		while loops > 0
+			found = false
+
+			raw = scanner.http_get( "https://www.metacritic.com/browse/game/all/#{genre}/#{year}/new/?genre=#{genre}&page=#{page}")
+			Nodes.parse(raw).css('a') do |anchor|
+				if %r{^/game/.+} =~ anchor['href']
+					[anchor['href']]
+				else
+					nil
+				end
+			end.css('div.c-finderProductCard_title') do |title, href|
+				found = true
+				scanner.suggest_link('All',title['data-title'],"https://www.metacritic.com#{href}")
 			end
+
+			if found
+				page += 1
+			else
+				year,page = (year+1),1
+				if year > Time.now.year
+					year = 1980
+				end
+			end
+
+			loops -= 1
 		end
 	end
 
-	def incremental( scanner)
-		path  = scanner.cache + "/metacritic.json"
-		found = File.exist?( path) ? JSON.parse( IO.read( path)) : {}
-		base_url = 'https://www.metacritic.com/browse/game/all/all/all-time/new/?' +
-				       'platform=pc&platform=mobile&' +
-		           'genre=adventure&genre=rpg&genre=edutainment&' +
-				       'genre=turn---based-strategy&genre=puzzle&' +
-				       '&releaseYearMin=1910&releaseYearMax=' +
-				       Time.now.year.to_s + '&page='
+	def find_adventures(scanner,state)
+		find_genre(scanner,'adventure',state)
+	end
 
-		(1..100).each do |page|
-			found_new = false
-			raw     = scanner.http_get( base_url + page.to_s)
-			return if raw.nil?
-			File.open( '/Users/peter/temp/metacritic.html', 'w') {|io| io.print raw}
-			#raw = IO.read( '/Users/peter/temp/rock_paper_shotgun.html')
+	def find_puzzles(scanner,state)
+		find_genre(scanner,'puzzle',state)
+	end
 
-			Nodes.parse( raw).css( 'a') do |anchor|
-				if %r{^/game/} =~ anchor['href']
-					[anchor['href']]
-				end
-			end.css('div.c-finderProductCard_title') do |element, href|
-				unless found['https://www.metacritic.com' + href]
-					found['https://www.metacritic.com' + href] = element['data-title']
-					found_new = true
-				end
-			end
-
-			break unless found_new
-		end
-
-		File.open( path,    'w') {|io| io.print JSON.generate( found)}
-		0
+	def find_rpgs(scanner,state)
+		find_genre(scanner,'rpg',state)
 	end
 
 	def name

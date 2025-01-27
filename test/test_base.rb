@@ -32,6 +32,10 @@ class TestBase < Minitest::Test
     end
   end
 
+  def insert_aspect(aspect,index,type=nil,derive=false)
+    @pagoda.insert('aspect',{name:aspect,index:index,type:type,derive:(derive ? 'N' : 'Y')})
+  end
+
   def insert_tag_aspect(tag, aspect)
     @pagoda.insert('tag_aspects',{tag:tag,aspect:aspect})
   end

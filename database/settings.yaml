@@ -25,6 +25,10 @@ train:
   method: find_reviews
 overnight:
 - site:   Adventure Game Hotspot
+  type:   Database
+  method: find_database
+  every:  30
+- site:   Adventure Game Hotspot
   type:   Review
   method: find_reviews
 - site:   Adventure Gamers
@@ -94,6 +98,15 @@ overnight:
   type:   Walkthrough
   method: find_walkthroughs
   every:  30
+- site:   Metacritic
+  type:   Reference
+  method: find_adventures
+- site:   Metacritic
+  type:   Reference
+  method: find_puzzles
+- site:   Metacritic
+  type:   Reference
+  method: find_rpgs
 - site:   MobyGames
   type:   Reference
   method: find_adventures

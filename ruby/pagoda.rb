@@ -54,6 +54,7 @@ class Pagoda
   def self.testing(metadata, cache)
     database = Database.new
     database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
+    database.add_table(Table.new('aspect',[:name,:index,:type,:derive],[]))
     database.add_table(Table.new('aspect_suggest',[:game,:aspect,:text,:cache,:visit,:timestamp,:site],[]))
     database.add_table(Table.new('bind',[:url,:id],[]))
     database.add_table(Table.new('company_alias',[:name,:alias],[]))

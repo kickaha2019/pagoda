@@ -181,7 +181,7 @@ class PrepareWork
               history[:elapsed],
               'warning',
               nil,
-              history[:elapsed] / (scan['every'] ? scan['every'] : 1) < 60)
+              history[:elapsed] / (scan['every'] ? scan['every'] : 1) < 120)
         end
       end
 

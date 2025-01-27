@@ -39,6 +39,7 @@ class PagodaTest < TestBase
   end
 
   def test_digest_aspects
+    insert_aspect('Adventure',1)
     insert_tag_aspect('Adventure','Adventure')
     insert_tag_aspect('Adventure','accept')
     link = TestLink.new('IGDB')

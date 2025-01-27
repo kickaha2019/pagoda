@@ -93,6 +93,10 @@ post '/forget/:url' do
   delete_link( d(params[:url]))
 end
 
+get '/game/:id' do
+  erb :game, :locals => {:id => params[:id].to_i, :context => 0}
+end
+
 get '/game/:id/' do
   erb :game, :locals => {:id => params[:id].to_i, :context => 0}
 end

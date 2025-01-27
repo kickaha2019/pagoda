@@ -30,7 +30,7 @@ RAWG
 			break if raw.nil?
 
 			data = JSON.parse(raw)
-			puts "... Count = #{data["count"]}"
+			#puts "... Count = #{data["count"]}"
 			data['results'].each do |game|
 				scanner.suggest_link(page,game['name'], BASE + '/games/' + game['slug'])
 			end

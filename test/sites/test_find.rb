@@ -90,7 +90,7 @@ class TestFind < TestBase
   end
 
   def test_game_boomers_walkthroughs
-    scan( 'GameBoomers', 'Walkthrough', :find_walkthroughs, 2, 3)
+    scan( 'GameBoomers', 'Walkthrough', :find_walkthroughs, 2, '3')
     assert_link_count 100
     assert_links_match %r{^http(s|)://(www.|)gameboomers.com/(wtcheats|Walkthroughs)/}
   end
@@ -103,8 +103,8 @@ class TestFind < TestBase
 
   def test_hotu
     scan( 'HOTU', 'Reference', :find_adventure, 2)
-    assert_link_count 60
-    assert_links_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
+    assert_suggest_count 60
+    assert_suggests_match %r{^https://www.homeoftheunderdogs.net/game.php\?id=\d+$}
   end
 
   def test_igdb
@@ -123,6 +123,12 @@ class TestFind < TestBase
     scan( 'Just Adventure', 'Walkthrough', :find_walkthroughs, 2)
     assert_link_count 54
     assert_links_match %r{^https://www.justadventure.com/\d\d\d\d/\d+/\d+/}
+  end
+
+  def test_metacritic1
+    scan( 'Metacritic', 'Reference',:find_adventures, 2, '2008 2')
+    assert_suggest_count 46
+    assert_suggests_match %r{^https://www.metacritic.com/game/}
   end
 
   def test_moby_games
@@ -162,7 +168,7 @@ class TestFind < TestBase
   end
 
   def test_turn_based_lovers
-    scan( 'Turn Based Lovers', 'Review', :findReviews, 2)
+    scan( 'Turn Based Lovers', 'Review', :find_reviews, 2)
     assert_link_count 15
     assert_links_match %r{^https://turnbasedlovers.com/review/}
   end

@@ -32,7 +32,7 @@ class GameBoomers < DefaultSite
 	end
 
 	def post_load(pagoda, url, page)
-		digest = super
+		digest = {}
 
 		if m = />design copyright[^<]*(\d\d\d\d)\s*</m.match( page)
 			digest['link_year'] = m[1].to_i
