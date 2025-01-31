@@ -17,7 +17,7 @@ class Rawg < DefaultSite
 
 	def find_genre(scanner, genre, state)
 		page = state.nil? ? 1 : state.to_i
-		loops, limit = 5, 40
+		loops, limit = 10, 40
 
 		url = <<"RAWG"
 https://api.rawg.io/api/games?key=#{scanner.settings['rawg.io']}&genres=#{genre}&page=#{page}&page_size=#{limit}&ordering=created

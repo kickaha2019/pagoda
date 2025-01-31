@@ -21,9 +21,6 @@ class Pagoda
     @now         = Time.now
 
     @database.declare_integer( 'alias',          :id)
-    @database.declare_integer( 'aspect_suggest', :game)
-    @database.declare_integer( 'aspect_suggest', :cache)
-    @database.declare_integer( 'aspect_suggest', :timestamp)
     @database.declare_integer( 'bind',           :id)
     @database.declare_integer( 'game',           :id)
     @database.declare_integer( 'game',           :group_id)
@@ -55,7 +52,6 @@ class Pagoda
     database = Database.new
     database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
     database.add_table(Table.new('aspect',[:name,:index,:type,:derive],[]))
-    database.add_table(Table.new('aspect_suggest',[:game,:aspect,:text,:cache,:visit,:timestamp,:site],[]))
     database.add_table(Table.new('bind',[:url,:id],[]))
     database.add_table(Table.new('company_alias',[:name,:alias],[]))
     database.add_table(Table.new('company',[:name],[]))
@@ -75,7 +71,7 @@ class Pagoda
   end
 
   def log( msg)
-    puts "#{Time.now.strftime('%H:%S.%L')} - #{msg}"
+    puts "#{Time.now.strftime('%H:%M:%S.%L')} - #{msg}"
   end
 
   def aliases
@@ -369,8 +365,6 @@ class Pagoda
     puts "*** Deleted #{count} alias records" if count > 0
     count = @database.clean_missing( 'game_aspect', :id, 'game', :id).size
     puts "*** Deleted #{count} aspect records" if count > 0
-    count = @database.clean_missing( 'aspect_suggest', :game, 'game', :id).size
-    puts "*** Deleted #{count} aspect suggest records" if count > 0
     count = @database.clean_missing( 'bind', :url, 'link', :url).size
     puts "*** Deleted #{count} bind records no link" if count > 0
     count = @database.clean_missing_positive( 'bind', :id, 'game', :id).size

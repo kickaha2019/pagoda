@@ -57,8 +57,8 @@ class Steam < DefaultSite
 			scanner.suggest_link('All', text, url)
 		end
 
-		scanner.already_suggested['All'].each do |url|
-			scanner.delete_suggest(url) unless suggested[url]
+		scanner.already_suggested do |record|
+			scanner.delete_suggest(record[:url]) unless suggested[record[:url]]
 		end
 	end
 

@@ -16,7 +16,7 @@ class Metacritic < DefaultSite
 			year, page = m[1].to_i, m[2].to_i
 		end
 
-		loops = 2
+		loops = 4
 		while loops > 0
 			found = false
 
@@ -43,6 +43,8 @@ class Metacritic < DefaultSite
 
 			loops -= 1
 		end
+
+		"#{year} #{page}"
 	end
 
 	def find_adventures(scanner,state)

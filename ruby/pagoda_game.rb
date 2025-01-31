@@ -29,7 +29,6 @@ class PagodaGame < PagodaRecord
     @owner.delete( 'alias',          :id,   id)
     @owner.delete( 'bind',           :id,   id)
     @owner.delete( 'game_aspect',    :id,   id)
-    @owner.delete( 'aspect_suggest', :game, id)
     @owner.end_transaction
 
     binds.each do |bind|

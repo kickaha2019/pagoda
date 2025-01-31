@@ -67,15 +67,21 @@ URL
 		end
 
 		offset -= 4 if offset > 4
-		find_scan( scanner,'/games', offset, "genre=#{genre}&") do |offset1, label, url|
-			if check_first_known
-				check_first_known = false
-				unless known[url]
-					raise "Games order corrupted"
+		loops, found = 2, true
+		while found && (loops > 0) do
+			loops, found = (loops - 1), false
+
+			find_scan( scanner,'/games', offset, "genre=#{genre}&") do |offset1, label, url|
+				if check_first_known
+					check_first_known = false
+					unless known[url]
+						raise "Games order corrupted"
+					end
 				end
+				scanner.suggest_link("offset:#{offset1}", label, url)
+				offset = offset1
+				found  = true
 			end
-			scanner.suggest_link("offset:#{offset1}", label, url)
-			offset = offset1
 		end
 
 		offset

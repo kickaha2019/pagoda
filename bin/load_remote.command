@@ -2,7 +2,7 @@
 #
 # Get Hostgator settings
 #
-source ~/Documents/Security/hostgator/setup.csh
+source ~/Documents/Security/dreamhost/setup.csh
 if ($status != 0) exit 1
 
 # -----------------------------------------------------------------
@@ -23,7 +23,7 @@ endif
 #
 cd $0:h
 cd ../database
-$SFTP $SERVER <<PUT
+sftp $SSH_SERVER <<PUT
 put pagoda.sql
 PUT
 
@@ -32,7 +32,7 @@ PUT
 # Secondly load pagoda.sql into the Pagoda MySQL database
 # then delete pagoda.sql
 #
-$SSH $SERVER <<LOAD
+ssh $SSH_SERVER <<LOAD
 mysql -e 'source pagoda.sql' $PAGODA_DB
 rm pagoda.sql
 LOAD

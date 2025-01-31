@@ -1,4 +1,4 @@
-require_relative 'pagoda'
+require_relative '../pagoda'
 
 class CompressDatabase
   def initialize( dir, cache)

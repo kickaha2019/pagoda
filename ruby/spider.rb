@@ -75,6 +75,12 @@ class Spider
 				pagoda.start_transaction
 				pagoda.delete('history',:timestamp, @timestamp) if @timestamp > 0
 				now = Time.now.to_i
+
+				while pagoda.has?('history',:timestamp,now) do
+					sleep 1
+					now += 1
+				end
+
 				pagoda.insert('history',
 											 {site:@site,
 												type:@type,

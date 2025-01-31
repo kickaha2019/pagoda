@@ -20,9 +20,10 @@ problem:
   type:   Reference
   method: find
 train:
-- site:   Turn Based Lovers
-  type:   Review
-  method: find_reviews
+- site:   Steam
+  type:   Store
+  method: incremental
+  every:  10
 overnight:
 - site:   Adventure Game Hotspot
   type:   Database
