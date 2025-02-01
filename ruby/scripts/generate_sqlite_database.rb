@@ -50,9 +50,13 @@ class GenerateSqliteDatabase
     check_errors 'Database created'
   end
 
-  def execute( statement)
+  def execute( statement=nil)
     begin
-      @sqlite3.execute statement, @binds
+      if statement.nil?
+        @prepared.execute @binds
+      else
+        @sqlite3.execute statement, @binds
+      end
     rescue StandardError => e
       if @on_error
         p @on_error
@@ -148,6 +152,11 @@ INSERT_COMPANY_ALIAS
   end
 
   def insert_games
+    prepare <<INSERT_GAME
+insert into game (id, name, is_group, group_id, game_type, year, developer, publisher)
+values (?, ?, ?, ?, ?, ?, ?, ?)
+INSERT_GAME
+
     @pagoda.select('game') do |game|
       bind game[:id],
            game[:name],
@@ -158,24 +167,23 @@ INSERT_COMPANY_ALIAS
            game[:developer],
            game[:publisher]
       on_error game
-      execute <<INSERT_GAME
-insert into game (id, name, is_group, group_id, game_type, year, developer, publisher)
-values (?, ?, ?, ?, ?, ?, ?, ?)
-INSERT_GAME
+      execute
     end
     check_errors 'Inserted games'
   end
 
   def insert_game_aspects
+    prepare <<INSERT_GAME_ASPECT
+insert into game_aspect (id, aspect, flag)
+values (?, ?, ?)
+INSERT_GAME_ASPECT
+
     @pagoda.select('game_aspect') do |game_aspect|
       bind game_aspect[:id],
            game_aspect[:aspect],
            (game_aspect[:flag] == 'Y') ? 1 : 0
       on_error game_aspect
-      execute <<INSERT_GAME_ASPECT
-insert into game_aspect (id, aspect, flag)
-values (?, ?, ?)
-INSERT_GAME_ASPECT
+      execute
     end
     check_errors 'Inserted game aspects'
   end
@@ -198,6 +206,11 @@ INSERT_HISTORY
   end
 
   def insert_links
+    prepare <<INSERT_LINK
+insert into link (site, type, title, url, timestamp, valid, comment, reject, year, static)
+values (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)
+INSERT_LINK
+
     @pagoda.select('link') do |link|
       bind link[:site],
            link[:type],
@@ -210,25 +223,24 @@ INSERT_HISTORY
            link[:year],
            (link[:static] == 'Y') ? 1 : 0
       on_error link
-      execute <<INSERT_LINK
-insert into link (site, type, title, url, timestamp, valid, comment, reject, year, static)
-values (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)
-INSERT_LINK
+      execute
     end
     check_errors 'Inserted links'
   end
 
   def insert_suggest
+    prepare <<INSERT_SUGGEST
+insert into suggest (site, type, title, url)
+values (?, ?, ?, ?)
+INSERT_SUGGEST
+
     @pagoda.select('suggest') do |suggest|
       bind suggest[:site],
            suggest[:type],
            suggest[:title] || '???',
            suggest[:url]
       on_error suggest
-      execute <<INSERT_SUGGEST
-insert into suggest (site, type, title, url)
-values (?, ?, ?, ?)
-INSERT_SUGGEST
+      execute
     end
     check_errors 'Inserted suggests'
   end
@@ -236,7 +248,7 @@ INSERT_SUGGEST
   def insert_tag_aspects
     @pagoda.select('tag_aspects') do |tag_aspect|
       bind tag_aspect[:tag],
-           tag_aspect[:aspect]
+           (tag_aspect[:aspect] || '')
       on_error tag_aspect
       execute <<INSERT_TAG_ASPECT
 insert into tag_aspects (tag, aspect)
@@ -252,7 +264,7 @@ INSERT_TAG_ASPECT
            visited[:timestamp]
       on_error visited
       execute <<INSERT_VISITED
-insert into game_aspect (key, timestamp)
+insert into visited (key, timestamp)
 values (?, ?)
 INSERT_VISITED
     end
@@ -261,6 +273,10 @@ INSERT_VISITED
 
   def on_error(thing)
     @on_error = thing
+  end
+
+  def prepare( statement)
+    @prepared = @sqlite3.prepare statement
   end
 end
 
