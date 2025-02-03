@@ -80,15 +80,15 @@ class DatabaseTest < Minitest::Test
     assert ! ok.nil?
   end
 
-  # def test_boolean
-  #   write 'data.tsv', "id\tname\n1\tfred"
-  #   write 'transaction.txt', "BEGIN\nINSERT\tdata\t2\tbill\nEND"
-  #   db = load_database
-  #   get = db.get( 'data', :id, 1)[0]
-  #   assert_equal( 1, get[:id])
-  #   get = db.get( 'data', :name, 'bill')[0]
-  #   assert_equal( 2, get[:id])
-  # end
+  def test_boolean
+    write 'data.tsv', "id\tvalid\n1\tY"
+    write 'transaction.txt', "BEGIN\nINSERT\tdata\t2\tN\nEND"
+    db = load_database
+    get = db.get( 'data', :id, 1)[0]
+    assert_equal( true, get[:valid])
+    get = db.get( 'data', :valid, false)[0]
+    assert_equal( 2, get[:id])
+  end
 
   def test_broken_transaction_ignored
     write 'data.tsv', "id\tname"

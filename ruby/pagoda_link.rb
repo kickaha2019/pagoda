@@ -110,8 +110,8 @@ class PagodaLink < PagodaRecord
   end
 
   def static?
-    return false unless @record[:static]
-    @record[:static] == 'Y'
+    #return false unless @record[:static]
+    @record[:static]
   end
 
   def status
@@ -155,11 +155,11 @@ class PagodaLink < PagodaRecord
   end
 
   def rejected?
-    @record[:reject] == 'Y'
+    @record[:reject]
   end
 
   def valid?
-    @record[:valid] == 'Y'
+    @record[:valid]
   end
 
   def verified( rec)
@@ -168,10 +168,10 @@ class PagodaLink < PagodaRecord
     ot = rec[:title] if ot.nil? || (ot.strip == '')
     @record[:orig_title] = rec[:orig_title] ? rec[:orig_title] : ot
     @record[:timestamp]  = rec[:timestamp]
-    @record[:valid]      = rec[:valid] ? 'Y' : 'N'
+    @record[:valid]      = rec[:valid]
     @record[:comment]    = rec[:comment]
     @record[:year]       = rec[:year] ? rec[:year] : nil
-    @record[:reject]     = rec[:reject] ? 'Y' : 'N'
+    @record[:reject]     = rec[:reject]
 
     if rec[:url] && (rec[:url] != @record[:url])
       raise "*** verified changed URL"

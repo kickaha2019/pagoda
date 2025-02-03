@@ -217,11 +217,11 @@ INSERT_LINK
            link[:title] || link[:orig_title] || '???',
            link[:url],
            link[:timestamp],
-           (link[:valid] == 'Y') ? 1 : 0,
+           link[:valid] ? 1 : 0,
            link[:comment],
-           (link[:reject] == 'Y') ? 1 : 0,
+           link[:reject] ? 1 : 0,
            link[:year],
-           (link[:static] == 'Y') ? 1 : 0
+           link[:static] ? 1 : 0
       on_error link
       execute
     end

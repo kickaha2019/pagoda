@@ -294,7 +294,7 @@ class Table
   def validate_column_value(column_name, column_value)
     case @types[column_name]
     when :boolean
-      raise "Not a boolean value for #{column_name}" unless [TrueClass, FalseClass].include?(column_value.class)
+      raise "Not a boolean value for #{column_name}" unless [nil, true, false].include?(column_value)
     when :float
       raise "Not a float value for #{column_name}" unless column_value.is_a?(Float)
     when :integer

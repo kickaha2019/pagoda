@@ -255,7 +255,7 @@ module Common
 				field.to_s
 			#			end
 		when NilClass
-			''
+			(type == :boolean) ? 'N' : ''
 		when TrueClass
 			'Y'
 		else
@@ -359,8 +359,14 @@ module Common
 			:integer
 		when :index
 			:integer
+		when :reject
+			:boolean
+		when :static
+			:boolean
 		when :timestamp
 			:integer
+		when :valid
+			:boolean
 		when :year
 			:nullable_integer
 		else
