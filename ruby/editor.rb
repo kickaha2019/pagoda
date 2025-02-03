@@ -107,7 +107,7 @@ end
 
 post '/game' do
   update_game( params)
-  erb :game, :locals => {:id => params[:id].to_i, :context => params[:context].to_i}
+  erb :game, :locals => {:id => params[:id].to_i, :context => params['context'].to_i}
 end
 
 get '/games' do

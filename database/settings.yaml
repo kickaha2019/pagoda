@@ -15,10 +15,13 @@ not_game_words:
 problem:
 - site:   rawg.io
   type:   Reference
-  method: find
-- site:   IGDB
+  method: find_adventures
+- site:   rawg.io
   type:   Reference
-  method: find
+  method: find_puzzles
+- site:   rawg.io
+  type:   Reference
+  method: find_rpgs
 train:
 - site:   Steam
   type:   Store

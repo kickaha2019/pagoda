@@ -20,17 +20,18 @@ class Pagoda
     @cache       = cache
     @now         = Time.now
 
-    @database.declare_integer( 'alias',          :id)
-    @database.declare_integer( 'bind',           :id)
-    @database.declare_integer( 'game',           :id)
-    @database.declare_integer( 'game',           :group_id)
-    @database.declare_integer( 'game',           :year)
-    @database.declare_integer( 'game_aspect',    :id)
-    @database.declare_integer( 'history',        :timestamp)
-    @database.declare_integer( 'history',        :elapsed)
-    @database.declare_integer( 'link',           :timestamp)
-    @database.declare_integer( 'link',           :year)
-    @database.declare_integer( 'visited',        :timestamp)
+    # @database.declare_integer( 'aspect',         :index)
+    # @database.declare_integer( 'alias',          :id)
+    # @database.declare_integer( 'bind',           :id)
+    # @database.declare_integer( 'game',           :id)
+    # @database.declare_nullable_integer( 'game',  :group_id)
+    # @database.declare_nullable_integer( 'game',  :year)
+    # @database.declare_integer( 'game_aspect',    :id)
+    # @database.declare_integer( 'history',        :timestamp)
+    # @database.declare_integer( 'history',        :elapsed)
+    # @database.declare_integer( 'link',           :timestamp)
+    # @database.declare_nullable_integer( 'link',  :year)
+    # @database.declare_integer( 'visited',        :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
@@ -131,7 +132,7 @@ class Pagoda
   end
 
   def check_unique_names( params)
-    id = params[:id]
+    id = params[:id].to_i
     return false unless check_unique_name( params[:name], id)
     (0..20).each do |index|
       return false unless check_unique_name( params["alias#{index}"], id)

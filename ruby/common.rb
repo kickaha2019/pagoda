@@ -29,6 +29,23 @@ module Common
 		end
 	end
 
+	def coerce(type, value)
+		case type
+		when :boolean
+			(value == 'Y')
+		when :float
+			value.to_f
+		when :integer
+			value.to_i
+		when :nullable_integer
+			value.empty? ? nil : value.to_i
+		when :nullable_string
+			value.empty? ? nil : value
+		else
+			value
+		end
+	end
+
 	def complete_url( base, url)
 		return url if /^http(s|):/ =~ url
 		raise "Unable to complete #{url} for #{base}" unless /^\// =~ url
@@ -225,6 +242,27 @@ module Common
 		end
 	end
 
+	def stringify(type, field)
+		case field
+		when FalseClass
+			'N'
+		when Float
+			field.to_s
+		when Integer
+			# if (field == 0) && (type == :nullable_integer)
+			# 	''
+			# else
+				field.to_s
+			#			end
+		when NilClass
+			''
+		when TrueClass
+			'Y'
+		else
+			field
+		end
+	end
+
 	def throttle( url, delay=10)
 		host = url_host(url)
 		t = Time.now.to_i
@@ -308,5 +346,25 @@ module Common
 
 		oldest = '0000-00-00' unless oldest_id && (oldest_id != until_id)
 		return added, oldest, oldest_id
+	end
+
+	def type_for_name(name)
+		raise "Name #{name} not a symbol" unless name.is_a? Symbol
+		case name
+		when :elapsed
+			:integer
+		when :group_id
+			:nullable_integer
+		when :id
+			:integer
+		when :index
+			:integer
+		when :timestamp
+			:integer
+		when :year
+			:nullable_integer
+		else
+			:nullable_string
+		end
 	end
 end

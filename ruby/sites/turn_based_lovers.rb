@@ -2,12 +2,14 @@ require_relative 'default_site'
 
 class TurnBasedLovers < DefaultSite
 	def find_reviews( scanner, _)
-		page  = 1
-		url   = 'https://turnbasedlovers.com/-/review/'
-		added = true
+		page    = 1
+		url     = 'https://turnbasedlovers.com/-/review/'
+		added   = true
+		scanned = 0
 
 		while page && added
 			last, page, added = page, nil, false
+			scanned += 1
 
 			scanner.html_anchors(url) do |href, label|
 				if m = %r{^https://turnbasedlovers.com/-/review/page/(\d+)/}.match(href)
@@ -23,6 +25,8 @@ class TurnBasedLovers < DefaultSite
 				end
 			end
 		end
+
+		"#{scanned} scans"
 	end
 
 	def name

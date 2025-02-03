@@ -41,6 +41,6 @@ class TestBase < Minitest::Test
   end
 
   def insert_history(site,type,method,timestamp,state)
-    @pagoda.insert('history',{site:site,type:type,method:method,timestamp:timestamp,state:state})
+    @pagoda.insert('history',{site:site,type:type,method:method,timestamp:timestamp,state:state,elapsed:1})
   end
 end

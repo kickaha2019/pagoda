@@ -41,12 +41,24 @@ class Database
     @tables[table_name].size
   end
 
+  def declare_boolean( table_name, column_name)
+    @tables[table_name].declare_boolean( column_name)
+  end
+
   def declare_float( table_name, column_name)
     @tables[table_name].declare_float( column_name)
   end
 
   def declare_integer( table_name, column_name)
     @tables[table_name].declare_integer( column_name)
+  end
+
+  def declare_not_null_string( table_name, column_name)
+    @tables[table_name].declare_not_null_string( column_name)
+  end
+
+  def declare_nullable_integer( table_name, column_name)
+    @tables[table_name].declare_nullable_integer( column_name)
   end
 
   def delete( table_name, column_name, column_value)

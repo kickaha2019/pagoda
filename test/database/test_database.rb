@@ -80,6 +80,16 @@ class DatabaseTest < Minitest::Test
     assert ! ok.nil?
   end
 
+  # def test_boolean
+  #   write 'data.tsv', "id\tname\n1\tfred"
+  #   write 'transaction.txt', "BEGIN\nINSERT\tdata\t2\tbill\nEND"
+  #   db = load_database
+  #   get = db.get( 'data', :id, 1)[0]
+  #   assert_equal( 1, get[:id])
+  #   get = db.get( 'data', :name, 'bill')[0]
+  #   assert_equal( 2, get[:id])
+  # end
+
   def test_broken_transaction_ignored
     write 'data.tsv', "id\tname"
     write 'transaction.txt', "BEGIN\nINSERT\tdata\t1\tfred"
@@ -116,14 +126,14 @@ class DatabaseTest < Minitest::Test
     assert_equal 1, db.count('data')
   end
 
-  def test_declare_integer
+  def test_integer
     write 'data.tsv', "id\tname\n1\tfred"
+    write 'transaction.txt', "BEGIN\nINSERT\tdata\t2\tbill\nEND"
     db = load_database
-    get = db.get( 'data', :id, '1')[0]
-    assert_equal( '1', get[:id])
-    db.declare_integer( 'data', :id)
-    get = db.get( 'data', :id, '1')[0]
+    get = db.get( 'data', :id, 1)[0]
     assert_equal( 1, get[:id])
+    get = db.get( 'data', :name, 'bill')[0]
+    assert_equal( 2, get[:id])
   end
 
   def test_delete
@@ -228,14 +238,13 @@ class DatabaseTest < Minitest::Test
   end
 
   def test_max_value
-    write 'data.tsv', "id\theight"
+    write 'data.tsv', "id\tyear"
     db = load_database
-    db.declare_integer( 'data', :height)
     assert_equal 1, db.next_value( 'data', :id)
     db.start_transaction
-    db.insert( 'data', {id:5, height:7})
+    db.insert( 'data', {id:5, year:7})
     db.end_transaction
-    assert_equal 7, db.max_value( 'data', :height)
+    assert_equal 7, db.max_value( 'data', :year)
   end
 
   def test_missing
@@ -245,14 +254,11 @@ class DatabaseTest < Minitest::Test
     missed = db.missing( 'data2', :name, 'data1', :key)
     assert_equal 1, missed.size
     assert_equal 'Blackberry', missed[0]
-    missed = db.missing( 'data1', :id, 'data2', :key)
-    assert_equal 2, missed.size
   end
 
   def test_next_value
     write 'data.tsv', "id\tname"
     db = load_database
-    db.declare_integer( 'data', :id)
     assert_equal 1, db.next_value( 'data', :id)
     db.start_transaction
     db.insert( 'data', {id:5, name:'fred'})

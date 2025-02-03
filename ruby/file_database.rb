@@ -3,6 +3,8 @@
 require_relative 'database'
 
 class FileDatabase < Database
+  include Common
+
   def initialize( dir)
     super()
     @dir    = dir
@@ -50,15 +52,21 @@ class FileDatabase < Database
 
   def insert( table_name, record)
     fields = @tables[table_name].fields( record)
-    @transactions.puts "INSERT\t" + table_name + "\t" + fields.collect {|v| v.to_s.gsub( /[\t\r\n]/, ' ')}.join( "\t")
+    fields1 = @tables[table_name].fields_as_strings( record) # fields.collect {|field| stringify(field)}
+    @transactions.puts "INSERT\t" + table_name + "\t" + fields1.join( "\t")
     @tables[table_name].insert( * fields)
   end
 
   def load_table(name, path)
     lines   = IO.readlines( path).collect {|line| line.chomp}
     columns = lines[0].split( "\t").collect {|name| name.to_sym}
+    types   = columns.collect {|c| type_for_name(c)}
     data    = lines[1..-1].collect do |line|
-      line.split( "\t").collect {|v| (v.strip == '') ? nil : v.strip}
+      fields = line.split( "\t" ).map {|field| field.strip}
+      fields.each_index do |i|
+        fields[i] = coerce(types[i], fields[i])
+      end
+      fields
     end
     Table.new(name, columns, data)
   end
@@ -67,9 +75,13 @@ class FileDatabase < Database
     table = @tables[rec[1]]
     raise "Unknown table: #{rec[1]}" unless table
     if rec[0] == 'DELETE'
-      table.delete( rec[2].to_sym, rec[3])
+      name = rec[2].to_sym
+      table.delete( name, coerce(type_for_name(name), rec[3]))
     elsif rec[0] == 'INSERT'
-      table.insert( * rec[2..-1])
+      # if %r{view/26407} =~ rec[5]
+      #   puts 'DEBUG200'
+      # end
+      table.insert( * table.coerce_strings( rec[2..-1]))
     else
       raise "Unknown transaction: #{rec[0]}"
     end

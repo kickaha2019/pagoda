@@ -3,6 +3,7 @@ class Names
   # HTML entity codes
   @@entities = {
     '&aacute;' => 'a',
+    '&abreve;' => 'a',
     '&amp;'    => '&',
     '&bull;'   => '.',
     '&ccedil;' => 'c',

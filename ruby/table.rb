@@ -1,11 +1,17 @@
+require_relative 'common'
+
 class Table
+  include Common
   attr_reader :name
 
   def initialize(name, columns, data)
     @name      = name
     @columns   = columns
     @joins     = {}
-    @types     = Hash.new {|h,k| h[k] = :to_s}
+    @types     = {}
+    columns.each do |column|
+      @types[column] = type_for_name(column)
+    end
     @listeners = []
     initialize_indexes( data)
   end
@@ -18,12 +24,8 @@ class Table
     @indexes[@columns[0]].each_value do |rows|
       rows.each do |row|
         if row[colind].nil?
-          if @types[column_name] == :to_i
-            row[colind] = 0
-          else
-            p [@name, column_name, row]
-            raise "No value for index column"
-          end
+          p [@name, column_name, row]
+          raise "No value for index column"
         end
         index[row[colind]] << row
       end
@@ -40,48 +42,113 @@ class Table
     @listeners << listener
   end
 
-  def coerce( column_name, column_value)
-    return nil if column_value.nil?
-    return nil if column_value.is_a?( String) && (column_value.strip == '')
-    column_value.send( @types[ column_name])
+  # def coerce( column_name, column_value)
+  #   return nil if column_value.nil?
+  #   return nil if column_value.is_a?( String) && (column_value.strip == '')
+  #   column_value.send( @types[ column_name])
+  # end
+
+  def coerce_strings( row)
+    row.each_index do |i|
+      row[i] = coerce(@types[@columns[i]], row[i])
+      # case @types[@columns[i]]
+      # when :boolean
+      #   row[i] = (row[i] == 'Y')
+      # when :float
+      #   row[i] = row[i].to_f
+      # when :integer
+      #   row[i] = row[i].to_i
+      # when :nullable_string
+      #   row[i] = row[i].nil? ? nil : (row[i].strip.empty? ? nil : row[i].strip)
+      # else
+      #   row[i] = row[i].strip
+      # end
+    end
+    row
   end
 
   def column_index( column_name)
     @columns.index( column_name)
   end
 
-  def declare_float( column_name)
-    @types[column_name] = :to_f
-    colind = column_index( column_name)
-
-    all_rows = []
-    @indexes[@columns[0]].each_value do |rows|
-      rows.each do |row|
-        row[colind] = row[colind].to_f if row[colind]
-        all_rows << row
-      end
-    end
-
-    initialize_indexes( all_rows)
-  end
-
-  def declare_integer( column_name)
-    @types[column_name] = :to_i
-    colind = column_index( column_name)
-
-    all_rows = []
-    @indexes[@columns[0]].each_value do |rows|
-      rows.each do |row|
-        row[colind] = row[colind].to_i if row[colind]
-        all_rows << row
-      end
-    end
-
-    initialize_indexes( all_rows)
-  end
+  # def declare_boolean( column_name)
+  #   @types[column_name] = :declare_boolean
+  #   colind = column_index( column_name)
+  #
+  #   all_rows = []
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       row[colind] = (row[colind] == 'Y')
+  #       all_rows << row
+  #     end
+  #   end
+  #
+  #   initialize_indexes( all_rows)
+  # end
+  #
+  # def declare_float( column_name)
+  #   @types[column_name] = :float
+  #   colind = column_index( column_name)
+  #
+  #   all_rows = []
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       row[colind] = row[colind] ? row[colind].to_f : 0.0
+  #       all_rows << row
+  #     end
+  #   end
+  #
+  #   initialize_indexes( all_rows)
+  # end
+  #
+  # def declare_integer( column_name)
+  #   @types[column_name] = :integer
+  #   colind = column_index( column_name)
+  #
+  #   all_rows = []
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       row[colind] = row[colind] ? row[colind].to_i : 0
+  #       all_rows << row
+  #     end
+  #   end
+  #
+  #   initialize_indexes( all_rows)
+  # end
+  #
+  # def declare_not_null_string( column_name)
+  #   @types[column_name] = :string
+  #   colind = column_index( column_name)
+  #
+  #   all_rows = []
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       row[colind] = row[colind] ? row[colind] : ''
+  #       all_rows << row
+  #     end
+  #   end
+  #
+  #   initialize_indexes( all_rows)
+  # end
+  #
+  # def declare_nullable_integer( column_name)
+  #   @types[column_name] = :nullable_integer
+  #   colind = column_index( column_name)
+  #
+  #   all_rows = []
+  #   @indexes[@columns[0]].each_value do |rows|
+  #     rows.each do |row|
+  #       row[colind] = row[colind] ? row[colind].to_i : nil
+  #       all_rows << row
+  #     end
+  #   end
+  #
+  #   initialize_indexes( all_rows)
+  # end
 
   def delete( column_name, column_value)
-    column_value = coerce( column_name, column_value)
+    validate_column_value(column_name, column_value)
+    #column_value = coerce( column_name, column_value)
 
     if @indexes[column_name].nil?
       add_index( column_name)
@@ -115,8 +182,18 @@ class Table
     @columns.collect {|name| record[name]}
   end
 
+  def fields_as_strings( record)
+    record.each_key do |key|
+      if @columns.index( key).nil?
+        p @columns
+        raise "Unknown key #{key}"
+      end
+    end
+    @columns.collect {|name| stringify( @types[name], record[name])}
+  end
+
   def get( column_name, column_value)
-    column_value = coerce( column_name, column_value)
+    validate_column_value( column_name, column_value)
 
     if @indexes[column_name].nil?
       add_index( column_name)
@@ -137,11 +214,12 @@ class Table
 
   def insert( * row)
     @columns.each_index do |i|
-      row[i] = coerce( @columns[i], row[i])
+      validate_column_value(@columns[i], row[i])
     end
 
+    rec = record(row)
     @listeners.each do |listener|
-      listener.record_inserted(@name, record(row))
+      listener.record_inserted(@name, rec)
     end
 
     @indexes.each_pair do |index_column, index|
@@ -149,7 +227,8 @@ class Table
       raise "No value for index column #{index_column}" if row[colind].nil?
       index[row[colind]] << row
     end
-    record( row)
+
+    rec
   end
 
   def next_value( column_name)
@@ -176,7 +255,10 @@ class Table
       io.puts @columns.join( "\t")
       @indexes[@columns[0]].each_value do |rows|
         rows.each do |row|
-          io.puts row.collect {|v| v.to_s}.join( "\t")
+          row.each_index do |i|
+            row[i] = stringify(@types[@columns[i]], row[i])
+          end
+          io.puts row.join( "\t")
         end
       end
     end
@@ -207,5 +289,22 @@ class Table
     end
 
     @indexes[column_name].keys.sort
+  end
+
+  def validate_column_value(column_name, column_value)
+    case @types[column_name]
+    when :boolean
+      raise "Not a boolean value for #{column_name}" unless [TrueClass, FalseClass].include?(column_value.class)
+    when :float
+      raise "Not a float value for #{column_name}" unless column_value.is_a?(Float)
+    when :integer
+      raise "Not an integer value for #{column_name}" unless column_value.is_a?(Integer)
+    when :nullable_integer
+      raise "Not an integer value for #{column_name}" unless column_value.nil? || column_value.is_a?(Integer)
+    when :string
+      raise "Not a string value for #{column_name}" unless column_value.is_a?(String)
+    else
+      raise "Bad value for column #{column_name}" unless column_value.nil? || column_value.is_a?(String)
+    end
   end
 end

@@ -115,8 +115,12 @@ class PagodaGame < PagodaRecord
     @owner.delete( 'game_aspect', :id, id)
 
     rec = {}
-    [:id, :name, :year, :is_group, :developer, :publisher].each do |field|
+    [:name, :is_group, :developer, :publisher].each do |field|
       rec[field] = params[field] ? params[field].to_s.strip : nil
+    end
+
+    [:id, :year].each do |field|
+      rec[field] = params[field].to_i if params[field] # ? params[field].to_s.strip : nil
     end
 
     if params[:group_name]
@@ -166,7 +170,7 @@ class PagodaGame < PagodaRecord
     rec = {}
     @record.each_pair {|k,v| rec[k] = v}
     [:year, :developer, :publisher].each do |field|
-      rec[field] = params[field] ? params[field].to_s.strip : rec[field]
+      rec[field] = params[field] if params[field] #? params[field].to_s.strip : rec[field]
     end
     @record = @owner.insert( 'game', rec)
     @owner.end_transaction
