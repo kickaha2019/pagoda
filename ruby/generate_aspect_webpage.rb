@@ -149,7 +149,7 @@ class WebsiteFiltersPage
     game.links do |link|
       next unless link.valid?
       if link.type == 'Store'
-        digest = @pagoda.cached_digest( link.timestamp)
+        digest = link.get_digest
         playable.record( site, link.url, digest)
       end
     end

@@ -8,7 +8,7 @@ class PagodaLink < PagodaRecord
   end
 
   def bad_tags
-    digest = @owner.cached_digest(timestamp)
+    digest = get_digest
     if digest['tags']
       digest['tags'].each do |tag|
         next if ['accept','reject'].include?(tag)
@@ -70,6 +70,10 @@ class PagodaLink < PagodaRecord
     valid? && collation && (! static?)
   end
 
+  def get_digest
+    @owner.get_digest(@record)
+  end
+
   def id
     timestamp
   end
@@ -79,7 +83,7 @@ class PagodaLink < PagodaRecord
   end
 
   def link_aspects
-    digest = @owner.cached_digest(timestamp)
+    digest = get_digest
     aspects = []
 
     @owner.digest_aspects(self,digest) do |aspect|
@@ -91,7 +95,7 @@ class PagodaLink < PagodaRecord
   end
 
   def link_date
-    @owner.cached_digest(timestamp)['link_year']
+    get_digest['link_year']
   end
 
   def name

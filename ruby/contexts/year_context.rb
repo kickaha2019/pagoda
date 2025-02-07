@@ -11,7 +11,7 @@ class YearContext < DefaultContext
     if @year.is_a?(Integer)
       game.year == @year
     else
-      game.year.nil?
+      game.year.nil? || (game.year < 1900)
     end
   end
 

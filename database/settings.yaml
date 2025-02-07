@@ -23,10 +23,9 @@ problem:
   type:   Reference
   method: find_rpgs
 train:
-- site:   Steam
-  type:   Store
-  method: incremental
-  every:  10
+- site:   Turn Based Lovers
+  type:   Review
+  method: find_reviews
 overnight:
 - site:   Adventure Game Hotspot
   type:   Database

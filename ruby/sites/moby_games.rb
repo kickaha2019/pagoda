@@ -21,7 +21,12 @@ https://api.mobygames.com/v1
 api_key=#{scanner.settings['MobyGames']}
 URL
 		url = url.gsub( /\s/, '')
-		raw = scanner.http_get(url)
+		begin
+			raw = scanner.http_get(url)
+		rescue Net::HTTPServerException
+			sleep 300
+			raw = scanner.http_get(url)
+		end
 		return 0 if raw.nil?
 		json = JSON.parse(raw)
 
@@ -56,9 +61,9 @@ URL
 	# end
 
 	def find_genre(scanner, genre, state)
-		offset, check_first_known, known = 0, false, {}
+		original_offset, check_first_known, known = 0, false, {}
 		if /^\d+$/ =~ state
-			offset            = state.to_i
+			original_offset   = state.to_i
 			check_first_known = true
 		end
 
@@ -66,6 +71,7 @@ URL
 			known[record[:url]] = true
 		end
 
+		offset =  original_offset
 		offset -= 4 if offset > 4
 		loops, found = 2, true
 		while found && (loops > 0) do
@@ -84,7 +90,7 @@ URL
 			end
 		end
 
-		offset
+		(offset < original_offset) ? original_offset : offset
 	end
 
 # 	def find_url(year, genre, page)

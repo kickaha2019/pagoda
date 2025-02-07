@@ -168,7 +168,7 @@ class TestFind < TestBase
   end
 
   def test_turn_based_lovers
-    scan( 'Turn Based Lovers', 'Review', :find_reviews, 2)
+    scan( 'Turn Based Lovers', 'Review', :find_reviews, 3)
     assert_link_count 15
     assert_links_match %r{^https://turnbasedlovers.com/review/}
   end

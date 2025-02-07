@@ -1,6 +1,7 @@
 require 'yaml'
 
 require_relative 'file_database'
+require_relative 'sqlite_database'
 require_relative 'names'
 require_relative 'pagoda_record'
 require_relative 'pagoda_alias'
@@ -106,16 +107,6 @@ class Pagoda
   def cache_path( timestamp, extension)
     slice = (timestamp / (24 * 60 * 60)) % 10
     @cache + "/verified/#{slice}/#{timestamp}.#{extension}"
-  end
-
-  def cached_digest( timestamp)
-    slice = (timestamp / (24 * 60 * 60)) % 10
-    path = @cache + "/verified/#{slice}/#{timestamp}.yaml"
-    if File.exist?( path)
-      YAML.load(IO.read(path))
-    else
-      {}
-    end
   end
 
   def check_unique_name( name, id)
@@ -258,6 +249,20 @@ class Pagoda
 
   def generate_links
     links {|link| link.generate?}
+  end
+
+  def get_digest(link_record)
+    if @database.is_a?(SqliteDatabase)
+      link_record[:digest] ? JSON.parse(link_record[:digest]) : {}
+    else
+      slice = (link_record[:timestamp] / (24 * 60 * 60)) % 10
+      path = @cache + "/verified/#{slice}/#{link_record[:timestamp]}.yaml"
+      if File.exist?( path)
+        YAML.load(IO.read(path))
+      else
+        {}
+      end
+    end
   end
 
   def get_site_handler( site)

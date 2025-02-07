@@ -4,11 +4,11 @@ class TurnBasedLovers < DefaultSite
 	def find_reviews( scanner, _)
 		page    = 1
 		url     = 'https://turnbasedlovers.com/-/review/'
-		added   = true
+		added   = 1
 		scanned = 0
 
-		while page && added
-			last, page, added = page, nil, false
+		while page && (added > 0)
+			last, page, added = page, nil, 0
 			scanned += 1
 
 			scanner.html_anchors(url) do |href, label|
@@ -21,7 +21,7 @@ class TurnBasedLovers < DefaultSite
 
 				if (%r{^https://turnbasedlovers.com/review/} =~ href) &&
 					(/ Review($|:)/ =~ label)
-					added |= scanner.add_link( label, href)
+					added += scanner.add_link( label, href)
 				end
 			end
 		end

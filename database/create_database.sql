@@ -5,6 +5,10 @@ create table alias (
   foreign key (id) references game(id)
 ) strict;
 
+create index alias_id on alias (id);
+
+create index alias_name on alias (name);
+
 create table aspect (
   name text primary key,
   'index' int not null unique,
@@ -18,11 +22,15 @@ create table bind (
   foreign key (url) references link(url)
 ) strict;
 
+create index bind_id on bind (id);
+
 create table company_alias (
   name text not null,
   'alias' text not null unique,
   foreign key (name) references company(name)
 ) strict;
+
+create index company_alias_name on company_alias (name);
 
 create table company (
   name text not null primary key
@@ -36,6 +44,8 @@ create table game_aspect (
   foreign key (aspect) references aspect(name)
 ) strict;
 
+create index game_aspect_id on game_aspect (id);
+
 create table game (
   id int primary key,
   name text not null unique,
@@ -46,6 +56,8 @@ create table game (
   developer text,
   publisher text
 ) strict;
+
+create index game_name on game (name);
 
 create table history (
   timestamp int primary key,
@@ -61,12 +73,13 @@ create table link (
   site text not null,
   type text not null,
   title text not null,
-  timestamp int,
-  valid int,
+  digest text not null,
+  timestamp int not null,
+  valid int not null,
   comment text,
-  reject int,
+  reject int not null,
   year int,
-  static int
+  static int not null
 ) strict;
 
 create table suggest (
@@ -81,6 +94,8 @@ create table tag_aspects (
   aspect text not null,
   foreign key (aspect) references aspect(name)
 ) strict;
+
+create index tag_aspects_tag on tag_aspects (tag);
 
 create table visited (
   key text primary key,

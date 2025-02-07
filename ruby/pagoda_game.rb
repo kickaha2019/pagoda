@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 class PagodaGame < PagodaRecord
+  include Common
+
   def aliases
     @owner.get( 'alias', :id, id).collect {|rec| PagodaAlias.new( @owner, rec)}
   end
@@ -115,13 +117,13 @@ class PagodaGame < PagodaRecord
     @owner.delete( 'game_aspect', :id, id)
 
     rec = {}
-    [:name, :is_group, :developer, :publisher].each do |field|
-      rec[field] = params[field] ? params[field].to_s.strip : nil
+    [:id, :year, :name, :is_group, :developer, :publisher].each do |field|
+      rec[field] = coerce( type_for_name(field), params[field]) if params[field]
     end
-
-    [:id, :year].each do |field|
-      rec[field] = params[field].to_i if params[field] # ? params[field].to_s.strip : nil
-    end
+    #
+    # [:id, :year].each do |field|
+    #   rec[field] = params[field].to_i if params[field] # ? params[field].to_s.strip : nil
+    # end
 
     if params[:group_name]
       group_recs = @owner.get( 'game', :name, params[:group_name].strip)
@@ -179,7 +181,7 @@ class PagodaGame < PagodaRecord
 
   def update_from_link(link)
     details = {}
-    digest  = @owner.cached_digest(link.timestamp)
+    digest  = link.get_digest
 
     if year.nil? && digest['year']
       details[:year] = digest['year']

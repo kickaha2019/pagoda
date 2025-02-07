@@ -123,7 +123,7 @@ class TestDigestLink < TestBase
 
   def test_moby_games1
     info = fire('MobyGames','https://www.mobygames.com/game/20148/agon-episode-1-london-scene/')
-    p info
+    #p info
     assert_equal 'AGON: Episode 1 - London Scene (2003)', info['title']
     assert_equal 2003, info['year']
     assert /Professor Samuel Hunt/ =~ info['description']

@@ -137,7 +137,7 @@ class PrepareWork
 
     @pagoda.links do |link|
       next unless ignored[link.url]
-      digest = @pagoda.cached_digest(link.timestamp)
+      digest = link.get_digest
       count += 1 if @pagoda.reject_link?(link, digest)
     end
 
@@ -203,7 +203,7 @@ class PrepareWork
     @pagoda.select('bind') do |bind|
       next if bind[:id] < 0
       @pagoda.get('link',:url,bind[:url]).each do |link|
-        digest = @pagoda.cached_digest(link[:timestamp])
+        digest = @pagoda.get_digest(link)
         ['developers','publishers'].each do |key|
           (digest[key] || []).each do |company|
             company = company.strip
