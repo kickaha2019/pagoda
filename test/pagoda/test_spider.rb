@@ -17,8 +17,10 @@ class SpiderTest < TestBase
 
   def test_some_run
     now = Time.now.to_i
+    @pagoda.start_transaction
     insert_history('Test','Test','find1',now,'ran')
-    insert_history('Test','Test','find3',now,'ran')
+    insert_history('Test','Test','find3',now+1,'ran')
+    @pagoda.end_transaction
     @spider.run('test')
     site = @pagoda.get_site_handler('Test')
     assert(! site.ran?('find1'))

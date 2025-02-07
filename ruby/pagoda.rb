@@ -346,7 +346,10 @@ class Pagoda
            :title      => title,
            :orig_title => title,
            :url        => url,
-           :timestamp  => 1}
+           :timestamp  => 1,
+           :valid      => false,
+           :static     => false,
+           :reject     => false}
     insert_link rec
     true
   end

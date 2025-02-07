@@ -8,15 +8,19 @@ class TestBase < Minitest::Test
   def setup
     super
 
+    File.delete( '/tmp/Pagoda_test.sqlite') if File.exist? '/tmp/Pagoda_test.sqlite'
+    database = SqliteDatabase.new '/tmp/Pagoda_test.sqlite'
+    database.load( IO.read( '/Users/peter/Pagoda/database/create_database.sql'))
     @metadata, @cache = '/Users/peter/Pagoda/database', '/tmp/Pagoda_cache'
-    mkdir @cache
-    mkdir @cache + '/verified'
-    (0..9).each do |i|
-      mkdir @cache + '/verified/' + i.to_s
-    end
+    # mkdir @cache
+    # mkdir @cache + '/verified'
+    # (0..9).each do |i|
+    #   mkdir @cache + '/verified/' + i.to_s
+    # end
 
-    @pagoda = Pagoda.testing(@metadata,@cache)
-    @spider = Spider.new(@pagoda, @cache)
+    @pagoda = Pagoda.new(database, @metadata, nil)
+    #@pagoda = Pagoda.testing(@metadata,@cache)
+    @spider = Spider.new(@pagoda, nil)
   end
 
   def mkdir(path)
@@ -33,7 +37,8 @@ class TestBase < Minitest::Test
   end
 
   def insert_aspect(aspect,index,type=nil,derive=false)
-    @pagoda.insert('aspect',{name:aspect,index:index,type:type,derive:(derive ? 'N' : 'Y')})
+    @pagoda.insert('aspect',
+                   {name:aspect,index:index,type:type,derive:derive})
   end
 
   def insert_tag_aspect(tag, aspect)

@@ -17,9 +17,11 @@ class PagodaTest < TestBase
   end
 
   def test_ignore
+    @pagoda.start_transaction
     insert_tag_aspect('Adventure','Adventure')
     insert_tag_aspect('Adventure','accept')
     insert_tag_aspect('2D Fighter','reject')
+    @pagoda.end_transaction
     link = TestLink.new('IGDB')
 
     digest = {}
@@ -39,9 +41,11 @@ class PagodaTest < TestBase
   end
 
   def test_digest_aspects
+    @pagoda.start_transaction
     insert_aspect('Adventure',1)
     insert_tag_aspect('Adventure','Adventure')
     insert_tag_aspect('Adventure','accept')
+    @pagoda.end_transaction
     link = TestLink.new('IGDB')
     assert_equal [], digest_aspects(link,{})
     assert_equal ["Adventure", "accept", "reject"],

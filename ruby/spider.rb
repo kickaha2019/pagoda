@@ -106,9 +106,9 @@ class Spider
 		@suggested_links = {}
 		set_not_game_words
 
-		@old_suggested_links = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = Hash.new {|h2,k2| h2[k2] = []}}}
+		@old_suggested_links = Hash.new {|h,k| h[k] = Hash.new {|h1,k1| h1[k1] = []}}
 		@pagoda.select('suggest') do |rec|
-			@old_suggested_links[rec[:site]][rec[:type]][rec[:group]] << rec
+			@old_suggested_links[rec[:site]][rec[:type]] << rec
 		end
 	end
 
@@ -143,7 +143,7 @@ class Spider
 	end
 
 	def already_suggested
-		@old_suggested_links[@site][@type].each_value do |list|
+		@old_suggested_links[@site][@type].each do |list|
 			list.each {|record| yield record}
 		end
 	end
@@ -230,10 +230,6 @@ class Spider
 		end.each do |link|
 			yield link
 		end
-	end
-
-	def has_suggests?(group)
-		! @old_suggested_links[@site][@type][group].empty?
 	end
 
 	def http_get_wrapped( url)
@@ -329,54 +325,6 @@ class Spider
 		@rebases[site][type].call
 		puts "... #{to_delete.size} deleted #{@pagoda.count( 'link') - before} added"
 	end
-
-	# def refresh( group='All')
-	# 	to_delete, last_run = [], 0
-	# 	@pagoda.select('history') do |rec|
-	# 		if rec[:timestamp] < (@pagoda.now.to_i - 365 * 24 * 60 * 60)
-	# 			to_delete << rec[:timestamp]
-	# 		end
-	#
-	# 		if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:group] == group.to_s)
-	# 			last_run = rec[:timestamp]
-	# 		end
-	# 	end
-	#
-	# 	unless to_delete.empty?
-	# 		@pagoda.start_transaction
-	# 		to_delete.each do |timestamp|
-	# 			@pagoda.delete('history',:timestamp, timestamp)
-	# 		end
-	# 		@pagoda.end_transaction
-	# 	end
-	#
-	# 	if last_run < (@pagoda.now.to_i - 12 * 60 * 60)
-	# 		count_links    = @pagoda.count('link')
-	# 		count_suggests = @pagoda.count('suggest')
-	#
-	# 		yield
-	#
-	# 		if count_links < @pagoda.count('link')
-	# 			puts "... #{@pagoda.count('link') - count_links} links added"
-	# 		end
-	#
-	# 		if count_suggests < @pagoda.count('suggest')
-	# 			puts "... #{@pagoda.count('suggest') - count_suggests} suggests added"
-	# 		end
-	#
-	# 		@pagoda.start_transaction
-	# 		@old_suggested_links[@site][@type][group].each do |rec|
-	# 			unless @suggested_links[rec[:url]]
-	# 				@pagoda.delete('suggest',:url, rec[:url])
-	# 			end
-	# 		end
-	#
-	# 		@pagoda.delete('history',:timestamp, last_run) if last_run > 0
-	# 		@pagoda.insert('history',
-	# 									 {site:@site, type:@type, group:group.to_s, timestamp:@pagoda.now.to_i})
-	# 		@pagoda.end_transaction
-	# 	end
-	# end
 
 	def report
 		if @errors > 0
@@ -479,7 +427,7 @@ class Spider
 		@pagoda.settings
 	end
 
-	def suggest_link( group, title, url)
+	def suggest_link( title, url)
 		url = @pagoda.get_site_handler( @site).coerce_url( url.strip)
 		#return if @pagoda.has?('link',:url, url)
 		@suggested_links[url] = true
@@ -488,7 +436,7 @@ class Spider
 		else
 			@pagoda.start_transaction
 			@pagoda.insert('suggest',
-										 {site:@site, type:@type, title:title, url:url, group:group.to_s})
+										 {site:@site, type:@type, title:title, url:url})
 			@pagoda.end_transaction
 			true
 		end

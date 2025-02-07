@@ -29,7 +29,7 @@ class Metacritic < DefaultSite
 				end
 			end.css('div.c-finderProductCard_title') do |title, href|
 				found = true
-				scanner.suggest_link('All',title['data-title'],"https://www.metacritic.com#{href}")
+				scanner.suggest_link(title['data-title'],"https://www.metacritic.com#{href}")
 			end
 
 			if found

@@ -36,7 +36,7 @@ class Igdb < DefaultSite
 
 			found.each do |game|
 				max_id = game['id'] if game['id'] > max_id
-				scanner.suggest_link(game['id'], game['name'], game['url'])
+				scanner.suggest_link(game['name'], game['url'])
 			end
 
 			loops	+= 1

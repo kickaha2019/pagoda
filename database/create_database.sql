@@ -73,13 +73,14 @@ create table link (
   site text not null,
   type text not null,
   title text not null,
-  digest text not null,
+  digest text,
   timestamp int not null,
   valid int not null,
   comment text,
   reject int not null,
   year int,
-  static int not null
+  static int not null,
+  orig_title text
 ) strict;
 
 create table suggest (

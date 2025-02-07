@@ -32,7 +32,7 @@ RAWG
 			data = JSON.parse(raw)
 			#puts "... Count = #{data["count"]}"
 			data['results'].each do |game|
-				scanner.suggest_link(page,game['name'], BASE + '/games/' + game['slug'])
+				scanner.suggest_link(game['name'], BASE + '/games/' + game['slug'])
 			end
 
 			if data['results'].size >= limit

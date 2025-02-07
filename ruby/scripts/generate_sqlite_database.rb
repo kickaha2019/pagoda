@@ -1,3 +1,4 @@
+require 'json'
 require 'sqlite3'
 require_relative '../pagoda'
 
@@ -207,8 +208,8 @@ INSERT_HISTORY
 
   def insert_links
     prepare <<INSERT_LINK
-insert into link (site, type, title, url, timestamp, valid, comment, reject, year, static)
-values (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)
+insert into link (site, type, title, url, timestamp, valid, comment, reject, year, static, digest)
+values (?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?)
 INSERT_LINK
 
     @pagoda.select('link') do |link|
@@ -221,7 +222,8 @@ INSERT_LINK
            link[:comment],
            link[:reject] ? 1 : 0,
            link[:year],
-           link[:static] ? 1 : 0
+           link[:static] ? 1 : 0,
+           @pagoda.get_digest(link).to_json
       on_error link
       execute
     end

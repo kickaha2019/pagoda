@@ -84,7 +84,7 @@ URL
 						raise "Games order corrupted"
 					end
 				end
-				scanner.suggest_link("offset:#{offset1}", label, url)
+				scanner.suggest_link(label, url)
 				offset = offset1
 				found  = true
 			end

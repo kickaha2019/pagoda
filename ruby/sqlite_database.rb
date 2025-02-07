@@ -88,7 +88,7 @@ class SqliteDatabase < Database
   def insert( table_name, record)
     raise 'Not inside transaction' unless @sqlite.transaction_active?
     statement = "insert into #{table_name} ("
-    keys      = record.keys.collect(&:to_s)
+    keys      = record.keys.collect {|key| to_word(key)}
     places    = record.keys.collect {|_| '?'}
     @sqlite.execute( statement + keys.join(',') + ') values (' + places.join(',') + ')',
                      encode(record.values))
@@ -119,6 +119,10 @@ class SqliteDatabase < Database
 
   def next_value( table_name, column_name)
     max_value(table_name, column_name) + 1
+  end
+
+  def to_word( symbol)
+    ([:index, :alias].include? symbol) ? "'#{symbol}'" : symbol.to_s
   end
 
   def select( table_name)
@@ -170,7 +174,9 @@ class SqliteDatabase < Database
     end
 
     statement = "update #{table_name} set "
-    sets      = record.keys.collect {|key| "#{key} = ?"}
+    sets      = record.keys.collect do |name|
+      "#{to_word(name)} = ?"
+    end
     @sqlite.execute( statement + sets.join(',') + " where #{column_name} = ?",
                      encode(record.values + [column_value]))
 

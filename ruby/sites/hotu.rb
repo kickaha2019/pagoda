@@ -50,7 +50,7 @@ class Hotu < DefaultSite
 											:invalid => :replace, :undef => :replace, :universal_newline => true)
 				text = text.sub( /\?$/, '')
 				count = count + 1
-				scanner.suggest_link('All', text, 'https://www.homeoftheunderdogs.net/game.php?id=' + m[0])
+				scanner.suggest_link(text, 'https://www.homeoftheunderdogs.net/game.php?id=' + m[0])
 			end
 
 			offset += 40
