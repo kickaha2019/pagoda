@@ -672,17 +672,15 @@ SEARCH
       end
     end
 
-    def suggest_groups_records( site, type)
-      map = Hash.new {|h,k| h[k] = 0}
-      $pagoda.select('suggest') do |rec|
-        if rec[:site] == site && rec[:type] == type
-          map[rec[:group]] += 1
+    def suggests_records( site, type, search)
+      found = []
+      $pagoda.get('suggest', :site, site) do |rec|
+        if (rec[:type] == type) &&
+           (rec[:title] || '???').downcase.include?( search.downcase.strip)
+          found << rec
         end
       end
-
-      map.keys.collect do |group|
-        [group, map[group]]
-      end
+      found
     end
 
     def suggested_by_site_and_type
@@ -705,7 +703,7 @@ SEARCH
 
         if c[0] > 0
           if status == 'Suggested'
-            url = "/suggest_groups?site=#{e(site)}&type=#{type}&search=&page=1"
+            url = "/suggests?site=#{e(site)}&type=#{type}&search=&page=1"
           else
             url = "/links?site=#{e(site)}&type=#{type}&status=#{status}&search=&page=1"
           end

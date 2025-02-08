@@ -1,0 +1,45 @@
+<%= erb :header, :locals => {:page => 'suggests'} %>
+
+<div><span style="font-size: 24px"><b>Site:</b> <%= site %> <b>Type:</b> <%= type %></span></div>
+<br>
+
+<div class="search control">
+  <button onclick="search_input( '<%= "/suggests?site=#{e(site)}&type=#{type}&page=1" %>')">Search</button>
+  <input type="text" id="search" maxlength="40" value="<%= search %>">
+  <%=
+      url = "/suggests?site=#{e(site)}&type=#{type}"
+      erb :page_control, :locals => {:view => 'suggests',
+                                     :page => page,
+                                     :url  => url,
+                                     :args => [site, type, search]}
+  %>&nbsp;&nbsp;
+</div>
+
+  <div id="list">
+<table class="suggests list">
+<tr><th>Link</th></tr>
+  <%=
+records = suggests_records( site, type, search)
+html = []
+
+total_pages  = (records.size + 99) /  100
+current_page = page
+current_page = 1 if total_pages < current_page
+
+records.sort_by! do |rec|
+  rec[:title] || ''
+end
+
+row = 0
+records[(100*(current_page-1))...(100*current_page)].each do |rec|
+  row += 1
+  html << "<tr><td><a target=\"_blank\" href=\"#{rec[:url]}\">#{rec[:title]|| '???'}<a/></td>"
+  html << '</tr>'
+end
+
+html.join( "\n")
+%>
+  </table></div>
+
+</body>
+</html>

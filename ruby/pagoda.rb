@@ -442,7 +442,13 @@ class Pagoda
   end
 
   def get( table_name, column_name, column_value)
-    @database.get( table_name, column_name, column_value)
+    if block_given?
+      @database.get( table_name, column_name, column_value) do |record|
+        yield record
+      end
+    else
+      @database.get( table_name, column_name, column_value)
+    end
   end
 
   def has?( table_name, column_name, column_value)

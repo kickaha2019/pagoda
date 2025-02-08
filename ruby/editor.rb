@@ -229,8 +229,8 @@ get '/sites' do
                                      :walkthrough => true,)
 end
 
-get '/suggest_groups' do
-  erb :suggest_groups, :locals => get_locals( params, :page => 1, :site => 'All', :type => 'All')
+get '/suggests' do
+  erb :suggests, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All')
 end
 
 get '/tables' do

@@ -54,6 +54,9 @@ class Steam < DefaultSite
 										:invalid => :replace, :undef => :replace, :universal_newline => true)
 			url = "https://store.steampowered.com/app/#{record['appid']}"
 			suggested[url] = true
+			# if /baldur/i =~ text
+			# 	p [text, url]
+			# end
 			scanner.suggest_link(text, url)
 		end
 
