@@ -84,6 +84,11 @@ post '/delete_game' do
   redirect '/new_game'
 end
 
+get '/digest/:url' do
+  content_type 'text/plain'
+  get_digest_as_yaml( d(params[:url]))
+end
+
 post '/duplicate_game' do
   new_id = duplicate_game( params[:id].to_i)
   redirect "/game/#{new_id}/"

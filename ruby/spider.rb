@@ -143,8 +143,8 @@ class Spider
 	end
 
 	def already_suggested
-		@old_suggested_links[@site][@type].each do |list|
-			list.each {|record| yield record}
+		@old_suggested_links[@site][@type].each do |record|
+			yield record
 		end
 	end
 

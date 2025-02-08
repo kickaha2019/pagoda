@@ -335,6 +335,14 @@ HIDDEN_ASPECT_ELEMENT
       @@contexts[index]
     end
 
+    def get_digest_as_yaml( url)
+      if link = $pagoda.link( url )
+        link.get_digest.to_yaml
+      else
+        ''
+      end
+    end
+
     def get_locals( params, defs)
       locals = {}
       defs.each_pair do |k,v|

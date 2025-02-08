@@ -45,6 +45,7 @@
     <tr><th>Static</th><td><%= @rec.static? ? 'Y' : 'N' %></td></tr>
     <tr><th>Comment</th><td><%= @rec.comment %></td></tr>
     <tr><th>Timestamp</th><td><%= (@rec.timestamp > 10000) ? Time.at( @rec.timestamp).strftime( "%Y/%m/%d") : '' %></td></tr>
+    <tr><th>Digest</th><td><%= "<a target=\"_blank\" href=\"/digest/#{e(e(@rec.url))}\">Display<a/>" %></td></tr>
     <tr><th>Link date</th><td><%= @rec.link_date %></td></tr>
     <tr><th>Link aspects</th><td><%= @rec.link_aspects %></td></tr>
     <%=
