@@ -1,15 +1,28 @@
 # frozen_string_literal: true
 require 'sqlite3'
+require_relative 'common'
 
-require_relative 'database'
-
-class SqliteDatabase < Database
+class SqliteDatabase
   include Common
 
-  def initialize( path)
-    super()
+  def initialize( path, log=false)
     @sqlite    = SQLite3::Database.new(path)
     @listeners = Hash.new { |hash, key| hash[key] = [] }
+    #    @sqlite.journal_mode='wal'
+    @sqlite.locking_mode='exclusive'
+    # p ['journal_mode', @sqlite.journal_mode]
+    # p ['locking_mode', @sqlite.locking_mode]
+    # p ['synchronous', @sqlite.synchronous]
+    # p ['temp_store', @sqlite.temp_store]
+    # p ['wal_checkpoint', @sqlite.wal_checkpoint]
+
+    if File.exist?(path + '.log')
+      load(IO.read(path + '.log'))
+      File.delete(path + '.log') unless log
+    end
+
+    @logging     = log ? File.open(path + '.log', 'a') : nil
+    @transaction = []
   end
 
   def add_listener(name, listener)
@@ -17,6 +30,10 @@ class SqliteDatabase < Database
     select(name) do |record|
       listener.record_inserted name, record
     end
+  end
+
+  def close
+    @sqlite.close
   end
 
   def count( table_name)
@@ -34,8 +51,10 @@ class SqliteDatabase < Database
       end
     end
 
-    @sqlite.execute("delete from #{table_name} where #{column_name} = ?",
-                    [encode(column_value)])
+    sql = "delete from #{table_name} where #{to_word(column_name)} = " +
+          encode2(column_value)
+    @sqlite.execute(sql)
+    @transaction << sql
   end
 
   def decode(type, value)
@@ -60,14 +79,34 @@ class SqliteDatabase < Database
     end
   end
 
+  def encode2(value)
+    case value
+    when FalseClass
+      0
+    when TrueClass
+      1
+    when String
+      "'#{value.gsub("'", "''")}'"
+    else
+      value.to_s
+    end
+  end
+
   def end_transaction
     raise 'Not inside transaction' unless @sqlite.transaction_active?
     @sqlite.commit
+    if @logging
+      @logging.puts(@transaction.join(";\n") + ';')
+      @logging.flush
+    end
+    @transaction = []
   end
 
   def get( table_name, column_name, column_value)
     got = []
-    results = @sqlite.query( "select * from #{table_name} where #{column_name} = ?",
+    # p ["select * from #{table_name} where #{to_word(column_name)} = ?",
+    #                          [encode(column_value)]]
+    results = @sqlite.query( "select * from #{table_name} where #{to_word(column_name)} = ?",
                              [encode(column_value)])
     row    = results.next
     while row do
@@ -85,17 +124,28 @@ class SqliteDatabase < Database
     got
   end
 
+  def has?( table_name, column_name, column_value)
+    get( table_name, column_name, column_value).size > 0
+  end
+
   def insert( table_name, record)
     raise 'Not inside transaction' unless @sqlite.transaction_active?
-    statement = "insert into #{table_name} ("
+    statement = ["insert into #{table_name} ("]
     keys      = record.keys.collect {|key| to_word(key)}
-    places    = record.keys.collect {|_| '?'}
-    @sqlite.execute( statement + keys.join(',') + ') values (' + places.join(',') + ')',
-                     encode(record.values))
+    statement << keys.join(',')
+    statement << ') values ('
+    places    = record.keys.collect {|key| encode2(record[key])}
+    statement << places.join(',')
+    statement << ')'
+    sql       = statement.join('')
+    @sqlite.execute(sql)
+    @transaction << sql
 
     @listeners[table_name].each do |listener|
       listener.record_inserted(table_name, record)
     end
+
+    record
   end
 
   def load(sql)
@@ -103,18 +153,10 @@ class SqliteDatabase < Database
   end
 
   def max_value( table_name, column_name)
-    results = @sqlite.query( "SELECT max(#{column_name}) FROM #{table_name}")
+    results = @sqlite.query( "SELECT max(#{to_word(column_name)}) FROM #{table_name}")
     value   = results.next[0]
     results.close
     value.nil? ? 0 : value
-  end
-
-  def missing( table1, column1, table2, column2)
-    []
-  end
-
-  def missing_positive( table1, column1, table2, column2)
-    []
   end
 
   def next_value( table_name, column_name)
@@ -146,11 +188,12 @@ class SqliteDatabase < Database
   def start_transaction
     @sqlite.rollback if @sqlite.transaction_active?
     @sqlite.transaction(:immediate)
+    @transaction = []
   end
 
   def unique( table_name, column_name)
     got = []
-    results = @sqlite.query( "select #{column_name} from #{table_name}")
+    results = @sqlite.query( "select #{to_word(column_name)} from #{table_name}")
     row     = results.next
     while row do
       got << decode(type_for_name(column_name), row[0])
@@ -163,7 +206,6 @@ class SqliteDatabase < Database
 
   def update( table_name, column_name, column_value, record)
     raise 'Not inside transaction' unless @sqlite.transaction_active?
-    raise 'Updating key field' if record.has_key?(column_name)
 
     if @listeners[table_name].any?
       get(table_name, column_name, column_value).each do |record|
@@ -173,12 +215,21 @@ class SqliteDatabase < Database
       end
     end
 
-    statement = "update #{table_name} set "
-    sets      = record.keys.collect do |name|
-      "#{to_word(name)} = ?"
+    statement    = ["update #{table_name} set"]
+    record.each_pair do |name, value|
+      if name == column_name
+        if column_value != record[column_name]
+          raise 'Updating key field'
+        end
+      else
+        statement << "'#{to_word(name)}' = #{encode2(value)}"
+      end
     end
-    @sqlite.execute( statement + sets.join(',') + " where #{column_name} = ?",
-                     encode(record.values + [column_value]))
+    statement << "where #{column_name} = #{encode2(column_value)}"
+
+    sql = statement.join(' ')
+    @sqlite.execute(sql)
+    @transaction << sql
 
     if @listeners[table_name].any?
       get(table_name, column_name, column_value).each do |record|

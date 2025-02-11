@@ -1,7 +1,9 @@
 require 'minitest/autorun'
 require_relative '../../ruby/sqlite_database'
 
-class DatabaseTest < Minitest::Test
+class SqliteDatabaseTest < Minitest::Test
+  PATH = '/tmp/pagoda_database_test.sqlite'.freeze
+
   class TestListener
     def initialize
       @table  = []
@@ -40,13 +42,28 @@ class DatabaseTest < Minitest::Test
   end
 
   def setup
-    path = '/tmp/pagoda_database_test.sqlite'
-    File.delete( path ) if File.exist?( path )
-    @database = SqliteDatabase.new(path)
+    File.delete( PATH ) if File.exist?( PATH )
+    File.delete( PATH+'.log' ) if File.exist?( PATH+'.log' )
+    @database = SqliteDatabase.new(PATH)
+  end
+
+  def reopen(log=false)
+    @database.close
+    @database = SqliteDatabase.new(PATH, log)
   end
 
   def teardown
     # Do nothing
+  end
+
+  def read_log
+    IO.read( PATH+'.log' ).strip
+  end
+
+  def write_log(text)
+    File.open( PATH+'.log', 'w' ) do |f|
+      f.puts text
+    end
   end
 
   def test_boolean
@@ -84,6 +101,30 @@ TEST_DELETE
     assert_equal 0, @database.count('data')
     listener.expected 'data', 'delete', 'fred1'
     listener.expected_none
+  end
+
+  def test_delete_log1
+    reopen(true)
+    @database.load <<TEST_DELETE
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred1');
+TEST_DELETE
+    @database.start_transaction
+    @database.delete( 'data', :id, 1)
+    @database.delete( 'data', :id, 2)
+    @database.end_transaction
+    assert_equal "delete from data where id = 1;\ndelete from data where id = 2;", read_log
+  end
+
+  def test_delete_log2
+    @database.load <<TEST_DELETE
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred');
+insert into data (id, value) values (2, 'bill');
+TEST_DELETE
+    write_log "delete from data where id = 1; delete from data where id = 2;"
+    reopen
+    assert_equal 0, @database.count('data')
   end
 
   def test_get
@@ -126,6 +167,28 @@ TEST_INSERT
     assert_equal 2, @database.count('data')
     listener.expected 'data', 'insert', 'bill'
     listener.expected_none
+  end
+
+  def test_insert_log1
+    reopen(true)
+    @database.load <<TEST_INSERT
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred');
+TEST_INSERT
+    @database.start_transaction
+    @database.insert( 'data', {id:2, value:'bill'})
+    @database.end_transaction
+    assert_equal "insert into data (id,value) values (2,'bill');", read_log
+  end
+
+  def test_insert_log2
+    @database.load <<TEST_DELETE
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred');
+TEST_DELETE
+    write_log "insert into data (id,value) values (2,'bill');"
+    reopen
+    assert_equal 2, @database.count('data')
   end
 
   def test_insert_unknown_fields
@@ -220,6 +283,28 @@ TEST_UPDATE_OK
     @database.end_transaction
     listener.expected 'data', 'delete', 'fred'
     listener.expected 'data', 'insert', 'bill'
+  end
+
+  def test_update_log1
+    reopen(true)
+    @database.load <<TEST_UPDATE_OK
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred');
+TEST_UPDATE_OK
+    @database.start_transaction
+    @database.update('data', :id, 1,{value:'bill'})
+    @database.end_transaction
+    assert_equal "update data set 'value' = 'bill' where id = 1;", read_log
+  end
+
+  def test_update_log2
+    @database.load <<TEST_UPDATE_OK
+create table data (id int PRIMARY KEY, value text);
+insert into data (id, value) values (1, 'fred');
+TEST_UPDATE_OK
+    write_log "update data set 'value' = 'bill' where id = 1;"
+    reopen
+    assert @database.has?('data', :value, 'bill')
   end
 
   def test_update_key_error

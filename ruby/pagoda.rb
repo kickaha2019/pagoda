@@ -1,6 +1,6 @@
 require 'yaml'
 
-require_relative 'file_database'
+#require_relative 'file_database'
 require_relative 'sqlite_database'
 require_relative 'names'
 require_relative 'pagoda_record'
@@ -47,7 +47,7 @@ class Pagoda
   end
 
   def self.release(dir, cache=nil)
-    Pagoda.new(FileDatabase.new( dir), dir, cache)
+    Pagoda.new(SqliteDatabase.new( dir + '/pagoda.sqlite'), dir, nil)
   end
 
   def self.testing(metadata, cache)
