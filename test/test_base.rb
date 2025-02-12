@@ -20,7 +20,7 @@ class TestBase < Minitest::Test
 
     @pagoda = Pagoda.new(database, @metadata)
     #@pagoda = Pagoda.testing(@metadata,@cache)
-    @spider = Spider.new(@pagoda, nil)
+    @spider = Spider.new(@pagoda)
   end
 
   def mkdir(path)

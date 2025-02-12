@@ -61,7 +61,7 @@ class DefaultSite
     status, response = http_get_threaded(url)
 
     unless status
-      return status, false, response
+      return status, false, "Error: #{response.code}"
     end
 
     if response.is_a? Net::HTTPRedirection
@@ -69,7 +69,7 @@ class DefaultSite
     end
 
     unless response.is_a? Net::HTTPSuccess
-      return false, false, response.message
+      return false, false, "Error: #{response.code}"
     end
 
     return true, false, post_load(pagoda, url, response.body)

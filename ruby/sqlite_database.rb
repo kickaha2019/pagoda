@@ -51,9 +51,11 @@ class SqliteDatabase
       end
     end
 
-    sql = "delete from #{table_name} where #{to_word(column_name)} = " +
-          encode2(column_value)
-    @sqlite.execute(sql)
+    @sqlite.execute("delete from #{table_name} where #{to_word(column_name)} = ?",
+                    [encode(column_value)])
+    # sql = "delete from #{table_name} where #{to_word(column_name)} = " +
+    #       encode2(column_value)
+    # @sqlite.execute(sql)
     #    @transaction << sql
   end
 
@@ -76,19 +78,6 @@ class SqliteDatabase
       1
     else
       value
-    end
-  end
-
-  def encode2(value)
-    case value
-    when FalseClass
-      0
-    when TrueClass
-      1
-    when String
-      "'#{value.gsub("'", "''")}'"
-    else
-      value.to_s
     end
   end
 
@@ -130,15 +119,20 @@ class SqliteDatabase
 
   def insert( table_name, record)
     raise 'Not inside transaction' unless @sqlite.transaction_active?
-    statement = ["insert into #{table_name} ("]
+    statement = "insert into #{table_name} ("
     keys      = record.keys.collect {|key| to_word(key)}
-    statement << keys.join(',')
-    statement << ') values ('
-    places    = record.keys.collect {|key| encode2(record[key])}
-    statement << places.join(',')
-    statement << ')'
-    sql       = statement.join('')
-    @sqlite.execute(sql)
+    places    = record.keys.collect {|_| '?'}
+    @sqlite.execute( statement + keys.join(',') + ') values (' + places.join(',') + ')',
+                     encode(record.values))
+    # statement = ["insert into #{table_name} ("]
+    # keys      = record.keys.collect {|key| to_word(key)}
+    # statement << keys.join(',')
+    # statement << ') values ('
+    # places    = record.keys.collect {|key| encode2(record[key])}
+    # statement << places.join(',')
+    # statement << ')'
+    # sql       = statement.join('')
+    # @sqlite.execute(sql)
     #@transaction << sql
 
     @listeners[table_name].each do |listener|
@@ -150,7 +144,6 @@ class SqliteDatabase
 
   def load(sql)
     @sqlite.execute_batch(sql)
-    p get('bind', :id, 9030)
   end
 
   def max_value( table_name, column_name)
@@ -216,20 +209,26 @@ class SqliteDatabase
       end
     end
 
-    statement    = ["update #{table_name} set"]
+    statement = ["update #{table_name} set"]
+    separator = ''
+    values    = []
+
     record.each_pair do |name, value|
       if name == column_name
         if column_value != record[column_name]
           raise 'Updating key field'
         end
       else
-        statement << "'#{to_word(name)}' = #{encode2(value)}"
+        statement << "#{separator}'#{to_word(name)}' = ?"
+        separator = ','
+        values << value
       end
     end
-    statement << "where #{column_name} = #{encode2(column_value)}"
+    statement << "where #{to_word(column_name)} = ?"
+    values << column_value
 
-    sql = statement.join(' ')
-    @sqlite.execute(sql)
+    p [statement.join(' '), encode(values)]
+    @sqlite.execute(statement.join(' '), encode(values))
     #@transaction << sql
 
     if @listeners[table_name].any?

@@ -205,7 +205,7 @@ class PagodaGame < PagodaRecord
       next if ['accept','reject'].include?(aspect)
       unless cache_aspects.has_key?(aspect)
         @owner.start_transaction
-        @owner.insert( 'game_aspect', {:id => id, :aspect => aspect, :flag => 'Y'})
+        @owner.insert( 'game_aspect', {:id => id, :aspect => aspect, :flag => true})
         @owner.end_transaction
       end
     end

@@ -57,7 +57,7 @@ class PagodaLink < PagodaRecord
   def complain(msg)
     @owner.start_transaction
     @record[:comment] = msg
-    @owner.update( 'link', :url, @record[:url], @record)
+    @owner.update( 'link', :url, @record[:url], {comment:msg})
     @owner.end_transaction
     @owner.refresh_link(@record[:url])
   end

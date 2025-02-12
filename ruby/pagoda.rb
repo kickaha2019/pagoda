@@ -210,6 +210,7 @@ class Pagoda
       end
 
       aspects.uniq.each do |aspect|
+        next if aspect.empty?
         if ['accept','reject'].include?(aspect)
           yield aspect
         elsif aspect?(aspect)

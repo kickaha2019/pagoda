@@ -10,7 +10,7 @@ class TestFind < TestBase
     attr_reader :adds, :suggests, :limit, :cache
 
     def initialize(pagoda, cache, site, type, limit)
-      super(pagoda,cache)
+      super(pagoda)
       @site  = site
       @type  = type
       @limit = limit
