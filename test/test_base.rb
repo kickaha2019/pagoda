@@ -18,7 +18,7 @@ class TestBase < Minitest::Test
     #   mkdir @cache + '/verified/' + i.to_s
     # end
 
-    @pagoda = Pagoda.new(database, @metadata, nil)
+    @pagoda = Pagoda.new(database, @metadata)
     #@pagoda = Pagoda.testing(@metadata,@cache)
     @spider = Spider.new(@pagoda, nil)
   end

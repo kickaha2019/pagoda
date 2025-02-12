@@ -11,7 +11,7 @@ class PrepareWork
   include Common
 
   def initialize(dir,cache)
-    @pagoda = Pagoda.release(dir,cache)
+    @pagoda = Pagoda.release(dir)
     @cache  = cache
     @path   = dir + '/work.yaml'
     if File.exist? @path

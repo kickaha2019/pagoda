@@ -1,6 +1,6 @@
 require_relative '../verifier'
 
-pagoda   = Pagoda.release( ARGV[0], ARGV[2])
+pagoda   = Pagoda.release( ARGV[0])
 
 vl = Verifier.new(pagoda)
 vl.verify_url( ARGV[1])

@@ -5,7 +5,7 @@ require_relative 'common'
 class SqliteDatabase
   include Common
 
-  def initialize( path, log=false)
+  def initialize( path)
     @sqlite    = SQLite3::Database.new(path)
     @listeners = Hash.new { |hash, key| hash[key] = [] }
     #    @sqlite.journal_mode='wal'
@@ -16,13 +16,13 @@ class SqliteDatabase
     # p ['temp_store', @sqlite.temp_store]
     # p ['wal_checkpoint', @sqlite.wal_checkpoint]
 
-    if File.exist?(path + '.log')
-      load(IO.read(path + '.log'))
-      File.delete(path + '.log') unless log
-    end
-
-    @logging     = log ? File.open(path + '.log', 'a') : nil
-    @transaction = []
+    # if File.exist?(path + '.log')
+    #   load(IO.read(path + '.log'))
+    #   File.delete(path + '.log') unless log
+    # end
+    #
+    # @logging     = log ? File.open(path + '.log', 'a') : nil
+    # @transaction = []
   end
 
   def add_listener(name, listener)
@@ -54,7 +54,7 @@ class SqliteDatabase
     sql = "delete from #{table_name} where #{to_word(column_name)} = " +
           encode2(column_value)
     @sqlite.execute(sql)
-    @transaction << sql
+    #    @transaction << sql
   end
 
   def decode(type, value)
@@ -95,11 +95,11 @@ class SqliteDatabase
   def end_transaction
     raise 'Not inside transaction' unless @sqlite.transaction_active?
     @sqlite.commit
-    if @logging
-      @logging.puts(@transaction.join(";\n") + ';')
-      @logging.flush
-    end
-    @transaction = []
+    # if @logging
+    #   @logging.puts(@transaction.join(";\n") + ';')
+    #   @logging.flush
+    # end
+    # @transaction = []
   end
 
   def get( table_name, column_name, column_value)
@@ -139,7 +139,7 @@ class SqliteDatabase
     statement << ')'
     sql       = statement.join('')
     @sqlite.execute(sql)
-    @transaction << sql
+    #@transaction << sql
 
     @listeners[table_name].each do |listener|
       listener.record_inserted(table_name, record)
@@ -150,6 +150,7 @@ class SqliteDatabase
 
   def load(sql)
     @sqlite.execute_batch(sql)
+    p get('bind', :id, 9030)
   end
 
   def max_value( table_name, column_name)
@@ -188,7 +189,7 @@ class SqliteDatabase
   def start_transaction
     @sqlite.rollback if @sqlite.transaction_active?
     @sqlite.transaction(:immediate)
-    @transaction = []
+    #@transaction = []
   end
 
   def unique( table_name, column_name)
@@ -229,7 +230,7 @@ class SqliteDatabase
 
     sql = statement.join(' ')
     @sqlite.execute(sql)
-    @transaction << sql
+    #@transaction << sql
 
     if @listeners[table_name].any?
       get(table_name, column_name, column_value).each do |record|

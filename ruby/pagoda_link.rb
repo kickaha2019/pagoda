@@ -32,7 +32,8 @@ class PagodaLink < PagodaRecord
   def bind( id)
     _bind(id)
     @owner.start_transaction
-    @owner.update( 'bind', :url, @record[:url], {
+    @owner.delete( 'bind', :url, @record[:url])
+    @owner.insert( 'bind', {
       url:@record[:url],
       id:id
     })

@@ -5,7 +5,7 @@ require_relative '../pagoda'
 
 class MissingReferences
   def initialize(args)
-    @pagoda = Pagoda.release(args[0], args[1])
+    @pagoda = Pagoda.release(args[0])
     @from   = args[2].to_i
     @to     = args[3].to_i
     @file   = File.open(args[4],'w')

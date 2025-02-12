@@ -44,7 +44,7 @@ class WebsiteFiltersPage
 
   def initialize( dir, cache, templates, local)
     @dir       = dir
-    @pagoda    = Pagoda.release( dir, cache)
+    @pagoda    = Pagoda.release( dir)
     @cache     = cache
     @templates = templates
     @local     = local

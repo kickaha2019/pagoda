@@ -642,7 +642,7 @@ SEARCH
     end
 
     def self.setup
-      $pagoda = Pagoda.release( ARGV[0], ARGV[1])
+      $pagoda = Pagoda.release( ARGV[0], true)
 
       $debug = false
       ARGV[2..-1].each do |arg|

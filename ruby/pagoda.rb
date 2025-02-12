@@ -12,13 +12,12 @@ require_relative 'pagoda_link'
 class Pagoda
   attr_reader :settings, :now
 
-  def initialize( database, metadata, cache=nil)
+  def initialize( database, metadata)
     @dir         = metadata
     @database    = database
     @settings    = YAML.load( IO.read( @dir + '/settings.yaml'))
     log 'Loaded database'
     @possibles   = nil
-    @cache       = cache
     @now         = Time.now
 
     # @database.declare_integer( 'aspect',         :index)
@@ -46,11 +45,11 @@ class Pagoda
     log 'Pagoda opened'
   end
 
-  def self.release(dir, cache=nil)
-    Pagoda.new(SqliteDatabase.new( dir + '/pagoda.sqlite'), dir, nil)
+  def self.release(dir, log=false)
+    Pagoda.new(SqliteDatabase.new( dir + '/pagoda.sqlite'), dir)
   end
 
-  def self.testing(metadata, cache)
+  def self.testing(metadata)
     database = Database.new
     database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
     database.add_table(Table.new('aspect',[:name,:index,:type,:derive],[]))
@@ -64,7 +63,7 @@ class Pagoda
     database.add_table(Table.new('suggest',[:url,:site,:type,:group,:title],[]))
     database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
     database.add_table(Table.new('visited',[:key,:timestamp],[]))
-    Pagoda.new(database, metadata, cache)
+    Pagoda.new(database, metadata)
   end
 
   def aspect?(name)
@@ -102,11 +101,6 @@ class Pagoda
     @database.select('aspect') do |record|
       yield record[:name],record[:type] if record[:derive].nil?
     end
-  end
-
-  def cache_path( timestamp, extension)
-    slice = (timestamp / (24 * 60 * 60)) % 10
-    @cache + "/verified/#{slice}/#{timestamp}.#{extension}"
   end
 
   def check_unique_name( name, id)
@@ -252,17 +246,7 @@ class Pagoda
   end
 
   def get_digest(link_record)
-    if @database.is_a?(SqliteDatabase)
       link_record[:digest] ? JSON.parse(link_record[:digest]) : {}
-    else
-      slice = (link_record[:timestamp] / (24 * 60 * 60)) % 10
-      path = @cache + "/verified/#{slice}/#{link_record[:timestamp]}.yaml"
-      if File.exist?( path)
-        YAML.load(IO.read(path))
-      else
-        {}
-      end
-    end
   end
 
   def get_site_handler( site)
@@ -407,28 +391,6 @@ class Pagoda
     puts "*** Deleted #{visited_lost.size} old visited records" if visited_lost.size > 0
   end
 
-  def clean_cache
-    deleted = 0
-    timestamps = {}
-    @database.select('link') do |rec|
-      timestamps[rec[:timestamp]] = true unless rec[:timestamp].nil?
-    end
-
-    Dir.entries( @cache + '/verified').each do |section|
-      next if /^[._]/ =~ section
-      Dir.entries( @cache + '/verified/' + section).each do |f|
-        /^(\d+)\.html$/.match( f) do |m|
-          unless timestamps[m[1].to_i]
-            path = @cache + '/verified/' + section + '/' + f
-            File.delete path
-            deleted += 1
-          end
-        end
-      end
-    end
-    puts "*** Deleted #{deleted} cached files" if deleted > 0
-  end
-
   def count( table_name)
     @database.count( table_name)
   end
@@ -517,11 +479,7 @@ class Pagoda
     end
 
     # Save the digest
-    sleep 1
-    rec[:timestamp] = Time.now.to_i
-    new_path = cache_path( rec[:timestamp], 'yaml')
-    File.open( new_path, 'w') {|io| io.print digest.to_yaml}
-    p ['update_link5', new_path] if debug
+    rec[:digest] = digest.to_json
 
     # Unbind rejected links
     rec[:reject] = true if reject_link?(link, digest)
@@ -557,7 +515,8 @@ class Pagoda
 
   def visited_key( key)
     start_transaction
-    @database.update( 'visited', :key, key, {:key => key, :timestamp => Time.now.to_i})
+    @database.delete( 'visited', :key, key)
+    @database.insert( 'visited', {:key => key, :timestamp => Time.now.to_i})
     end_transaction
   end
 end

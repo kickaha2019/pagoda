@@ -2,7 +2,7 @@ require_relative '../pagoda'
 
 class CompressDatabase
   def initialize( dir, cache)
-    @pagoda = Pagoda.release( dir, cache)
+    @pagoda = Pagoda.release( dir)
   end
 
   def clean

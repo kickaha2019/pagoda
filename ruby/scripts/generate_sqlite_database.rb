@@ -5,7 +5,7 @@ require_relative '../pagoda'
 class GenerateSqliteDatabase
   def initialize( dir, cache)
     @dir    = dir
-    @pagoda = Pagoda.release( dir, cache)
+    @pagoda = Pagoda.release( dir)
     @pagoda.clean
     @pagoda.clean_cache
     @binds    = []

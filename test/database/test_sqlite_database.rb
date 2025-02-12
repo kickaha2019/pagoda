@@ -49,7 +49,7 @@ class SqliteDatabaseTest < Minitest::Test
 
   def reopen(log=false)
     @database.close
-    @database = SqliteDatabase.new(PATH, log)
+    @database = SqliteDatabase.new(PATH)
   end
 
   def teardown
