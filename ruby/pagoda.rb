@@ -10,28 +10,15 @@ require_relative 'pagoda_game'
 require_relative 'pagoda_link'
 
 class Pagoda
-  attr_reader :settings, :now
+  attr_reader :settings, :now, :directory
 
   def initialize( database, metadata)
-    @dir         = metadata
+    @directory   = metadata
     @database    = database
-    @settings    = YAML.load( IO.read( @dir + '/settings.yaml'))
+    @settings    = YAML.load( IO.read( @directory + '/settings.yaml'))
     log 'Loaded database'
     @possibles   = nil
     @now         = Time.now
-
-    # @database.declare_integer( 'aspect',         :index)
-    # @database.declare_integer( 'alias',          :id)
-    # @database.declare_integer( 'bind',           :id)
-    # @database.declare_integer( 'game',           :id)
-    # @database.declare_nullable_integer( 'game',  :group_id)
-    # @database.declare_nullable_integer( 'game',  :year)
-    # @database.declare_integer( 'game_aspect',    :id)
-    # @database.declare_integer( 'history',        :timestamp)
-    # @database.declare_integer( 'history',        :elapsed)
-    # @database.declare_integer( 'link',           :timestamp)
-    # @database.declare_nullable_integer( 'link',  :year)
-    # @database.declare_integer( 'visited',        :timestamp)
 
     # Populate names repository
     @database.select( 'game') do |game_rec|
@@ -49,21 +36,12 @@ class Pagoda
     Pagoda.new(SqliteDatabase.new( dir + '/pagoda.sqlite'), dir)
   end
 
-  def self.testing(metadata)
-    database = Database.new
-    database.add_table(Table.new('alias',[:id,:name,:hide,:sort_name],[]))
-    database.add_table(Table.new('aspect',[:name,:index,:type,:derive],[]))
-    database.add_table(Table.new('bind',[:url,:id],[]))
-    database.add_table(Table.new('company_alias',[:name,:alias],[]))
-    database.add_table(Table.new('company',[:name],[]))
-    database.add_table(Table.new('game',[:id,:name,:is_group,:group_id,:game_type,:year,:developer,:publisher],[]))
-    database.add_table(Table.new('game_aspect',[:id,:aspect,:flag],[]))
-    database.add_table(Table.new('history',[:timestamp,:site,:type,:method,:state,:elapsed],[]))
-    database.add_table(Table.new('link',[:site,:type,:title,:url,:timestamp,:valid,:comment,:orig_title,:changed,:year,:static],[]))
-    database.add_table(Table.new('suggest',[:url,:site,:type,:group,:title],[]))
-    database.add_table(Table.new('tag_aspects',[:tag,:aspect],[]))
-    database.add_table(Table.new('visited',[:key,:timestamp],[]))
-    Pagoda.new(database, metadata)
+  def close_database
+    @database.close
+  end
+
+  def reopen_database
+    @database.reopen
   end
 
   def aspect?(name)
@@ -84,18 +62,6 @@ class Pagoda
     end
     list
   end
-
-  # def aspect_info
-  #   if (@aspect_info_timestamp + 2) > Time.now
-  #     return @aspect_info
-  #   end
-  #
-  #   unless @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
-  #     @aspect_info_timestamp == File.mtime( @dir + '/aspects.yaml')
-  #     @aspect_info = YAML.load( IO.read( @dir + '/aspects.yaml'))
-  #   end
-  #   @aspect_info
-  # end
 
   def aspect_name_and_types
     @database.select('aspect') do |record|
@@ -259,7 +225,7 @@ class Pagoda
   end
 
   def get_yaml( f)
-    YAML.load( IO.read( @dir + '/' + f))
+    YAML.load( IO.read( @directory + '/' + f))
   end
 
   def link( url)
@@ -299,7 +265,7 @@ class Pagoda
   end
 
   def put_yaml( data, f)
-    File.open( @dir + '/' + f, 'w') {|io| io.print data.to_yaml}
+    File.open( @directory + '/' + f, 'w') {|io| io.print data.to_yaml}
   end
 
   # def string_combos( name)

@@ -2,7 +2,7 @@ require_relative 'default_site'
 
 class Grabbed < DefaultSite
 	def incremental( scanner, _)
-		path  = scanner.cache + "/grabbed.txt"
+		path  = scanner.directory + "/grabbed.txt"
 		added = 0
 		game  = -1
 		left  = []

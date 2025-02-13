@@ -65,7 +65,8 @@ create table history (
   type text not null,
   method text not null,
   state text,
-  elapsed real not null
+  elapsed real not null,
+  found int
 ) strict;
 
 create table link (

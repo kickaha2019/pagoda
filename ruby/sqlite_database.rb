@@ -6,6 +6,7 @@ class SqliteDatabase
   include Common
 
   def initialize( path)
+    @path      = path
     @sqlite    = SQLite3::Database.new(path)
     @listeners = Hash.new { |hash, key| hash[key] = [] }
     #    @sqlite.journal_mode='wal'
@@ -93,8 +94,6 @@ class SqliteDatabase
 
   def get( table_name, column_name, column_value)
     got = []
-    # p ["select * from #{table_name} where #{to_word(column_name)} = ?",
-    #                          [encode(column_value)]]
     results = @sqlite.query( "select * from #{table_name} where #{to_word(column_name)} = ?",
                              [encode(column_value)])
     row    = results.next
@@ -155,6 +154,10 @@ class SqliteDatabase
 
   def next_value( table_name, column_name)
     max_value(table_name, column_name) + 1
+  end
+
+  def reopen
+    @sqlite = SQLite3::Database.new(@path)
   end
 
   def to_word( symbol)
@@ -227,7 +230,6 @@ class SqliteDatabase
     statement << "where #{to_word(column_name)} = ?"
     values << column_value
 
-    p [statement.join(' '), encode(values)]
     @sqlite.execute(statement.join(' '), encode(values))
     #@transaction << sql
 

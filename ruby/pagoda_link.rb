@@ -168,7 +168,7 @@ class PagodaLink < PagodaRecord
   end
 
   def verified( rec)
-    @record[:title]      = rec[:title]
+    @record[:title]      = rec[:title] if rec.has_key?(:title)
     ot = @record[:orig_title]
     ot = rec[:title] if ot.nil? || (ot.strip == '')
     @record[:orig_title] = rec[:orig_title] ? rec[:orig_title] : ot

@@ -19,23 +19,37 @@ class Spider
 		attr_reader :every
 
 		def initialize(pagoda,defn)
-			@site      = defn['site']
-			@type      = defn['type']
-			@method    = defn['method']
-			@every     = defn['every'] ? defn['every'].to_i : 1
-			@timestamp = 0
-			@state     = nil
+			@site       = defn['site']
+			@type       = defn['type']
+			@method     = defn['method']
+			@every      = defn['every'] ? defn['every'].to_i : 1
+			@timestamps = []
+			@state      = nil
 
-			forgotten = []
+			forgotten, timestamps, year_ago = [], [], Time.now.to_i - 365 * 24 * 60 * 60
 			pagoda.select('history') do |rec|
+				if rec[:timestamp] < year_ago
+					forgotten << rec
+					next
+				end
+
 				if (rec[:site] == @site) && (rec[:type] == @type) && (rec[:method] == @method)
-					@timestamp = rec[:timestamp]
-					@state     = rec[:state]
+					@timestamps << rec[:timestamp]
 				end
 			end
 
+			pagoda.start_transaction
 			forgotten.each do |timestamp|
 				pagoda.delete('history',:timestamp,timestamp)
+			end
+			pagoda.end_transaction
+
+			if @timestamps.empty?
+				@timestamps = [0]
+			else
+				@timestamps.sort!.reverse!
+				rec    = pagoda.get('history', :timestamp, @timestamps[0])[0]
+				@state = rec[:state]
 			end
 		end
 
@@ -44,7 +58,7 @@ class Spider
 		end
 
 		def overdue
-			((Time.now.to_i - @timestamp + (60 * 60 * 12)) / (60 * 60 * 24)) - (@every - 1)
+			((Time.now.to_i - @timestamps[0] + (60 * 60 * 12)) / (60 * 60 * 24)) - (@every - 1)
 		end
 
 		def run(scanner,pagoda)
@@ -63,16 +77,20 @@ class Spider
 					new_state = nil
 				end
 
-				if count_links < pagoda.count('link')
-					puts "... #{pagoda.count('link') - count_links} links added"
+				found_links = pagoda.count('link') - count_links
+				if found_links > 0
+					puts "... #{found_links} links added"
 				end
 
-				if count_suggests < pagoda.count('suggest')
-					puts "... #{pagoda.count('suggest') - count_suggests} suggests added"
+				found_suggests = pagoda.count('suggest') - count_suggests
+				if found_suggests > 0
+					puts "... #{found_suggests} suggests added"
 				end
 
 				pagoda.start_transaction
-				pagoda.delete('history',:timestamp, @timestamp) if @timestamp > 0
+				@timestamps[9..-1].each do |timestamp|
+					pagoda.delete('history',:timestamp,timestamp)
+				end
 				now = Time.now.to_i
 
 				while pagoda.has?('history',:timestamp,now) do
@@ -86,7 +104,8 @@ class Spider
 												method:@method,
 												timestamp:now,
 												state:new_state,
-												elapsed:(now - start)})
+												elapsed:(now - start),
+												found:found_links+found_suggests})
 				pagoda.end_transaction
 				puts "... Time taken #{now - start} seconds"
 				STDOUT.flush
@@ -153,6 +172,13 @@ class Spider
 		@pagoda.end_transaction
 	end
 
+	def browser_driver
+		@pagoda.close_database
+		driver = super
+		@pagoda.reopen_database
+		driver
+	end
+
 	def correlate_site( url)
 		return * @pagoda.correlate_site( url)
 	end
@@ -167,6 +193,10 @@ class Spider
 		@pagoda.start_transaction
 		@pagoda.delete( 'suggest', :url, url)
 		@pagoda.end_transaction
+	end
+
+	def directory
+		@pagoda.directory
 	end
 
 	def error( msg)

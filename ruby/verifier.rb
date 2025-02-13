@@ -14,6 +14,7 @@ class Verifier
   end
 
   def get_details( link, body, rec)
+    return nil unless body.has_key?('title')
     rec[:title] = body['title']
 
     # 404 errors
@@ -112,8 +113,7 @@ class Verifier
       return
     end
 
-    rec = {title:'',
-           timestamp:Time.now.to_i,
+    rec = {timestamp:Time.now.to_i,
            reject:(body['unreleased'] ? true : false),
            valid:true,
            comment: nil}

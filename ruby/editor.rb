@@ -196,7 +196,11 @@ get '/reports' do
 end
 
 get '/scans' do
-  erb :scans
+  erb :scans, :locals => {:field => 'found'}
+end
+
+get '/scans/:field' do
+  erb :scans, :locals => {:field => params[:field]}
 end
 
 get '/selected_game' do

@@ -167,28 +167,20 @@ class PrepareWork
   end
 
   def scans
-    @pagoda.settings['overnight'].each do |scan|
-      key = "Scan: #{scan['site']} / #{scan['type']} / #{scan['method']}"
+    key             = 'Scans elapsed'
+    longest_elapsed = 0
 
-      run_last_night = false
-      @pagoda.select('history') do |history|
-        if (history[:site]   == scan['site']) &&
-           (history[:type]   == scan['type']) &&
-           (history[:method] == scan['method']) &&
-           ((Time.now.to_i - 18 * 60 * 60) < history[:timestamp])
-          run_last_night  = true
-          add(key,
-              history[:elapsed],
-              'warning',
-              nil,
-              history[:elapsed] / (scan['every'] ? scan['every'] : 1) < 120)
-        end
-      end
-
-      unless run_last_night
-        copy key
+    @pagoda.select('history') do |history|
+      if (Time.now.to_i - 18 * 60 * 60) < history[:timestamp]
+        longest_elapsed = history[:elapsed] if history[:elapsed] > longest_elapsed
       end
     end
+
+    add(key,
+        longest_elapsed,
+        'warning',
+        "/scans/elapsed",
+        longest_elapsed < 600)
   end
 
   def unknown_companies
