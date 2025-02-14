@@ -61,7 +61,7 @@ class DefaultSite
     status, response = http_get_threaded(url)
 
     unless status
-      return status, false, "Error: #{response.code}"
+      return status, false, "Error: #{response.is_a?(String) ? response : response.code}"
     end
 
     if response.is_a? Net::HTTPRedirection

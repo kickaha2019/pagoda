@@ -589,7 +589,10 @@ SEARCH
         end
         next if records.empty?
 
-        records.sort!.reverse!
+        records.sort_by! do |record|
+          record[:timestamp]
+        end
+        records.reverse!
         values = records.map {|rec| rec[field.to_sym] }
         yield scan['site'], scan['type'], scan['method'], records[0][:timestamp], values
       end

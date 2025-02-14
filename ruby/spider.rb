@@ -58,6 +58,7 @@ class Spider
 		end
 
 		def overdue
+			return 1 if @every < 1
 			((Time.now.to_i - @timestamps[0] + (60 * 60 * 12)) / (60 * 60 * 24)) - (@every - 1)
 		end
 
@@ -88,7 +89,7 @@ class Spider
 				end
 
 				pagoda.start_transaction
-				@timestamps[9..-1].each do |timestamp|
+				(@timestamps[9..-1] || []).each do |timestamp|
 					pagoda.delete('history',:timestamp,timestamp)
 				end
 				now = Time.now.to_i
@@ -397,5 +398,30 @@ class Spider
 	def wait_return
 		puts "*** Press carriage return to continue"
 		STDIN.gets
+	end
+
+	def wayback_link(url, archive)
+		if (link = @pagoda.link(url)) && link.collation
+			record = {
+				site:link.site,
+				type:link.type,
+				title:link.title,
+				url:archive,
+				timestamp:Time.now.to_i,
+				valid:true,
+				static:true,
+				reject:false,
+				digest:link.digest
+			}
+			@pagoda.start_transaction
+			@pagoda.insert('link',record)
+			@pagoda.insert('bind',{url:archive,id:link.collation.id})
+			@pagoda.delete('bind', :url, url)
+			@pagoda.delete('link', :url, url)
+			@pagoda.end_transaction
+			true
+		else
+			false
+		end
 	end
 end

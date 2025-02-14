@@ -11,6 +11,14 @@ class Grabbed < DefaultSite
 			url = line.strip
 			next if url == ''
 
+			if m = %r{^https://web.archive.org/web/\d+/(.*)$}.match( url )
+				unless scanner.wayback_link(m[1], url)
+					puts "*** #{url}"
+					left << url
+				end
+				next
+			end
+
 			if /^\d+$/ =~ url
 				game = url.to_i
 				next

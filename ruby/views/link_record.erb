@@ -35,9 +35,6 @@
     <tr><th>Site</th><td><%= h(@rec.site) %></td></tr>
     <tr><th>Type</th><td><%= h(@rec.type) %></td></tr>
     <tr><th>Link</th><td><%= "<a href=\"#{@rec.url}\">#{h(@rec.title)}<a/>" %></td></tr>
-    <tr><th>Cache</th><td>
-      <%= @rec.valid? ? "<a href=\"/cache/#{@rec.timestamp}\">#{h(@rec.title)}<a/>" : '' %>
-    </td></tr>
     <tr><th>Join</th><td><%= h(@rec.join) %></td></tr>
     <tr><th>Status</th><td><%= link_status(@rec) %></td></tr>
     <tr><th>Collation</th><td><%= @rec.collation ? game_link(@rec.collation.id) : '' %>
@@ -57,12 +54,12 @@
       html << '</tr>' unless html.empty?
       html.join(' ')
     %>
-    <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') +
-                                link_action( @rec, 'bind') +
-                                link_action( @rec, 'unbind') +
-                                link_action( @rec, 'pardon') +
+    <tr><th>Actions</th><td><%= link_action( @rec, 'ignore') + ' ' +
+                                link_action( @rec, 'bind') + ' ' +
+                                link_action( @rec, 'unbind') + ' ' +
+                                link_action( @rec, 'pardon') + ' ' +
                                 ((/(free|ignored)/i =~ link_status(@rec)) ? link_add_action( @rec) : '')
-    %></td></tr>
+    %> <a href="https://web.archive.org/web/20250000000000*/<%= @rec.url %>">Wayback</A></td></tr>
   </table>
 
   <table class="list">

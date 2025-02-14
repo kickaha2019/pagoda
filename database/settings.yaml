@@ -23,9 +23,10 @@ problem:
   type:   Reference
   method: find_rpgs
 train:
-- site:   Turn Based Lovers
-  type:   Review
-  method: find_reviews
+- site:   Grabbed
+  type:   Reference
+  method: incremental
+  every:  0
 overnight:
 - site:   Adventure Game Hotspot
   type:   Database
