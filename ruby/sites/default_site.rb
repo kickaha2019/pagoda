@@ -72,7 +72,8 @@ class DefaultSite
       return false, false, "Error: #{response.code}"
     end
 
-    return true, false, post_load(pagoda, url, response.body)
+    digest = post_load(pagoda, url, response.body)
+    return true, digest['delete'], digest
   end
 
   def delete_redirects

@@ -66,6 +66,9 @@ class BigFishGames < DefaultSite
 			nodes.css('div.productFullDetail__descriptionContent') do |desc|
 				digest['description'] = desc.text.strip
 			end
+			if digest.empty?
+				digest['delete'] = true
+			end
 		end
 	end
 end

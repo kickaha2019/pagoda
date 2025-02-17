@@ -178,7 +178,7 @@ class Steam < DefaultSite
 				body = driver.execute_script('return document.documentElement.outerHTML;')
 				return true, false, post_load(pagoda, url, body)
 			rescue StandardError => bang
-				return false, false, bang.message
+				return false, false, "Error: #{bang.message}"
 			end
 		end
 
@@ -186,6 +186,6 @@ class Steam < DefaultSite
 			return false, true, "Redirected to #{response['location']}"
 		end
 
-		return false, false, response.message
+		return false, false, "Error: #{response.message}"
 	end
 end
