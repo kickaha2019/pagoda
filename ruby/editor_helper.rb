@@ -44,7 +44,7 @@ module Sinatra
     def alias_element( index, alias_rec)
       input_element( "alias#{index}", 60, alias_rec ? alias_rec.name : '') +
       '</td><td>' +
-      checkbox_element( "hide#{index}", alias_rec ? (alias_rec.hide == 'Y') : true)
+      checkbox_element( "hide#{index}", alias_rec ? alias_rec.hide : true)
     end
 
     def aliases_records( context, search)

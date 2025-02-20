@@ -164,7 +164,7 @@ class WebsiteFiltersPage
     list = []
     @pagoda.game( 0)   # Force index to be created
     @pagoda.games do |game|
-      next if game.is_group == 'Y'
+      next if game.is_group
       playable = Playable.new( self, game.id, game.name, game.year)
       seen = {}
       get_game_info( game, playable, seen)

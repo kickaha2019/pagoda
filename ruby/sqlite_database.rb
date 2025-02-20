@@ -52,12 +52,9 @@ class SqliteDatabase
       end
     end
 
+    column_type = type_for_name column_name
     @sqlite.execute("delete from #{table_name} where #{to_word(column_name)} = ?",
-                    [encode(column_value)])
-    # sql = "delete from #{table_name} where #{to_word(column_name)} = " +
-    #       encode2(column_value)
-    # @sqlite.execute(sql)
-    #    @transaction << sql
+                    [encode(column_type, column_value)])
   end
 
   def decode(type, value)
@@ -69,14 +66,25 @@ class SqliteDatabase
     end
   end
 
-  def encode(value)
+  def encode(type, value)
     case value
-    when Array
-      value.collect { |v| encode(v) }
     when FalseClass
       0
     when TrueClass
       1
+    when String
+      case type
+      when :boolean
+        (value == 'Y') ? 1 : 0
+      when :float
+        value.to_i
+      when :integer
+        value.to_i
+      when :nullable_integer
+        value.to_i
+      else
+        value
+      end
     else
       value
     end
@@ -94,8 +102,9 @@ class SqliteDatabase
 
   def get( table_name, column_name, column_value)
     got = []
+    column_type = type_for_name( column_name )
     results = @sqlite.query( "select * from #{table_name} where #{to_word(column_name)} = ?",
-                             [encode(column_value)])
+                             [encode(column_type, column_value)])
     row    = results.next
     while row do
       record = {}
@@ -119,20 +128,14 @@ class SqliteDatabase
   def insert( table_name, record)
     raise 'Not inside transaction' unless @sqlite.transaction_active?
     statement = "insert into #{table_name} ("
-    keys      = record.keys.collect {|key| to_word(key)}
-    places    = record.keys.collect {|_| '?'}
+    keys, places, values = [], [], []
+    record.each_pair do |key, value|
+      keys   << to_word(key)
+      places << '?'
+      values << encode(type_for_name(key), value)
+    end
     @sqlite.execute( statement + keys.join(',') + ') values (' + places.join(',') + ')',
-                     encode(record.values))
-    # statement = ["insert into #{table_name} ("]
-    # keys      = record.keys.collect {|key| to_word(key)}
-    # statement << keys.join(',')
-    # statement << ') values ('
-    # places    = record.keys.collect {|key| encode2(record[key])}
-    # statement << places.join(',')
-    # statement << ')'
-    # sql       = statement.join('')
-    # @sqlite.execute(sql)
-    #@transaction << sql
+                     values)
 
     @listeners[table_name].each do |listener|
       listener.record_inserted(table_name, record)
@@ -224,13 +227,14 @@ class SqliteDatabase
       else
         statement << "#{separator}'#{to_word(name)}' = ?"
         separator = ','
-        values << value
+        values    << encode(type_for_name(name), value)
       end
     end
-    statement << "where #{to_word(column_name)} = ?"
-    values << column_value
 
-    @sqlite.execute(statement.join(' '), encode(values))
+    statement << "where #{to_word(column_name)} = ?"
+    values    << encode(type_for_name(column_name), column_value)
+
+    @sqlite.execute(statement.join(' '), values)
     #@transaction << sql
 
     if @listeners[table_name].any?

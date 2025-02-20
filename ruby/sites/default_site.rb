@@ -73,7 +73,7 @@ class DefaultSite
     end
 
     digest = post_load(pagoda, url, response.body)
-    return true, digest['delete'], digest
+    return true, (digest['delete'] == true), digest
   end
 
   def delete_redirects

@@ -65,7 +65,7 @@ class Pagoda
 
   def aspect_name_and_types
     @database.select('aspect') do |record|
-      yield record[:name],record[:type] if record[:derive].nil?
+      yield record[:name],record[:type] unless record[:derive]
     end
   end
 

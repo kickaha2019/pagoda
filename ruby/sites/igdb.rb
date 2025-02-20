@@ -104,7 +104,7 @@ class Igdb < DefaultSite
 		twitch = pagoda.settings['Twitch']
 		refresh_access_token(pagoda)
 
-		m = /data-game-id="(\d+)"/.match(page)
+		m = %r{/([^/]*)$}.match(url)
 		return {} unless m
 
 		fields = [
@@ -126,7 +126,7 @@ class Igdb < DefaultSite
 							 10,
 							 {'Client-ID'    =>  twitch['client_id'],
 											 'Authorization' => "Bearer #{@access_token}"},
-							 "fields #{fields.join(',')}; where id=#{m[1]};")
+							 "fields #{fields.join(',')}; where slug=\"#{m[1]}\";")
 		info = JSON.parse(json)[0]
 		return {} if info.nil?
 

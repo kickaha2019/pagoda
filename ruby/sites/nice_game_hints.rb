@@ -15,4 +15,16 @@ class NiceGameHints < DefaultSite
 	def name
 		'Nice Game Hints'
 	end
+
+	def reduce_title(title)
+		if m = /^(.*\S)\s*| Nice Game Hints$/.match(title.strip)
+			title = m[1].strip
+		end
+
+		if m = /^(.*\S)\s*| \d+ low-spoiler guides$/.match(title.strip)
+			title = m[1].strip
+		end
+
+		title
+	end
 end

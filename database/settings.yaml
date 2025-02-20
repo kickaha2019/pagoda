@@ -135,15 +135,6 @@ overnight:
 - site:   Nice Game Hints
   type:   Walkthrough
   method: find
-- site:   rawg.io
-  type:   Reference
-  method: find_adventures
-- site:   rawg.io
-  type:   Reference
-  method: find_puzzles
-- site:   rawg.io
-  type:   Reference
-  method: find_rpgs
 - site:   Steam
   type:   Store
   method: incremental

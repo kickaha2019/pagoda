@@ -9,12 +9,7 @@ class PagodaGame < PagodaRecord
   def aspects
     map = {}
     @owner.get( 'game_aspect', :id, id).each do |rec|
-      f, a = rec[:flag], rec[:aspect]
-      if f == 'Y'
-        map[a] = true
-      elsif f == 'N'
-        map[a] = false
-      end
+      map[rec[:aspect]] = rec[:flag]
     end
     map
   end
@@ -51,7 +46,7 @@ class PagodaGame < PagodaRecord
   end
 
   def group?
-    @record[:is_group] == 'Y'
+    @record[:is_group]
   end
 
   def group_name
@@ -137,7 +132,7 @@ class PagodaGame < PagodaRecord
       name = params["alias#{index}".to_sym]
       next if name.nil? || (name.strip == '')
       next if names_seen[name.downcase]
-      rec = {id:id, name:name, hide:params["hide#{index}".to_sym]}
+      rec = {id:id, name:name, hide:(params["hide#{index}".to_sym] == 'Y')}
       @owner.insert( 'alias', rec)
       names_seen[name.downcase] = true
     end

@@ -39,7 +39,7 @@ create table company (
 create table game_aspect (
   id int not null,
   aspect text not null,
-  flag int,
+  flag int not null,
   foreign key (id) references game(id),
   foreign key (aspect) references aspect(name)
 ) strict;

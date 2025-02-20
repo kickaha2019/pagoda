@@ -351,14 +351,22 @@ module Common
 	def type_for_name(name)
 		raise "Name #{name} not a symbol" unless name.is_a? Symbol
 		case name
+		when :derive
+			:boolean
 		when :elapsed
 			:integer
+		when :flag
+			:boolean
 		when :group_id
 			:nullable_integer
+		when :hide
+			:boolean
 		when :id
 			:integer
 		when :index
 			:integer
+		when :is_group
+			:boolean
 		when :reject
 			:boolean
 		when :static
