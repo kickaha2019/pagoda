@@ -25,8 +25,16 @@ RAWG
 		url = url.strip
 
 		while (loops > 0) && url
-			raw = scanner.http_get(url,10,'Accept' => 'application/json')
-			#raw = scanner.curl url
+			begin
+				raw = scanner.http_get(url,10,'Accept' => 'application/json')
+			rescue Net::HTTPServerException => e
+				if e.response.is_a?( Net::HTTPNotFound)
+					break
+				else
+					raise e
+				end
+			end
+
 			break if raw.nil?
 
 			data = JSON.parse(raw)

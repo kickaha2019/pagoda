@@ -124,6 +124,7 @@ module Common
 			sleep 60
 			response = http_get_response( url, delay, headers)
 		end
+
 		begin
 			response.value
 		rescue

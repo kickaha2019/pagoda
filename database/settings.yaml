@@ -13,19 +13,10 @@ not_game_words:
 - soundtrack
 - trailer
 problem:
+train:
 - site:   rawg.io
   type:   Reference
   method: find_adventures
-- site:   rawg.io
-  type:   Reference
-  method: find_puzzles
-- site:   rawg.io
-  type:   Reference
-  method: find_rpgs
-train:
-- site:   Grabbed
-  type:   Reference
-  method: incremental
   every:  0
 overnight:
 - site:   Adventure Game Hotspot
@@ -135,6 +126,15 @@ overnight:
 - site:   Nice Game Hints
   type:   Walkthrough
   method: find
+- site:   rawg.io
+  type:   Reference
+  method: find_adventures
+- site:   rawg.io
+  type:   Reference
+  method: find_puzzles
+- site:   rawg.io
+  type:   Reference
+  method: find_rpgs
 - site:   Steam
   type:   Store
   method: incremental

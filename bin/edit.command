@@ -20,7 +20,7 @@ endif
 # Launch the editor
 #
 cd $0:h
-cp ../database/pagoda.sqlite  ../database/pagoda.sqlite.bak
+cp ../database/pagoda.sqlite  /tmp/pagoda.sqlite
 sleep 10;open http://localhost:4567 &
 ruby -I../ruby ../ruby/editor.rb ../database /Users/peter/Caches/Pagoda
 
