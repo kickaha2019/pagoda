@@ -1,5 +1,27 @@
 require_relative 'default_site'
 
+# Genres
+#
+# [[4, "Action"],
+#  [51, "Indie"],
+#  [3, "Adventure"],
+#  [5, "RPG"],
+#  [10, "Strategy"],
+#  [2, "Shooter"],
+#  [40, "Casual"],
+#  [14, "Simulation"],
+#  [7, "Puzzle"],
+#  [11, "Arcade"],
+#  [83, "Platformer"],
+#  [59, "Massively Multiplayer"],
+#  [1, "Racing"],
+#  [15, "Sports"],
+#  [6, "Fighting"],
+#  [19, "Family"],
+#  [28, "Board Games"],
+#  [17, "Card"],
+#  [34, "Educational"]]
+
 class Rawg < DefaultSite
 	BASE = 'https://rawg.io'
 
@@ -16,19 +38,34 @@ class Rawg < DefaultSite
 	end
 
 	def find_genre(scanner, genre, state)
-		page = state.nil? ? 1 : state.to_i
+		if m = /^(\d+) (\d+)$/.match(state)
+			year = m[1].to_i
+			page = m[2].to_i
+		else
+			year = 1980
+			page = 1
+		end
 		loops, limit = 10, 40
 
 		url = <<"RAWG"
-https://api.rawg.io/api/games?key=#{scanner.settings['rawg.io']}&genres=#{genre}&page=#{page}&page_size=#{limit}&ordering=created
+https://api.rawg.io/api/
+games?key=#{scanner.settings['rawg.io']}&
+genres=#{genre}&
+page=#{page}&
+page_size=#{limit}&
+dates=#{year}-01-01,#{year}-12-31&
+ordering=created
 RAWG
-		url = url.strip
+		url = url.gsub(/\s/,'')
 
 		while (loops > 0) && url
 			begin
 				raw = scanner.http_get(url,10,'Accept' => 'application/json')
 			rescue Net::HTTPServerException => e
 				if e.response.is_a?( Net::HTTPNotFound)
+					year += 1
+					year = 1980 if year > Time.now.year
+					page =  1
 					break
 				else
 					raise e
@@ -48,11 +85,13 @@ RAWG
 				loops -= 1
 				page  += 1
 			else
-				break
+				year += 1
+				year = 1980 if year > Time.now.year
+				page =  1
 			end
 		end
 
-		page
+		"#{year} #{page}"
 	end
 
 	def find_adventures(scanner, state)
