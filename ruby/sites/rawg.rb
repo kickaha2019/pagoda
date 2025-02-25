@@ -59,20 +59,21 @@ RAWG
 		url = url.gsub(/\s/,'')
 
 		while (loops > 0) && url
+			loops -= 1
+
 			begin
 				raw = scanner.http_get(url,10,'Accept' => 'application/json')
+				break if raw.nil?
 			rescue Net::HTTPServerException => e
 				if e.response.is_a?( Net::HTTPNotFound)
 					year += 1
 					year = 1980 if year > Time.now.year
 					page =  1
-					break
+					next
 				else
 					raise e
 				end
 			end
-
-			break if raw.nil?
 
 			data = JSON.parse(raw)
 			#puts "... Count = #{data["count"]}"
@@ -82,7 +83,6 @@ RAWG
 
 			if data['results'].size >= limit
 				url   =  data['next']
-				loops -= 1
 				page  += 1
 			else
 				year += 1

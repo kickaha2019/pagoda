@@ -275,7 +275,7 @@ post '/visited/:key' do
 end
 
 post '/write_grabbed/:game_id' do
-  File.open(ARGV[1] + '/grabbed.txt', 'a') do |io|
+  File.open(ARGV[0] + '/grabbed.txt', 'a') do |io|
     io.puts params[:game_id]
   end
 end

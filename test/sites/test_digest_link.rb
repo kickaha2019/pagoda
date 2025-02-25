@@ -82,7 +82,7 @@ class TestDigestLink < TestBase
   end
 
   def test_itchio
-    info = fire('itch.io','https://moonmuse.itch.io/tmos')
+    info = fire('itch.io','https://hanabarger-digital.itch.io/tmos')
     assert_equal 'The Manse on Soracca by MoonMuse', info['title']
     assert /Herbert Castaigne/ =~ info['description']
     assert info['tags'].include?('Lovecraftian Horror')

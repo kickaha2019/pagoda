@@ -14,9 +14,9 @@ not_game_words:
 - trailer
 problem:
 train:
-- site:   rawg.io
+- site:   Grabbed
   type:   Reference
-  method: find_adventures
+  method: incremental
   every:  0
 overnight:
 - site:   Adventure Game Hotspot

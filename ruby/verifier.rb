@@ -117,10 +117,11 @@ class Verifier
       return
     end
 
-    rec = {timestamp:Time.now.to_i,
-           reject:(body['unreleased'] ? true : false),
-           valid:true,
-           comment: nil}
+    rec = {timestamp: Time.now.to_i,
+           reject:    (body['unreleased'] ? true : false),
+           valid:     true,
+           comment:   nil,
+           digest:    body.to_json}
 
     # Get year if possible for link
     rec[:year] = body['year'] if status && body['year']

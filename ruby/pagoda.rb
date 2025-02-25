@@ -445,9 +445,6 @@ class Pagoda
       end
     end
 
-    # Save the digest
-    rec[:digest] = digest.to_json
-
     # Unbind rejected links
     rec[:reject] = true if reject_link?(link, digest)
 

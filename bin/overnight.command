@@ -7,7 +7,7 @@
 #
 # Check Google Archive script run
 #
-set FOUND=`find ~/Synch -name 'EVENING_TO_IMAC' -ctime -6h | wc -l`
+set FOUND=`find ~/Synch -name 'LAPTOP_EVENING' -ctime -6h | wc -l`
 if ("1" != "$FOUND") then
   echo
   echo "*** Evening archive script may not have been run"
