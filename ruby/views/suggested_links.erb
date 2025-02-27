@@ -1,0 +1,41 @@
+<%= erb :header, :locals => {:page => 'suggested_links'} %>
+
+<script>
+    function suggest_bind_action( url, id, row) {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open( "POST", "/add_link_from_suggest/" + id + "/" + url, false);
+        xhttp.send();
+        if (xhttp.responseText != '') {
+            window.location.reload();
+            return;
+        }
+        window.open("/link/" + url);
+    }
+</script>
+
+<%
+  @game = $pagoda.game( id)
+  @name = @game.name
+%>
+
+<h2>Suggested links for: <%= @name %></h2>
+
+<div id="list"><table class="scan list">
+<tr><th>Site</th><th>Type</th><th>Title</th><th>Actions</th></tr>
+<%=
+  records = suggested_links_records( id)
+  html    = []
+  records.each do |rec|
+  html << "<tr><td>#{h(rec[:site])}</td>"
+  html << "<td>#{rec[:type]}</td>"
+  html << "<td><a target=\"_blank\" href=\"#{rec[:url]}\">#{h(rec[:title],60)}<a/></td>"
+  html << "<td>#{ suggest_bind_action( rec, id)}</td>"
+  html << '</tr>'
+end
+
+html.join( "\n")
+%>
+</table></div>
+
+</body>
+</html>

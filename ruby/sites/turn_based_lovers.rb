@@ -52,6 +52,10 @@ class TurnBasedLovers < DefaultSite
 			title = m[1]
 		end
 
+		if m = /^(.*\S)\s*-\s*$/.match(title)
+			title = m[1]
+		end
+
 		title
 	end
 end

@@ -20,12 +20,6 @@ class Pagoda
     @possibles   = nil
     @now         = Time.now
 
-    # Populate names repository
-    @database.select( 'game') do |game_rec|
-      PagodaGame.new( self, game_rec)
-    end
-    log 'Populate names repository'
-
     #@aspect_info_timestamp = Time.utc(1970)
     load_site_handlers
     @pagoda_links = load_links

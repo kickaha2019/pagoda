@@ -237,6 +237,10 @@ get '/suggests' do
   erb :suggests, :locals => get_locals( params, :search => '', :page => 1, :site => 'All', :type => 'All')
 end
 
+get '/suggested_links/:game' do
+  erb :suggested_links, :locals => {id:params[:game].to_i}
+end
+
 get '/tables' do
   erb :tables
 end

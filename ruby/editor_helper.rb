@@ -653,9 +653,15 @@ SEARCH
       $game_names = Names.new
       $game_names.listen( $pagoda, 'game', :name, :id)
       $game_names.listen( $pagoda, 'alias', :name, :id)
+      $pagoda.log 'Populate game names repository'
 
       $company_names = Names.new
       $company_names.listen( $pagoda, 'company', :name, :name)
+      $pagoda.log 'Populate company names repository'
+
+      $suggestions = Names.new
+      $suggestions.listen( $pagoda, 'suggest', :title, :url)
+      $pagoda.log 'Populate suggestions names repository'
     end
 
     def sort_name( name)
@@ -665,6 +671,10 @@ SEARCH
       else
         name
       end
+    end
+
+    def suggest_bind_action( rec, id, row=0)
+      "<button onclick=\"suggest_bind_action( '#{e(e(rec[:url]))}', #{id}, #{row});\">Bind</button>"
     end
 
     def suggest_games(link_title)
@@ -690,6 +700,16 @@ SEARCH
         map[rec[:site]][rec[:type]] += 1
       end
       map
+    end
+
+    def suggested_links_records(id)
+      [].tap do |suggests|
+        $suggestions.suggest($pagoda.game(id).name,200) do |name, url|
+          next if $pagoda.has?('link', :url, url)
+          suggests << $pagoda.get('suggest', :url, url)[0]
+          break if suggests.size >= 100
+        end
+      end
     end
 
     def summary_line( site, type, counts, totals, html)
