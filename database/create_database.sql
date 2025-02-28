@@ -1,6 +1,7 @@
 create table alias (
   id int not null,
   name text not null unique,
+  reduced_name text not null,
   hide int,
   foreign key (id) references game(id)
 ) strict;
@@ -33,7 +34,8 @@ create table company_alias (
 create index company_alias_name on company_alias (name);
 
 create table company (
-  name text not null primary key
+  name text not null primary key,
+  reduced_name text not null
 ) strict;
 
 create table game_aspect (
@@ -49,6 +51,7 @@ create index game_aspect_id on game_aspect (id);
 create table game (
   id int primary key,
   name text not null unique,
+  reduced_name text not null,
   is_group int,
   group_id int,
   game_type text,
@@ -88,7 +91,8 @@ create table suggest (
   url text primary key,
   site text not null,
   type text not null,
-  title text not null
+  title text not null,
+  reduced_title text not null
 ) strict;
 
 create table tag_aspects (

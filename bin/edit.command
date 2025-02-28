@@ -21,6 +21,6 @@ endif
 #
 cd $0:h
 cp ../database/pagoda.sqlite  /tmp/pagoda.sqlite
-sleep 50;open http://localhost:4567 &
+sleep 15;open http://localhost:4567 &
 ruby -I../ruby ../ruby/editor.rb ../database /Users/peter/Caches/Pagoda
 

@@ -158,7 +158,8 @@ HIDDEN_ASPECT_ELEMENT
 
     def company_add(company)
       $pagoda.start_transaction
-      $pagoda.insert('company',{:name => company})
+      $pagoda.insert('company',
+                     {name:company, reduced_name:Names.reduce(company)})
       $pagoda.end_transaction
     end
 
@@ -235,7 +236,7 @@ HIDDEN_ASPECT_ELEMENT
       text   = text.to_s
       search = search.downcase
       return true if text.downcase.index( search)
-      $game_names.reduce( text).index( search)
+      Names.reduce( text).index( search)
     end
 
     def d( text)
@@ -651,16 +652,16 @@ SEARCH
       end
 
       $game_names = Names.new
-      $game_names.listen( $pagoda, 'game', :name, :id)
-      $game_names.listen( $pagoda, 'alias', :name, :id)
+      $game_names.listen( $pagoda, 'game', :reduced_name, :id)
+      $game_names.listen( $pagoda, 'alias', :reduced_name, :id)
       $pagoda.log 'Populate game names repository'
 
       $company_names = Names.new
-      $company_names.listen( $pagoda, 'company', :name, :name)
+      $company_names.listen( $pagoda, 'company', :reduced_name, :name)
       $pagoda.log 'Populate company names repository'
 
       $suggestions = Names.new
-      $suggestions.listen( $pagoda, 'suggest', :title, :url)
+      $suggestions.listen( $pagoda, 'suggest', :reduced_title, :url)
       $pagoda.log 'Populate suggestions names repository'
     end
 

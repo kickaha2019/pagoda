@@ -389,7 +389,11 @@ class Spider
 		else
 			@pagoda.start_transaction
 			@pagoda.insert('suggest',
-										 {site:@site, type:@type, title:title, url:url})
+										 {site:@site,
+											type:@type,
+											title:title,
+											reduced_title:Names.reduce(title),
+											url:url})
 			@pagoda.end_transaction
 			true
 		end

@@ -115,10 +115,7 @@ class PagodaGame < PagodaRecord
     [:id, :year, :name, :is_group, :developer, :publisher].each do |field|
       rec[field] = coerce( type_for_name(field), params[field]) if params[field]
     end
-    #
-    # [:id, :year].each do |field|
-    #   rec[field] = params[field].to_i if params[field] # ? params[field].to_s.strip : nil
-    # end
+    rec[:reduced_name] = Names.reduce(rec[:name])
 
     if params[:group_name]
       group_recs = @owner.get( 'game', :name, params[:group_name].strip)
@@ -132,7 +129,10 @@ class PagodaGame < PagodaRecord
       name = params["alias#{index}".to_sym]
       next if name.nil? || (name.strip == '')
       next if names_seen[name.downcase]
-      rec = {id:id, name:name, hide:(params["hide#{index}".to_sym] == 'Y')}
+      rec = {id:id,
+             name:name,
+             reduced_name:Names.reduce(name),
+             hide:(params["hide#{index}".to_sym] == 'Y')}
       @owner.insert( 'alias', rec)
       names_seen[name.downcase] = true
     end

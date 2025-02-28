@@ -138,7 +138,7 @@ class Names
     name = record[info[0]]
     key  = record[info[1]]
 
-    string_combos( name) do |combo|
+    string_combos(name) do |combo|
       entries = @combo2data[combo].select {|data| (data[0] != name) || (data[1] != key)}
       if entries.empty?
         @combo2data.delete(combo)
@@ -159,9 +159,7 @@ class Names
     end
   end
 
-  def reduce( name)
-    cached = @cache[name]
-    return cached if cached
+  def self.reduce( name)
 
     # Lower case and decode HTML entities
     reduced = Names.simplify( name.gsub(/\(\d\d\d\d\)/, ' '))
@@ -182,9 +180,7 @@ class Names
     end
 
     # Compress blanks
-    reduced = reduced.gsub( /[ ]+/, ' ').strip
-
-    @cache[name] = reduced
+    reduced.gsub( /[ ]+/, ' ').strip
   end
 
   def self.simplify( name)
@@ -214,7 +210,7 @@ class Names
   end
 
   def string_combos( name)
-    words = reduce( name).split( ' ')
+    words = name.split( ' ')
     yield words.join(' ')
 
     if words.size > 1
@@ -242,7 +238,7 @@ class Names
 
   def suggest( name, limit)
     id2size = Hash.new {|h,k| h[k] = [1000000, '']}
-    string_combos( name) do |combo|
+    string_combos(Names.reduce(name)) do |combo|
       found = @combo2data[combo]
       found.each do |data|
         text, key = * data
